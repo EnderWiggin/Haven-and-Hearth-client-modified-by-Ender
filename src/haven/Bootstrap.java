@@ -14,7 +14,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	
 	public void run() {
 		ui.newwidget(1, "text", new Coord(100, 100), 0, new Coord(100, 20), "192.168.0.116");
-		ui.newwidget(2, "img", new Coord(0, 0), 0, "testimgs/snow.bmp");
+		ui.newwidget(2, "img", new Coord(0, 0), 0, "gfx/testimgs/snow.bmp");
 		retry: do {
 			address = null;
 			synchronized(this) {

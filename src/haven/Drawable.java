@@ -5,7 +5,7 @@ import java.awt.Graphics;
 public abstract class Drawable {
 	Coord c, v;
 	Coord sc;
-	int lastframe;
+	int lastframe, id;
 	
 	public Drawable(Coord c, Coord v) {
 		this.c = c;

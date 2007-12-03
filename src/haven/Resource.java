@@ -6,7 +6,7 @@ import javax.imageio.*;
 import java.awt.image.BufferedImage;
 
 public class Resource {
-	private static File basedir = new File("D:\\Haven\\src\\res\\gfx");
+	private static File basedir = new File("D:\\Haven\\src\\res");
 	private static Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
 	private static Map<String, Sprite> sprites = new HashMap<String, Sprite>();
 	

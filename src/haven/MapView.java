@@ -12,7 +12,6 @@ public class MapView extends Widget {
 	List<Image> tiles = new LinkedList<Image>();
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
-	Image tree;
 	Coord mc;
 	public static final Coord tilesz = new Coord(8, 8);
 	public static final Coord cmaps = new Coord(100, 100);
@@ -46,9 +45,8 @@ public class MapView extends Widget {
 	public MapView(Coord c, Coord sz, Widget parent, Coord mc) {
 		super(c, sz, parent);
 		for(int i = 0; i <= 13; i++) {
-			tiles.add(Resource.loadimg(String.format("tiles/dirt-%02d.gif", i)));
+			tiles.add(Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i)));
 		}
-		tree = Resource.loadimg("trees/tree3.gif");
 		this.mc = mc;
 		Session.current.mapdispatch = this;
 	}
@@ -114,7 +112,10 @@ public class MapView extends Widget {
 		
 		ArrayList<Drawable> sprites = new ArrayList<Drawable>();
 		synchronized(Session.current.oc.objs) {
-			for(Drawable d : Session.current.oc.objs.values()) {
+			for(Map.Entry<Integer, Drawable> e : Session.current.oc.objs.entrySet()) {
+				Drawable d = e.getValue();
+				int id = e.getKey();
+				d.id = id;
 				Coord dc = m2s(d.c).add(oc);
 				d.sc = dc;
 				Coord ulc = dc.add(d.getoffset().inv());
@@ -130,6 +131,8 @@ public class MapView extends Widget {
 		});
 		for(Drawable d : sprites) {
 			d.draw(g, d.sc);
+			g.setColor(Color.WHITE);
+			g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
 		}
 		return(true);
 	}
