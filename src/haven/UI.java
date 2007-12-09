@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 public class UI {
 	Widget root;
-	Widget keyfocus, mousefocus;
+	Widget keygrab, mousegrab;
 	Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
 	Receiver rcvr;
@@ -25,10 +25,15 @@ public class UI {
 	}
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
-		synchronized(this) {
-			Widget wdg = Widget.create(type, c, widgets.get(parent), args);
-			widgets.put(id, wdg);
-			rwidgets.put(wdg, id);
+		try {
+			synchronized(this) {
+				Widget wdg = Widget.create(type, c, widgets.get(parent), args);
+				widgets.put(id, wdg);
+				rwidgets.put(wdg, id);
+			}
+		} catch(Throwable t) {
+			/* XXX: Remove! */
+			t.printStackTrace();
 		}
 	}
 	
@@ -58,24 +63,38 @@ public class UI {
 			widgets.get(id).uimsg(msg.intern(), args);
 	}
 	
-	public void type(char c) {
-		if(keyfocus == null)
-			root.type(c);
+	public void type(KeyEvent ev) {
+		if(keygrab == null)
+			root.type(ev.getKeyChar(), ev);
 		else
-			keyfocus.type(c);
+			keygrab.type(ev.getKeyChar(), ev);
 	}
 	
 	public void keydown(KeyEvent ev) {
-		if(keyfocus == null)
+		if(keygrab == null)
 			root.keydown(ev);
 		else
-			keyfocus.keydown(ev);
+			keygrab.keydown(ev);
 	}
 	
 	public void keyup(KeyEvent ev) {
-		if(keyfocus == null)
+		if(keygrab == null)
 			root.keyup(ev);
 		else
-			keyfocus.keyup(ev);		
+			keygrab.keyup(ev);		
+	}
+	
+	public void mousedown(Coord c, int button) {
+		if(mousegrab == null)
+			root.mousedown(c, button);
+		else
+			mousegrab.mousedown(c, button);
+	}
+	
+	public void mouseup(Coord c, int button) {
+		if(mousegrab == null)
+			root.mouseup(c, button);
+		else
+			mousegrab.mouseup(c, button);
 	}
 }

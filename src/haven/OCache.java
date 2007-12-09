@@ -11,7 +11,6 @@ public class OCache {
 		synchronized(objs) {
 			if(objs.containsKey(id)) {
 				objs.remove(id);
-				System.out.println(id + " " + objs.containsKey(id));
 				deleted.put(id, frame);
 			}
 		}

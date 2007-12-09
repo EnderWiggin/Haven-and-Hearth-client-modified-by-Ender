@@ -16,12 +16,15 @@ public class Session {
 	public static final int OD_MOVE = 0;
 	public static final int OD_REM = 1;
 	public static final int OD_VMOVE = 2;
+	public static final int SESSERR_AUTH = 1;
+	public static final int SESSERR_BUST = 2;
+	public static final int SESSERR_CONN = 3;
 	
 	public static Session current;
 	DatagramSocket sk;
 	InetAddress server;
 	Thread rworker, sworker;
-	boolean connfailed = false;
+	int connfailed = 0;
 	boolean connected = false;
 	int tseq = 0, rseq = 0;
 	MapView mapdispatch; /* XXX */
@@ -30,6 +33,7 @@ public class Session {
 	LinkedList<Message> pending = new LinkedList<Message>();
 	Map<Integer, ObjAck> objacks = new TreeMap<Integer, ObjAck>();
 	OCache oc = new OCache();
+	String username, password;
 	
 	private class ObjAck {
 		int id;
@@ -133,8 +137,14 @@ public class Session {
 				Message msg = new Message(p.getData()[0], p.getData(), 1, p.getLength() - 1);
 				if(msg.type == MSG_SESS) {
 					if(!connected) {
+						int error = msg.uint8();
 						synchronized(Session.this) {
-							connected = true;
+							if(error == 0) {
+								connected = true;
+							} else {
+								connected = false;
+								connfailed = error;
+							}
 							Session.this.notifyAll();
 						}
 					}
@@ -175,12 +185,15 @@ public class Session {
 						if(now - last > 500) {
 							if(++retries > 5) {
 								synchronized(Session.this) {
-									connfailed = true;
+									connfailed = SESSERR_CONN;
 									Session.this.notifyAll();
 									return;
 								}
 							}
-							sendmsg(new byte[] {MSG_SESS});
+							Message msg = new Message(MSG_SESS);
+							msg.addstring(username);
+							msg.addstring(password);
+							sendmsg(msg);
 							last = now;
 						}
 						Thread.sleep(100);
@@ -237,8 +250,10 @@ public class Session {
 		}
 	}
 	
-	public Session(InetAddress server) {
+	public Session(InetAddress server, String username, String password) {
 		this.server = server;
+		this.username = username;
+		this.password = password;
 		try {
 			sk = new DatagramSocket();
 		} catch(SocketException e) {

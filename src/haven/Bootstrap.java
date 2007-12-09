@@ -6,6 +6,8 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	UI ui;
 	Session sess;
 	String address;
+	String username, password;
+	int cfocus = 0;
 	
 	public Bootstrap(UI ui) {
 		this.ui = ui;
@@ -13,12 +15,20 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	}
 	
 	public void run() {
-		ui.newwidget(1, "text", new Coord(100, 100), 0, new Coord(100, 20), "192.168.0.116");
-		ui.newwidget(2, "img", new Coord(0, 0), 0, "gfx/testimgs/snow.bmp");
+		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
+		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/testimgs/snow.bmp");
+		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), Utils.getpref("server", "127.0.0.1"));
+		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
+		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
+		//ui.newwidget(6, "sm", new Coord(400, 300), 0, "Test", "Barda", "Apa", "Slen", "Mast");
+		ui.uimsg(5, "tabfocus", 1);
+		ui.uimsg(5, "act", 1);
 		retry: do {
 			address = null;
+			username = null;
+			password = null;
 			synchronized(this) {
-				while(address == null) {
+				while((address == null) || (username == null) || (password == null)) {
 					try {
 						this.wait();
 					} catch(InterruptedException e) {
@@ -27,7 +37,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 				}
 			}
 			try {
-				sess = new Session(InetAddress.getByName(address));
+				sess = new Session(InetAddress.getByName(address), username, password);
 			} catch(UnknownHostException e) {
 				/* XXX */
 				throw(new RuntimeException(e));
@@ -39,10 +49,13 @@ public class Bootstrap extends Thread implements UI.Receiver {
 			while(true) {
 				if(sess.connected) {
 					System.out.println("Connected!");
-					ui.destroy(1);
-					ui.destroy(2);
+					Utils.setpref("server", address);
+					Utils.setpref("username", username);
+					Utils.setpref("password", password);
+					ui.destroy(5);
 					break retry;
-				} else if(sess.connfailed) {
+				} else if(sess.connfailed != 0) {
+					System.out.println("Failed: " + sess.connfailed);
 					sess = null;
 					continue retry;
 				}
@@ -59,13 +72,40 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	}
 	
 	public void rcvmsg(int widget, String msg, Object... args) {
-		if(widget == 1) {
-			synchronized(this) {
-				address = (String)args[0];
+		synchronized(this) {
+			if((widget == 5) && (msg == "activate")) {
+				if(cfocus == 2) {
+					ui.uimsg(3, "settext", "");
+					ui.uimsg(5, "focus", 3);
+				} else {
+					address = username = password = null;
+					ui.uimsg(1, "get");
+					ui.uimsg(2, "get");
+					ui.uimsg(3, "get");
+				}
+			}
+			if((widget == 5) && (msg == "focus")) {
+				cfocus = (Integer)args[0];
+			}
+			if(msg == "text") {
+				if(widget == 1) {
+					address = (String)args[0];
+				} else if(widget == 2) {
+					username = (String)args[0];
+				} else if(widget == 3) {
+					password = (String)args[0];
+				}
+			}
+			if((address != null) && (username != null) && (password != null)) {
+				if(username.equals("")) {
+					ui.uimsg(5, "focus", 2);
+					username = null;
+				} else if(password.equals("")) {
+					ui.uimsg(5, "focus", 3);
+					password = null;
+				}
 				notifyAll();
 			}
-		} else {
-			System.out.println(widget + ": " + msg);
 		}
 	}
 }

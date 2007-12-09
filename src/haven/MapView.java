@@ -13,6 +13,7 @@ public class MapView extends Widget {
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Coord mc;
+	List<Drawable> clickable = null;
 	public static final Coord tilesz = new Coord(8, 8);
 	public static final Coord cmaps = new Coord(100, 100);
 	
@@ -74,14 +75,29 @@ public class MapView extends Widget {
 	}
 	
 	public boolean mousedown(Coord c, int button) {
+		Drawable hit = null;
+		for(Drawable d : clickable) {
+			Coord ulc = d.sc.add(d.getoffset().inv());
+			if(c.isect(ulc, d.getsize())) {
+				if(d.checkhit(c.add(ulc.inv()))) {
+					hit = d;
+					break;
+				}
+			}
+		}
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
-		ui.wdgmsg(this, "click", mc, button);
+		if(hit == null)
+			ui.wdgmsg(this, "click", mc, button);
+		else
+			ui.wdgmsg(this, "click", mc, button, hit.id, hit.c);
 		return(true);
 	}
 	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "move") {
 			mc = (Coord)args[0];
+		} else {
+			super.uimsg(msg, args);
 		}
 	}
 	
@@ -111,6 +127,7 @@ public class MapView extends Widget {
 		}
 		
 		ArrayList<Drawable> sprites = new ArrayList<Drawable>();
+		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
 		synchronized(Session.current.oc.objs) {
 			for(Map.Entry<Integer, Drawable> e : Session.current.oc.objs.entrySet()) {
 				Drawable d = e.getValue();
@@ -120,13 +137,23 @@ public class MapView extends Widget {
 				d.sc = dc;
 				Coord ulc = dc.add(d.getoffset().inv());
 				Coord lrc = ulc.add(d.getsize());
-				if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y))
+				if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
 					sprites.add(d);
+					clickable.add(d);
+				}
 			}
 		}
+		this.clickable = clickable;
+		Collections.sort(clickable, new Comparator<Drawable>() {
+			public int compare(Drawable a, Drawable b) {
+				if(a.clickprio != b.clickprio)
+					return(a.clickprio - b.clickprio);
+				return(b.sc.y - a.sc.y);
+			}
+		});
 		Collections.sort(sprites, new Comparator<Drawable>() {
 			public int compare(Drawable a, Drawable b) {
-				return(a.c.y - b.c.y);
+				return(a.sc.y - b.sc.y);
 			}
 		});
 		for(Drawable d : sprites) {

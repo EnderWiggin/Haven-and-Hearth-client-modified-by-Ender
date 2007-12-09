@@ -25,6 +25,11 @@ public class SimpleDrawable extends Drawable {
 		this.v = v;
 	}
 	
+	public boolean checkhit(Coord c) {
+		int cl = spr.img.getRGB(c.x, c.y);
+		return(Utils.rgbm.getAlpha(cl) >= 128);
+	}
+	
 	public Coord getsize() {
 		return(new Coord(spr.img.getWidth(), spr.img.getHeight()));
 	}

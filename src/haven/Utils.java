@@ -1,8 +1,30 @@
 package haven;
 
+import java.awt.RenderingHints;
 import java.io.*;
+import java.util.prefs.*;
 
 public class Utils {
+	private static Preferences prefs = null;
+	public static java.awt.image.ColorModel rgbm = java.awt.image.ColorModel.getRGBdefault();
+	
+	static void AA(java.awt.Graphics g) {
+		java.awt.Graphics2D g2 = (java.awt.Graphics2D)g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);		
+	}
+	
+	static synchronized String getpref(String prefname, String def) {
+		if(prefs == null)
+			prefs = Preferences.userNodeForPackage(Utils.class);
+		return(prefs.get(prefname, def));
+	}
+	
+	static synchronized void setpref(String prefname, String val) {
+		if(prefs == null)
+			prefs = Preferences.userNodeForPackage(Utils.class);
+		prefs.put(prefname, val);
+	}
+	
 	static int ub(byte b) {
 		if(b < 0)
 			return(256 + b);

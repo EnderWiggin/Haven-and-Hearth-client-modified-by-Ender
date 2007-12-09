@@ -14,6 +14,7 @@ public class MainFrame extends Frame {
 	public MainFrame(int w, int h) {
 		setSize(w, h);
 		setVisible(true);
+		setFocusTraversalKeysEnabled(false);
 		createBufferStrategy(2);
 		root = new RootWidget(new Coord(w, h), getGraphicsConfiguration());
 		ui = new UI(root);
@@ -68,9 +69,9 @@ public class MainFrame extends Frame {
 				if(e instanceof MouseEvent) {
 					MouseEvent me = (MouseEvent)e;
 					if(me.getID() == MouseEvent.MOUSE_PRESSED) {
-						root.mousedown(new Coord(me.getX(), me.getY()), me.getButton());
+						ui.mousedown(new Coord(me.getX(), me.getY()), me.getButton());
 					} else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
-						root.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
+						ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
 					}
 				} else if(e instanceof KeyEvent) {
 					KeyEvent ke = (KeyEvent)e;
@@ -79,7 +80,7 @@ public class MainFrame extends Frame {
 					} else if(ke.getID() == KeyEvent.KEY_RELEASED) {
 						ui.keyup(ke);
 					} else if(ke.getID() == KeyEvent.KEY_TYPED) {
-						ui.type(ke.getKeyChar());
+						ui.type(ke);
 					}
 				}
 			}
