@@ -16,5 +16,6 @@
 	<attribute name="Main-Class" value="haven.MainFrame" />
       </manifest>
     </jar>
+    <signjar jar="build/haven.jar" alias="haven" storepass="autosign" keystore="etc/keys" />
   </target>
 </project>

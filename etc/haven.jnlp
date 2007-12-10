@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<jnlp spec="1.0+" codebase="http://localhost/~fredrik/haven/">
+  <information>
+    <title>Haven</title>
+    <vendor>Seatribe</vendor>
+    <homepage href="http://www.seatribe.se/" />
+    <description>The Haven game</description>
+  </information>
+  <offline-allowed />
+  <security>
+    <all-permissions />
+  </security>
+  <resources>
+    <j2se version="1.6+" />
+    <jar href="haven.jar" />
+  </resources>
+  <application-desc />
+</jnlp>
