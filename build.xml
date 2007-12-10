@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<project name="haven" default="jar">
+  <target name="build-env">
+    <mkdir dir="build" />
+    <mkdir dir="build/classes" />
+  </target>
+  
+  <target name="haven-client" depends="build-env">
+    <javac srcdir="src" destdir="build/classes" debug="on" />
+  </target>
+  
+  <target name="jar" depends="haven-client">
+    <jar destfile="build/haven.jar" basedir="build/classes">
+      <manifest>
+	<attribute name="Main-Class" value="haven.MainFrame" />
+      </manifest>
+    </jar>
+  </target>
+</project>
