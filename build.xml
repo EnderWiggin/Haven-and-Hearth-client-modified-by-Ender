@@ -4,14 +4,23 @@
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
+    <mkdir dir="build/res" />
   </target>
   
   <target name="haven-client" depends="build-env">
     <javac srcdir="src" destdir="build/classes" debug="on" />
   </target>
   
-  <target name="jar" depends="haven-client">
-    <jar destfile="build/haven.jar" basedir="build/classes">
+  <target name="resources" depends="build-env">
+    <copy todir="build/res">
+      <fileset dir="res" />
+    </copy>
+  </target>
+
+  <target name="jar" depends="haven-client,resources">
+    <jar destfile="build/haven.jar" basedir="build">
+      <include name="classes/**" />
+      <include name="res/**" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
       </manifest>
