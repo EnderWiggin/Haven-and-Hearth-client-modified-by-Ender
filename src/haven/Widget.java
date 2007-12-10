@@ -135,7 +135,6 @@ public class Widget {
 	public boolean mousedown(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
 			if(c.isect(wdg.c, wdg.sz)) {
-				System.out.println(wdg);
 				if(wdg.mousedown(c.add(wdg.c.inv()), button)) {
 					return(true);
 				}
