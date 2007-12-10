@@ -18,9 +18,9 @@
   </target>
 
   <target name="jar" depends="haven-client,resources">
-    <jar destfile="build/haven.jar" basedir="build">
-      <include name="classes/**" />
-      <include name="res/**" />
+    <jar destfile="build/haven.jar">
+      <fileset dir="build/classes" />
+      <fileset dir="build" includes="res/**" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
       </manifest>
