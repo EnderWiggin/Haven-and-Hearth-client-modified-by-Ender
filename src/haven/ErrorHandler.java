@@ -169,6 +169,21 @@ public class ErrorHandler extends ThreadGroup {
 	}
 	
 	public void senderror(Exception e) {
+	    e.printStackTrace();
+	    done = false;
+	    remove(vp);
+	    add(dp, BorderLayout.SOUTH);
+	    status.setText("An error occurred while sending!");
+	    pack();
+	    synchronized(this) {
+		try {
+		    while(!done)
+			wait();
+		} catch(InterruptedException e2) {
+		    throw(new Error(e2));
+		}
+	    }
+	    errorsent();
 	}
 	
 	public abstract void errorsent();
