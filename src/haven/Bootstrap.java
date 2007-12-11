@@ -10,6 +10,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	int cfocus = 0;
 	
 	public Bootstrap(UI ui) {
+		super("Haven bootstrap thread");
 		this.ui = ui;
 		ui.setreceiver(this);
 	}

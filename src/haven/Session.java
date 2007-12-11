@@ -49,6 +49,7 @@ public class Session {
 	
 	private class RWorker extends Thread {
 		public RWorker() {
+			super("Session reader");
 			setDaemon(true);
 		}
 		
@@ -172,6 +173,7 @@ public class Session {
 	
 	private class SWorker extends Thread {
 		public SWorker() {
+			super("Session writer");
 			setDaemon(true);
 		}
 		
