@@ -207,7 +207,7 @@ public class ErrorHandler extends ThreadGroup {
 		}
 	    });
 	reporter.start();
-	Thread init = new Thread(this, main);
+	Thread init = new Thread(this, main, "Main error handled thread");
 	init.start();
     }
     
