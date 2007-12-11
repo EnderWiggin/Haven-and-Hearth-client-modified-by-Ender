@@ -58,6 +58,7 @@ public class ErrorHandler extends ThreadGroup {
 	    c.addRequestProperty("Content-Type", "application/x-java-error");
 	    c.connect();
 	    ObjectOutputStream o = new ObjectOutputStream(c.getOutputStream());
+	    o.writeObject(t);
 	    o.close();
 	    status.sending();
 	    InputStream i = c.getInputStream();
