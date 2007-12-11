@@ -127,7 +127,7 @@ public class ErrorHandler extends ThreadGroup {
 	public void goterror(Throwable t) {
 	    done = false;
 	    add(vp, BorderLayout.SOUTH);
-	    status.setText("An has occurred! Do you wish to report it?");
+	    status.setText("An error has occurred! Do you wish to report it?");
 	    pack();
 	    setVisible(true);
 	    synchronized(this) {
