@@ -99,7 +99,6 @@ public class MainFrame extends Frame {
 					redraw();
 				}
 			} catch(Throwable t) {
-				t.printStackTrace();
 				throw(new Error(t));
 			}
 			now = System.currentTimeMillis();
@@ -112,7 +111,7 @@ public class MainFrame extends Frame {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main2() {
 		MainFrame f = new MainFrame(800, 600);
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -122,5 +121,13 @@ public class MainFrame extends Frame {
 		Thread t = new Bootstrap(f.ui);
 		t.start();
 		f.loop();
+	}
+
+	public static void main(String[] args) {
+		new ErrorHandler(new Runnable() {
+				public void run() {
+					main2();
+				}
+			});
 	}
 }
