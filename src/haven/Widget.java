@@ -72,6 +72,14 @@ public class Widget {
 		}
 	}
 	
+	public boolean hasparent(Widget w2) {
+		for(Widget w = this; w != null; w = w.parent) {
+			if(w == w2)
+				return(true);
+		}
+		return(false);
+	}
+	
 	public void gotfocus() {
 	}
 	

@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 public class UI {
 	Widget root;
-	Widget keygrab, mousegrab;
+	private Widget keygrab, mousegrab;
 	Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
 	Receiver rcvr;
@@ -37,6 +37,10 @@ public class UI {
 		}
 	}
 	
+	public void grabmouse(Widget wdg) {
+		mousegrab = wdg;
+	}
+	
 	private void removeid(Widget wdg) {
 		int id = rwidgets.get(wdg);
 		widgets.remove(id);
@@ -48,6 +52,11 @@ public class UI {
 	public void destroy(int id) {
 		if(widgets.containsKey(id)) {
 			Widget wdg = widgets.get(id);
+			
+			if((mousegrab != null) && mousegrab.hasparent(wdg))
+				mousegrab = null;
+			if((keygrab != null) && keygrab.hasparent(wdg))
+				keygrab = null;
 			removeid(wdg);
 			wdg.unlink();
 		}
@@ -84,17 +93,25 @@ public class UI {
 			keygrab.keyup(ev);		
 	}
 	
+	private Coord wdgxlate(Coord c, Widget wdg) {
+		while(wdg != null) {
+			c = c.add(wdg.c.inv());
+			wdg = wdg.parent;
+		}
+		return(c);
+	}
+	
 	public void mousedown(Coord c, int button) {
 		if(mousegrab == null)
 			root.mousedown(c, button);
 		else
-			mousegrab.mousedown(c, button);
+			mousegrab.mousedown(wdgxlate(c, mousegrab), button);
 	}
 	
 	public void mouseup(Coord c, int button) {
 		if(mousegrab == null)
 			root.mouseup(c, button);
 		else
-			mousegrab.mouseup(c, button);
+			mousegrab.mouseup(wdgxlate(c, mousegrab), button);
 	}
 }

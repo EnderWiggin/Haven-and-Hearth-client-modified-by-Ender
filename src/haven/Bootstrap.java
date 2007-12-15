@@ -20,7 +20,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), Utils.getpref("server", "127.0.0.1"));
 		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
 		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
-		//ui.newwidget(6, "sm", new Coord(400, 300), 0, "Test", "Barda", "Apa", "Slen", "Mast");
+		ui.newwidget(6, "sm", new Coord(400, 300), 5, "Test", "Barda", "Apa", "Slen", "Mast");
 		ui.uimsg(5, "tabfocus", 1);
 		ui.uimsg(5, "act", 1);
 		retry: do {
@@ -83,8 +83,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 					ui.uimsg(2, "get");
 					ui.uimsg(3, "get");
 				}
-			}
-			if((widget == 5) && (msg == "focus")) {
+			} else if((widget == 5) && (msg == "focus")) {
 				cfocus = (Integer)args[0];
 			}
 			if(msg == "text") {

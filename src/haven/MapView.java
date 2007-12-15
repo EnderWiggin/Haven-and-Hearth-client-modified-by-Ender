@@ -87,9 +87,9 @@ public class MapView extends Widget {
 		}
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 		if(hit == null)
-			ui.wdgmsg(this, "click", mc, button);
+			ui.wdgmsg(this, "click", c, mc, button);
 		else
-			ui.wdgmsg(this, "click", mc, button, hit.id, hit.c);
+			ui.wdgmsg(this, "click", c, mc, button, hit.id, hit.c);
 		return(true);
 	}
 	
@@ -212,5 +212,6 @@ public class MapView extends Widget {
 			Rectangle2D b = m.getStringBounds(text, g);
 			g.drawString(text, sz.x / 2 - (int)b.getWidth() / 2, sz.y / 2 - m.getAscent());
 		}
+		super.draw(g);
 	}
 }
