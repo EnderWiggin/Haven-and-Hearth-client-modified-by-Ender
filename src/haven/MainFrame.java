@@ -112,10 +112,14 @@ public class MainFrame extends Frame {
 	}
 	
 	public static void main2() {
-		MainFrame f = new MainFrame(800, 600);
+		final MainFrame f = new MainFrame(800, 600);
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+				synchronized(f.ui) {
+					if(Session.current != null)
+						Session.current.close();
+					System.exit(0);
+				}
 			}
 		});
 		Thread t = new Bootstrap(f.ui);

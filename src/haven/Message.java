@@ -5,6 +5,7 @@ import java.util.*;
 public class Message {
 	public static final int RMSG_NEWWDG = 0;
 	public static final int RMSG_WDGMSG = 1;
+	public static final int RMSG_DSTWDG = 2;
 	
 	public static final int T_END = 0;
 	public static final int T_INT = 1;
