@@ -33,6 +33,9 @@ public class RemoteUI extends Thread implements UI.Receiver {
 					int id = msg.uint16();
 					String name = msg.string();
 					ui.uimsg(id, name, msg.list());
+				} else if(msg.type == Message.RMSG_DSTWDG) {
+					int id = msg.uint16();
+					ui.destroy(id);
 				}
 			}
 			try {

@@ -13,6 +13,7 @@ public class Session {
 	public static final int MSG_MAPDATA = 5;
 	public static final int MSG_OBJDATA = 6;
 	public static final int MSG_OBJACK = 7;
+	public static final int MSG_CLOSE = 8;
 	public static final int OD_MOVE = 0;
 	public static final int OD_REM = 1;
 	public static final int OD_VMOVE = 2;
@@ -20,7 +21,7 @@ public class Session {
 	public static final int SESSERR_BUST = 2;
 	public static final int SESSERR_CONN = 3;
 	
-	public static Session current;
+	public static Session current; /* XXX: Should not exist */
 	DatagramSocket sk;
 	InetAddress server;
 	Thread rworker, sworker;
@@ -128,6 +129,8 @@ public class Session {
 				DatagramPacket p = new DatagramPacket(new byte[65536], 65536);
 				try {
 					sk.receive(p);
+				} catch(java.nio.channels.ClosedByInterruptException e) {
+					break;
 				} catch(IOException e) {
 					System.out.println(e);
 					continue;
@@ -264,6 +267,14 @@ public class Session {
 		sworker = new SWorker();
 		sworker.start();
 		current = this;
+	}
+	
+	public void close() {
+		if(connected)
+			sendmsg(new Message(MSG_CLOSE));
+		sworker.interrupt();
+		rworker.interrupt();
+		current = null;
 	}
 	
 	public void queuemsg(Message msg) {
