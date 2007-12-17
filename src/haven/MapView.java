@@ -87,9 +87,9 @@ public class MapView extends Widget {
 		}
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 		if(hit == null)
-			ui.wdgmsg(this, "click", c, mc, button);
+			wdgmsg("click", c, mc, button);
 		else
-			ui.wdgmsg(this, "click", c, mc, button, hit.id, hit.c);
+			wdgmsg("click", c, mc, button, hit.id, hit.c);
 		return(true);
 	}
 	

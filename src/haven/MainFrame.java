@@ -49,6 +49,19 @@ public class MainFrame extends Frame {
 				}
 			}
 		});
+		addMouseMotionListener(new MouseMotionListener() {
+			public void mouseDragged(MouseEvent e) {
+				synchronized(events) {
+					events.add(e);
+				}
+			}
+
+			public void mouseMoved(MouseEvent e) {
+				synchronized(events) {
+					events.add(e);
+				}
+			}
+});
 	}
 	
 	void redraw() {
@@ -72,6 +85,8 @@ public class MainFrame extends Frame {
 						ui.mousedown(new Coord(me.getX(), me.getY()), me.getButton());
 					} else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
 						ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
+					} else if(me.getID() == MouseEvent.MOUSE_MOVED || me.getID() == MouseEvent.MOUSE_DRAGGED) {
+						ui.mousemove(new Coord(me.getX(), me.getY()));
 					}
 				} else if(e instanceof KeyEvent) {
 					KeyEvent ke = (KeyEvent)e;
