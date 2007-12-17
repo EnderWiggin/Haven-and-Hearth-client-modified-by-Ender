@@ -163,6 +163,8 @@ public class Session {
 							mapdispatch.mapdata(msg);
 					} else if(msg.type == MSG_OBJDATA) {
 						getobjdata(msg);
+					} else if(msg.type == MSG_CLOSE) {
+						System.exit(0); /* XXX */
 					} else {
 						for(int i = 0; i < msg.blob.length; i++)
 							System.out.format("%02x ", msg.blob[i]);

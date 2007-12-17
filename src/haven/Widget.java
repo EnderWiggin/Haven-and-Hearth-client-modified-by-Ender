@@ -22,6 +22,8 @@ public class Widget {
 		System.out.println(TextEntry.barda);
 		System.out.println(MapView.barda);
 		System.out.println(FlowerMenu.barda);
+		System.out.println(Window.barda);
+		System.out.println(Button.barda);
 		addtype("cnt", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				return(new Widget(c, (Coord)args[0], parent));
@@ -97,7 +99,7 @@ public class Widget {
 				if(last != null)
 					last.lostfocus();
 				w.gotfocus();
-				ui.wdgmsg(this, "focus", ui.rwidgets.get(w));
+				wdgmsg("focus", ui.rwidgets.get(w));
 			}
 		} else {
 			parent.setfocus(w);
@@ -134,6 +136,10 @@ public class Widget {
 		}
 	}
 	
+	public void wdgmsg(String msg, Object... args) {
+		ui.wdgmsg(this, msg, args);
+	}
+	
 	public void draw(Graphics g) {
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
 			wdg.draw(g.create(wdg.c.x, wdg.c.y, wdg.sz.x, wdg.sz.y));
@@ -162,10 +168,17 @@ public class Widget {
 		return(false);
 	}
 	
+	public void mousemove(Coord c) {
+		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			if(c.isect(wdg.c, wdg.sz))
+				wdg.mousemove(c.add(wdg.c.inv()));
+		}
+	}
+	
 	public boolean type(char key, KeyEvent ev) {
 		if(canactivate) {
 			if(key == 10) {
-				ui.wdgmsg(this, "activate");
+				wdgmsg("activate");
 				return(true);
 			}
 		}

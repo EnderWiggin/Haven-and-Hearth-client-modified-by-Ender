@@ -25,7 +25,7 @@ public class TextEntry extends SSWidget {
 				pos = text.length();
 			render();
 		} else if(name == "get") {
-			ui.wdgmsg(this, "text", text);
+			wdgmsg("text", text);
 		} else {
 			super.uimsg(name, args);
 		}
@@ -73,7 +73,7 @@ public class TextEntry extends SSWidget {
 		} else if(c == 10) {
 			if(!canactivate)
 				return(false);
-			ui.wdgmsg(this, "activate", text);
+			wdgmsg("activate", text);
 		} else if(c == 127) {
 			if(pos < text.length())
 				text = text.substring(0, pos) + text.substring(pos + 1);

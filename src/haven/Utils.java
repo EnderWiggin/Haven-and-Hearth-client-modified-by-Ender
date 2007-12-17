@@ -3,12 +3,19 @@ package haven;
 import java.awt.RenderingHints;
 import java.io.*;
 import java.util.prefs.*;
+import java.awt.Graphics;
 
 public class Utils {
 	private static Preferences prefs = null;
 	public static java.awt.image.ColorModel rgbm = java.awt.image.ColorModel.getRGBdefault();
 	
-	static void AA(java.awt.Graphics g) {
+	static void centertext(Graphics g, String text, Coord c) {
+		java.awt.FontMetrics m = g.getFontMetrics();
+		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);
+		g.drawString(text, (int)(c.x - ts.getWidth() / 2), (int)(c.y + m.getAscent() - ts.getHeight() / 2));
+	}
+	
+	static void AA(Graphics g) {
 		java.awt.Graphics2D g2 = (java.awt.Graphics2D)g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);		
 	}
