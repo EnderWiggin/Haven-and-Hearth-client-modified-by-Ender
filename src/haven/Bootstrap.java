@@ -17,6 +17,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	
 	public void run() {
 		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
+		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/testimgs/snow.bmp");
 		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), Utils.getpref("server", "127.0.0.1"));
 		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
 		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
