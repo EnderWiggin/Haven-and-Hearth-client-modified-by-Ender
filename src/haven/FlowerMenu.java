@@ -62,11 +62,11 @@ public class FlowerMenu extends Widget {
 	
 	public boolean mousedown(Coord c, int button) {
 		if(!c.isect(new Coord(0, 0), sz)) {
-			ui.wdgmsg(this, "cl", -1);
+			wdgmsg("cl", -1);
 			return(true);
 		}
 		int v = neg.getRGB(c.x, c.y) & 0x00ffffff;
-		ui.wdgmsg(this, "cl", v - 1);
+		wdgmsg("cl", v - 1);
 		return(true);
 	}
 }

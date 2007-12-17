@@ -114,4 +114,11 @@ public class UI {
 		else
 			mousegrab.mouseup(wdgxlate(c, mousegrab), button);
 	}
+	
+	public void mousemove(Coord c) {
+		if(mousegrab == null)
+			root.mousemove(c);
+		else
+			mousegrab.mousemove(wdgxlate(c, mousegrab));
+	}
 }
