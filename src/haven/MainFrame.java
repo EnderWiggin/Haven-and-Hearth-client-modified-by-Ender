@@ -126,8 +126,7 @@ public class MainFrame extends Frame {
 		}
 	}
 	
-	public static void main2() {
-		final MainFrame f = new MainFrame(800, 600);
+	public static void main2(final MainFrame f) {
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				synchronized(f.ui) {
@@ -143,10 +142,15 @@ public class MainFrame extends Frame {
 	}
 
 	public static void main(String[] args) {
+		final MainFrame f = new MainFrame(800, 600);
 		new haven.error.ErrorHandler(new Runnable() {
 				public void run() {
-					main2();
+					main2(f);
 				}
-			});
+			}, new haven.error.ErrorGui(f) {
+					public void errorsent() {
+						System.exit(1);
+					}
+				});
 	}
 }

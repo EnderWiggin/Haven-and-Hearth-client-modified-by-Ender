@@ -77,11 +77,16 @@ public class ErrorHandler extends ThreadGroup {
     public ErrorHandler(Runnable main) {
 	super("Haven client");
 	initial = Thread.currentThread().getThreadGroup();
-	reporter = new Reporter(new ErrorGui() {
-		public void errorsent() {
-		    System.exit(1);
-		}
-	    });
+	reporter = new Reporter(new ErrorStatus.Simple());
+	reporter.start();
+	Thread init = new Thread(this, main, "Main error handled thread");
+	init.start();
+    }
+    
+    public ErrorHandler(Runnable main, ErrorStatus ui) {
+	super("Haven client");
+	initial = Thread.currentThread().getThreadGroup();
+	reporter = new Reporter(ui);
 	reporter.start();
 	Thread init = new Thread(this, main, "Main error handled thread");
 	init.start();

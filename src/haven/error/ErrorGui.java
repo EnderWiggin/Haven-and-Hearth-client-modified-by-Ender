@@ -1,24 +1,28 @@
 package haven.error;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Dialog;
+import javax.swing.*;
 import java.awt.event.*;
 
-public abstract class ErrorGui extends Frame implements ErrorStatus {
-    private Label status;
-    private Panel vp, dp;
+public abstract class ErrorGui extends JDialog implements ErrorStatus {
+    private JLabel status;
+    private JPanel vp, dp;
     private boolean verified, done;
 	
-    public ErrorGui() {
-	super("Haven error!");
+    public ErrorGui(java.awt.Window parent) {
+	super(parent, "Haven error!", Dialog.ModalityType.APPLICATION_MODAL);
 	setMinimumSize(new Dimension(300, 100));
 	setResizable(false);
 	setLayout(new BorderLayout());
-	add(status = new Label(""), BorderLayout.CENTER);
+	add(status = new JLabel(""), BorderLayout.CENTER);
 	    
-	vp = new Panel();
+	vp = new JPanel();
 	vp.setLayout(new FlowLayout());
-	Button b;
-	vp.add(b = new Button("Yes"));
+	JButton b;
+	vp.add(b = new JButton("Yes"));
 	b.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    synchronized(ErrorGui.this) {
@@ -28,7 +32,7 @@ public abstract class ErrorGui extends Frame implements ErrorStatus {
 		    }
 		}
 	    });
-	vp.add(b = new Button("No"));
+	vp.add(b = new JButton("No"));
 	b.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    synchronized(ErrorGui.this) {
@@ -38,9 +42,9 @@ public abstract class ErrorGui extends Frame implements ErrorStatus {
 		    }
 		}
 	    });
-	dp = new Panel();
+	dp = new JPanel();
 	dp.setLayout(new FlowLayout());
-	dp.add(b = new Button("OK"));
+	dp.add(b = new JButton("OK"));
 	b.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    synchronized(ErrorGui.this) {
@@ -56,11 +60,16 @@ public abstract class ErrorGui extends Frame implements ErrorStatus {
 	add(vp, BorderLayout.SOUTH);
 	status.setText("An error has occurred! Do you wish to report it?");
 	pack();
-	setVisible(true);
+	new Thread() {
+	    public void run() {
+		show();
+	    }
+	}.start();
 	synchronized(this) {
 	    try {
-		while(!done)
+		while(!done) {
 		    wait();
+		}
 	    } catch(InterruptedException e) {
 		throw(new Error(e));
 	    }
