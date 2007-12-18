@@ -1,4 +1,4 @@
-package haven;
+package haven.error;
 
 import java.awt.*;
 import java.awt.event.*;

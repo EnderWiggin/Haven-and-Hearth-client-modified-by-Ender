@@ -143,7 +143,7 @@ public class MainFrame extends Frame {
 	}
 
 	public static void main(String[] args) {
-		new ErrorHandler(new Runnable() {
+		new haven.error.ErrorHandler(new Runnable() {
 				public void run() {
 					main2();
 				}
