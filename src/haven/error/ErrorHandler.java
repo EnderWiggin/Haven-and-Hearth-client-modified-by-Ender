@@ -15,7 +15,7 @@ public class ErrorHandler extends ThreadGroup {
 	
     static {
 	try {
-	    errordest = new URL("http://localhost/~fredrik/haven/error");
+	    errordest = new URL("http://www.havenandhearth.com/java/error");
 	} catch(MalformedURLException e) {
 	    throw(new Error(e));
 	}
