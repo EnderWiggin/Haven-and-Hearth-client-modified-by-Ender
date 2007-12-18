@@ -57,14 +57,14 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 
     public void goterror(Throwable t) {
 	done = false;
-	add(vp, BorderLayout.SOUTH);
-	status.setText("An error has occurred! Do you wish to report it?");
-	pack();
-	new Thread() {
-	    public void run() {
-		show();
-	    }
-	}.start();
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    add(vp, BorderLayout.SOUTH);
+		    status.setText("An error has occurred! Do you wish to report it?");
+		    pack();
+		    show();
+		}
+	    });
 	synchronized(this) {
 	    try {
 		while(!done) {
@@ -79,21 +79,33 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
     }
 	
     public void connecting() {
-	status.setText("Connecting to server");
-	pack();
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    status.setText("Connecting to server");
+		    pack();
+		}
+	    });
     }
 	
     public void sending() {
-	status.setText("Sending error");
-	pack();
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    status.setText("Sending error");
+		    pack();
+		}
+	    });
     }
 	
     public void done() {
 	done = false;
-	remove(vp);
-	add(dp, BorderLayout.SOUTH);
-	status.setText("Done");
-	pack();
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    remove(vp);
+		    add(dp, BorderLayout.SOUTH);
+		    status.setText("Done");
+		    pack();
+		}
+	    });
 	synchronized(this) {
 	    try {
 		while(!done)
@@ -108,10 +120,14 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
     public void senderror(Exception e) {
 	e.printStackTrace();
 	done = false;
-	remove(vp);
-	add(dp, BorderLayout.SOUTH);
-	status.setText("An error occurred while sending!");
-	pack();
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+		    remove(vp);
+		    add(dp, BorderLayout.SOUTH);
+		    status.setText("An error occurred while sending!");
+		    pack();
+		}
+	    });
 	synchronized(this) {
 	    try {
 		while(!done)
