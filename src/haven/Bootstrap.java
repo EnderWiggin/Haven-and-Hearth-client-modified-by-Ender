@@ -13,7 +13,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 		super("Haven bootstrap thread");
 		this.ui = ui;
 		ui.setreceiver(this);
-		defaddr = "127.0.0.1";
+		defaddr = Utils.getpref("server", "127.0.0.1");
 	}
 	
 	public void setaddr(String addr) {
@@ -23,7 +23,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	public void run() {
 		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
 		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/testimgs/snow.png");
-		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), Utils.getpref("server", defaddr));
+		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), defaddr);
 		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
 		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
 		ui.newwidget(6, "wnd", new Coord(400, 300), 0, new Coord(100, 50));
