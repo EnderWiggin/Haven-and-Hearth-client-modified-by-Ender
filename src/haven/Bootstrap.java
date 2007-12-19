@@ -52,6 +52,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 			try {
 				Thread.sleep(100);
 			} catch(InterruptedException e) {
+				return;
 			}
 			while(true) {
 				if(sess.connected) {
@@ -71,7 +72,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 						sess.wait();
 					}
 				} catch(InterruptedException e) {
-					break;
+					return;
 				}
 			}
 		} while(true);
