@@ -13,11 +13,11 @@ public class HavenApplet extends Applet {
     }
     
     public void start() {
+	h = new HavenPanel(800, 600);
+	add(h);
+	h.init();
 	p = new haven.error.ErrorHandler(new Runnable() {
 		public void run() {
-		    h = new HavenPanel(800, 600);
-		    add(h);
-		    h.init();
 		    Bootstrap b = new Bootstrap(h.ui);
 		    b.setaddr("www.seatribe.se");
 		    b.start();
