@@ -21,15 +21,22 @@ public class Utils {
 	}
 	
 	static synchronized String getpref(String prefname, String def) {
-		if(prefs == null)
-			prefs = Preferences.userNodeForPackage(Utils.class);
-		return(prefs.get(prefname, def));
+		try {
+			if(prefs == null)
+				prefs = Preferences.userNodeForPackage(Utils.class);
+			return(prefs.get(prefname, def));
+		} catch(SecurityException e) {
+			return(def);
+		}
 	}
 	
 	static synchronized void setpref(String prefname, String val) {
-		if(prefs == null)
-			prefs = Preferences.userNodeForPackage(Utils.class);
-		prefs.put(prefname, val);
+		try {
+			if(prefs == null)
+				prefs = Preferences.userNodeForPackage(Utils.class);
+			prefs.put(prefname, val);
+		} catch(SecurityException e) {
+		}
 	}
 	
 	static int ub(byte b) {
