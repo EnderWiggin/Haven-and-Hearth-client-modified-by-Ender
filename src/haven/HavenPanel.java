@@ -6,7 +6,7 @@ import java.awt.image.*;
 import java.awt.Graphics;
 import java.util.*;
 
-public class HavenPanel extends Canvas {
+public class HavenPanel extends Canvas implements Runnable {
 	RootWidget root;
 	UI ui;
 	int w, h;
@@ -105,7 +105,7 @@ public class HavenPanel extends Canvas {
 		}
 	}
 	
-	void loop() {
+	public void run() {
 		try {
 			while(true) {
 				long now, then;
