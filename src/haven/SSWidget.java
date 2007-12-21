@@ -9,7 +9,7 @@ public class SSWidget extends Widget {
 	
 	public SSWidget(Coord c, Coord sz, Widget parent) {
 		super(c, sz, parent);
-		surf = gc.createCompatibleImage(sz.x, sz.y, Transparency.TRANSLUCENT);
+		surf = gc.createCompatibleImage(sz.x, sz.y, Transparency.BITMASK);
 	}
 	
 	public void draw(Graphics g) {
