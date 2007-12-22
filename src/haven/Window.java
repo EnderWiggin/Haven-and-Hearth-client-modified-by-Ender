@@ -36,7 +36,7 @@ public class Window extends Widget {
 	public void draw(Graphics g) {
 		g.setColor(bg);
 		g.fillRect(bt.getHeight(), bl.getWidth(), sz.x - bl.getWidth() - br.getWidth(), sz.y - bt.getHeight() - bb.getHeight());
-		super.draw(g, new Coord(ctl.getWidth(), ctl.getHeight()));
+		super.draw(g);
 		for(int x = ctl.getWidth(); x < sz.x - ctr.getWidth(); x++)
 			g.drawImage(bt, x, 0, null);
 		for(int x = cbl.getWidth(); x < sz.x - cbr.getWidth(); x++)
@@ -67,8 +67,11 @@ public class Window extends Widget {
 		}
 	}
 	
-	public Coord rootpos() {
-		return(super.rootpos().add(Utils.imgsz(ctl)));
+	public Coord xlate(Coord c, boolean in) {
+		if(in)
+			return(c.add(Utils.imgsz(ctl)));
+		else
+			return(c.add(Utils.imgsz(ctl).inv()));
 	}
 	
 	public boolean mousedown(Coord c, int button) {

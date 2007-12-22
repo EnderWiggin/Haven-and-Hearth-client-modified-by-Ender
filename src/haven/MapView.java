@@ -1,9 +1,11 @@
 package haven;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.Transparency;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
@@ -45,7 +47,10 @@ public class MapView extends Widget {
 	public MapView(Coord c, Coord sz, Widget parent, Coord mc) {
 		super(c, sz, parent);
 		for(int i = 0; i <= 13; i++) {
-			tiles.add(Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i)));
+			BufferedImage img = Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i));
+			BufferedImage img2 = gc.createCompatibleImage(img.getWidth(), img.getHeight(), Transparency.BITMASK);
+			img2.getGraphics().drawImage(img, 0, 0, null);
+			tiles.add(img2);
 		}
 		this.mc = mc;
 		Session.current.mapdispatch = this;

@@ -9,6 +9,7 @@ public class UI {
 	Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
 	Receiver rcvr;
+	Coord mc;
 	
 	public interface Receiver {
 		public void rcvmsg(int widget, String msg, Object... args);
@@ -99,6 +100,7 @@ public class UI {
 	}
 	
 	public void mousedown(Coord c, int button) {
+		mc = c;
 		if(mousegrab == null)
 			root.mousedown(c, button);
 		else
@@ -106,6 +108,7 @@ public class UI {
 	}
 	
 	public void mouseup(Coord c, int button) {
+		mc = c;
 		if(mousegrab == null)
 			root.mouseup(c, button);
 		else
@@ -113,6 +116,7 @@ public class UI {
 	}
 	
 	public void mousemove(Coord c) {
+		mc = c;
 		if(mousegrab == null)
 			root.mousemove(c);
 		else

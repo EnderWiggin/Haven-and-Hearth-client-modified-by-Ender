@@ -13,7 +13,10 @@ public class Item extends SSWidget {
 	static {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
-				return(new Item(c, Resource.loadsprite((String)args[0]).img, parent, (Integer)args[1] != 0));
+				if((Integer)args[1] != 0)
+					return(new Item(c, Resource.loadsprite((String)args[0]).img, parent, (Coord)args[2]));
+				else
+					return(new Item(c, Resource.loadsprite((String)args[0]).img, parent, null));
 			}
 		});
 	}
@@ -41,36 +44,49 @@ public class Item extends SSWidget {
 		return(sh);
 	}
 	
-	public Item(Coord c, BufferedImage img, Widget parent, boolean d) {
+	public Item(Coord c, BufferedImage img, Widget parent, Coord drag) {
 		super(c, Utils.imgsz(img).add(shoff), parent, true);
 		this.img = img;
-		dm = d;
+		if(drag == null) {
+			dm = false;
+		} else {
+			dm = true;
+			doff = drag;
+			ui.grabmouse(this);
+			this.c = ui.mc.add(doff.inv());
+		}
 		sh = makesh(img);
 		render();
 	}
-	
-	public void uimsg(String msg, Object... args) {
-		if(msg == "take") {
-			this.c = rootpos();
-			unlink();
-			parent = ui.root;
-			link();
-			ui.grabmouse(this);
-			dm = true;
-			doff = c;
-			render();
+
+	public boolean findrelevant(Widget w, Coord c) {
+		if(w instanceof Inventory) {
+			wdgmsg("drop", c.add(doff.inv()).div(new Coord(29, 29)));
+			return(true);
+		} else if(w instanceof MapView) {
+			wdgmsg("mapdrop");
+			return(true);
+		} else {
+			for(Widget wdg = w.lchild; wdg != null; wdg = wdg.prev) {
+				Coord cc = w.xlate(wdg.c, true);
+				if(c.isect(cc, wdg.sz)) {
+					if(findrelevant(wdg, c.add(cc.inv())))
+						return(true);
+				}
+			}
 		}
+		return(false);
 	}
 	
 	public boolean mousedown(Coord c, int button) {
 		if(!dm) {
 			if(button == 1) {
-				wdgmsg("take");
+				wdgmsg("take", c);
 				return(true);
 			}
 		} else {
 			if(button == 1) {
-				wdgmsg("drop");
+				findrelevant(parent, c.add(this.c));
 			}
 			return(true);
 		}

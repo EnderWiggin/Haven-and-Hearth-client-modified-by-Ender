@@ -84,10 +84,14 @@ public class Widget {
 		}
 	}
 	
+	public Coord xlate(Coord c, boolean in) {
+		return(c);
+	}
+	
 	public Coord rootpos() {
 		if(parent == null)
 			return(new Coord(0, 0));
-		return(parent.rootpos().add(c));
+		return(xlate(parent.rootpos().add(c), true));
 	}
 	
 	public boolean hasparent(Widget w2) {
@@ -158,20 +162,16 @@ public class Widget {
 	
 	public void draw(Graphics g) {
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-			wdg.draw(g.create(wdg.c.x, wdg.c.y, wdg.sz.x, wdg.sz.y));
-		}
-	}
-	
-	public void draw(Graphics g, Coord offset) {
-		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-			wdg.draw(g.create(offset.add(wdg.c).x, offset.add(wdg.c).y, wdg.sz.x, wdg.sz.y));
+			Coord cc = xlate(wdg.c, true);
+			wdg.draw(g.create(cc.x, cc.y, wdg.sz.x, wdg.sz.y));
 		}
 	}
 	
 	public boolean mousedown(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-			if(c.isect(wdg.c, wdg.sz)) {
-				if(wdg.mousedown(c.add(wdg.c.inv()), button)) {
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(wdg.mousedown(c.add(cc.inv()), button)) {
 					return(true);
 				}
 			}
@@ -181,8 +181,9 @@ public class Widget {
 	
 	public boolean mouseup(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-			if(c.isect(wdg.c, wdg.sz)) {
-				if(wdg.mouseup(c.add(wdg.c.inv()), button)) {
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(wdg.mouseup(c.add(cc.inv()), button)) {
 					return(true);
 				}
 			}
@@ -192,8 +193,9 @@ public class Widget {
 	
 	public void mousemove(Coord c) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-			if(c.isect(wdg.c, wdg.sz))
-				wdg.mousemove(c.add(wdg.c.inv()));
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz))
+				wdg.mousemove(c.add(cc.inv()));
 		}
 	}
 	
