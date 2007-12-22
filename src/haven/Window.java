@@ -36,7 +36,7 @@ public class Window extends Widget {
 	public void draw(Graphics g) {
 		g.setColor(bg);
 		g.fillRect(bt.getHeight(), bl.getWidth(), sz.x - bl.getWidth() - br.getWidth(), sz.y - bt.getHeight() - bb.getHeight());
-		super.draw(g);
+		super.draw(g, new Coord(ctl.getWidth(), ctl.getHeight()));
 		for(int x = ctl.getWidth(); x < sz.x - ctr.getWidth(); x++)
 			g.drawImage(bt, x, 0, null);
 		for(int x = cbl.getWidth(); x < sz.x - cbr.getWidth(); x++)
@@ -51,7 +51,28 @@ public class Window extends Widget {
 		g.drawImage(cbr, sz.x - cbr.getWidth(), sz.y - cbr.getHeight(), null);
 	}
 	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "pack") {
+			Coord max = new Coord(0, 0);
+			for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+				Coord br = wdg.c.add(wdg.sz);
+				if(br.x > max.x)
+					max.x = br.x;
+				if(br.y > max.y)
+					max.y = br.y;
+			}
+			sz = max.add(Utils.imgsz(ctl)).add(Utils.imgsz(cbr));
+		} else {
+			super.uimsg(msg, args);
+		}
+	}
+	
+	public Coord rootpos() {
+		return(super.rootpos().add(Utils.imgsz(ctl)));
+	}
+	
 	public boolean mousedown(Coord c, int button) {
+		raise();
 		if(super.mousedown(c, button))
 			return(true);
 		if(button != 1)

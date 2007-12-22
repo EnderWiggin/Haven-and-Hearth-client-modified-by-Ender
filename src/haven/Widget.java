@@ -24,6 +24,8 @@ public class Widget {
 		System.out.println(FlowerMenu.barda);
 		System.out.println(Window.barda);
 		System.out.println(Button.barda);
+		System.out.println(Inventory.barda);
+		System.out.println(Item.barda);
 		addtype("cnt", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				return(new Widget(c, (Coord)args[0], parent));
@@ -52,6 +54,12 @@ public class Widget {
 			this.c = c;
 			this.sz = sz;
 			this.parent = parent;
+			link();
+		}
+	}
+	
+	public void link() {
+		synchronized(ui) {
 			if(parent.lchild != null)
 				parent.lchild.next = this;
 			if(parent.child == null)
@@ -71,7 +79,15 @@ public class Widget {
 				parent.child = next;
 			if(parent.lchild == this)
 				parent.lchild = prev;
+			next = null;
+			prev = null;
 		}
+	}
+	
+	public Coord rootpos() {
+		if(parent == null)
+			return(new Coord(0, 0));
+		return(parent.rootpos().add(c));
 	}
 	
 	public boolean hasparent(Widget w2) {
@@ -143,6 +159,12 @@ public class Widget {
 	public void draw(Graphics g) {
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
 			wdg.draw(g.create(wdg.c.x, wdg.c.y, wdg.sz.x, wdg.sz.y));
+		}
+	}
+	
+	public void draw(Graphics g, Coord offset) {
+		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+			wdg.draw(g.create(offset.add(wdg.c).x, offset.add(wdg.c).y, wdg.sz.x, wdg.sz.y));
 		}
 	}
 	
@@ -227,5 +249,12 @@ public class Widget {
 				return(true);
 		}
 		return(false);
+	}
+	
+	public void raise() {
+		synchronized(ui) {
+			unlink();
+			link();
+		}
 	}
 }
