@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd src/haven
+smbclient //bearland/haven -Nc 'cd src/Java/client/client/src/haven; prompt; mget *.java'
