@@ -18,6 +18,7 @@ public class UI {
 		root.setui(this);
 		this.root = root;
 		widgets.put(0, root);
+		rwidgets.put(root, 0);
 	}
 	
 	public void setreceiver(Receiver rcvr) {
@@ -94,11 +95,7 @@ public class UI {
 	}
 	
 	private Coord wdgxlate(Coord c, Widget wdg) {
-		while(wdg != null) {
-			c = c.add(wdg.c.inv());
-			wdg = wdg.parent;
-		}
-		return(c);
+		return(c.add(wdg.rootpos().inv()));
 	}
 	
 	public void mousedown(Coord c, int button) {

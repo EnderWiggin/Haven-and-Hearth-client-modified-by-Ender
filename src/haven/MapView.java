@@ -20,7 +20,6 @@ public class MapView extends Widget {
 	static {
 		Widget.addtype("mapview", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
-				System.out.println(args[1]);
 				return(new MapView(c, (Coord)args[0], parent, (Coord)args[1]));
 			}
 		});

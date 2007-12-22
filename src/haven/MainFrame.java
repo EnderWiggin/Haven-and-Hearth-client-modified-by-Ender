@@ -13,6 +13,7 @@ public class MainFrame extends Frame {
 		p = new HavenPanel(w, h);
 		add(p);
 		pack();
+		p.requestFocus();
 		setVisible(true);
 		p.init();
 	}

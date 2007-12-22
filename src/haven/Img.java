@@ -14,7 +14,7 @@ public class Img extends SSWidget {
 	}
 	
 	public Img(Coord c, BufferedImage img, Widget parent) {
-		super(c, new Coord(img.getWidth(), img.getHeight()), parent);
+		super(c, Utils.imgsz(img), parent, false);
 		surf.getGraphics().drawImage(img, 0, 0, null);
 	}
 }
