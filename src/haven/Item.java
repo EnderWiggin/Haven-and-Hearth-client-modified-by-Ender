@@ -6,7 +6,7 @@ import java.awt.Graphics;
 public class Item extends SSWidget {
 	public static int barda = 47;
 	static Coord shoff = new Coord(1, 3);
-	int state = 0;
+	boolean dm = false;
 	Coord doff;
 	BufferedImage img, sh;
 	
@@ -21,7 +21,7 @@ public class Item extends SSWidget {
 	void render() {
 		clear();
 		Graphics g = surf.getGraphics();
-		if(state != 0)
+		if(dm)
 			g.drawImage(sh, shoff.x, shoff.y, null);
 		g.drawImage(img, 0, 0, null);
 	}
@@ -44,25 +44,31 @@ public class Item extends SSWidget {
 	public Item(Coord c, BufferedImage img, Widget parent, boolean d) {
 		super(c, Utils.imgsz(img).add(shoff), parent, true);
 		this.img = img;
-		state = d?2:0;
+		dm = d;
 		sh = makesh(img);
 		render();
 	}
 	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "take") {
+			this.c = rootpos();
+			unlink();
+			parent = ui.root;
+			link();
+			ui.grabmouse(this);
+			dm = true;
+			doff = c;
+			render();
+		}
+	}
+	
 	public boolean mousedown(Coord c, int button) {
-		if(state == 0) {
+		if(!dm) {
 			if(button == 1) {
-				this.c = rootpos();
-				unlink();
-				parent = ui.root;
-				link();
-				ui.grabmouse(this);
-				state = 1;
-				doff = c;
-				render();
+				wdgmsg("take");
 				return(true);
 			}
-		} else if(state == 2) {
+		} else {
 			if(button == 1) {
 				wdgmsg("drop");
 			}
@@ -71,19 +77,8 @@ public class Item extends SSWidget {
 		return(false);
 	}
 	
-	public boolean mouseup(Coord c, int button) {
-		if(state == 1) {
-			if(button == 1) {
-				state = 2;
-				render();
-				return(true);
-			}
-		}
-		return(false);
-	}
-	
 	public void mousemove(Coord c) {
-		if(state != 0)
+		if(dm)
 			this.c = this.c.add(c.add(doff.inv()));
 	}
 }
