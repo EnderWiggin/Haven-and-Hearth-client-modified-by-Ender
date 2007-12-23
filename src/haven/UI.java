@@ -27,15 +27,10 @@ public class UI {
 	}
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
-		try {
-			synchronized(this) {
-				Widget wdg = Widget.create(type, c, widgets.get(parent), args);
-				widgets.put(id, wdg);
-				rwidgets.put(wdg, id);
-			}
-		} catch(Throwable t) {
-			/* XXX: Remove! */
-			t.printStackTrace();
+		synchronized(this) {
+			Widget wdg = Widget.create(type, c, widgets.get(parent), args);
+			widgets.put(id, wdg);
+			rwidgets.put(wdg, id);
 		}
 	}
 	
