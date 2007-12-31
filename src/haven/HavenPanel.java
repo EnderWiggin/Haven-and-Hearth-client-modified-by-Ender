@@ -108,18 +108,26 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 	
 	public void run() {
 		try {
+			long now, fthen, then;
+			int frames = 0;
+			fthen = System.currentTimeMillis();
 			while(true) {
-				long now, then;
 				then = System.currentTimeMillis();
 				synchronized(ui) {
 					dispatch();
 					redraw();
 				}
+				frames++;
 				now = System.currentTimeMillis();
-				//System.out.println(now - then);
-				if(now - then < 60) {
-					Thread.sleep(60 - (now - then));
+				if(now - then < 5)
+					Thread.sleep(5 - (now - then));
+				if(now - fthen > 1000) {
+					System.out.println("FPS: " + frames);
+					frames = 0;
+					fthen = now;
 				}
+				if(Thread.interrupted())
+					throw(new InterruptedException());
 			}
 		} catch(InterruptedException e) {}
 	}
