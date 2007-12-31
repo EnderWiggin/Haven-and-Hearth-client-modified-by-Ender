@@ -6,13 +6,19 @@ import java.awt.Graphics;
 
 public class SSWidget extends Widget {
 	BufferedImage surf;
+	private boolean t;
 	
-	public SSWidget(Coord c, Coord sz, Widget parent) {
+	public SSWidget(Coord c, Coord sz, Widget parent, boolean t) {
 		super(c, sz, parent);
-		surf = gc.createCompatibleImage(sz.x, sz.y, Transparency.BITMASK);
+		this.t = t;
+		clear();
 	}
 	
 	public void draw(Graphics g) {
 		g.drawImage(surf, 0, 0, null);
+	}
+	
+	public void clear() {
+		surf = getconf().createCompatibleImage(sz.x, sz.y, t?Transparency.TRANSLUCENT:Transparency.BITMASK);	
 	}
 }

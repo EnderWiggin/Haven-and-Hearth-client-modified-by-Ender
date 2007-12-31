@@ -51,7 +51,31 @@ public class Window extends Widget {
 		g.drawImage(cbr, sz.x - cbr.getWidth(), sz.y - cbr.getHeight(), null);
 	}
 	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "pack") {
+			Coord max = new Coord(0, 0);
+			for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+				Coord br = wdg.c.add(wdg.sz);
+				if(br.x > max.x)
+					max.x = br.x;
+				if(br.y > max.y)
+					max.y = br.y;
+			}
+			sz = max.add(Utils.imgsz(ctl)).add(Utils.imgsz(cbr));
+		} else {
+			super.uimsg(msg, args);
+		}
+	}
+	
+	public Coord xlate(Coord c, boolean in) {
+		if(in)
+			return(c.add(Utils.imgsz(ctl)));
+		else
+			return(c.add(Utils.imgsz(ctl).inv()));
+	}
+	
 	public boolean mousedown(Coord c, int button) {
+		raise();
 		if(super.mousedown(c, button))
 			return(true);
 		if(button != 1)

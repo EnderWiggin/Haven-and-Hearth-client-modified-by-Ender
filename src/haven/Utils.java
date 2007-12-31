@@ -4,10 +4,15 @@ import java.awt.RenderingHints;
 import java.io.*;
 import java.util.prefs.*;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class Utils {
 	private static Preferences prefs = null;
 	public static java.awt.image.ColorModel rgbm = java.awt.image.ColorModel.getRGBdefault();
+
+	static Coord imgsz(BufferedImage img) {
+		return(new Coord(img.getWidth(), img.getHeight()));
+	}
 	
 	static void centertext(Graphics g, String text, Coord c) {
 		java.awt.FontMetrics m = g.getFontMetrics();

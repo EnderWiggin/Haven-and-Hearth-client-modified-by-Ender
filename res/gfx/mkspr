@@ -1,0 +1,9 @@
+#!/bin/sh
+
+find -name '*.gif' -type f | while read file; do
+	base="${file%.gif}"
+	if [ -r "${base}.gif" -a -r "${base}n.gif" ]; then
+		echo "$base"
+		/srv/haven/utils/mkspr "${base}.gif" "${base}n.gif" "${base}.spr"
+	fi
+done

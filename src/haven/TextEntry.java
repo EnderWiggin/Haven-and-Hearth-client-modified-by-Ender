@@ -54,7 +54,7 @@ public class TextEntry extends SSWidget {
 	}
 	
 	public TextEntry(Coord c, Coord sz, Widget parent, String deftext) {
-		super(c, sz, parent);
+		super(c, sz, parent, false);
 		canfocus = true;
 		text = deftext;
 		pos = text.length();

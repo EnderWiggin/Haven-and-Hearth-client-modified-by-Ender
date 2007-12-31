@@ -17,7 +17,7 @@ public class Button extends SSWidget {
 	}
 	
 	public Button(Coord c, Coord sz, Widget parent, String text) {
-		super(c, sz, parent);
+		super(c, sz, parent, false);
 		this.text = text;
 		render();
 	}

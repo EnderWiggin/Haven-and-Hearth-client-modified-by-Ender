@@ -7,11 +7,10 @@ import java.awt.event.KeyEvent;
 
 import java.awt.GraphicsConfiguration;
 
-public class Widget {
+public class Widget implements Graphical {
 	UI ui;
 	Coord c, sz;
 	Widget next, prev, child, lchild, parent;
-	GraphicsConfiguration gc;
 	boolean tabfocus = false, canfocus = false, hasfocus = false;
 	boolean canactivate = false;
 	Widget focused;
@@ -24,6 +23,8 @@ public class Widget {
 		System.out.println(FlowerMenu.barda);
 		System.out.println(Window.barda);
 		System.out.println(Button.barda);
+		System.out.println(Inventory.barda);
+		System.out.println(Item.barda);
 		addtype("cnt", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				return(new Widget(c, (Coord)args[0], parent));
@@ -48,10 +49,15 @@ public class Widget {
 	public Widget(Coord c, Coord sz, Widget parent) {
 		synchronized(parent.ui) {
 			this.ui = parent.ui;
-			this.gc = parent.gc;
 			this.c = c;
 			this.sz = sz;
 			this.parent = parent;
+			link();
+		}
+	}
+	
+	public void link() {
+		synchronized(ui) {
 			if(parent.lchild != null)
 				parent.lchild.next = this;
 			if(parent.child == null)
@@ -71,7 +77,19 @@ public class Widget {
 				parent.child = next;
 			if(parent.lchild == this)
 				parent.lchild = prev;
+			next = null;
+			prev = null;
 		}
+	}
+	
+	public Coord xlate(Coord c, boolean in) {
+		return(c);
+	}
+	
+	public Coord rootpos() {
+		if(parent == null)
+			return(new Coord(0, 0));
+		return(xlate(parent.rootpos().add(c), true));
 	}
 	
 	public boolean hasparent(Widget w2) {
@@ -142,14 +160,16 @@ public class Widget {
 	
 	public void draw(Graphics g) {
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-			wdg.draw(g.create(wdg.c.x, wdg.c.y, wdg.sz.x, wdg.sz.y));
+			Coord cc = xlate(wdg.c, true);
+			wdg.draw(g.create(cc.x, cc.y, wdg.sz.x, wdg.sz.y));
 		}
 	}
 	
 	public boolean mousedown(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-			if(c.isect(wdg.c, wdg.sz)) {
-				if(wdg.mousedown(c.add(wdg.c.inv()), button)) {
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(wdg.mousedown(c.add(cc.inv()), button)) {
 					return(true);
 				}
 			}
@@ -159,8 +179,9 @@ public class Widget {
 	
 	public boolean mouseup(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-			if(c.isect(wdg.c, wdg.sz)) {
-				if(wdg.mouseup(c.add(wdg.c.inv()), button)) {
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(wdg.mouseup(c.add(cc.inv()), button)) {
 					return(true);
 				}
 			}
@@ -170,8 +191,9 @@ public class Widget {
 	
 	public void mousemove(Coord c) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-			if(c.isect(wdg.c, wdg.sz))
-				wdg.mousemove(c.add(wdg.c.inv()));
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz))
+				wdg.mousemove(c.add(cc.inv()));
 		}
 	}
 	
@@ -227,5 +249,16 @@ public class Widget {
 				return(true);
 		}
 		return(false);
+	}
+	
+	public void raise() {
+		synchronized(ui) {
+			unlink();
+			link();
+		}
+	}
+	
+	public GraphicsConfiguration getconf() {
+		return(parent.getconf());
 	}
 }

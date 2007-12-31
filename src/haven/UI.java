@@ -9,6 +9,7 @@ public class UI {
 	Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
 	Receiver rcvr;
+	Coord mc;
 	
 	public interface Receiver {
 		public void rcvmsg(int widget, String msg, Object... args);
@@ -18,6 +19,7 @@ public class UI {
 		root.setui(this);
 		this.root = root;
 		widgets.put(0, root);
+		rwidgets.put(root, 0);
 	}
 	
 	public void setreceiver(Receiver rcvr) {
@@ -25,15 +27,10 @@ public class UI {
 	}
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
-		try {
-			synchronized(this) {
-				Widget wdg = Widget.create(type, c, widgets.get(parent), args);
-				widgets.put(id, wdg);
-				rwidgets.put(wdg, id);
-			}
-		} catch(Throwable t) {
-			/* XXX: Remove! */
-			t.printStackTrace();
+		synchronized(this) {
+			Widget wdg = Widget.create(type, c, widgets.get(parent), args);
+			widgets.put(id, wdg);
+			rwidgets.put(wdg, id);
 		}
 	}
 	
@@ -94,14 +91,11 @@ public class UI {
 	}
 	
 	private Coord wdgxlate(Coord c, Widget wdg) {
-		while(wdg != null) {
-			c = c.add(wdg.c.inv());
-			wdg = wdg.parent;
-		}
-		return(c);
+		return(c.add(wdg.rootpos().inv()));
 	}
 	
 	public void mousedown(Coord c, int button) {
+		mc = c;
 		if(mousegrab == null)
 			root.mousedown(c, button);
 		else
@@ -109,6 +103,7 @@ public class UI {
 	}
 	
 	public void mouseup(Coord c, int button) {
+		mc = c;
 		if(mousegrab == null)
 			root.mouseup(c, button);
 		else
@@ -116,6 +111,7 @@ public class UI {
 	}
 	
 	public void mousemove(Coord c) {
+		mc = c;
 		if(mousegrab == null)
 			root.mousemove(c);
 		else

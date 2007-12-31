@@ -1,12 +1,13 @@
 package haven;
 
 import java.awt.Canvas;
+import java.awt.GraphicsConfiguration;
 import java.awt.event.*;
 import java.awt.image.*;
 import java.awt.Graphics;
 import java.util.*;
 
-public class HavenPanel extends Canvas implements Runnable {
+public class HavenPanel extends Canvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
 	int w, h;
@@ -19,7 +20,7 @@ public class HavenPanel extends Canvas implements Runnable {
 	public void init() {
 		setFocusTraversalKeysEnabled(false);
 		createBufferStrategy(2);
-		root = new RootWidget(new Coord(w, h), getGraphicsConfiguration());
+		root = new RootWidget(new Coord(w, h), this);
 		ui = new UI(root);
 		addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
@@ -110,16 +111,11 @@ public class HavenPanel extends Canvas implements Runnable {
 			while(true) {
 				long now, then;
 				then = System.currentTimeMillis();
-				try {
-					if(Session.current != null)
-						Session.current.oc.tick();
-					synchronized(ui) {
-						dispatch();
-						redraw();
-					}
-				} catch(Throwable t) {
-					t.printStackTrace();
-					throw(new Error(t));
+				if(Session.current != null)
+					Session.current.oc.tick();
+				synchronized(ui) {
+					dispatch();
+					redraw();
 				}
 				now = System.currentTimeMillis();
 				//System.out.println(now - then);
@@ -128,5 +124,9 @@ public class HavenPanel extends Canvas implements Runnable {
 				}
 			}
 		} catch(InterruptedException e) {}
+	}
+	
+	public GraphicsConfiguration getconf() {
+		return(getGraphicsConfiguration());
 	}
 }

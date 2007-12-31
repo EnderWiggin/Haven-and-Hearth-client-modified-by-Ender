@@ -1,15 +1,17 @@
 package haven;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.Transparency;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 public class MapView extends Widget {
 	public static int barda = 2;
-	List<Image> tiles = new LinkedList<Image>();
+	List<CPImage> tiles = new LinkedList<CPImage>();
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Coord mc;
@@ -20,7 +22,6 @@ public class MapView extends Widget {
 	static {
 		Widget.addtype("mapview", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
-				System.out.println(args[1]);
 				return(new MapView(c, (Coord)args[0], parent, (Coord)args[1]));
 			}
 		});
@@ -46,7 +47,12 @@ public class MapView extends Widget {
 	public MapView(Coord c, Coord sz, Widget parent, Coord mc) {
 		super(c, sz, parent);
 		for(int i = 0; i <= 13; i++) {
-			tiles.add(Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i)));
+			BufferedImage img = Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i));
+			/*
+			BufferedImage img2 = gc.createCompatibleImage(img.getWidth(), img.getHeight(), Transparency.BITMASK);
+			img2.getGraphics().drawImage(img, 0, 0, null);
+			*/
+			tiles.add(new CPImage(img, this));
 		}
 		this.mc = mc;
 		Session.current.mapdispatch = this;
@@ -64,7 +70,7 @@ public class MapView extends Widget {
 		return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
 	}
 	
-	private Image gettile(Coord tc) {
+	private CPImage gettile(Coord tc) {
 		Grid g;
 		synchronized(grids) {
 			g = grids.get(tc.div(cmaps));
@@ -118,10 +124,10 @@ public class MapView extends Widget {
 					ctc = tc.add(new Coord(x + y, -x + y + i));
 					sc = m2s(ctc.mul(tilesz)).add(oc);
 					sc.x -= (tilesz.x - 1) * 2;
-					Image tile = gettile(ctc);
+					CPImage tile = gettile(ctc);
 					if(tile == null)
 						return(false);
-					g.drawImage(tile, sc.x, sc.y, null);
+					tile.draw(g, sc);
 				}
 			}
 		}
@@ -143,7 +149,6 @@ public class MapView extends Widget {
 				}
 			}
 		}
-		this.clickable = clickable;
 		Collections.sort(clickable, new Comparator<Drawable>() {
 			public int compare(Drawable a, Drawable b) {
 				if(a.clickprio != b.clickprio)
@@ -151,6 +156,7 @@ public class MapView extends Widget {
 				return(b.sc.y - a.sc.y);
 			}
 		});
+		this.clickable = clickable;
 		Collections.sort(sprites, new Comparator<Drawable>() {
 			public int compare(Drawable a, Drawable b) {
 				return(a.sc.y - b.sc.y);
@@ -158,8 +164,10 @@ public class MapView extends Widget {
 		});
 		for(Drawable d : sprites) {
 			d.draw(g, d.sc);
+			/*
 			g.setColor(Color.WHITE);
 			g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
+			*/
 		}
 		return(true);
 	}
