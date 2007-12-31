@@ -24,7 +24,7 @@ public class Session {
 	public static Session current; /* XXX: Should not exist */
 	DatagramSocket sk;
 	InetAddress server;
-	Thread rworker, sworker;
+	Thread rworker, sworker, ticker;
 	int connfailed = 0;
 	boolean connected = false;
 	int tseq = 0, rseq = 0;
@@ -45,6 +45,24 @@ public class Session {
 			this.id = id;
 			this.frame = frame;
 			this.recv = recv;
+		}
+	}
+    
+	private class Ticker extends Thread {
+		public Ticker() {
+			super("Server time ticker");
+			setDaemon(true);
+		}
+		
+		public void run() {
+			try {
+				long now, then;
+				then = System.currentTimeMillis();
+				oc.tick();
+				now = System.currentTimeMillis();
+				if(now - then < 60)
+					Thread.sleep(60 - (now - then));
+			} catch(InterruptedException e) {}
 		}
 	}
 	
@@ -270,6 +288,8 @@ public class Session {
 		rworker.start();
 		sworker = new SWorker();
 		sworker.start();
+		ticker = new Ticker();
+		ticker.start();
 		current = this;
 	}
 	
@@ -278,6 +298,7 @@ public class Session {
 			sendmsg(new Message(MSG_CLOSE));
 		sworker.interrupt();
 		rworker.interrupt();
+		ticker.interrupt();
 		current = null;
 	}
 	
