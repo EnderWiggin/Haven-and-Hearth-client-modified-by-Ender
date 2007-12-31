@@ -11,6 +11,7 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
 	int w, h;
+	long fd = 60;
 	List<InputEvent> events = new LinkedList<InputEvent>();
 	
 	public HavenPanel(int w, int h) {
@@ -26,17 +27,20 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 			public void keyTyped(KeyEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 
 			public void keyPressed(KeyEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 			public void keyReleased(KeyEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 		});
@@ -44,12 +48,14 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 			public void mousePressed(MouseEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 		});
@@ -57,12 +63,14 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 			public void mouseDragged(MouseEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 
 			public void mouseMoved(MouseEvent e) {
 				synchronized(events) {
 					events.add(e);
+					events.notifyAll();
 				}
 			}
 });
@@ -108,20 +116,29 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 	
 	public void run() {
 		try {
+			long now, fthen, then;
+			int frames = 0;
+			fthen = System.currentTimeMillis();
 			while(true) {
-				long now, then;
 				then = System.currentTimeMillis();
-				if(Session.current != null)
-					Session.current.oc.tick();
 				synchronized(ui) {
 					dispatch();
 					redraw();
 				}
+				frames++;
 				now = System.currentTimeMillis();
-				//System.out.println(now - then);
-				if(now - then < 60) {
-					Thread.sleep(60 - (now - then));
+				if(now - then < fd) {
+					synchronized(events) {
+						events.wait(fd - (now - then));
+					}
 				}
+				if(now - fthen > 1000) {
+					System.out.println("FPS: " + frames);
+					frames = 0;
+					fthen = now;
+				}
+				if(Thread.interrupted())
+					throw(new InterruptedException());
 			}
 		} catch(InterruptedException e) {}
 	}
