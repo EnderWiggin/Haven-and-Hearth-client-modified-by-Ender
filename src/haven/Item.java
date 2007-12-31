@@ -13,10 +13,16 @@ public class Item extends SSWidget {
 	static {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
-				if((Integer)args[1] != 0)
-					return(new Item(c, Resource.loadsprite((String)args[0]).img, parent, (Coord)args[2]));
+				BufferedImage img;
+				String res = (String)args[0];
+				if(res.substring(res.length() - 4).equals(".spr"))
+					img = Resource.loadsprite(res).img;
 				else
-					return(new Item(c, Resource.loadsprite((String)args[0]).img, parent, null));
+					img = Resource.loadimg(res);
+				if((Integer)args[1] != 0)
+					return(new Item(c, img, parent, (Coord)args[2]));
+				else
+					return(new Item(c, img, parent, null));
 			}
 		});
 	}
@@ -61,7 +67,7 @@ public class Item extends SSWidget {
 
 	public boolean findrelevant(Widget w, Coord c) {
 		if(w instanceof Inventory) {
-			wdgmsg("drop", c.add(doff.inv()).div(new Coord(29, 29)));
+			wdgmsg("drop", c.add(doff.inv()).add(new Coord(15, 15)).div(new Coord(29, 29)));
 			return(true);
 		} else if(w instanceof MapView) {
 			wdgmsg("mapdrop");

@@ -147,7 +147,6 @@ public class MapView extends Widget {
 				}
 			}
 		}
-		this.clickable = clickable;
 		Collections.sort(clickable, new Comparator<Drawable>() {
 			public int compare(Drawable a, Drawable b) {
 				if(a.clickprio != b.clickprio)
@@ -155,6 +154,7 @@ public class MapView extends Widget {
 				return(b.sc.y - a.sc.y);
 			}
 		});
+		this.clickable = clickable;
 		Collections.sort(sprites, new Comparator<Drawable>() {
 			public int compare(Drawable a, Drawable b) {
 				return(a.sc.y - b.sc.y);
@@ -162,8 +162,10 @@ public class MapView extends Widget {
 		});
 		for(Drawable d : sprites) {
 			d.draw(g, d.sc);
+			/*
 			g.setColor(Color.WHITE);
 			g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
+			*/
 		}
 		return(true);
 	}
