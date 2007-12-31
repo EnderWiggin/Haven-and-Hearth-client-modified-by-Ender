@@ -7,11 +7,10 @@ import java.awt.event.KeyEvent;
 
 import java.awt.GraphicsConfiguration;
 
-public class Widget {
+public class Widget implements Graphical {
 	UI ui;
 	Coord c, sz;
 	Widget next, prev, child, lchild, parent;
-	GraphicsConfiguration gc;
 	boolean tabfocus = false, canfocus = false, hasfocus = false;
 	boolean canactivate = false;
 	Widget focused;
@@ -50,7 +49,6 @@ public class Widget {
 	public Widget(Coord c, Coord sz, Widget parent) {
 		synchronized(parent.ui) {
 			this.ui = parent.ui;
-			this.gc = parent.gc;
 			this.c = c;
 			this.sz = sz;
 			this.parent = parent;
@@ -258,5 +256,9 @@ public class Widget {
 			unlink();
 			link();
 		}
+	}
+	
+	public GraphicsConfiguration getconf() {
+		return(parent.getconf());
 	}
 }
