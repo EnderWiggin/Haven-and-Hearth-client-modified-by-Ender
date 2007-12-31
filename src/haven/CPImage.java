@@ -52,7 +52,7 @@ public class CPImage {
     
     private void recreate() {
 	try {
-	    me = surf.getconf().createCompatibleVolatileImage(real.getWidth(), real.getHeight(), new ImageCapabilities(true), Transparency.BITMASK);
+	    me = surf.getconf().createCompatibleVolatileImage(real.getWidth(), real.getHeight(), new ImageCapabilities(true), real.getTransparency());
 	    synchronized(CPImage.class) {
 		if(!printed) {
 		    System.out.println("Accelerated :)");
