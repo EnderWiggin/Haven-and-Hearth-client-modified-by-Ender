@@ -72,4 +72,9 @@ public class CPImage {
 	}
 	redraw();
     }
+    
+    public Graphics graphics() {
+	me = null;
+	return(real.getGraphics());
+    }
 }
