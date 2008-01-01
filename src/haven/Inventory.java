@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
 public class Inventory extends Widget {
-	public static int barda = -12;
 	BufferedImage invsq;
 	Coord isz;
 

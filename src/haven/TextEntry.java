@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.event.KeyEvent;
 
 public class TextEntry extends SSWidget {
-	static int barda = 1;
 	String text;
 	int pos;
 	boolean prompt = false;

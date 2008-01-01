@@ -10,7 +10,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 public class MapView extends Widget {
-	public static int barda = 2;
 	List<CPImage> tiles = new LinkedList<CPImage>();
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();

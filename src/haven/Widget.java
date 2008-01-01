@@ -15,16 +15,16 @@ public class Widget implements Graphical {
 	boolean canactivate = false;
 	Widget focused;
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
+	static Class[] inittypes = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
+				Window.class, Button.class, Inventory.class, Item.class};
 	
 	static {
-		System.out.println(Img.barda);
-		System.out.println(TextEntry.barda);
-		System.out.println(MapView.barda);
-		System.out.println(FlowerMenu.barda);
-		System.out.println(Window.barda);
-		System.out.println(Button.barda);
-		System.out.println(Inventory.barda);
-		System.out.println(Item.barda);
+		try {
+			for(Class c : inittypes)
+				Class.forName(c.getName(), true, c.getClassLoader());
+		} catch(ClassNotFoundException e) {
+			throw(new Error(e));
+		}
 		addtype("cnt", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				return(new Widget(c, (Coord)args[0], parent));

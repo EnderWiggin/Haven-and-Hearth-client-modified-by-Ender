@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class FlowerMenu extends Widget {
-	public static int barda = 9;
 	public static Color pink = new Color(255, 0, 128);
 	static int r = 50;
 	String[] opts;
