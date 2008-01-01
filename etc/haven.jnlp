@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
-<jnlp spec="1.0+" codebase="http://localhost/~fredrik/haven/">
+<jnlp spec="1.0+" codebase="http://www.seatribe.se/~fredrik/">
   <information>
     <title>Haven</title>
     <vendor>Seatribe</vendor>
-    <homepage href="http://www.seatribe.se/" />
+    <homepage href="http://www.havenandhearth.com/" />
     <description>The Haven game</description>
   </information>
   <offline-allowed />
@@ -13,6 +13,7 @@
   <resources>
     <j2se version="1.6+" />
     <jar href="haven.jar" />
+    <property name="haven.errorhandler" value="on" />
   </resources>
   <application-desc />
 </jnlp>
