@@ -12,7 +12,8 @@ public class HavenApplet extends Applet {
 	    Session.current.close();
     }
     
-    public void start() {
+    public void init() {
+	resize(800, 600);
 	h = new HavenPanel(800, 600);
 	add(h);
 	h.init();
@@ -25,10 +26,5 @@ public class HavenApplet extends Applet {
 		    main.start();
 		}
 	    });
-    }
-
-    public void init() {
-	resize(800, 600);
-	start();
     }
 }
