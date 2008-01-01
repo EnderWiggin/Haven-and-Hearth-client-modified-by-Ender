@@ -1,10 +1,8 @@
 package haven;
 
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import java.awt.Graphics;
-import java.util.*;
 
 public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
