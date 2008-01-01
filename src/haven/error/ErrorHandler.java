@@ -40,7 +40,7 @@ public class ErrorHandler extends ThreadGroup {
 		    while((t = errors.poll()) != null) {
 			try {
 			    doreport(t);
-			} catch(IOException e) {
+			} catch(Exception e) {
 			    status.senderror(e);
 			}
 		    }
