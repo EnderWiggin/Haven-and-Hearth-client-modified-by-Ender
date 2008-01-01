@@ -2,21 +2,31 @@ package haven;
 
 import java.applet.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class HavenApplet extends Applet {
     ThreadGroup p;
     HavenPanel h;
+    boolean running = false;
     
     private class ErrorPanel extends Canvas implements haven.error.ErrorStatus {
 	String status = "";
+	boolean ar = false;
 	
 	public ErrorPanel() {
 	    setBackground(Color.BLACK);
+	    addMouseListener(new MouseAdapter() {
+		    public void mouseClicked(MouseEvent e) {
+			if(ar && !running) {
+			    HavenApplet.this.remove(ErrorPanel.this);
+			    startgame();
+			}
+		    }
+		});
 	}
 	
 	public void goterror(Throwable t) {
-	    p.interrupt();
-	    HavenApplet.this.remove(h);
+	    stopgame();
 	    setSize(HavenApplet.this.getSize());
 	    HavenApplet.this.add(this);
 	    repaint();
@@ -34,16 +44,18 @@ public class HavenApplet extends Applet {
 	
 	public void done() {
 	    status = "Done";
+	    ar = true;
 	    repaint();
 	}
 	
 	public void senderror(Exception e) {
 	    status = "Could not send error report";
+	    ar = true;
 	    repaint();
 	}
 	
 	public void paint(Graphics g) {
-	    g.setColor(Color.BLACK);
+	    g.setColor(getBackground());
 	    g.fillRect(0, 0, getWidth(), getHeight());
 	    g.setColor(Color.WHITE);
 	    FontMetrics m = g.getFontMetrics();
@@ -51,6 +63,11 @@ public class HavenApplet extends Applet {
 	    g.drawString("An error has occurred.", 0, y + m.getAscent());
 	    y += m.getHeight();
 	    g.drawString(status, 0, y + m.getAscent());
+	    y += m.getHeight();
+	    if(ar) {
+		g.drawString("Click to restart the game", 0, y + m.getAscent());
+		y += m.getHeight();
+	    }
 	}
     }
     
@@ -60,8 +77,9 @@ public class HavenApplet extends Applet {
 	    Session.current.close();
     }
     
-    public void init() {
-	resize(800, 600);
+    public void startgame() {
+	if(running)
+	    return;
 	h = new HavenPanel(800, 600);
 	add(h);
 	h.init();
@@ -74,5 +92,21 @@ public class HavenApplet extends Applet {
 		    main.start();
 		}
 	    }, new ErrorPanel());
+	running = true;
+    }
+    
+    public void stopgame() {
+	if(!running)
+	    return;
+	p.interrupt();
+	remove(h);
+	p = null;
+	h = null;
+	running = false;
+    }
+    
+    public void init() {
+	resize(800, 600);
+	startgame();
     }
 }
