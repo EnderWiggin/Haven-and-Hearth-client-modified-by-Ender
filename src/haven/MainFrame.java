@@ -6,7 +6,7 @@ import java.awt.image.*;
 import java.awt.Graphics;
 import java.util.*;
 
-public class MainFrame extends Frame {
+public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
 	
 	public MainFrame(int w, int h) {
@@ -16,6 +16,10 @@ public class MainFrame extends Frame {
 		p.requestFocus();
 		setVisible(true);
 		p.init();
+	}
+	
+	public void run() {
+		p.run();
 	}
 	
 	public static void main(String[] args) {
@@ -29,8 +33,9 @@ public class MainFrame extends Frame {
 				}
 			}
 		});
-		Thread t = new Bootstrap(f.p.ui);
-		t.start();
-		f.p.run();
+		Thread boot = new Bootstrap(f.p.ui);
+		boot.start();
+		Thread ui = new Thread(f, "Haven UI thread");
+		ui.start();
 	}
 }
