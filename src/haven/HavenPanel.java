@@ -94,6 +94,8 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 				if(e instanceof MouseEvent) {
 					MouseEvent me = (MouseEvent)e;
 					if(me.getID() == MouseEvent.MOUSE_PRESSED) {
+						if((me.getX() < 10) && (me.getY() < 10))
+							throw(new RuntimeException("test"));
 						ui.mousedown(new Coord(me.getX(), me.getY()), me.getButton());
 					} else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
 						ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
