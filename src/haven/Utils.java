@@ -14,6 +14,11 @@ public class Utils {
 		return(new Coord(img.getWidth(), img.getHeight()));
 	}
 	
+	static void drawtext(Graphics g, String text, Coord c) {
+		java.awt.FontMetrics m = g.getFontMetrics();
+		g.drawString(text, c.x, c.y + m.getAscent());
+	}
+	
 	static void centertext(Graphics g, String text, Coord c) {
 		java.awt.FontMetrics m = g.getFontMetrics();
 		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);

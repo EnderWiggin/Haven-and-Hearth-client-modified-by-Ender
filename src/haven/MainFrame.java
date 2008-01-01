@@ -1,12 +1,10 @@
 package haven;
 
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import java.awt.Graphics;
-import java.util.*;
 
-public class MainFrame extends Frame implements Runnable {
+public class MainFrame extends Frame {
 	HavenPanel p;
 	
 	public MainFrame(int w, int h) {
@@ -16,10 +14,6 @@ public class MainFrame extends Frame implements Runnable {
 		p.requestFocus();
 		setVisible(true);
 		p.init();
-	}
-	
-	public void run() {
-		p.run();
 	}
 	
 	public static void main2(final MainFrame f) {
@@ -34,7 +28,7 @@ public class MainFrame extends Frame implements Runnable {
 		});
 		Thread boot = new Bootstrap(f.p.ui);
 		boot.start();
-		Thread ui = new Thread(Utils.tg(), f, "Haven UI thread");
+		Thread ui = new Thread(Utils.tg(), f.p, "Haven UI thread");
 		ui.start();
 	}
 

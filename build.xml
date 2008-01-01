@@ -17,7 +17,11 @@
     </copy>
   </target>
 
-  <target name="jar" depends="haven-client,resources">
+  <target name="appletview" depends="build-env">
+    <copy file="etc/test.html" todir="build" />
+  </target>
+
+  <target name="jar" depends="haven-client,resources,appletview">
     <jar destfile="build/haven.jar">
       <fileset dir="build/classes" />
       <fileset dir="build" includes="res/**" />
