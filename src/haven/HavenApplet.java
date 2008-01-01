@@ -83,7 +83,8 @@ public class HavenApplet extends Applet {
 	h = new HavenPanel(800, 600);
 	add(h);
 	h.init();
-	p = new haven.error.ErrorHandler(new Runnable() {
+	p = new haven.error.ErrorHandler(new ErrorPanel());
+	Thread main = new Thread(p, new Runnable() {
 		public void run() {
 		    Bootstrap b = new Bootstrap(h.ui);
 		    b.setaddr("www.seatribe.se");
@@ -91,7 +92,8 @@ public class HavenApplet extends Applet {
 		    Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
 		    main.start();
 		}
-	    }, new ErrorPanel());
+	    });
+	main.start();
 	running = true;
     }
     
