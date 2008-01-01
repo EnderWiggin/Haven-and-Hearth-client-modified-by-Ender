@@ -74,15 +74,6 @@ public class ErrorHandler extends ThreadGroup {
 	}
     }
 
-    public ErrorHandler(Runnable main) {
-	super("Haven client");
-	initial = Thread.currentThread().getThreadGroup();
-	reporter = new Reporter(new ErrorStatus.Simple());
-	reporter.start();
-	Thread init = new Thread(this, main, "Main error handled thread");
-	init.start();
-    }
-    
     public ErrorHandler(Runnable main, ErrorStatus ui) {
 	super("Haven client");
 	initial = Thread.currentThread().getThreadGroup();
@@ -90,6 +81,10 @@ public class ErrorHandler extends ThreadGroup {
 	reporter.start();
 	Thread init = new Thread(this, main, "Main error handled thread");
 	init.start();
+    }
+    
+    public ErrorHandler(Runnable main) {
+	this(main, new ErrorStatus.Simple());
     }
     
     public void uncaughtException(Thread t, Throwable e) {
