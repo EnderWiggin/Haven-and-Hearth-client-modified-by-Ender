@@ -5,7 +5,7 @@ public class RemoteUI extends Thread implements UI.Receiver {
 	UI ui;
 	
 	public RemoteUI(Session sess, UI ui) {
-		super("Remote Haven UI handler");
+		super(Utils.tg(), "Remote Haven UI handler");
 		this.sess = sess;
 		this.ui = ui;
 		ui.setreceiver(this);

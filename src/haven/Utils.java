@@ -20,6 +20,10 @@ public class Utils {
 		g.drawString(text, (int)(c.x - ts.getWidth() / 2), (int)(c.y + m.getAscent() - ts.getHeight() / 2));
 	}
 	
+	static ThreadGroup tg() {
+		return(Thread.currentThread().getThreadGroup());
+	}
+
 	static void AA(Graphics g) {
 		java.awt.Graphics2D g2 = (java.awt.Graphics2D)g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);		

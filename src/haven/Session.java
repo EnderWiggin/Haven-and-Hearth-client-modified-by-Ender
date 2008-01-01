@@ -50,7 +50,7 @@ public class Session {
     
 	private class Ticker extends Thread {
 		public Ticker() {
-			super("Server time ticker");
+			super(Utils.tg(), "Server time ticker");
 			setDaemon(true);
 		}
 		
@@ -68,7 +68,7 @@ public class Session {
 	
 	private class RWorker extends Thread {
 		public RWorker() {
-			super("Session reader");
+			super(Utils.tg(), "Session reader");
 			setDaemon(true);
 		}
 		
@@ -196,7 +196,7 @@ public class Session {
 	
 	private class SWorker extends Thread {
 		public SWorker() {
-			super("Session writer");
+			super(Utils.tg(), "Session writer");
 			setDaemon(true);
 		}
 		
