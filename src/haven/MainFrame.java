@@ -34,7 +34,7 @@ public class MainFrame extends Frame implements Runnable {
 		});
 		Thread boot = new Bootstrap(f.p.ui);
 		boot.start();
-		Thread ui = new Thread(f, "Haven UI thread");
+		Thread ui = new Thread(Utils.tg(), f, "Haven UI thread");
 		ui.start();
 	}
 

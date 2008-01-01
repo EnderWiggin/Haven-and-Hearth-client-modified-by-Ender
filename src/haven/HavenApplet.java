@@ -22,7 +22,7 @@ public class HavenApplet extends Applet {
 		    Bootstrap b = new Bootstrap(h.ui);
 		    b.setaddr("www.seatribe.se");
 		    b.start();
-		    Thread main = new Thread(h, "Haven applet main thread");
+		    Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
 		    main.start();
 		}
 	    });
