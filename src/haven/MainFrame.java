@@ -35,11 +35,15 @@ public class MainFrame extends Frame {
 	public static void main(String[] args) {
 		final MainFrame f = new MainFrame(800, 600);
 		ThreadGroup g;
-		g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
-				public void errorsent() {
-					System.exit(1);
-				}
-			});
+		if(System.getProperty("haven.errorhandler", "off").equals("on")) {
+			g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
+					public void errorsent() {
+						System.exit(1);
+					}
+				});
+		} else {
+			g = new ThreadGroup("Haven client");
+		}
 		Thread main = new Thread(g, new Runnable() {
 				public void run() {
 					main2(f);
