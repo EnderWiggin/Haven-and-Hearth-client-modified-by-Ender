@@ -11,7 +11,7 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
 	int w, h;
-	long fd = 60;
+	long fd = 60, fps = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
 	
 	public HavenPanel(int w, int h) {
@@ -81,6 +81,8 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 		Graphics g = bs.getDrawGraphics();
 		try {
 			root.draw(g);
+			g.setColor(java.awt.Color.WHITE);
+			Utils.drawtext(g, "FPS: " + fps, new Coord(0, 0));
 		} finally {
 			g.dispose();
 		}
@@ -133,7 +135,7 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 					}
 				}
 				if(now - fthen > 1000) {
-					System.out.println("FPS: " + frames);
+					fps = frames;
 					frames = 0;
 					fthen = now;
 				}
