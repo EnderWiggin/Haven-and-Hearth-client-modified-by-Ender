@@ -15,6 +15,17 @@ public class UI {
 		public void rcvmsg(int widget, String msg, Object... args);
 	}
 	
+	private static class UIException extends RuntimeException {
+		String mname;
+		Object[] args;
+		
+		public UIException(String message, String mname, Object... args) {
+			super(message);
+			this.mname = mname;
+			this.args = args;
+		}
+	}
+	
 	public UI(RootWidget root) {
 		root.setui(this);
 		this.root = root;
@@ -28,7 +39,10 @@ public class UI {
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
 		synchronized(this) {
-			Widget wdg = Widget.create(type, c, widgets.get(parent), args);
+			Widget pwdg = widgets.get(parent);
+			if(pwdg == null)
+				throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
+			Widget wdg = Widget.create(type, c, pwdg, args);
 			widgets.put(id, wdg);
 			rwidgets.put(wdg, id);
 		}
@@ -64,6 +78,8 @@ public class UI {
 	public void wdgmsg(Widget sender, String msg, Object... args) {
 		int id;
 		synchronized(this) {
+			if(!rwidgets.containsKey(sender))
+				throw(new UIException("Wdgmsg sender (" + sender.getClass().getName() + ") is not in rwidgets", msg, args));
 			id = rwidgets.get(sender);
 		}
 		if(rcvr != null)
@@ -77,6 +93,8 @@ public class UI {
 		}
 		if(wdg != null)
 			wdg.uimsg(msg.intern(), args);
+		else
+			throw(new UIException("Uimsg to non-existent widget " + id, msg, args));
 	}
 	
 	public void type(KeyEvent ev) {
