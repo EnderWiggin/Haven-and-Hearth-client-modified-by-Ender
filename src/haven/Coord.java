@@ -1,6 +1,6 @@
 package haven;
 
-public class Coord implements Comparable<Coord> {
+public class Coord implements Comparable<Coord>, java.io.Serializable {
 	public int x, y;
 	
 	public Coord(int x, int y) {
