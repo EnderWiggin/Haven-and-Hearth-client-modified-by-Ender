@@ -26,7 +26,6 @@ public class Bootstrap extends Thread implements UI.Receiver {
 		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), defaddr);
 		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
 		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
-		ui.uimsg(6, "pack");
 		ui.uimsg(5, "tabfocus", 1);
 		ui.uimsg(5, "act", 1);
 		retry: do {
