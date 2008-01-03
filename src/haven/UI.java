@@ -47,26 +47,36 @@ public class UI {
 	}
 	
 	public void destroy(int id) {
-		if(widgets.containsKey(id)) {
-			Widget wdg = widgets.get(id);
+		synchronized(this) {
+			if(widgets.containsKey(id)) {
+				Widget wdg = widgets.get(id);
 			
-			if((mousegrab != null) && mousegrab.hasparent(wdg))
-				mousegrab = null;
-			if((keygrab != null) && keygrab.hasparent(wdg))
-				keygrab = null;
-			removeid(wdg);
-			wdg.unlink();
+				if((mousegrab != null) && mousegrab.hasparent(wdg))
+					mousegrab = null;
+				if((keygrab != null) && keygrab.hasparent(wdg))
+					keygrab = null;
+				removeid(wdg);
+				wdg.unlink();
+			}
 		}
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
+		int id;
+		synchronized(this) {
+			id = rwidgets.get(sender);
+		}
 		if(rcvr != null)
-			rcvr.rcvmsg(rwidgets.get(sender), msg, args);
+			rcvr.rcvmsg(id, msg, args);
 	}
 	
 	public void uimsg(int id, String msg, Object... args) {
-		if(widgets.containsKey(id))
-			widgets.get(id).uimsg(msg.intern(), args);
+		Widget wdg;
+		synchronized(this) {
+			wdg = widgets.get(id);
+		}
+		if(wdg != null)
+			wdg.uimsg(msg.intern(), args);
 	}
 	
 	public void type(KeyEvent ev) {
