@@ -6,14 +6,25 @@ import javax.imageio.*;
 import java.awt.image.BufferedImage;
 
 public class Resource {
+	private static File basedir = new File("/home/fredrik/src/haven/res");
 	private static Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
 	private static Map<String, Sprite> sprites = new HashMap<String, Sprite>();
 	
 	public static InputStream getres(String name) {
-		InputStream s = Resource.class.getResourceAsStream("/res/" + name);
-		if(s == null)
-			throw(new RuntimeException("Could not find resource: " + name));
-		return(s);
+		String fn = "";
+		for(int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if(c == '/')
+				fn += File.separator;
+			else
+				fn += c;
+		}
+		File f = new File(basedir, fn);
+		try {
+			return(new FileInputStream(f));
+		} catch(FileNotFoundException e) {
+			throw(new RuntimeException(e));
+		}		
 	}
 	
 	public static byte[] loadres(String name) {
