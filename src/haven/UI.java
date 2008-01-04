@@ -15,6 +15,17 @@ public class UI {
 		public void rcvmsg(int widget, String msg, Object... args);
 	}
 	
+	private static class UIException extends RuntimeException {
+		String mname;
+		Object[] args;
+		
+		public UIException(String message, String mname, Object... args) {
+			super(message);
+			this.mname = mname;
+			this.args = args;
+		}
+	}
+	
 	public UI(RootWidget root) {
 		root.setui(this);
 		this.root = root;
@@ -27,15 +38,13 @@ public class UI {
 	}
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
-		try {
-			synchronized(this) {
-				Widget wdg = Widget.create(type, c, widgets.get(parent), args);
-				widgets.put(id, wdg);
-				rwidgets.put(wdg, id);
-			}
-		} catch(Throwable t) {
-			/* XXX: Remove! */
-			t.printStackTrace();
+		synchronized(this) {
+			Widget pwdg = widgets.get(parent);
+			if(pwdg == null)
+				throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
+			Widget wdg = Widget.create(type, c, pwdg, args);
+			widgets.put(id, wdg);
+			rwidgets.put(wdg, id);
 		}
 	}
 	
@@ -52,26 +61,40 @@ public class UI {
 	}
 	
 	public void destroy(int id) {
-		if(widgets.containsKey(id)) {
-			Widget wdg = widgets.get(id);
+		synchronized(this) {
+			if(widgets.containsKey(id)) {
+				Widget wdg = widgets.get(id);
 			
-			if((mousegrab != null) && mousegrab.hasparent(wdg))
-				mousegrab = null;
-			if((keygrab != null) && keygrab.hasparent(wdg))
-				keygrab = null;
-			removeid(wdg);
-			wdg.unlink();
+				if((mousegrab != null) && mousegrab.hasparent(wdg))
+					mousegrab = null;
+				if((keygrab != null) && keygrab.hasparent(wdg))
+					keygrab = null;
+				removeid(wdg);
+				wdg.unlink();
+			}
 		}
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
+		int id;
+		synchronized(this) {
+			if(!rwidgets.containsKey(sender))
+				throw(new UIException("Wdgmsg sender (" + sender.getClass().getName() + ") is not in rwidgets", msg, args));
+			id = rwidgets.get(sender);
+		}
 		if(rcvr != null)
-			rcvr.rcvmsg(rwidgets.get(sender), msg, args);
+			rcvr.rcvmsg(id, msg, args);
 	}
 	
 	public void uimsg(int id, String msg, Object... args) {
-		if(widgets.containsKey(id))
-			widgets.get(id).uimsg(msg.intern(), args);
+		Widget wdg;
+		synchronized(this) {
+			wdg = widgets.get(id);
+		}
+		if(wdg != null)
+			wdg.uimsg(msg.intern(), args);
+		else
+			throw(new UIException("Uimsg to non-existent widget " + id, msg, args));
 	}
 	
 	public void type(KeyEvent ev) {

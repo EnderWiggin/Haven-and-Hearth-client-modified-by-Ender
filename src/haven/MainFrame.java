@@ -1,10 +1,8 @@
 package haven;
 
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-import java.awt.Graphics;
-import java.util.*;
 
 public class MainFrame extends Frame {
 	HavenPanel p;
@@ -18,8 +16,7 @@ public class MainFrame extends Frame {
 		p.init();
 	}
 	
-	public static void main(String[] args) {
-		final MainFrame f = new MainFrame(800, 600);
+	public static void main2(final MainFrame f) {
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				synchronized(f.p.ui) {
@@ -29,8 +26,29 @@ public class MainFrame extends Frame {
 				}
 			}
 		});
-		Thread t = new Bootstrap(f.p.ui);
-		t.start();
-		f.p.run();
+		Thread boot = new Bootstrap(f.p.ui);
+		boot.start();
+		Thread ui = new Thread(Utils.tg(), f.p, "Haven UI thread");
+		ui.start();
+	}
+
+	public static void main(String[] args) {
+		final MainFrame f = new MainFrame(800, 600);
+		ThreadGroup g;
+		if(System.getProperty("haven.errorhandler", "off").equals("on")) {
+			g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
+					public void errorsent() {
+						System.exit(1);
+					}
+				});
+		} else {
+			g = new ThreadGroup("Haven client");
+		}
+		Thread main = new Thread(g, new Runnable() {
+				public void run() {
+					main2(f);
+				}
+			});
+		main.start();
 	}
 }

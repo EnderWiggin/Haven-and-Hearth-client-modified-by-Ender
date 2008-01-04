@@ -2,3 +2,5 @@
 
 cd src/haven
 smbclient //bearland/haven -Nc 'cd src/Java/client/client/src/haven; prompt; mget *.java'
+cd error
+smbclient //bearland/haven -Nc 'cd src/Java/client/client/src/haven/error; prompt; mget *.java'

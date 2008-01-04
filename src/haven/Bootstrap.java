@@ -10,6 +10,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	int cfocus = 0;
 	
 	public Bootstrap(UI ui) {
+		super(Utils.tg(), "Haven bootstrap thread");
 		this.ui = ui;
 		ui.setreceiver(this);
 		defaddr = Utils.getpref("server", "127.0.0.1");
@@ -21,11 +22,10 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	
 	public void run() {
 		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
-		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/testimgs/snow.bmp");
+		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/testimgs/snow.png");
 		ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), defaddr);
 		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
 		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
-		ui.uimsg(6, "pack");
 		ui.uimsg(5, "tabfocus", 1);
 		ui.uimsg(5, "act", 1);
 		retry: do {
@@ -50,6 +50,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 			try {
 				Thread.sleep(100);
 			} catch(InterruptedException e) {
+				return;
 			}
 			while(true) {
 				if(sess.connected) {
@@ -69,7 +70,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 						sess.wait();
 					}
 				} catch(InterruptedException e) {
-					break;
+					return;
 				}
 			}
 		} while(true);

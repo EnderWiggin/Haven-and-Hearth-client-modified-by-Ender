@@ -14,12 +14,21 @@ public class Utils {
 		return(new Coord(img.getWidth(), img.getHeight()));
 	}
 	
+	static void drawtext(Graphics g, String text, Coord c) {
+		java.awt.FontMetrics m = g.getFontMetrics();
+		g.drawString(text, c.x, c.y + m.getAscent());
+	}
+	
 	static void centertext(Graphics g, String text, Coord c) {
 		java.awt.FontMetrics m = g.getFontMetrics();
 		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);
 		g.drawString(text, (int)(c.x - ts.getWidth() / 2), (int)(c.y + m.getAscent() - ts.getHeight() / 2));
 	}
 	
+	static ThreadGroup tg() {
+		return(Thread.currentThread().getThreadGroup());
+	}
+
 	static void AA(Graphics g) {
 		java.awt.Graphics2D g2 = (java.awt.Graphics2D)g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);		

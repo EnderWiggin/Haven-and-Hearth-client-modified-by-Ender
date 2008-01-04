@@ -19,6 +19,6 @@ public class SSWidget extends Widget {
 	}
 	
 	public void clear() {
-		surf = gc.createCompatibleImage(sz.x, sz.y, t?Transparency.TRANSLUCENT:Transparency.BITMASK);	
+		surf = getconf().createCompatibleImage(sz.x, sz.y, t?Transparency.TRANSLUCENT:Transparency.BITMASK);	
 	}
 }

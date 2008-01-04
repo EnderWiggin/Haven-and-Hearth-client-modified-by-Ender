@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class Window extends Widget {
-	public static int barda = 7;
 	static Color bg = new Color(179, 129, 95);
 	BufferedImage ctl, ctr, cbl, cbr;
 	BufferedImage bl, br, bt, bb;

@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.Color;
 
 public class Button extends SSWidget {
-	public static int barda = 4;
 	String text;
 	boolean a = false;
 	

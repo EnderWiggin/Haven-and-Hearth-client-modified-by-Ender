@@ -10,8 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.*;
 
 public class MapView extends Widget {
-	public static int barda = 2;
-	List<Image> tiles = new LinkedList<Image>();
+	List<CPImage> tiles = new LinkedList<CPImage>();
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Coord mc;
@@ -48,9 +47,11 @@ public class MapView extends Widget {
 		super(c, sz, parent);
 		for(int i = 0; i <= 13; i++) {
 			BufferedImage img = Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i));
+			/*
 			BufferedImage img2 = gc.createCompatibleImage(img.getWidth(), img.getHeight(), Transparency.BITMASK);
 			img2.getGraphics().drawImage(img, 0, 0, null);
-			tiles.add(img2);
+			*/
+			tiles.add(new CPImage(img, this));
 		}
 		this.mc = mc;
 		Session.current.mapdispatch = this;
@@ -68,7 +69,7 @@ public class MapView extends Widget {
 		return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
 	}
 	
-	private Image gettile(Coord tc) {
+	private CPImage gettile(Coord tc) {
 		Grid g;
 		synchronized(grids) {
 			g = grids.get(tc.div(cmaps));
@@ -122,10 +123,10 @@ public class MapView extends Widget {
 					ctc = tc.add(new Coord(x + y, -x + y + i));
 					sc = m2s(ctc.mul(tilesz)).add(oc);
 					sc.x -= (tilesz.x - 1) * 2;
-					Image tile = gettile(ctc);
+					CPImage tile = gettile(ctc);
 					if(tile == null)
 						return(false);
-					g.drawImage(tile, sc.x, sc.y, null);
+					tile.draw(g, sc);
 				}
 			}
 		}

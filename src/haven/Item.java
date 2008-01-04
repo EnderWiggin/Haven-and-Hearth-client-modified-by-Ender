@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
 public class Item extends SSWidget {
-	public static int barda = 47;
 	static Coord shoff = new Coord(1, 3);
 	boolean dm = false;
 	Coord doff;
@@ -51,7 +50,7 @@ public class Item extends SSWidget {
 	}
 	
 	public Item(Coord c, BufferedImage img, Widget parent, Coord drag) {
-		super(c, Utils.imgsz(img).add(shoff), parent, true);
+		super(c, Utils.imgsz(img).add(shoff), parent, drag != null);
 		this.img = img;
 		if(drag == null) {
 			dm = false;
