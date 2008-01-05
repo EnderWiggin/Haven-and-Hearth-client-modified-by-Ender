@@ -38,13 +38,17 @@ public class UI {
 	}
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
-		synchronized(this) {
-			Widget pwdg = widgets.get(parent);
-			if(pwdg == null)
-				throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
-			Widget wdg = Widget.create(type, c, pwdg, args);
-			widgets.put(id, wdg);
-			rwidgets.put(wdg, id);
+		try {
+			synchronized(this) {
+				Widget pwdg = widgets.get(parent);
+				if(pwdg == null)
+					throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
+				Widget wdg = Widget.create(type, c, pwdg, args);
+				widgets.put(id, wdg);
+				rwidgets.put(wdg, id);
+			}
+		} catch(Throwable t) {
+			t.printStackTrace();
 		}
 	}
 	
@@ -53,9 +57,11 @@ public class UI {
 	}
 	
 	private void removeid(Widget wdg) {
-		int id = rwidgets.get(wdg);
-		widgets.remove(id);
-		rwidgets.remove(wdg);
+		if(rwidgets.containsKey(wdg)) {
+			int id = rwidgets.get(wdg);
+			widgets.remove(id);
+			rwidgets.remove(wdg);
+		}
 		for(Widget child = wdg.child; child != null; child = child.next)
 			removeid(child);
 	}
@@ -119,7 +125,7 @@ public class UI {
 	}
 	
 	private Coord wdgxlate(Coord c, Widget wdg) {
-		return(c.add(wdg.rootpos().inv()));
+		return(c.add(wdg.c.inv()).add(wdg.parent.rootpos().inv()));
 	}
 	
 	public void mousedown(Coord c, int button) {

@@ -2,6 +2,7 @@ package haven;
 
 public class Coord implements Comparable<Coord>, java.io.Serializable {
 	public int x, y;
+	public static Coord z = new Coord(0, 0);
 	
 	public Coord(int x, int y) {
 		this.x = x;
