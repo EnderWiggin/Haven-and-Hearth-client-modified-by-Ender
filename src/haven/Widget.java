@@ -15,12 +15,12 @@ public class Widget implements Graphical {
 	boolean canactivate = false;
 	Widget focused;
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
-	static Class[] inittypes = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
-				Window.class, Button.class, Inventory.class, Item.class};
+	static Class<?>[] inittypes = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
+		Window.class, Button.class, Inventory.class, Item.class, Listbox.class, Makewindow.class};
 	
 	static {
 		try {
-			for(Class c : inittypes)
+			for(Class<?> c : inittypes)
 				Class.forName(c.getName(), true, c.getClassLoader());
 		} catch(ClassNotFoundException e) {
 			throw(new Error(e));
@@ -155,7 +155,14 @@ public class Widget implements Graphical {
 	}
 	
 	public void wdgmsg(String msg, Object... args) {
-		ui.wdgmsg(this, msg, args);
+		wdgmsg(this, msg, args);
+	}
+	
+	public void wdgmsg(Widget sender, String msg, Object... args) {
+		if(parent == null)
+			ui.wdgmsg(sender, msg, args);
+		else
+			parent.wdgmsg(sender, msg, args);
 	}
 	
 	public void draw(Graphics g) {
@@ -236,17 +243,37 @@ public class Widget implements Graphical {
 	}
 	
 	public boolean keydown(KeyEvent ev) {
-		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-			if(wdg.keydown(ev))
-				return(true);
+		if(tabfocus) {
+			if(focused != null) {
+				if(focused.keydown(ev))
+					return(true);
+				return(false);
+			} else {
+				return(false);
+			}
+		} else {
+			for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+				if(wdg.keydown(ev))
+					return(true);
+			}
 		}
 		return(false);
 	}
 	
 	public boolean keyup(KeyEvent ev) {
-		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-			if(wdg.keyup(ev))
-				return(true);
+		if(tabfocus) {
+			if(focused != null) {
+				if(focused.keyup(ev))
+					return(true);
+				return(false);
+			} else {
+				return(false);
+			}
+		} else {
+			for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+				if(wdg.keyup(ev))	
+					return(true);
+			}
 		}
 		return(false);
 	}

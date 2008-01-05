@@ -18,6 +18,12 @@ public class SSWidget extends Widget {
 		g.drawImage(surf, 0, 0, null);
 	}
 	
+	Graphics graphics() {
+		Graphics g = surf.getGraphics();
+		Utils.AA(g);
+		return(g);
+	}
+	
 	public void clear() {
 		surf = getconf().createCompatibleImage(sz.x, sz.y, t?Transparency.TRANSLUCENT:Transparency.BITMASK);	
 	}
