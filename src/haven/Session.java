@@ -41,11 +41,13 @@ public class Session {
 		int id;
 		int frame;
 		long recv;
+		long sent;
 		
 		public ObjAck(int id, int frame, long recv) {
 			this.id = id;
 			this.frame = frame;
 			this.recv = recv;
+			this.sent = 0;
 		}
 	}
     
@@ -260,13 +262,20 @@ public class Session {
 							Message msg = null;
 							for(Iterator<ObjAck> i = objacks.values().iterator(); i.hasNext();) {
 								ObjAck a = i.next();
-								if(now - a.recv > 120) {
+								boolean send = false, del = false;
+								if(now - a.sent > 200)
+									send = true;
+								if(now - a.recv > 120)
+									send = del = true;
+								if(send) {
 									if(msg == null)
 										msg = new Message(MSG_OBJACK);
 									msg.addint32(a.id);
 									msg.addint32(a.frame);
-									i.remove();
+									a.sent = now;
 								}
+								if(del)
+									i.remove();
 							}
 							if(msg != null)
 								sendmsg(msg);
