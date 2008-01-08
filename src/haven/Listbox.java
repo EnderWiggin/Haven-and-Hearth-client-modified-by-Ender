@@ -51,7 +51,7 @@ public class Listbox extends SSWidget {
 		super(c, sz, parent, false);
 		this.opts = opts;
 		chosen = 0;
-		canfocus = true;
+		setcanfocus(true);
 		render();
 	}
 	

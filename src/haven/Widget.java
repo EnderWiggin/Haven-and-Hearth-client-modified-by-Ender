@@ -11,12 +11,14 @@ public class Widget implements Graphical {
 	UI ui;
 	Coord c, sz;
 	Widget next, prev, child, lchild, parent;
-	boolean tabfocus = false, canfocus = false, hasfocus = false;
+	boolean focustab = false, focusctl = false, hasfocus = false;
+	private boolean canfocus = false;
 	boolean canactivate = false;
 	Widget focused;
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
 	static Class<?>[] inittypes = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
-		Window.class, Button.class, Inventory.class, Item.class, Listbox.class, Makewindow.class};
+		Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
+		Makewindow.class, Chatwindow.class, Textlog.class};
 	
 	static {
 		try {
@@ -101,13 +103,21 @@ public class Widget implements Graphical {
 	}
 	
 	public void gotfocus() {
+		if(focusctl && (focused != null)) {
+			focused.hasfocus = true;
+			focused.gotfocus();
+		}
 	}
 	
 	public void lostfocus() {
+		if(focusctl && (focused != null)) {
+			focused.hasfocus = false;
+			focused.lostfocus();
+		}
 	}
 	
 	public void setfocus(Widget w) {
-		if(tabfocus) {
+		if(focusctl) {
 			if(w != focused) {
 				Widget last = focused;
 				focused = w;
@@ -117,16 +127,47 @@ public class Widget implements Graphical {
 				if(last != null)
 					last.lostfocus();
 				w.gotfocus();
-				wdgmsg("focus", ui.rwidgets.get(w));
+				if((ui != null) && ui.rwidgets.containsKey(w))
+					wdgmsg("focus", ui.rwidgets.get(w));
 			}
+			if(parent != null)
+				parent.setfocus(this);
 		} else {
 			parent.setfocus(w);
 		}
 	}
 	
-	public void settabfocus(boolean tabfocus) {
-		this.tabfocus = tabfocus;
-		if(tabfocus) {
+	public void setcanfocus(boolean canfocus) {
+		this.canfocus = canfocus;
+		if(parent != null) {
+			if(canfocus) {
+				parent.newfocusable(this);
+			} else {
+				parent.delfocusable(this);
+			}
+		}
+	}
+	
+	public void newfocusable(Widget w) {
+		if(focusctl) {
+			if(focused == null)
+				setfocus(w);
+		} else {
+			parent.newfocusable(w);
+		}
+	}
+	
+	public void delfocusable(Widget w) {
+		if(focusctl) {
+			if(focused == w)
+				focused = null;
+		} else {
+			parent.delfocusable(w);
+		}
+	}
+	
+	public void setfocusctl(boolean focusctl) {
+		if(this.focusctl = focusctl) {
 			/* XXX: Might need to check subwidgets recursively */
 			focused = null;
 			for(Widget w = child; w != null; w = w.next) {
@@ -137,12 +178,19 @@ public class Widget implements Graphical {
 					break;
 				}
 			}
+			setcanfocus(true);
 		}
+	}
+	
+	public void setfocustab(boolean focustab) {
+		if(focustab && !focusctl)
+			setfocusctl(true);
+		this.focustab = focustab;
 	}
 	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "tabfocus") {
-			settabfocus(((Integer)args[0] == 1));
+			setfocustab(((Integer)args[0] == 1));
 		} else if(msg == "act") {
 			canactivate = (Integer)args[0] == 1;
 		} else if(msg == "focus") {
@@ -151,6 +199,8 @@ public class Widget implements Graphical {
 				if(w.canfocus)
 					setfocus(w);
 			}
+		} else {
+			System.err.println("Unhandled widget message: " + msg);
 		}
 	}
 	
@@ -196,6 +246,18 @@ public class Widget implements Graphical {
 		return(false);
 	}
 	
+	public boolean mousewheel(Coord c, int amount) {
+		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(wdg.mousewheel(c.add(cc.inv()), amount)) {
+					return(true);
+				}
+			}
+		}
+		return(false);
+	}
+	
 	public void mousemove(Coord c) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
 			Coord cc = xlate(wdg.c, true);
@@ -211,22 +273,26 @@ public class Widget implements Graphical {
 				return(true);
 			}
 		}
-		if(tabfocus) {
+		if(focusctl) {
 			if(focused != null) {
 				if(focused.type(key, ev))
 					return(true);
-				if(key == '\t') {
-					Widget f = focused;
-					while(true) {
-						if((ev.getModifiers() & InputEvent.SHIFT_MASK) == 0)
-							f = (f.next == null)?child:f.next;
-						else
-							f = (f.prev == null)?lchild:f.prev;
-						if(f.canfocus)
-							break;
+				if(focustab) {
+					if(key == '\t') {
+						Widget f = focused;
+						while(true) {
+							if((ev.getModifiers() & InputEvent.SHIFT_MASK) == 0)
+								f = (f.next == null)?child:f.next;
+							else
+								f = (f.prev == null)?lchild:f.prev;
+							if(f.canfocus)
+								break;
+						}
+						setfocus(f);
+						return(true);
+					} else {
+						return(false);
 					}
-					setfocus(f);
-					return(true);
 				} else {
 					return(false);
 				}
@@ -243,7 +309,7 @@ public class Widget implements Graphical {
 	}
 	
 	public boolean keydown(KeyEvent ev) {
-		if(tabfocus) {
+		if(focusctl) {
 			if(focused != null) {
 				if(focused.keydown(ev))
 					return(true);
@@ -261,7 +327,7 @@ public class Widget implements Graphical {
 	}
 	
 	public boolean keyup(KeyEvent ev) {
-		if(tabfocus) {
+		if(focusctl) {
 			if(focused != null) {
 				if(focused.keyup(ev))
 					return(true);

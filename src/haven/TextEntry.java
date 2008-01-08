@@ -17,12 +17,16 @@ public class TextEntry extends SSWidget {
 		});
 	}
 	
+	public void settext(String text) {
+		this.text = text;
+		if(pos > text.length())
+			pos = text.length();
+		render();
+	}
+	
 	public void uimsg(String name, Object... args) {
 		if(name == "settext") {
-			text = (String)args[0];
-			if(pos > text.length())
-				pos = text.length();
-			render();
+			settext((String)args[0]);
 		} else if(name == "get") {
 			wdgmsg("text", text);
 		} else {
@@ -54,10 +58,10 @@ public class TextEntry extends SSWidget {
 	
 	public TextEntry(Coord c, Coord sz, Widget parent, String deftext) {
 		super(c, sz, parent, false);
-		canfocus = true;
 		text = deftext;
 		pos = text.length();
 		render();
+		setcanfocus(true);
 	}
 	
 	public boolean type(char c, KeyEvent ev) {

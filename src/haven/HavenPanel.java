@@ -71,7 +71,13 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 					events.add(e);
 				}
 			}
-});
+		});
+		addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				events.add(e);
+				events.notifyAll();
+			}
+		});
 	}
 	
 	void redraw() {
@@ -101,6 +107,8 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 						ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
 					} else if(me.getID() == MouseEvent.MOUSE_MOVED || me.getID() == MouseEvent.MOUSE_DRAGGED) {
 						ui.mousemove(new Coord(me.getX(), me.getY()));
+					} else if(me instanceof MouseWheelEvent) {
+						ui.mousewheel(new Coord(me.getX(), me.getY()), ((MouseWheelEvent)me).getWheelRotation());
 					}
 				} else if(e instanceof KeyEvent) {
 					KeyEvent ke = (KeyEvent)e;
