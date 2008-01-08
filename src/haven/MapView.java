@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.geom.Rectangle2D;
+import java.awt.Transparency;
 import java.util.*;
 
 public class MapView extends Widget {
