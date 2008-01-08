@@ -74,8 +74,10 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 		});
 		addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				events.add(e);
-				events.notifyAll();
+				synchronized(events) {
+					events.add(e);
+					events.notifyAll();
+				}
 			}
 		});
 	}
