@@ -61,12 +61,14 @@ public class Session {
 		
 		public void run() {
 			try {
-				long now, then;
-				then = System.currentTimeMillis();
-				oc.tick();
-				now = System.currentTimeMillis();
-				if(now - then < 60)
-					Thread.sleep(60 - (now - then));
+				while(true) {
+					long now, then;
+					then = System.currentTimeMillis();
+					oc.tick();
+					now = System.currentTimeMillis();
+					if(now - then < 60)
+						Thread.sleep(60 - (now - then));
+				}
 			} catch(InterruptedException e) {}
 		}
 	}
