@@ -9,6 +9,7 @@ public class RootWidget extends Widget {
 	public RootWidget(Coord sz, Graphical backer) {
 		super(null, new Coord(0, 0), sz);
 		this.backer = backer;
+		setfocusctl(true);
 	}
 	
 	public void setui(UI ui) {

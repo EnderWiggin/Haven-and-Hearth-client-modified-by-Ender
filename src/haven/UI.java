@@ -151,4 +151,12 @@ public class UI {
 		else
 			mousegrab.mousemove(wdgxlate(c, mousegrab));
 	}
+	
+	public void mousewheel(Coord c, int amount) {
+		mc = c;
+		if(mousegrab == null)
+			root.mousewheel(c, amount);
+		else
+			mousegrab.mousewheel(wdgxlate(c, mousegrab), amount);
+	}
 }

@@ -1,11 +1,9 @@
 package haven;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Transparency;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
@@ -55,6 +53,7 @@ public class MapView extends Widget {
 		}
 		this.mc = mc;
 		Session.current.mapdispatch = this;
+		setcanfocus(true);
 	}
 	
 	static Coord m2s(Coord c) {
@@ -80,6 +79,7 @@ public class MapView extends Widget {
 	}
 	
 	public boolean mousedown(Coord c, int button) {
+		setfocus(this);
 		Drawable hit = null;
 		for(Drawable d : clickable) {
 			Coord ulc = d.sc.add(d.getoffset().inv());

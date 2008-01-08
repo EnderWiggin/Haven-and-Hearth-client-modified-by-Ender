@@ -38,7 +38,7 @@ public class Window extends Widget {
 		atl = new Coord(bl.getWidth(), bt.getHeight()).add(tlo);
 		wsz = sz.add(tlo.inv()).add(rbo.inv());
 		asz = new Coord(wsz.x - bl.getWidth() - br.getWidth(), wsz.y - bt.getHeight() - bb.getHeight());
-		settabfocus(true);
+		setfocustab(true);
 	}
 	
 	public Window(Coord c, Coord sz, Widget parent) {
@@ -91,6 +91,7 @@ public class Window extends Widget {
 	}
 	
 	public boolean mousedown(Coord c, int button) {
+		parent.setfocus(this);
 		raise();
 		if(super.mousedown(c, button))
 			return(true);

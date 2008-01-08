@@ -118,14 +118,6 @@ public class Resource {
 					dur.add(Utils.uint16d(fb, 0));
 					byte[] fdb = new byte[len];
 					in.read(fdb);
-					java.security.MessageDigest md = null;
-					try {
-						md = java.security.MessageDigest.getInstance("MD5");
-					} catch(java.security.NoSuchAlgorithmException e) {}
-					byte[] d = md.digest(fdb);
-					for(byte b : d)
-						System.out.format("%02X", b);
-					System.out.println();
 					frames.add(ImageIO.read(new ByteArrayInputStream(fdb)));
 				}
 				Anim anim = new Anim(frames, dur, cc, sz);
