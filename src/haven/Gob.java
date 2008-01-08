@@ -29,7 +29,11 @@ public class Gob {
 	}
 	
 	public Coord getc() {
-		return(rc);
+		Moving m = getattr(Moving.class);
+		if(m != null)
+			return(m.getc());
+		else
+			return(rc);
 	}
 	
 	public void setattr(GAttrib a) {
@@ -43,7 +47,11 @@ public class Gob {
 		attr.put(ac, a);
 	}
 	
-	public <C> C getattr(Class<C> c) {
+	public <C extends GAttrib> C getattr(Class<C> c) {
 		return((C)attr.get(c));
+	}
+	
+	public void delattr(Class<? extends GAttrib> c) {
+		attr.remove(c);
 	}
 }

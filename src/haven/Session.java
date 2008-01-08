@@ -17,6 +17,8 @@ public class Session {
 	public static final int OD_REM = 0;
 	public static final int OD_MOVE = 1;
 	public static final int OD_RES = 2;
+	public static final int OD_LINBEG = 3;
+	public static final int OD_LINSTEP = 4;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUST = 2;
@@ -107,6 +109,14 @@ public class Session {
 							int rtype = msg.uint8();
 							String res = msg.string();
 							oc.cres(id, frame, rtype, res);
+						} else if(type == OD_LINBEG) {
+							Coord s = msg.coord();
+							Coord t = msg.coord();
+							int c = msg.int32();
+							oc.linbeg(id, frame, s, t, c);
+						} else if(type == OD_LINSTEP) {
+							int l = msg.int32();
+							oc.linstep(id, frame, l);
 						} else if(type == OD_END) {
 							break;
 						}

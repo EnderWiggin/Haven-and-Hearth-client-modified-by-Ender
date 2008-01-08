@@ -82,4 +82,25 @@ public class OCache {
 			g.setattr(nd);
 		}
 	}
+	
+	public synchronized void linbeg(int id, int frame, Coord s, Coord t, int c) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		LinMove lm = new LinMove(g, s, t, c);
+		g.setattr(lm);
+	}
+	
+	public synchronized void linstep(int id, int frame, int l) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		Moving m = g.getattr(Moving.class);
+		if(!(m instanceof LinMove))
+			return;
+		LinMove lm = (LinMove)m;
+		lm.l = l;
+		if(l >= lm.c)
+			g.delattr(Moving.class);
+	}
 }
