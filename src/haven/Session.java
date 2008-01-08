@@ -14,9 +14,10 @@ public class Session {
 	public static final int MSG_OBJDATA = 6;
 	public static final int MSG_OBJACK = 7;
 	public static final int MSG_CLOSE = 8;
-	public static final int OD_MOVE = 0;
-	public static final int OD_REM = 1;
-	public static final int OD_VMOVE = 2;
+	public static final int OD_REM = 0;
+	public static final int OD_MOVE = 1;
+	public static final int OD_RES = 2;
+	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUST = 2;
 	public static final int SESSERR_CONN = 3;
@@ -90,20 +91,27 @@ public class Session {
 		
 		private void getobjdata(Message msg) {
 			while(msg.off < msg.blob.length) {
-				int type = msg.uint8();
 				int id = msg.int32();
 				int frame = msg.int32();
-				if(type == OD_MOVE) {
-					Coord c = msg.coord();
-					String res = msg.string();
-					oc.move(id, frame, c, res);
-				} else if(type == OD_REM) {
-					oc.remove(id, frame);
-				} else if(type == OD_VMOVE) {
-					Coord c = msg.coord();
-					Coord v = msg.coord();
-					String res = msg.string();
-					oc.move(id, frame, c, v, res);
+				synchronized(oc) {
+					while(true) {
+						int type = msg.uint8();
+						if(type == OD_REM) {
+							oc.remove(id, frame);
+						} else if(type == OD_MOVE) {
+							Coord c = msg.coord();
+							oc.move(id, frame, c);
+						} else if(type == OD_RES) {
+							int rtype = msg.uint8();
+							String res = msg.string();
+							oc.cres(id, frame, rtype, res);
+						} else if(type == OD_END) {
+							break;
+						}
+					}
+					Gob g = oc.getgob(id, frame);
+					if(g != null)
+						g.frame = frame;
 				}
 				synchronized(objacks) {
 					if(objacks.containsKey(id)) {

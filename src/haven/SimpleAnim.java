@@ -7,8 +7,8 @@ public class SimpleAnim extends Drawable {
 	int cf;
 	int de;
 	
-	public SimpleAnim(Coord c, Coord v, String res) {
-		super(c, v, res);
+	public SimpleAnim(Gob gob, String res) {
+		super(gob, res);
 		this.res = res;
 		anim = Resource.loadanim(res);
 		cf = 0;
@@ -32,7 +32,7 @@ public class SimpleAnim extends Drawable {
 		return(anim.sz);
 	}
 	
-	public void ctick(long dt) {
+	public void ctick(int dt) {
 		de += dt;
 		while(de > anim.dur.get(cf)) {
 			de -= anim.dur.get(cf);

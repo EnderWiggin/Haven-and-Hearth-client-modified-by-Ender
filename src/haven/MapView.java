@@ -94,7 +94,7 @@ public class MapView extends Widget {
 		if(hit == null)
 			wdgmsg("click", c, mc, button);
 		else
-			wdgmsg("click", c, mc, button, hit.id, hit.c);
+			wdgmsg("click", c, mc, button, hit.gob.id, hit.gob.getc());
 		return(true);
 	}
 	
@@ -133,12 +133,14 @@ public class MapView extends Widget {
 		
 		ArrayList<Drawable> sprites = new ArrayList<Drawable>();
 		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
-		synchronized(Session.current.oc.objs) {
-			for(Map.Entry<Integer, Drawable> e : Session.current.oc.objs.entrySet()) {
-				Drawable d = e.getValue();
+		synchronized(Session.current.oc) {
+			for(Map.Entry<Integer, Gob> e : Session.current.oc.objs.entrySet()) {
+				Gob gob = e.getValue();
 				int id = e.getKey();
-				d.id = id;
-				Coord dc = m2s(d.c).add(oc);
+				Drawable d = gob.getattr(Drawable.class);
+				if(d == null)
+					continue;
+				Coord dc = m2s(gob.getc()).add(oc);
 				d.sc = dc;
 				Coord ulc = dc.add(d.getoffset().inv());
 				Coord lrc = ulc.add(d.getsize());
@@ -150,8 +152,8 @@ public class MapView extends Widget {
 		}
 		Collections.sort(clickable, new Comparator<Drawable>() {
 			public int compare(Drawable a, Drawable b) {
-				if(a.clickprio != b.clickprio)
-					return(a.clickprio - b.clickprio);
+				if(a.gob.clprio != b.gob.clprio)
+					return(a.gob.clprio - b.gob.clprio);
 				return(b.sc.y - a.sc.y);
 			}
 		});
