@@ -96,7 +96,7 @@ public class OCache {
 		if(g == null)
 			return;
 		Moving m = g.getattr(Moving.class);
-		if(!(m instanceof LinMove))
+		if((m == null) || !(m instanceof LinMove))
 			return;
 		LinMove lm = (LinMove)m;
 		lm.l = l;
