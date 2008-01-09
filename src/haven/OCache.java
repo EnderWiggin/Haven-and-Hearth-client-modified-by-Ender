@@ -99,7 +99,8 @@ public class OCache {
 		if((m == null) || !(m instanceof LinMove))
 			return;
 		LinMove lm = (LinMove)m;
-		lm.l = l;
+		if(l > lm.l)
+			lm.l = l;
 		if((l < 0) || (l >= lm.c))
 			g.delattr(Moving.class);
 	}
