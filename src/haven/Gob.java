@@ -3,7 +3,7 @@ package haven;
 import java.util.*;
 
 public class Gob {
-	Coord rc;
+	Coord rc, sc;
 	int clprio = 0;
 	int id, frame;
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();

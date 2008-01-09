@@ -19,6 +19,7 @@ public class Session {
 	public static final int OD_RES = 2;
 	public static final int OD_LINBEG = 3;
 	public static final int OD_LINSTEP = 4;
+	public static final int OD_SPEECH = 5;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUST = 2;
@@ -119,6 +120,10 @@ public class Session {
 						} else if(type == OD_LINSTEP) {
 							int l = msg.int32();
 							oc.linstep(id, frame, l);
+						} else if(type == OD_SPEECH) {
+							Coord off = msg.coord();
+							String text = msg.string();
+							oc.speak(id, frame, off, text);
 						} else if(type == OD_END) {
 							break;
 						}

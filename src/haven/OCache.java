@@ -105,5 +105,19 @@ public class OCache {
 	}
 	
 	public synchronized void speak(int id, int frame, Coord off, String text) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		if(text.length() < 1) {
+			g.delattr(Speaking.class);
+		} else {
+			Speaking m = g.getattr(Speaking.class);
+			if(m == null) {
+				g.setattr(new Speaking(g, off, text));
+			} else {
+				m.off = off;
+				m.text = text;
+			}
+		}
 	}
 }

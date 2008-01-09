@@ -4,7 +4,6 @@ import java.awt.Graphics;
 
 public abstract class Drawable extends GAttrib {
 	String res;
-	Coord sc;
 	
 	public Drawable(Gob gob, String res) {
 		super(gob);
