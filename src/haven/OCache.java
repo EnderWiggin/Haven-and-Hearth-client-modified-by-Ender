@@ -100,7 +100,10 @@ public class OCache {
 			return;
 		LinMove lm = (LinMove)m;
 		lm.l = l;
-		if(l >= lm.c)
+		if((l < 0) || (l >= lm.c))
 			g.delattr(Moving.class);
+	}
+	
+	public synchronized void speak(int id, int frame, Coord off, String text) {
 	}
 }
