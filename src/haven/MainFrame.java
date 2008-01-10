@@ -24,6 +24,7 @@ public class MainFrame extends Frame {
 					if(Session.current != null)
 						Session.current.close();
 					g.interrupt();
+					setVisible(false);
 				}
 			}
 		});
