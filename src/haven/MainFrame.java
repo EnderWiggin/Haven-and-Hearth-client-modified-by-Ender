@@ -23,7 +23,7 @@ public class MainFrame extends Frame {
 				synchronized(p.ui) {
 					if(Session.current != null)
 						Session.current.close();
-					System.exit(0);
+					g.interrupt();
 				}
 			}
 		});
@@ -39,7 +39,7 @@ public class MainFrame extends Frame {
 		if(System.getProperty("haven.errorhandler", "off").equals("on")) {
 			g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
 					public void errorsent() {
-						System.exit(1);
+						f.g.interrupt();
 					}
 				});
 		} else {
