@@ -210,7 +210,7 @@ public class Session {
 					} else if(msg.type == MSG_OBJDATA) {
 						getobjdata(msg);
 					} else if(msg.type == MSG_CLOSE) {
-						System.exit(0); /* XXX */
+						getThreadGroup().interrupt();
 					} else {
 						for(int i = 0; i < msg.blob.length; i++)
 							System.out.format("%02x ", msg.blob[i]);
@@ -306,6 +306,8 @@ public class Session {
 					}
 				}
 			} catch(InterruptedException e) {}
+			if(connected)
+				sendmsg(new Message(MSG_CLOSE));
 		}
 	}
 	
@@ -328,8 +330,6 @@ public class Session {
 	}
 	
 	public void close() {
-		if(connected)
-			sendmsg(new Message(MSG_CLOSE));
 		sworker.interrupt();
 		rworker.interrupt();
 		ticker.interrupt();

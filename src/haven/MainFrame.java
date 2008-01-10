@@ -4,8 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-public class MainFrame extends Frame {
+public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
+	ThreadGroup g;
 	
 	public MainFrame(int w, int h) {
 		p = new HavenPanel(w, h);
@@ -16,20 +17,23 @@ public class MainFrame extends Frame {
 		p.init();
 	}
 	
-	public static void main2(final MainFrame f) {
-		f.addWindowListener(new WindowAdapter() {
+	public void run() {
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				synchronized(f.p.ui) {
-					if(Session.current != null)
-						Session.current.close();
-					System.exit(0);
+				synchronized(p.ui) {
+					g.interrupt();
+					setVisible(false);
 				}
 			}
 		});
-		Thread boot = new Bootstrap(f.p.ui);
+		Thread boot = new Bootstrap(p.ui);
 		boot.start();
-		Thread ui = new Thread(Utils.tg(), f.p, "Haven UI thread");
+		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
 		ui.start();
+		try {
+			ui.join();
+		} catch(InterruptedException e) {
+		}
 	}
 
 	public static void main(String[] args) {
@@ -38,17 +42,20 @@ public class MainFrame extends Frame {
 		if(System.getProperty("haven.errorhandler", "off").equals("on")) {
 			g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
 					public void errorsent() {
-						System.exit(1);
+						f.g.interrupt();
 					}
 				});
 		} else {
 			g = new ThreadGroup("Haven client");
 		}
-		Thread main = new Thread(g, new Runnable() {
-				public void run() {
-					main2(f);
-				}
-			});
+		f.g = g;
+		Thread main = new Thread(g, f);
 		main.start();
+		try {
+			main.join();
+		} catch(InterruptedException e) {
+			return;
+		}
+		System.exit(0);
 	}
 }
