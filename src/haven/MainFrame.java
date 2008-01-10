@@ -32,6 +32,10 @@ public class MainFrame extends Frame implements Runnable {
 		boot.start();
 		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
 		ui.start();
+		try {
+			ui.join();
+		} catch(InterruptedException e) {
+		}
 	}
 
 	public static void main(String[] args) {
@@ -49,5 +53,11 @@ public class MainFrame extends Frame implements Runnable {
 		f.g = g;
 		Thread main = new Thread(g, f);
 		main.start();
+		try {
+			main.join();
+		} catch(InterruptedException e) {
+			return;
+		}
+		System.exit(0);
 	}
 }
