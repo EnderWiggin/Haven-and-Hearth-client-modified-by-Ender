@@ -5,8 +5,8 @@ import java.awt.Graphics;
 public class SimpleDrawable extends Drawable {
 	Sprite spr;
 	
-	public SimpleDrawable(Coord c, Coord v, String res) {
-		super(c, v, res);
+	public SimpleDrawable(Gob gob, String res) {
+		super(gob, res);
 		this.res = res;
 		spr = Resource.loadsprite(res);
 	}

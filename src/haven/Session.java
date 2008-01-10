@@ -14,9 +14,13 @@ public class Session {
 	public static final int MSG_OBJDATA = 6;
 	public static final int MSG_OBJACK = 7;
 	public static final int MSG_CLOSE = 8;
-	public static final int OD_MOVE = 0;
-	public static final int OD_REM = 1;
-	public static final int OD_VMOVE = 2;
+	public static final int OD_REM = 0;
+	public static final int OD_MOVE = 1;
+	public static final int OD_RES = 2;
+	public static final int OD_LINBEG = 3;
+	public static final int OD_LINSTEP = 4;
+	public static final int OD_SPEECH = 5;
+	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUST = 2;
 	public static final int SESSERR_CONN = 3;
@@ -40,11 +44,13 @@ public class Session {
 		int id;
 		int frame;
 		long recv;
+		long sent;
 		
 		public ObjAck(int id, int frame, long recv) {
 			this.id = id;
 			this.frame = frame;
 			this.recv = recv;
+			this.sent = 0;
 		}
 	}
     
@@ -56,12 +62,14 @@ public class Session {
 		
 		public void run() {
 			try {
-				long now, then;
-				then = System.currentTimeMillis();
-				oc.tick();
-				now = System.currentTimeMillis();
-				if(now - then < 60)
-					Thread.sleep(60 - (now - then));
+				while(true) {
+					long now, then;
+					then = System.currentTimeMillis();
+					oc.tick();
+					now = System.currentTimeMillis();
+					if(now - then < 70)
+						Thread.sleep(70 - (now - then));
+				}
 			} catch(InterruptedException e) {}
 		}
 	}
@@ -90,20 +98,39 @@ public class Session {
 		
 		private void getobjdata(Message msg) {
 			while(msg.off < msg.blob.length) {
-				int type = msg.uint8();
 				int id = msg.int32();
 				int frame = msg.int32();
-				if(type == OD_MOVE) {
-					Coord c = msg.coord();
-					String res = msg.string();
-					oc.move(id, frame, c, res);
-				} else if(type == OD_REM) {
-					oc.remove(id, frame);
-				} else if(type == OD_VMOVE) {
-					Coord c = msg.coord();
-					Coord v = msg.coord();
-					String res = msg.string();
-					oc.move(id, frame, c, v, res);
+				synchronized(oc) {
+					while(true) {
+						int type = msg.uint8();
+						if(type == OD_REM) {
+							oc.remove(id, frame);
+						} else if(type == OD_MOVE) {
+							Coord c = msg.coord();
+							oc.move(id, frame, c);
+						} else if(type == OD_RES) {
+							int rtype = msg.uint8();
+							String res = msg.string();
+							oc.cres(id, frame, rtype, res);
+						} else if(type == OD_LINBEG) {
+							Coord s = msg.coord();
+							Coord t = msg.coord();
+							int c = msg.int32();
+							oc.linbeg(id, frame, s, t, c);
+						} else if(type == OD_LINSTEP) {
+							int l = msg.int32();
+							oc.linstep(id, frame, l);
+						} else if(type == OD_SPEECH) {
+							Coord off = msg.coord();
+							String text = msg.string();
+							oc.speak(id, frame, off, text);
+						} else if(type == OD_END) {
+							break;
+						}
+					}
+					Gob g = oc.getgob(id, frame);
+					if(g != null)
+						g.frame = frame;
 				}
 				synchronized(objacks) {
 					if(objacks.containsKey(id)) {
@@ -183,7 +210,7 @@ public class Session {
 					} else if(msg.type == MSG_OBJDATA) {
 						getobjdata(msg);
 					} else if(msg.type == MSG_CLOSE) {
-						System.exit(0); /* XXX */
+						getThreadGroup().interrupt();
 					} else {
 						for(int i = 0; i < msg.blob.length; i++)
 							System.out.format("%02x ", msg.blob[i]);
@@ -252,13 +279,20 @@ public class Session {
 							Message msg = null;
 							for(Iterator<ObjAck> i = objacks.values().iterator(); i.hasNext();) {
 								ObjAck a = i.next();
-								if(now - a.recv > 120) {
+								boolean send = false, del = false;
+								if(now - a.sent > 200)
+									send = true;
+								if(now - a.recv > 120)
+									send = del = true;
+								if(send) {
 									if(msg == null)
 										msg = new Message(MSG_OBJACK);
 									msg.addint32(a.id);
 									msg.addint32(a.frame);
-									i.remove();
+									a.sent = now;
 								}
+								if(del)
+									i.remove();
 							}
 							if(msg != null)
 								sendmsg(msg);
@@ -272,6 +306,8 @@ public class Session {
 					}
 				}
 			} catch(InterruptedException e) {}
+			if(connected)
+				sendmsg(new Message(MSG_CLOSE));
 		}
 	}
 	
@@ -294,8 +330,6 @@ public class Session {
 	}
 	
 	public void close() {
-		if(connected)
-			sendmsg(new Message(MSG_CLOSE));
 		sworker.interrupt();
 		rworker.interrupt();
 		ticker.interrupt();

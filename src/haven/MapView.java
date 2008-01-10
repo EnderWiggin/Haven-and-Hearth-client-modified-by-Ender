@@ -13,7 +13,7 @@ public class MapView extends Widget {
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Coord mc;
-	List<Drawable> clickable = null;
+	List<Gob> clickable = null;
 	public static final Coord tilesz = new Coord(8, 8);
 	public static final Coord cmaps = new Coord(100, 100);
 	
@@ -82,8 +82,11 @@ public class MapView extends Widget {
 	public boolean mousedown(Coord c, int button) {
 		setfocus(this);
 		Drawable hit = null;
-		for(Drawable d : clickable) {
-			Coord ulc = d.sc.add(d.getoffset().inv());
+		for(Gob g : clickable) {
+			Drawable d = g.getattr(Drawable.class);
+			if(d == null)
+				continue;
+			Coord ulc = g.sc.add(d.getoffset().inv());
 			if(c.isect(ulc, d.getsize())) {
 				if(d.checkhit(c.add(ulc.inv()))) {
 					hit = d;
@@ -95,7 +98,7 @@ public class MapView extends Widget {
 		if(hit == null)
 			wdgmsg("click", c, mc, button);
 		else
-			wdgmsg("click", c, mc, button, hit.id, hit.c);
+			wdgmsg("click", c, mc, button, hit.gob.id, hit.gob.getc());
 		return(true);
 	}
 	
@@ -132,42 +135,53 @@ public class MapView extends Widget {
 			}
 		}
 		
-		ArrayList<Drawable> sprites = new ArrayList<Drawable>();
-		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
-		synchronized(Session.current.oc.objs) {
-			for(Map.Entry<Integer, Drawable> e : Session.current.oc.objs.entrySet()) {
-				Drawable d = e.getValue();
+		ArrayList<Gob> sprites = new ArrayList<Gob>();
+		ArrayList<Gob> clickable = new ArrayList<Gob>();
+		ArrayList<Gob> speaking = new ArrayList<Gob>();
+		synchronized(Session.current.oc) {
+			for(Map.Entry<Integer, Gob> e : Session.current.oc.objs.entrySet()) {
+				Gob gob = e.getValue();
 				int id = e.getKey();
-				d.id = id;
-				Coord dc = m2s(d.c).add(oc);
-				d.sc = dc;
-				Coord ulc = dc.add(d.getoffset().inv());
-				Coord lrc = ulc.add(d.getsize());
-				if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
-					sprites.add(d);
-					clickable.add(d);
+				Coord dc = m2s(gob.getc()).add(oc);
+				gob.sc = dc;
+				Drawable d = gob.getattr(Drawable.class);
+				if(d != null) {
+					Coord ulc = dc.add(d.getoffset().inv());
+					Coord lrc = ulc.add(d.getsize());
+					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
+						sprites.add(gob);
+						clickable.add(gob);
+					}
 				}
+				Speaking s = gob.getattr(Speaking.class);
+				if(s != null)
+					speaking.add(gob);
 			}
 		}
-		Collections.sort(clickable, new Comparator<Drawable>() {
-			public int compare(Drawable a, Drawable b) {
-				if(a.clickprio != b.clickprio)
-					return(a.clickprio - b.clickprio);
+		Collections.sort(clickable, new Comparator<Gob>() {
+			public int compare(Gob a, Gob b) {
+				if(a.clprio != b.clprio)
+					return(a.clprio - b.clprio);
 				return(b.sc.y - a.sc.y);
 			}
 		});
 		this.clickable = clickable;
-		Collections.sort(sprites, new Comparator<Drawable>() {
-			public int compare(Drawable a, Drawable b) {
+		Collections.sort(sprites, new Comparator<Gob>() {
+			public int compare(Gob a, Gob b) {
 				return(a.sc.y - b.sc.y);
 			}
 		});
-		for(Drawable d : sprites) {
-			d.draw(g, d.sc);
+		for(Gob gob : sprites) {
+			Drawable d = gob.getattr(Drawable.class);
+			d.draw(g, gob.sc);
 			/*
 			g.setColor(Color.WHITE);
 			g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
 			*/
+		}
+		for(Gob gob : speaking) {
+			Speaking s = gob.getattr(Speaking.class);
+			s.draw(g, gob.sc.add(s.off));
 		}
 		return(true);
 	}
