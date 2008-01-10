@@ -38,17 +38,13 @@ public class UI {
 	}
 	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
-		try {
-			synchronized(this) {
-				Widget pwdg = widgets.get(parent);
-				if(pwdg == null)
-					throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
-				Widget wdg = Widget.create(type, c, pwdg, args);
-				widgets.put(id, wdg);
-				rwidgets.put(wdg, id);
-			}
-		} catch(Throwable t) {
-			t.printStackTrace();
+		synchronized(this) {
+			Widget pwdg = widgets.get(parent);
+			if(pwdg == null)
+				throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
+			Widget wdg = Widget.create(type, c, pwdg, args);
+			widgets.put(id, wdg);
+			rwidgets.put(wdg, id);
 		}
 	}
 	

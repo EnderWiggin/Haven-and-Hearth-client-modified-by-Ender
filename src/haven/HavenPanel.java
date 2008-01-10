@@ -134,14 +134,10 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 			while(true) {
 				then = System.currentTimeMillis();
 				synchronized(ui) {
-					try {
-						if(Session.current != null)
-							Session.current.oc.ctick();
-						dispatch();
-						redraw();
-					} catch(Throwable t) {
-						t.printStackTrace();
-					}
+					if(Session.current != null)
+						Session.current.oc.ctick();
+					dispatch();
+					redraw();
 				}
 				frames++;
 				now = System.currentTimeMillis();
