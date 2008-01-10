@@ -6,6 +6,7 @@ import java.awt.image.*;
 
 public class MainFrame extends Frame {
 	HavenPanel p;
+	ThreadGroup g;
 	
 	public MainFrame(int w, int h) {
 		p = new HavenPanel(w, h);
@@ -16,19 +17,19 @@ public class MainFrame extends Frame {
 		p.init();
 	}
 	
-	public static void main2(final MainFrame f) {
-		f.addWindowListener(new WindowAdapter() {
+	public void main2() {
+		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				synchronized(f.p.ui) {
+				synchronized(p.ui) {
 					if(Session.current != null)
 						Session.current.close();
 					System.exit(0);
 				}
 			}
 		});
-		Thread boot = new Bootstrap(f.p.ui);
+		Thread boot = new Bootstrap(p.ui);
 		boot.start();
-		Thread ui = new Thread(Utils.tg(), f.p, "Haven UI thread");
+		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
 		ui.start();
 	}
 
@@ -44,9 +45,10 @@ public class MainFrame extends Frame {
 		} else {
 			g = new ThreadGroup("Haven client");
 		}
+		f.g = g;
 		Thread main = new Thread(g, new Runnable() {
 				public void run() {
-					main2(f);
+					f.main2();
 				}
 			});
 		main.start();
