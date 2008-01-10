@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-public class MainFrame extends Frame {
+public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
 	ThreadGroup g;
 	
@@ -17,7 +17,7 @@ public class MainFrame extends Frame {
 		p.init();
 	}
 	
-	public void main2() {
+	public void run() {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				synchronized(p.ui) {
@@ -47,11 +47,7 @@ public class MainFrame extends Frame {
 			g = new ThreadGroup("Haven client");
 		}
 		f.g = g;
-		Thread main = new Thread(g, new Runnable() {
-				public void run() {
-					f.main2();
-				}
-			});
+		Thread main = new Thread(g, f);
 		main.start();
 	}
 }
