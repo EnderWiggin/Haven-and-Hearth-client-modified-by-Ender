@@ -21,8 +21,6 @@ public class MainFrame extends Frame implements Runnable {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				synchronized(p.ui) {
-					if(Session.current != null)
-						Session.current.close();
 					g.interrupt();
 					setVisible(false);
 				}

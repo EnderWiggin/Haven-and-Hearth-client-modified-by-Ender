@@ -272,6 +272,8 @@ public class Session {
 					}
 				}
 			} catch(InterruptedException e) {}
+			if(connected)
+				sendmsg(new Message(MSG_CLOSE));
 		}
 	}
 	
@@ -294,8 +296,6 @@ public class Session {
 	}
 	
 	public void close() {
-		if(connected)
-			sendmsg(new Message(MSG_CLOSE));
 		sworker.interrupt();
 		rworker.interrupt();
 		ticker.interrupt();

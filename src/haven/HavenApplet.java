@@ -73,8 +73,6 @@ public class HavenApplet extends Applet {
     
     public void destroy() {
 	p.interrupt();
-	if(Session.current != null)
-	    Session.current.close();
     }
     
     public void startgame() {
