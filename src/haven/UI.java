@@ -15,9 +15,9 @@ public class UI {
 		public void rcvmsg(int widget, String msg, Object... args);
 	}
 	
-	private static class UIException extends RuntimeException {
-		String mname;
-		Object[] args;
+	public static class UIException extends RuntimeException {
+		public final String mname;
+		public final Object[] args;
 		
 		public UIException(String message, String mname, Object... args) {
 			super(message);
