@@ -20,6 +20,7 @@ public class Session {
 	public static final int OD_LINBEG = 3;
 	public static final int OD_LINSTEP = 4;
 	public static final int OD_SPEECH = 5;
+	public static final int OD_LAYERS = 6;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUST = 2;
@@ -124,6 +125,18 @@ public class Session {
 							Coord off = msg.coord();
 							String text = msg.string();
 							oc.speak(id, frame, off, text);
+						} else if(type == OD_LAYERS) {
+							List<Integer> types = new LinkedList<Integer>();
+							List<String> layers = new LinkedList<String>();
+							while(true) {
+								int rtype = msg.uint8();
+								String layer = msg.string();
+								if(layer.equals(""))
+									break;
+								types.add(rtype);
+								layers.add(layer);
+							}
+							oc.layers(id, frame, types, layers);
 						} else if(type == OD_END) {
 							break;
 						}

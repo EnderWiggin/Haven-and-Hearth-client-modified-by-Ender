@@ -3,11 +3,8 @@ package haven;
 import java.awt.Graphics;
 
 public abstract class Drawable extends GAttrib {
-	String res;
-	
-	public Drawable(Gob gob, String res) {
+	public Drawable(Gob gob) {
 		super(gob);
-		this.res = res;
 	}
 	
 	public abstract Coord getsize();

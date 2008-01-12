@@ -2,7 +2,7 @@ package haven;
 
 import java.awt.Graphics;
 
-public class SimpleAnim extends Drawable {
+public class SimpleAnim extends SimpleDrawable {
 	Anim anim;
 	int cf;
 	int de;
