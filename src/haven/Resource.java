@@ -80,10 +80,14 @@ public class Resource {
 				in.read(sigb);
 				if(!sig.equals(new String(sigb)))
 					throw(new FormatException("Illegal sprite format", name));
-				byte[] ib = new byte[12];
+				byte[] ib = new byte[13];
 				in.read(ib);
 				Coord cc = new Coord(Utils.uint16d(ib, 0), Utils.uint16d(ib, 2));
-				Sprite spr = new Sprite(ImageIO.read(in), cc);
+				int prio = Utils.sb(ib[12]);
+				BufferedImage frame = ImageIO.read(in);
+				if(frame == null)
+					throw(new RuntimeException("Bad image data in " + name));
+				Sprite spr = new Sprite(frame, cc, prio);
 				sprites.put(name, spr);
 				return(spr);
 			} catch(IOException e) {
@@ -108,19 +112,24 @@ public class Resource {
 				Coord sz = new Coord(Utils.uint16d(ib, 0), Utils.uint16d(ib, 2));
 				Coord cc = new Coord(Utils.uint16d(ib, 4), Utils.uint16d(ib, 6));
 				List<BufferedImage> frames = new ArrayList<BufferedImage>();
+				List<Integer> prio = new ArrayList<Integer>();
 				List<Integer> dur = new ArrayList<Integer>();
 				while(true) {
-					byte[] fb = new byte[6];
+					byte[] fb = new byte[7];
 					in.read(fb);
-					int len = Utils.int32d(fb, 2);
+					int len = Utils.int32d(fb, 3);
 					if(len == 0)
 						break;
+					prio.add((int)Utils.sb(fb[2]));
 					dur.add(Utils.uint16d(fb, 0));
 					byte[] fdb = new byte[len];
 					in.read(fdb);
-					frames.add(ImageIO.read(new ByteArrayInputStream(fdb)));
+					BufferedImage frame = ImageIO.read(new ByteArrayInputStream(fdb));
+					if(frame == null)
+						throw(new RuntimeException("Bad frame in " + name));
+					frames.add(frame);
 				}
-				Anim anim = new Anim(frames, dur, cc, sz);
+				Anim anim = new Anim(frames, prio, dur, cc, sz);
 				anims.put(name, anim);
 				return(anim);
 			} catch(IOException e) {

@@ -1,7 +1,6 @@
 package haven;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class OCache {
 	Map<Integer, Gob> objs = new TreeMap<Integer, Gob>();
@@ -66,20 +65,21 @@ public class OCache {
 		g.move(c);
 	}
 	
+	static SimpleDrawable loaddrw(Gob g, int type, String name) {
+		if(type == 0)
+			return(new SimpleSprite(g, name));
+		else if(type == 2)
+			return(new SimpleAnim(g, name));
+		throw(new RuntimeException("Unknown resource type: " + type));
+	}
+	
 	public synchronized void cres(int id, int frame, int type, String res) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
-		Drawable d = g.getattr(Drawable.class);
+		SimpleDrawable d = (SimpleDrawable)g.getattr(Drawable.class);
 		if((d == null) || !d.res.equals(res)) {
-			Drawable nd;
-			if(type == 0)
-				nd = new SimpleDrawable(g, res);
-			else if(type == 2)
-				nd = new SimpleAnim(g, res);
-			else
-				throw(new RuntimeException("Unknown resource type: " + type));
-			g.setattr(nd);
+			g.setattr(loaddrw(g, type, res));
 		}
 	}
 	
@@ -120,5 +120,20 @@ public class OCache {
 				m.text = text;
 			}
 		}
+	}
+	
+	public synchronized void layers(int id, int frame, List<Integer> types, List<String> layers) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		 Layered lay = (Layered)g.getattr(Drawable.class);
+		 if(lay == null) {
+			 lay = new Layered(g);
+			 g.setattr(lay);
+		 }
+		 List<SimpleDrawable> ll = new ArrayList<SimpleDrawable>();
+		 for(int i = 0; i < types.size(); i++)
+			 ll.add(loaddrw(g, types.get(i), layers.get(i)));
+		 lay.setlayers(ll);
 	}
 }
