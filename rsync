@@ -1,6 +1,0 @@
-#!/bin/sh
-
-cd src/haven
-smbclient //bearland/haven -Nc 'cd src/Java/client/client/src/haven; prompt; mput *.java'
-cd error
-smbclient //bearland/haven -Nc 'cd src/Java/client/client/src/haven/error; prompt; mput *.java'
