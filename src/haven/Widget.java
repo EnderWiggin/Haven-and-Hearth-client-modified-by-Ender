@@ -16,13 +16,13 @@ public class Widget implements Graphical {
 	boolean canactivate = false;
 	Widget focused;
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
-	static Class<?>[] inittypes = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
+	static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 		Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
-		Makewindow.class, Chatwindow.class, Textlog.class};
+		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class};
 	
 	static {
 		try {
-			for(Class<?> c : inittypes)
+			for(Class<?> c : barda)
 				Class.forName(c.getName(), true, c.getClassLoader());
 		} catch(ClassNotFoundException e) {
 			throw(new Error(e));

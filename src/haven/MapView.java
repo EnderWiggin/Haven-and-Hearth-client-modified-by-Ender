@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.Transparency;
 import java.util.*;
 
-public class MapView extends Widget {
+public class MapView extends Widget implements DTarget {
 	List<CPImage> tiles = new LinkedList<CPImage>();
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
@@ -235,5 +235,9 @@ public class MapView extends Widget {
 			g.drawString(text, sz.x / 2 - (int)b.getWidth() / 2, sz.y / 2 - m.getAscent());
 		}
 		super.draw(g);
+	}
+	
+	public void drop(Coord cc, Coord ul) {
+		wdgmsg("drop");
 	}
 }

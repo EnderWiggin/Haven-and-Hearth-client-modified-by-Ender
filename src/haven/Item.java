@@ -12,18 +12,21 @@ public class Item extends SSWidget {
 	static {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
-				BufferedImage img;
 				String res = (String)args[0];
-				if(res.substring(res.length() - 4).equals(".spr"))
-					img = Resource.loadsprite(res).img;
-				else
-					img = Resource.loadimg(res);
+				BufferedImage img = getres(res);
 				if((Integer)args[1] != 0)
 					return(new Item(c, img, parent, (Coord)args[2]));
 				else
 					return(new Item(c, img, parent, null));
 			}
 		});
+	}
+	
+	static BufferedImage getres(String res) {
+		if(res.substring(res.length() - 4).equals(".spr"))
+			return(Resource.loadsprite(res).img);
+		else
+			return(Resource.loadimg(res));
 	}
 	
 	void render() {
@@ -64,21 +67,21 @@ public class Item extends SSWidget {
 		render();
 	}
 
+	public Item(Coord c, String res, Widget parent, Coord drag) {
+		this(c, getres(res), parent, drag);
+	}
+
 	public boolean findrelevant(Widget w, Coord c) {
-		if(w instanceof Inventory) {
-			wdgmsg("drop", c.add(doff.inv()).add(new Coord(15, 15)).div(new Coord(29, 29)));
-			return(true);
-		} else if(w instanceof MapView) {
-			wdgmsg("mapdrop");
-			return(true);
-		} else {
-			for(Widget wdg = w.lchild; wdg != null; wdg = wdg.prev) {
-				Coord cc = w.xlate(wdg.c, true);
-				if(c.isect(cc, wdg.sz)) {
-					if(findrelevant(wdg, c.add(cc.inv())))
-						return(true);
-				}
+		for(Widget wdg = w.lchild; wdg != null; wdg = wdg.prev) {
+			Coord cc = w.xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(findrelevant(wdg, c.add(cc.inv())))
+					return(true);
 			}
+		}
+		if(w instanceof DTarget) {
+			((DTarget)w).drop(c, c.add(doff.inv()));
+			return(true);
 		}
 		return(false);
 	}

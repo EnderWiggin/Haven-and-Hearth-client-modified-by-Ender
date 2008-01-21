@@ -3,7 +3,7 @@ package haven;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
-public class Inventory extends Widget {
+public class Inventory extends Widget implements DTarget {
 	BufferedImage invsq;
 	Coord isz;
 
@@ -28,5 +28,9 @@ public class Inventory extends Widget {
 		super(c, Utils.imgsz(Resource.loadimg("gfx/hud/invsq.gif")).add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
 		isz = sz;
 		invsq = Resource.loadimg("gfx/hud/invsq.gif");
+	}
+	
+	public void drop(Coord cc, Coord ul) {
+		wdgmsg("drop", ul.add(new Coord(15, 15)).div(Utils.imgsz(invsq)));
 	}
 }
