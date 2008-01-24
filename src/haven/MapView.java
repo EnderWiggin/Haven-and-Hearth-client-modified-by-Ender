@@ -32,6 +32,7 @@ public class MapView extends Widget implements DTarget {
 		CPImage[] bt = new CPImage[15];
 		CPImage[] ct = new CPImage[15];
 		int tw = 0;
+		Random gen = new Random();
 		
 		public TileSet(String name) {
 			int w = 1, n = 1;
@@ -61,9 +62,10 @@ public class MapView extends Widget implements DTarget {
 		}
 		
 		public Tile get(Coord c) {
-			int r = 0;
-			r += (Math.abs(c.x) * 574833) % 1823;
-			r += (Math.abs(c.y) * 547279) % 4781;
+			int r = 1;
+			gen.setSeed(c.x);
+			gen.setSeed(gen.nextInt() * c.y);
+			r = gen.nextInt();
 			r %= tw;
 			for(Tile t : tiles) {
 				if((r -= t.w) <= 0)
