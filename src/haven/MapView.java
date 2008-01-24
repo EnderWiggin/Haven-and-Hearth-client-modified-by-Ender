@@ -9,7 +9,7 @@ import java.awt.Transparency;
 import java.util.*;
 
 public class MapView extends Widget implements DTarget {
-	List<CPImage> tiles = new LinkedList<CPImage>();
+	List<TileSet> sets = new LinkedList<TileSet>();
 	Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Coord mc;
@@ -23,6 +23,64 @@ public class MapView extends Widget implements DTarget {
 				return(new MapView(c, (Coord)args[0], parent, (Coord)args[1]));
 			}
 		});
+	}
+	
+	private class Loading extends RuntimeException {}
+	
+	private class TileSet {
+		List<Tile> tiles = new ArrayList<Tile>();
+		CPImage[] bt = new CPImage[15];
+		CPImage[] ct = new CPImage[15];
+		int tw = 0;
+		
+		public TileSet(String name) {
+			int w = 1, n = 1;
+			boolean loadtrn = true;
+			Scanner s = new Scanner(Resource.gettext(String.format("gfx/tiles/%s/info", name)));
+			try {
+				while(true) {
+					String cmd = s.next().intern();
+					if(cmd == "w") {
+						w = s.nextInt();
+					} else if(cmd == "load") {
+						for(int i = s.nextInt(); i > 0; i--) {
+							tiles.add(new Tile(new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/%02d.gif", name, n++)), MapView.this), w));
+							tw += w;
+						}
+					} else if(cmd == "notrans") {
+						loadtrn = false;
+					}
+				}
+			} catch(NoSuchElementException e) {}
+			if(loadtrn) {
+				for(int i = 0; i < 15; i++) {
+					bt[i] = new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/transitions/00-%02d.gif", name, i)), MapView.this);
+					ct[i] = new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/transitions/01-%02d.gif", name, i)), MapView.this);
+				}
+			}
+		}
+		
+		public Tile get(Coord c) {
+			int r = 0;
+			r += (Math.abs(c.x) * 574833) % 1823;
+			r += (Math.abs(c.y) * 547279) % 4781;
+			r %= tw;
+			for(Tile t : tiles) {
+				if((r -= t.w) <= 0)
+					return(t);
+			}
+			throw(new RuntimeException("Barda"));
+		}
+	}
+	
+	private class Tile {
+		CPImage img;
+		int w;
+		
+		Tile(CPImage img, int w) {
+			this.img = img;
+			this.w = w;
+		}
 	}
 	
 	private class Grid {
@@ -44,14 +102,13 @@ public class MapView extends Widget implements DTarget {
 	
 	public MapView(Coord c, Coord sz, Widget parent, Coord mc) {
 		super(c, sz, parent);
-		for(int i = 0; i <= 13; i++) {
-			BufferedImage img = Resource.loadimg(String.format("gfx/tiles/dirt-%02d.gif", i));
-			/*
-			BufferedImage img2 = gc.createCompatibleImage(img.getWidth(), img.getHeight(), Transparency.BITMASK);
-			img2.getGraphics().drawImage(img, 0, 0, null);
-			*/
-			tiles.add(new CPImage(img, this));
+		Scanner s = new Scanner(Resource.gettext("gfx/tiles/tilesets"));
+		try {
+			while(true)
+				sets.add(new TileSet(s.nextLine()));
+		} catch(NoSuchElementException e) {
 		}
+		s.close();
 		this.mc = mc;
 		Session.current.mapdispatch = this;
 		setcanfocus(true);
@@ -69,14 +126,16 @@ public class MapView extends Widget implements DTarget {
 		return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
 	}
 	
-	private CPImage gettile(Coord tc) {
+	private int gettile(Coord tc) {
 		Grid g;
 		synchronized(grids) {
 			g = grids.get(tc.div(cmaps));
 		}
 		if(g == null)
-			return(null);
-		return(tiles.get(g.gettile(tc.mod(cmaps))));
+			throw(new Loading());
+		int t = g.gettile(tc.mod(cmaps));
+		t %= sets.size();
+		return(t);
 	}
 	
 	public boolean mousedown(Coord c, int button) {
@@ -110,7 +169,47 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
-	public boolean drawmap(Graphics g) {
+	private void drawtile(Graphics g, Coord tc, Coord sc) {
+		Tile t;
+		
+		t = sets.get(gettile(tc)).get(tc);
+		t.img.draw(g, sc);
+		int tr[][] = new int[3][3];
+		for(int y = -1; y <= 1; y++) {
+			for(int x = -1; x <= 1; x++) {
+				if((x == 0) && (y == 0))
+					continue;
+				tr[x + 1][y + 1] = gettile(tc.add(new Coord(x, y)));
+			}
+		}
+		if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
+		if(tr[0][0] >= tr[0][1]) tr[0][0] = -1;
+		if(tr[2][0] >= tr[1][0]) tr[2][0] = -1;
+		if(tr[2][0] >= tr[2][1]) tr[2][0] = -1;
+		if(tr[0][2] >= tr[0][1]) tr[0][2] = -1;
+		if(tr[0][2] >= tr[1][2]) tr[0][2] = -1;
+		if(tr[2][2] >= tr[2][1]) tr[2][2] = -1;
+		if(tr[2][2] >= tr[1][2]) tr[2][2] = -1;
+		int bx[] = {0, 1, 2, 1};
+		int by[] = {1, 0, 1, 2};
+		int cx[] = {0, 2, 2, 0};
+		int cy[] = {0, 0, 2, 2};
+		for(int i = gettile(tc) - 1; i >= 0; i--) {
+			int bm = 0, cm = 0;
+			for(int o = 0; o < 4; o++) {
+				if(tr[bx[o]][by[o]] == i)
+					bm |= 1 << o;
+				if(tr[cx[o]][cy[o]] == i)
+					cm |= 1 << o;
+			}
+			if(bm != 0)
+				sets.get(i).bt[bm - 1].draw(g, sc);
+			if(cm != 0)
+				sets.get(i).ct[cm - 1].draw(g, sc);
+		}
+	}
+	
+	public void drawmap(Graphics g) {
 		int x, y, i;
 		int stw, sth;
 		Coord oc, tc, ctc, sc;
@@ -127,10 +226,7 @@ public class MapView extends Widget implements DTarget {
 					ctc = tc.add(new Coord(x + y, -x + y + i));
 					sc = m2s(ctc.mul(tilesz)).add(oc);
 					sc.x -= (tilesz.x - 1) * 2;
-					CPImage tile = gettile(ctc);
-					if(tile == null)
-						return(false);
-					tile.draw(g, sc);
+					drawtile(g, ctc, sc);
 				}
 			}
 		}
@@ -141,7 +237,7 @@ public class MapView extends Widget implements DTarget {
 		synchronized(Session.current.oc) {
 			for(Map.Entry<Integer, Gob> e : Session.current.oc.objs.entrySet()) {
 				Gob gob = e.getValue();
-				int id = e.getKey();
+				/* int id = e.getKey(); */
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
 				Drawable d = gob.getattr(Drawable.class);
@@ -183,7 +279,6 @@ public class MapView extends Widget implements DTarget {
 			Speaking s = gob.getattr(Speaking.class);
 			s.draw(g, gob.sc.add(s.off));
 		}
-		return(true);
 	}
 	
 	public void mapdata(Message msg) {
@@ -225,7 +320,9 @@ public class MapView extends Widget implements DTarget {
 				}
 			}
 		}
-		if(!drawmap(g)) {
+		try {
+			drawmap(g);
+		} catch(Loading l) {
 			String text = "Loading...";
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, sz.x, sz.y);

@@ -47,8 +47,8 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	public Coord div(Coord d) {
 		int v, w;
 		
-		v = x / d.x;
-		w = y / d.y;
+		v = ((x < 0)?(x + 1):x) / d.x;
+		w = ((y < 0)?(y + 1):y) / d.y;
 		if(x < 0)
 			v--;
 		if(y < 0)

@@ -17,6 +17,14 @@ public class Resource {
 		return(s);
 	}
 	
+	public static Reader gettext(String name) {
+		try {
+			return(new InputStreamReader(getres(name), "utf-8"));
+		} catch(UnsupportedEncodingException e) {
+			throw(new RuntimeException(e));
+		}
+	}
+	
 	public static byte[] loadres(String name) {
 		InputStream is = getres(name);
 		int len = 0;
