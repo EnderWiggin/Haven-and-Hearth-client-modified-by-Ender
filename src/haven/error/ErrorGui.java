@@ -62,7 +62,7 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 		    add(vp, BorderLayout.SOUTH);
 		    status.setText("An error has occurred! Do you wish to report it?");
 		    pack();
-		    show();
+		    setVisible(true);
 		}
 	    });
 	synchronized(this) {
