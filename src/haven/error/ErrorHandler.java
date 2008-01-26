@@ -19,7 +19,7 @@ public class ErrorHandler extends ThreadGroup {
     }
 
     private class Reporter extends Thread {
-	private Queue<Throwable> errors = new LinkedList<Throwable>();
+	private Queue<Report> errors = new LinkedList<Report>();
 	private final ErrorStatus status;
 	
 	public Reporter(ErrorStatus status) {
@@ -36,10 +36,10 @@ public class ErrorHandler extends ThreadGroup {
 		    } catch(InterruptedException e) {
 			return;
 		    }
-		    Throwable t;
-		    while((t = errors.poll()) != null) {
+		    Report r;
+		    while((r = errors.poll()) != null) {
 			try {
-			    doreport(t);
+			    doreport(r);
 			} catch(Exception e) {
 			    status.senderror(e);
 			}
@@ -48,15 +48,15 @@ public class ErrorHandler extends ThreadGroup {
 	    }
 	}
 	
-	private void doreport(Throwable t) throws IOException {
-	    status.goterror(t);
+	private void doreport(Report r) throws IOException {
+	    status.goterror(r.t);
 	    URLConnection c = errordest.openConnection();
 	    status.connecting();
 	    c.setDoOutput(true);
 	    c.addRequestProperty("Content-Type", "application/x-java-error");
 	    c.connect();
 	    ObjectOutputStream o = new ObjectOutputStream(c.getOutputStream());
-	    o.writeObject(t);
+	    o.writeObject(r);
 	    o.close();
 	    status.sending();
 	    InputStream i = c.getInputStream();
@@ -67,10 +67,14 @@ public class ErrorHandler extends ThreadGroup {
 	}
     
 	public void report(Throwable t) {
+	    Report r = new Report(t);
 	    synchronized(errors) {
-		errors.add(t);
+		errors.add(r);
 		errors.notifyAll();
 	    }
+	    try {
+		r.join();
+	    } catch(InterruptedException e) { /* XXX? */ }
 	}
     }
 
