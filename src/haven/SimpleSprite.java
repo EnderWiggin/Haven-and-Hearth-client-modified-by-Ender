@@ -1,6 +1,7 @@
 package haven;
 
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class SimpleSprite extends SimpleDrawable {
 	Sprite spr;
@@ -26,5 +27,12 @@ public class SimpleSprite extends SimpleDrawable {
 	
 	public void draw(Graphics g, Coord sc) {
 		g.drawImage(spr.img, sc.x - spr.cc.x, sc.y - spr.cc.y, null);
+	}
+	
+	public void draw2(BufferedImage t, Coord sc) {
+		if(spr.isgay)
+			Utils.drawgay(t, spr.img, sc.add(spr.cc.inv()));
+		else
+			draw(t.getGraphics(), sc);
 	}
 }

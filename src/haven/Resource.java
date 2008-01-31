@@ -66,6 +66,17 @@ public class Resource {
 		}
 	}
 	
+	public static boolean detectgay(BufferedImage i) {
+		Coord sz = Utils.imgsz(i);
+		for(int y = 0; y < sz.y; y++) {
+			for(int x = 0; x < sz.x; x++) {
+				if((i.getRGB(x, y) & 0x00ffffff) == 0x00ff0080)
+					return(true);
+			}
+		}
+		return(false);
+	}
+	
 	public static Sprite loadsprite(String name) {
 		synchronized(sprites) {
 			if(sprites.containsKey(name))
