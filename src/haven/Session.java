@@ -101,49 +101,53 @@ public class Session {
 			while(msg.off < msg.blob.length) {
 				int id = msg.int32();
 				int frame = msg.int32();
-				synchronized(oc) {
-					while(true) {
-						int type = msg.uint8();
-						if(type == OD_REM) {
-							oc.remove(id, frame);
-						} else if(type == OD_MOVE) {
-							Coord c = msg.coord();
-							oc.move(id, frame, c);
-						} else if(type == OD_RES) {
-							int rtype = msg.uint8();
-							String res = msg.string();
-							oc.cres(id, frame, rtype, res);
-						} else if(type == OD_LINBEG) {
-							Coord s = msg.coord();
-							Coord t = msg.coord();
-							int c = msg.int32();
-							oc.linbeg(id, frame, s, t, c);
-						} else if(type == OD_LINSTEP) {
-							int l = msg.int32();
-							oc.linstep(id, frame, l);
-						} else if(type == OD_SPEECH) {
-							Coord off = msg.coord();
-							String text = msg.string();
-							oc.speak(id, frame, off, text);
-						} else if(type == OD_LAYERS) {
-							List<Integer> types = new LinkedList<Integer>();
-							List<String> layers = new LinkedList<String>();
-							while(true) {
+				try {
+					synchronized(oc) {
+						while(true) {
+							int type = msg.uint8();
+							if(type == OD_REM) {
+								oc.remove(id, frame);
+							} else if(type == OD_MOVE) {
+								Coord c = msg.coord();
+								oc.move(id, frame, c);
+							} else if(type == OD_RES) {
 								int rtype = msg.uint8();
-								String layer = msg.string();
-								if(layer.equals(""))
-									break;
-								types.add(rtype);
-								layers.add(layer);
+								String res = msg.string();
+								oc.cres(id, frame, rtype, res);
+							} else if(type == OD_LINBEG) {
+								Coord s = msg.coord();
+								Coord t = msg.coord();
+								int c = msg.int32();
+								oc.linbeg(id, frame, s, t, c);
+							} else if(type == OD_LINSTEP) {
+								int l = msg.int32();
+								oc.linstep(id, frame, l);
+							} else if(type == OD_SPEECH) {
+								Coord off = msg.coord();
+								String text = msg.string();
+								oc.speak(id, frame, off, text);
+							} else if(type == OD_LAYERS) {
+								List<Integer> types = new LinkedList<Integer>();
+								List<String> layers = new LinkedList<String>();
+								while(true) {
+									int rtype = msg.uint8();
+									String layer = msg.string();
+									if(layer.equals(""))
+										break;
+									types.add(rtype);
+									layers.add(layer);
+								}
+								oc.layers(id, frame, types, layers);
+							} else if(type == OD_END) {
+								break;
 							}
-							oc.layers(id, frame, types, layers);
-						} else if(type == OD_END) {
-							break;
 						}
+						Gob g = oc.getgob(id, frame);
+						if(g != null)
+							g.frame = frame;
 					}
-					Gob g = oc.getgob(id, frame);
-					if(g != null)
-						g.frame = frame;
+				} catch (Throwable e) {
+					e.printStackTrace();
 				}
 				synchronized(objacks) {
 					if(objacks.containsKey(id)) {

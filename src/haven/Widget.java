@@ -18,7 +18,7 @@ public class Widget implements Graphical {
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
 	static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 		Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
-		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class};
+		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class, IButton.class};
 	
 	static {
 		try {

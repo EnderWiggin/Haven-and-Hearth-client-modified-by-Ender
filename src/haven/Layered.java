@@ -1,6 +1,10 @@
 package haven;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.image.BufferedImage;
+import java.awt.Transparency;
 import java.util.*;
 
 public class Layered extends Drawable {
@@ -28,9 +32,14 @@ public class Layered extends Drawable {
 	}
 
 	public void draw(Graphics g, Coord sc) {
-		for(SimpleDrawable d : layers) {
-			d.draw(g, sc);
-		}
+		GraphicsConfiguration gc = ((Graphics2D)g).getDeviceConfiguration();
+		Coord sz = getsize();
+		BufferedImage buf = gc.createCompatibleImage(sz.x, sz.y, Transparency.BITMASK);
+		Coord cc = getoffset();
+		for(SimpleDrawable d : layers)
+			d.draw2(buf, cc);
+		Coord dc = sc.add(getoffset().inv());
+		g.drawImage(buf, dc.x, dc.y, null);
 	}
 
 	public Coord getoffset() {

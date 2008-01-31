@@ -1,6 +1,7 @@
 package haven;
 
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class SimpleAnim extends SimpleDrawable {
 	Anim anim;
@@ -24,6 +25,13 @@ public class SimpleAnim extends SimpleDrawable {
 		g.drawImage(anim.frames.get(cf), sc.x - anim.cc.x, sc.y - anim.cc.y, null);
 	}
 
+	public void draw2(BufferedImage t, Coord sc) {
+		if(anim.isgay)
+			Utils.drawgay(t, anim.frames.get(cf), sc.add(anim.cc.inv()));
+		else
+			draw(t.getGraphics(), sc);
+	}
+	
 	public Coord getoffset() {
 		return(anim.cc);
 	}
