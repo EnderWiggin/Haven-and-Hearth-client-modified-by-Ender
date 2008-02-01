@@ -136,4 +136,21 @@ public class OCache {
 			 ll.add(loaddrw(g, types.get(i), layers.get(i)));
 		 lay.setlayers(ll);
 	}
+	
+	public synchronized void drawoff(int id, int frame, Coord off) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		if((off.x == 0) && (off.y == 0)) {
+			g.delattr(DrawOffset.class);
+		} else {
+			DrawOffset dro = g.getattr(DrawOffset.class);
+			if(dro == null) {
+				dro = new DrawOffset(g, off);
+				g.setattr(dro);
+			} else {
+				dro.off = off;
+			}
+		}
+	}
 }
