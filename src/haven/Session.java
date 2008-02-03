@@ -21,6 +21,7 @@ public class Session {
 	public static final int OD_LINSTEP = 4;
 	public static final int OD_SPEECH = 5;
 	public static final int OD_LAYERS = 6;
+	public static final int OD_DRAWOFF = 7;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUST = 2;
@@ -137,8 +138,13 @@ public class Session {
 								layers.add(layer);
 							}
 							oc.layers(id, frame, types, layers);
+						} else if(type == OD_DRAWOFF) {
+							Coord off = msg.coord();
+							oc.drawoff(id, frame, off);
 						} else if(type == OD_END) {
 							break;
+						} else {
+							throw(new RuntimeException("Unknown objdelta type: " + type));
 						}
 					}
 					Gob g = oc.getgob(id, frame);

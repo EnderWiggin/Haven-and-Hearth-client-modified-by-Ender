@@ -255,31 +255,35 @@ public class MapView extends Widget implements DTarget {
 				if(s != null)
 					speaking.add(gob);
 			}
-		}
-		Collections.sort(clickable, new Comparator<Gob>() {
-			public int compare(Gob a, Gob b) {
-				if(a.clprio != b.clprio)
-					return(a.clprio - b.clprio);
-				return(b.sc.y - a.sc.y);
+			Collections.sort(clickable, new Comparator<Gob>() {
+					public int compare(Gob a, Gob b) {
+						if(a.clprio != b.clprio)
+							return(a.clprio - b.clprio);
+						return(b.sc.y - a.sc.y);
+					}
+				});
+			this.clickable = clickable;
+			Collections.sort(sprites, new Comparator<Gob>() {
+					public int compare(Gob a, Gob b) {
+						return(a.sc.y - b.sc.y);
+					}
+				});
+			for(Gob gob : sprites) {
+				Drawable d = gob.getattr(Drawable.class);
+				Coord dc = gob.sc;
+				DrawOffset dro = gob.getattr(DrawOffset.class);
+				if(dro != null)
+					dc = dc.add(dro.off);
+				d.draw(g, dc);
+				/*
+				  g.setColor(Color.WHITE);
+				  g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
+				*/
 			}
-		});
-		this.clickable = clickable;
-		Collections.sort(sprites, new Comparator<Gob>() {
-			public int compare(Gob a, Gob b) {
-				return(a.sc.y - b.sc.y);
+			for(Gob gob : speaking) {
+				Speaking s = gob.getattr(Speaking.class);
+				s.draw(g, gob.sc.add(s.off));
 			}
-		});
-		for(Gob gob : sprites) {
-			Drawable d = gob.getattr(Drawable.class);
-			d.draw(g, gob.sc);
-			/*
-			g.setColor(Color.WHITE);
-			g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
-			*/
-		}
-		for(Gob gob : speaking) {
-			Speaking s = gob.getattr(Speaking.class);
-			s.draw(g, gob.sc.add(s.off));
 		}
 	}
 	
