@@ -26,7 +26,7 @@ public class MainFrame extends Frame implements Runnable {
 				}
 			}
 		});
-		Bootstrap bill = new Bootstrap(p.ui, System.getProperty("haven.srvlist").equals("on"));
+		Bootstrap bill = new Bootstrap(p.ui, System.getProperty("haven.srvlist", "off").equals("on"));
 		String defaddr = System.getProperty("haven.defserv");
 		if(defaddr != null)
 			bill.setaddr(defaddr);
