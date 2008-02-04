@@ -6,8 +6,9 @@ import java.awt.event.KeyEvent;
 
 public class TextEntry extends SSWidget {
 	String text;
-	int pos;
-	boolean prompt = false;
+	int pos, limit = 0;
+	boolean prompt = false, pw = false;
+	FontMetrics sm;
 	
 	static {
 		Widget.addtype("text", new WidgetFactory() {
@@ -29,23 +30,42 @@ public class TextEntry extends SSWidget {
 			settext((String)args[0]);
 		} else if(name == "get") {
 			wdgmsg("text", text);
+		} else if(name == "limit") {
+			limit = (Integer)args[0];
+		} else if(name == "pw") {
+			pw = ((Integer)args[0]) == 1;
+			render();
 		} else {
 			super.uimsg(name, args);
 		}
 	}
 	
 	private void render() {
+		String dtext;
+		if(pw) {
+			dtext = "";
+			for(int i = 0; i < text.length(); i++)
+				dtext += "*";
+		} else {
+			dtext = text;
+		}
 		Graphics g = surf.getGraphics();
 		Utils.AA(g);
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, sz.x, sz.y);
 		g.setColor(Color.BLACK);
 		FontMetrics m = g.getFontMetrics();
-		g.drawString(text, 0, m.getAscent());
+		sm = m;
+		g.drawString(dtext, 0, m.getAscent());
 		if(hasfocus && prompt) {
-			Rectangle2D tm = m.getStringBounds(text.substring(0, pos), g);
+			Rectangle2D tm = m.getStringBounds(dtext.substring(0, pos), g);
 			g.drawLine((int)tm.getWidth(), 1, (int)tm.getWidth(), m.getHeight() - 1);
 		}
+	}
+	
+	private int textwidth(String text) {
+		Rectangle2D tm = sm.getFont().getStringBounds(text.substring(0, pos), sm.getFontRenderContext());
+		return((int)tm.getWidth());
 	}
 	
 	public void gotfocus() {
@@ -83,8 +103,11 @@ public class TextEntry extends SSWidget {
 		} else if(c == '\t') {
 			return(false);
 		} else {
-			text = text.substring(0, pos) + c + text.substring(pos);
-			pos++;
+			String nt = text.substring(0, pos) + c + text.substring(pos);
+			if((limit == 0) || ((limit > 0) && (nt.length() <= limit)) || ((limit == -1) && (textwidth(nt) < sz.x))) {
+				text = nt;
+				pos++;
+			}
 		}
 		render();
 		return(true);

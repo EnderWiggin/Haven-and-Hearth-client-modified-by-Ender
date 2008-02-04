@@ -6,8 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class Window extends Widget {
 	static Color bg = new Color(179, 129, 95);
-	BufferedImage ctl, ctr, cbl, cbr;
-	BufferedImage bl, br, bt, bb;
+	static IBox wbox = null;
 	boolean dm = false;
 	Coord atl, asz, wsz;
 	Coord tlo, rbo;
@@ -25,19 +24,21 @@ public class Window extends Widget {
 		super(c, new Coord(0, 0), parent);
 		this.tlo = tlo;
 		this.rbo = rbo;
-		ctl = Resource.loadimg("gfx/hud/tl.gif");
-		ctr = Resource.loadimg("gfx/hud/tr.gif");
-		cbl = Resource.loadimg("gfx/hud/bl.gif");
-		cbr = Resource.loadimg("gfx/hud/br.gif");
-		bl = Resource.loadimg("gfx/hud/extvl.gif");
-		br = Resource.loadimg("gfx/hud/extvr.gif");
-		bt = Resource.loadimg("gfx/hud/extht.gif");
-		bb = Resource.loadimg("gfx/hud/exthb.gif");
-		sz = sz.add(tlo).add(rbo).add(new Coord(bl.getWidth() + br.getWidth(), bt.getHeight() + bb.getHeight()));
+		if(wbox == null) {
+			wbox = new IBox(Resource.loadimg("gfx/hud/tl.gif"),
+					Resource.loadimg("gfx/hud/tr.gif"),
+					Resource.loadimg("gfx/hud/bl.gif"),
+					Resource.loadimg("gfx/hud/br.gif"),
+					Resource.loadimg("gfx/hud/extvl.gif"),
+					Resource.loadimg("gfx/hud/extvr.gif"),
+					Resource.loadimg("gfx/hud/extht.gif"),
+					Resource.loadimg("gfx/hud/exthb.gif"));
+		}
+		sz = sz.add(tlo).add(rbo).add(new Coord(wbox.bl.getWidth() + wbox.br.getWidth(), wbox.bt.getHeight() + wbox.bb.getHeight()));
 		this.sz = sz;
-		atl = new Coord(bl.getWidth(), bt.getHeight()).add(tlo);
+		atl = new Coord(wbox.bl.getWidth(), wbox.bt.getHeight()).add(tlo);
 		wsz = sz.add(tlo.inv()).add(rbo.inv());
-		asz = new Coord(wsz.x - bl.getWidth() - br.getWidth(), wsz.y - bt.getHeight() - bb.getHeight());
+		asz = new Coord(wsz.x - wbox.bl.getWidth() - wbox.br.getWidth(), wsz.y - wbox.bt.getHeight() - wbox.bb.getHeight());
 		setfocustab(true);
 	}
 	
@@ -48,19 +49,8 @@ public class Window extends Widget {
 	public void draw(Graphics og) {
 		Graphics g = og.create(tlo.x, tlo.y, wsz.x, wsz.y);
 		g.setColor(bg);
-		g.fillRect(bl.getWidth(), bt.getHeight(), asz.x, asz.y);
-		for(int x = ctl.getWidth(); x < wsz.x - ctr.getWidth(); x++)
-			g.drawImage(bt, x, 0, null);
-		for(int x = cbl.getWidth(); x < wsz.x - cbr.getWidth(); x++)
-			g.drawImage(bb, x, wsz.y - bb.getHeight(), null);
-		for(int y = ctl.getHeight(); y < wsz.y - cbl.getHeight(); y++)
-			g.drawImage(bl, 0, y, null);
-		for(int y = ctr.getHeight(); y < wsz.y - cbr.getHeight(); y++)
-			g.drawImage(br, wsz.x - br.getWidth(), y, null);
-		g.drawImage(ctl, 0, 0, null);
-		g.drawImage(ctr, wsz.x - ctr.getWidth(), 0, null);
-		g.drawImage(cbl, 0, wsz.y - cbl.getHeight(), null);
-		g.drawImage(cbr, wsz.x - cbr.getWidth(), wsz.y - cbr.getHeight(), null);
+		g.fillRect(wbox.tloff().x, wbox.tloff().y, asz.x, asz.y);
+		wbox.draw(g, Coord.z, wsz);
 		super.draw(og);
 	}
 	
@@ -74,16 +64,16 @@ public class Window extends Widget {
 				if(br.y > max.y)
 					max.y = br.y;
 			}
-			sz = max.add(Utils.imgsz(ctl)).add(Utils.imgsz(cbr)).add(tlo).add(rbo);
+			sz = max.add(wbox.bsz().add(tlo).add(rbo));
 			wsz = sz.add(tlo.inv()).add(rbo.inv());
-			asz = new Coord(wsz.x - bl.getWidth() - br.getWidth(), wsz.y - bt.getHeight() - bb.getHeight());
+			asz = new Coord(wsz.x - wbox.bl.getWidth() - wbox.br.getWidth(), wsz.y - wbox.bt.getHeight() - wbox.bb.getHeight());
 		} else {
 			super.uimsg(msg, args);
 		}
 	}
 	
 	public Coord xlate(Coord c, boolean in) {
-		Coord ctl = new Coord(bl.getWidth(), bt.getHeight());
+		Coord ctl = new Coord(wbox.bl.getWidth(), wbox.bt.getHeight());
 		if(in)
 			return(c.add(ctl).add(tlo));
 		else

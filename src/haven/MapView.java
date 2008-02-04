@@ -327,6 +327,8 @@ public class MapView extends Widget implements DTarget {
 		}
 		try {
 			drawmap(g);
+			g.setColor(java.awt.Color.WHITE);
+			Utils.drawtext(g, mc.toString(), new Coord(0, 20));
 		} catch(Loading l) {
 			String text = "Loading...";
 			g.setColor(Color.BLACK);
