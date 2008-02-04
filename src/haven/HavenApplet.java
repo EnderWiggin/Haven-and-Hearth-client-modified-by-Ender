@@ -84,8 +84,8 @@ public class HavenApplet extends Applet {
 	p = new haven.error.ErrorHandler(new ErrorPanel());
 	Thread main = new Thread(p, new Runnable() {
 		public void run() {
-		    Bootstrap b = new Bootstrap(h.ui);
-		    b.setaddr("www.seatribe.se");
+		    Bootstrap b = new Bootstrap(h.ui, false);
+		    b.setaddr(getCodeBase().getHost());
 		    b.start();
 		    Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
 		    main.start();

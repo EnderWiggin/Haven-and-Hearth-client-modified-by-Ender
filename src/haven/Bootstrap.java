@@ -7,13 +7,15 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	Session sess;
 	String address, defaddr;
 	String username, password;
+	boolean servlist;
 	int cfocus = 0;
 	
-	public Bootstrap(UI ui) {
+	public Bootstrap(UI ui, boolean servlist) {
 		super(Utils.tg(), "Haven bootstrap thread");
 		this.ui = ui;
 		ui.setreceiver(this);
-		defaddr = Utils.getpref("server", "127.0.0.1");
+		defaddr = "127.0.0.1";
+		this.servlist = servlist;
 	}
 	
 	public void setaddr(String addr) {
@@ -23,19 +25,24 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	public void run() {
 		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
 		ui.uimsg(5, "tabfocus", 1);
-		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/testimgs/snow.png");
+		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/loginscr.gif");
 		//ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), defaddr);
-		address = "127.0.0.1";
-		ui.newwidget(1, "lb", new Coord(330, 230), 5, new Object[] {new Coord(200, 300),
-			"127.0.0.1", "localhost",
-			"192.168.0.116", "dolda",
-			"192.168.0.144", "server",
-			"sh.seatribe.se", "Seatribe"
-			});
-		ui.uimsg(1, "act", 1);
-		ui.newwidget(2, "text", new Coord(100, 130), 5, new Coord(100, 20), Utils.getpref("username", ""));
-		ui.newwidget(3, "text", new Coord(100, 160), 5, new Coord(100, 20), Utils.getpref("password", ""));
+		address = defaddr;
+		if(servlist) {
+			ui.newwidget(1, "lb", new Coord(50, 50), 5, new Object[] {new Coord(200, 300),
+				"127.0.0.1", "localhost",
+				"192.168.0.116", "dolda",
+				"192.168.0.144", "server",
+				"sh.seatribe.se", "Seatribe"
+				});
+			ui.uimsg(1, "act", 1);
+		}
+		ui.newwidget(2, "text", new Coord(345, 330), 5, new Coord(150, 20), Utils.getpref("username", ""));
+		ui.newwidget(3, "text", new Coord(345, 390), 5, new Coord(150, 20), Utils.getpref("password", ""));
+		ui.uimsg(3, "pw", 1);
+		ui.newwidget(4, "ibtn", new Coord(373, 430), 5, "gfx/hud/buttons/loginu.gif", "gfx/hud/buttons/logind.gif");
 		ui.uimsg(5, "act", 1);
+		ui.uimsg(5, "focus", 1);
 		retry: do {
 			username = null;
 			password = null;
@@ -95,6 +102,9 @@ public class Bootstrap extends Thread implements UI.Receiver {
 					ui.uimsg(2, "get");
 					ui.uimsg(3, "get");
 				}
+			} if((widget == 4) && (msg == "activate")) {
+				ui.uimsg(2, "get");
+				ui.uimsg(3, "get");
 			} else if((widget == 5) && (msg == "focus")) {
 				cfocus = (Integer)args[0];
 			} else if(widget == 7) {

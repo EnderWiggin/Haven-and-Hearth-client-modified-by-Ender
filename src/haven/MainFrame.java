@@ -26,8 +26,11 @@ public class MainFrame extends Frame implements Runnable {
 				}
 			}
 		});
-		Thread boot = new Bootstrap(p.ui);
-		boot.start();
+		Bootstrap bill = new Bootstrap(p.ui, System.getProperty("haven.srvlist").equals("on"));
+		String defaddr = System.getProperty("haven.defserv");
+		if(defaddr != null)
+			bill.setaddr(defaddr);
+		bill.start();
 		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
 		ui.start();
 		try {
