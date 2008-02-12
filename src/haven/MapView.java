@@ -233,6 +233,7 @@ public class MapView extends Widget implements DTarget {
 			}
 		}
 		
+		ArrayList<Gob> shadows = new ArrayList<Gob>();
 		ArrayList<Gob> sprites = new ArrayList<Gob>();
 		ArrayList<Gob> clickable = new ArrayList<Gob>();
 		ArrayList<Gob> speaking = new ArrayList<Gob>();
@@ -243,6 +244,7 @@ public class MapView extends Widget implements DTarget {
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
 				Drawable d = gob.getattr(Drawable.class);
+				Sprite sdw = d.shadow();
 				if(d != null) {
 					Coord ulc = dc.add(d.getoffset().inv());
 					Coord lrc = ulc.add(d.getsize());
@@ -250,6 +252,12 @@ public class MapView extends Widget implements DTarget {
 						sprites.add(gob);
 						clickable.add(gob);
 					}
+				}
+				if(sdw != null) {
+					Coord ulc = dc.add(sdw.cc.inv());
+					Coord lrc = ulc.add(sdw.sz);
+					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y))
+						shadows.add(gob);
 				}
 				Speaking s = gob.getattr(Speaking.class);
 				if(s != null)
@@ -268,6 +276,13 @@ public class MapView extends Widget implements DTarget {
 						return(a.sc.y - b.sc.y);
 					}
 				});
+			for(Gob gob : shadows) {
+				Drawable d = gob.getattr(Drawable.class);
+				Sprite s = d.shadow();
+				Coord dc = gob.sc;
+				dc = dc.add(s.cc.inv());
+				//g.drawImage(s.img, dc.x, dc.y, null);
+			}
 			for(Gob gob : sprites) {
 				Drawable d = gob.getattr(Drawable.class);
 				Coord dc = gob.sc;

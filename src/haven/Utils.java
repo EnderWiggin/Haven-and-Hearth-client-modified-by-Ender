@@ -35,10 +35,10 @@ public class Utils {
 		return(m.getHeight());
 	}
 	
-	static void centertext(Graphics g, String text, Coord c) {
+	static void aligntext(Graphics g, String text, Coord c, double ax, double ay) {
 		java.awt.FontMetrics m = g.getFontMetrics();
 		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);
-		g.drawString(text, (int)(c.x - ts.getWidth() / 2), (int)(c.y + m.getAscent() - ts.getHeight() / 2));
+		g.drawString(text, (int)(c.x - ts.getWidth() * ax), (int)(c.y + m.getAscent() - ts.getHeight() * ay));
 	}
 	
 	static ThreadGroup tg() {

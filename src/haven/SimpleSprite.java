@@ -35,4 +35,8 @@ public class SimpleSprite extends SimpleDrawable {
 		else
 			draw(t.getGraphics(), sc);
 	}
+	
+	public Sprite shadow() {
+		return(spr.shadow);
+	}
 }

@@ -28,7 +28,7 @@ public class Button extends SSWidget {
 		g.fillRect(1, 1, sz.x - 2, sz.y - 2);
 		g.setColor(Color.BLACK);
 		g.drawRect(0, 0, sz.x - 1, sz.y - 1);
-		Utils.centertext(g, text, sz.div(new Coord(2, 2)));
+		Utils.aligntext(g, text, sz.div(new Coord(2, 2)), 0.5, 0.5);
 	}
 	
 	public boolean mousedown(Coord c, int button) {

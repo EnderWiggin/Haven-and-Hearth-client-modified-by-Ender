@@ -8,7 +8,7 @@ public class CPImage {
     private boolean accel = true;
     private BufferedImage real;
     private VolatileImage me;
-    private Graphical surf;
+    public Graphical surf;
     static private boolean printed = false;
     
     public CPImage(BufferedImage back, Graphical surf) {

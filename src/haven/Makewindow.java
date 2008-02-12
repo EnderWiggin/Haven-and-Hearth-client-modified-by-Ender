@@ -2,10 +2,13 @@ package haven;
 
 import java.util.*;
 import java.awt.image.BufferedImage;
+import java.awt.Graphics;
 
 public class Makewindow extends Window {
 	Widget list, btn;
 	String cr;
+	List<Widget> inputs;
+	List<Widget> outputs;
 	static Coord boff = new Coord(7, 9);
 
 	static {
@@ -20,13 +23,49 @@ public class Makewindow extends Window {
 	}
 	
 	public Makewindow(Coord c, Widget parent, List<Listbox.Option> opts) {
-		super(c, new Coord(300, 200), parent, new Coord(0, 0), boff);
+		super(c, new Coord(0, 0), parent, new Coord(0, 0), boff);
 		cr = opts.get(0).name;
 		BufferedImage bup = Resource.loadimg("gfx/hud/btn-mk-up.gif");
+		new Img(Coord.z, Resource.loadimg("gfx/hud/mkbg.gif"), this);
 		list = new Listbox(new Coord(0, 0), new Coord(100, 200), this, opts);
-		btn = new IButton(new Coord(305, 205).add(Utils.imgsz(bup).inv()).add(boff), this, bup, Resource.loadimg("gfx/hud/btn-mk-dn.gif"));							
+		pack();
+		btn = new IButton(asz.add(new Coord(5, 5)).add(Utils.imgsz(bup).inv()).add(boff), this, bup, Resource.loadimg("gfx/hud/btn-mk-dn.gif"));
 	}
-
+	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "pop") {
+			if(inputs != null) {
+				for(Widget w : inputs)
+					w.unlink();
+				for(Widget w : outputs)
+					w.unlink();
+			}
+			inputs = new LinkedList<Widget>();
+			outputs = new LinkedList<Widget>();
+			int i;
+			Coord c = new Coord(110, 20);
+			for(i = 0; args[i] instanceof String; i += 2) {
+				Widget box = new Inventory(c, new Coord(1, 1), this);
+				inputs.add(box);
+				c = c.add(new Coord(31, 0));
+				new Item(Coord.z, (String)args[i], box, null, (Integer)args[i + 1]);
+			}
+			c = new Coord(110, 80);
+			for(i++; (i < args.length) && (args[i] instanceof String); i += 2) {
+				Widget box = new Inventory(c, new Coord(1, 1), this);
+				outputs.add(box);
+				c = c.add(new Coord(31, 0));
+				new Item(Coord.z, (String)args[i], box, null, (Integer)args[i + 1]);
+			}
+		}
+	}
+	
+	public void draw(Graphics g) {
+		super.draw(g);
+		Utils.drawtext(g, "Ingredients:", xlate(new Coord(110, 0), true));
+		Utils.drawtext(g, "Products:", xlate(new Coord(110, 60), true));
+	}
+	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
 		if(sender == this) {
 			super.wdgmsg(sender, msg, args);
@@ -36,8 +75,10 @@ public class Makewindow extends Window {
 			if(msg == "activate")
 				wdgmsg("make", cr);
 		} else if(sender == list) {
-			if(msg == "chose")
+			if(msg == "chose") {
 				cr = (String)args[0];
+				wdgmsg(msg, cr);
+			}
 		}
 	}
 }

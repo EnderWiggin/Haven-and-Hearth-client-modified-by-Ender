@@ -9,6 +9,7 @@ import java.util.*;
 
 public class Layered extends Drawable {
 	List<SimpleDrawable> layers;
+	Sprite shadow = null;
 	int cf = 0, de = 0;
 	
 	public Layered(Gob gob) {
@@ -17,6 +18,12 @@ public class Layered extends Drawable {
 	}
 
 	public void setlayers(List<SimpleDrawable> layers) {
+		shadow = null;
+		for(SimpleDrawable l : layers) {
+			Sprite sdw = l.shadow();
+			if(sdw != null)
+				shadow = sdw;
+		}
 		this.layers = layers;
 		de = 0;
 		cf = 0;
@@ -80,5 +87,9 @@ public class Layered extends Drawable {
 			}
 			sort();
 		}
+	}
+	
+	public Sprite shadow() {
+		return(shadow);
 	}
 }
