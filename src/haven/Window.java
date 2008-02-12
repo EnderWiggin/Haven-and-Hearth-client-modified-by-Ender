@@ -54,19 +54,23 @@ public class Window extends Widget {
 		super.draw(og);
 	}
 	
+	public void pack() {
+		Coord max = new Coord(0, 0);
+		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+			Coord br = wdg.c.add(wdg.sz);
+			if(br.x > max.x)
+				max.x = br.x;
+			if(br.y > max.y)
+				max.y = br.y;
+		}
+		sz = max.add(wbox.bsz().add(tlo).add(rbo));
+		wsz = sz.add(tlo.inv()).add(rbo.inv());
+		asz = new Coord(wsz.x - wbox.bl.getWidth() - wbox.br.getWidth(), wsz.y - wbox.bt.getHeight() - wbox.bb.getHeight());
+	}
+	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "pack") {
-			Coord max = new Coord(0, 0);
-			for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-				Coord br = wdg.c.add(wdg.sz);
-				if(br.x > max.x)
-					max.x = br.x;
-				if(br.y > max.y)
-					max.y = br.y;
-			}
-			sz = max.add(wbox.bsz().add(tlo).add(rbo));
-			wsz = sz.add(tlo.inv()).add(rbo.inv());
-			asz = new Coord(wsz.x - wbox.bl.getWidth() - wbox.br.getWidth(), wsz.y - wbox.bt.getHeight() - wbox.bb.getHeight());
+			pack();
 		} else {
 			super.uimsg(msg, args);
 		}

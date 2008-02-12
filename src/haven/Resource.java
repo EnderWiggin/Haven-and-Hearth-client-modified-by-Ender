@@ -88,27 +88,66 @@ public class Resource {
 		return(false);
 	}
 	
+	private static BufferedImage loadlenimg(InputStream in) throws IOException {
+		byte[] lb = new byte[4];
+		in.read(lb);
+		int len = Utils.int32d(lb, 0);
+		byte[] buf = new byte[len];
+		in.read(buf);
+		return(ImageIO.read(new ByteArrayInputStream(buf)));
+	}
+	
+	private static Sprite loadspr1(InputStream in, String name) throws IOException {
+		byte[] ib = new byte[13];
+		in.read(ib);
+		Coord cc = new Coord(Utils.uint16d(ib, 0), Utils.uint16d(ib, 2));
+		int prio = Utils.sb(ib[12]);
+		BufferedImage frame = ImageIO.read(in);
+		if(frame == null)
+			throw(new RuntimeException("Bad image data in " + name));
+		Sprite spr = new Sprite(frame, cc, prio);
+		return(spr);
+	}
+	
+	private static Sprite loadspr2(InputStream in, String name) throws IOException {
+		byte[] ib = new byte[13];
+		in.read(ib);
+		Coord cc = new Coord(Utils.uint16d(ib, 0), Utils.uint16d(ib, 2));
+		int prio = Utils.sb(ib[12]);
+		BufferedImage frame = loadlenimg(in);
+		if(frame == null)
+			throw(new RuntimeException("Bad image data in " + name));
+		Sprite spr = new Sprite(frame, cc, prio);
+		BufferedImage sframe = loadlenimg(in);
+		if(sframe == null)
+			throw(new RuntimeException("Bad shadow data in " + name));
+		Sprite sdw = new Sprite(sframe, Utils.imgsz(sframe).div(new Coord(2, 2)), 0);
+		spr.shadow = sdw;
+		return(spr);
+	}
+	
 	public static Sprite loadsprite(String name) {
 		synchronized(sprites) {
 			if(sprites.containsKey(name))
 				return(sprites.get(name));
 			try {
 				InputStream in = getres(name);
-				String sig = "Haven Sprite 1";
+				String sig = "Haven Sprite ";
 				byte[] sigb = new byte[sig.length()];
 				in.read(sigb);
 				if(!sig.equals(new String(sigb)))
 					throw(new FormatException("Illegal sprite format", name));
-				byte[] ib = new byte[13];
-				in.read(ib);
-				Coord cc = new Coord(Utils.uint16d(ib, 0), Utils.uint16d(ib, 2));
-				int prio = Utils.sb(ib[12]);
-				BufferedImage frame = ImageIO.read(in);
-				if(frame == null)
-					throw(new RuntimeException("Bad image data in " + name));
-				Sprite spr = new Sprite(frame, cc, prio);
-				sprites.put(name, spr);
-				return(spr);
+				int ver = in.read() - '0';
+				Sprite ret;
+				if(ver == 1) {
+					ret = loadspr1(in, name);
+				} else if(ver == 2) {
+					ret = loadspr2(in, name);
+				} else {
+					throw(new FormatException("Illegal sprite version", name));
+				}
+				sprites.put(name, ret);
+				return(ret);
 			} catch(IOException e) {
 				throw(new RuntimeException(e));
 			}

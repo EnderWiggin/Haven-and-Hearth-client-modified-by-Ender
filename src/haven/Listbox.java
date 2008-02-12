@@ -5,8 +5,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
-public class Listbox extends SSWidget {
-	static Color bg = new Color(203, 171, 139);
+public class Listbox extends Widget {
 	List<Option> opts;
 	int chosen;
 	
@@ -31,10 +30,7 @@ public class Listbox extends SSWidget {
 		}
 	}
 	
-	void render() {
-		Graphics g = graphics();
-		g.setColor(bg);
-		g.fillRect(0, 0, sz.x, sz.y);
+	public void draw(Graphics g) {
 		int y = 0, i = 0;
 		for(Option o : opts) {
 			if(i++ == chosen)
@@ -48,11 +44,10 @@ public class Listbox extends SSWidget {
 	}
 	
 	public Listbox(Coord c, Coord sz, Widget parent, List<Option> opts) {
-		super(c, sz, parent, false);
+		super(c, sz, parent);
 		this.opts = opts;
 		chosen = 0;
 		setcanfocus(true);
-		render();
 	}
 	
 	static List<Option> makelist(Option[] opts) {
@@ -82,7 +77,6 @@ public class Listbox extends SSWidget {
 			chosen = i;
 			sendchosen();
 		}
-		render();
 		return(true);
 	}
 	
@@ -94,7 +88,6 @@ public class Listbox extends SSWidget {
 			chosen--;
 			sendchosen();
 		}
-		render();
 		return(true);
 	}
 }

@@ -48,4 +48,8 @@ public class SimpleAnim extends SimpleDrawable {
 				cf = 0;
 		}
 	}
+	
+	public Sprite shadow() {
+		return(null);
+	}
 }
