@@ -243,8 +243,9 @@ public class MapView extends Widget implements DTarget {
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
 				Drawable d = gob.getattr(Drawable.class);
-				Sprite sdw = d.shadow();
+				Sprite sdw = null;
 				if(d != null) {
+					sdw = d.shadow();
 					Coord ulc = dc.add(d.getoffset().inv());
 					Coord lrc = ulc.add(d.getsize());
 					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
