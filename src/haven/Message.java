@@ -6,6 +6,7 @@ public class Message {
 	public static final int RMSG_NEWWDG = 0;
 	public static final int RMSG_WDGMSG = 1;
 	public static final int RMSG_DSTWDG = 2;
+	public static final int RMSG_MAPIV = 3;
 	
 	public static final int T_END = 0;
 	public static final int T_INT = 1;
