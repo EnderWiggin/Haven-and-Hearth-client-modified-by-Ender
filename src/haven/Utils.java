@@ -45,6 +45,10 @@ public class Utils {
 		return(Thread.currentThread().getThreadGroup());
 	}
 
+	static void line(Graphics g, Coord c1, Coord c2) {
+		g.drawLine(c1.x, c1.y, c2.x, c2.y);
+	}
+	
 	static void AA(Graphics g) {
 		java.awt.Graphics2D g2 = (java.awt.Graphics2D)g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);		

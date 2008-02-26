@@ -37,6 +37,9 @@ public class RemoteUI extends Thread implements UI.Receiver {
 				} else if(msg.type == Message.RMSG_DSTWDG) {
 					int id = msg.uint16();
 					ui.destroy(id);
+				} else if(msg.type == Message.RMSG_MAPIV) {
+					/* XXX */
+					sess.mapdispatch.invalidate(msg.coord());
 				}
 			}
 			try {

@@ -14,6 +14,10 @@ public class MapView extends Widget implements DTarget {
 	Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Coord mc;
 	List<Gob> clickable = null;
+	int visol = 0;
+	Color[] olc = {new Color(255, 0, 128), new Color(0, 255, 0)};
+	Grabber grab = null;
+	Set<Overlay> ols = new HashSet<Overlay>();
 	public static final Coord tilesz = new Coord(8, 8);
 	public static final Coord cmaps = new Coord(100, 100);
 	
@@ -25,7 +29,34 @@ public class MapView extends Widget implements DTarget {
 		});
 	}
 	
+	public interface Grabber {
+		void mmousedown(Coord mc, int button);
+		void mmouseup(Coord mc, int button);
+		void mmousemove(Coord mc);
+	}
+	
 	private class Loading extends RuntimeException {}
+	
+	public class Overlay {
+		Coord c1, c2;
+		int mask;
+		
+		public Overlay(Coord c1, Coord c2, int mask) {
+			this.c1 = c1;
+			this.c2 = c2;
+			this.mask = mask;
+			ols.add(this);
+		}
+		
+		public void destroy() {
+			ols.remove(this);
+		}
+		
+		public void update(Coord c1, Coord c2) {
+			this.c1 = c1;
+			this.c2 = c2;
+		}
+	}
 	
 	private class TileSet {
 		List<Tile> tiles = new ArrayList<Tile>();
@@ -85,19 +116,24 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
+	private class GridTile {
+		public int tile = -1;
+		public int ol = -1;
+	}
+	
 	private class Grid {
-		public int tiles[][];
+		public GridTile tiles[][];
 		public long lastreq = 0;
 		
 		public Grid() {
-			tiles = new int[cmaps.x][cmaps.y];
-			for(int y = 0; y < 50; y++) {
-				for(int x = 0; x < 50; x++)
-					tiles[x][y] = -1;
+			tiles = new GridTile[cmaps.x][cmaps.y];
+			for(int y = 0; y < cmaps.x; y++) {
+				for(int x = 0; x < cmaps.y; x++)
+					tiles[x][y] = new GridTile();
 			}
 		}
 		
-		public int gettile(Coord tc) {
+		public GridTile gettile(Coord tc) {
 			return(tiles[tc.x][tc.y]);
 		}
 	}
@@ -128,16 +164,23 @@ public class MapView extends Widget implements DTarget {
 		return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
 	}
 	
-	private int gettile(Coord tc) {
+	private GridTile gettile(Coord tc) {
 		Grid g;
 		synchronized(grids) {
 			g = grids.get(tc.div(cmaps));
 		}
 		if(g == null)
 			throw(new Loading());
-		int t = g.gettile(tc.mod(cmaps));
-		t %= sets.size();
-		return(t);
+		return(g.gettile(tc.mod(cmaps)));
+	}
+	
+	public void grab(Grabber grab) {
+		this.grab = grab;
+	}
+	
+	public void release(Grabber grab) {
+		if(this.grab == grab)
+			this.grab = null;
 	}
 	
 	public boolean mousedown(Coord c, int button) {
@@ -156,11 +199,32 @@ public class MapView extends Widget implements DTarget {
 			}
 		}
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
-		if(hit == null)
-			wdgmsg("click", c, mc, button);
-		else
-			wdgmsg("click", c, mc, button, hit.gob.id, hit.gob.getc());
+		if(grab != null) {
+			grab.mmousedown(mc, button);
+		} else {
+			if(hit == null)
+				wdgmsg("click", c, mc, button);
+			else
+				wdgmsg("click", c, mc, button, hit.gob.id, hit.gob.getc());
+		}
 		return(true);
+	}
+	
+	public boolean mouseup(Coord c, int button) {
+		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
+		if(grab != null) {
+			grab.mmouseup(mc, button);
+			return(true);
+		} else {
+			return(false);
+		}
+	}
+	
+	public void mousemove(Coord c) {
+		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
+		if(grab != null) {
+			grab.mmousemove(mc);
+		}
 	}
 	
 	public void uimsg(String msg, Object... args) {
@@ -171,17 +235,25 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
+	public void enol(int mask) {
+		visol |= mask;
+	}
+	
+	public void disol(int mask) {
+		visol &= ~mask;
+	}
+	
 	private void drawtile(Graphics g, Coord tc, Coord sc) {
 		Tile t;
 		
-		t = sets.get(gettile(tc)).get(tc);
+		t = sets.get(gettile(tc).tile).get(tc);
 		t.img.draw(g, sc);
 		int tr[][] = new int[3][3];
 		for(int y = -1; y <= 1; y++) {
 			for(int x = -1; x <= 1; x++) {
 				if((x == 0) && (y == 0))
 					continue;
-				tr[x + 1][y + 1] = gettile(tc.add(new Coord(x, y)));
+				tr[x + 1][y + 1] = gettile(tc.add(new Coord(x, y))).tile;
 			}
 		}
 		if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
@@ -196,7 +268,7 @@ public class MapView extends Widget implements DTarget {
 		int by[] = {1, 0, 1, 2};
 		int cx[] = {0, 2, 2, 0};
 		int cy[] = {0, 0, 2, 2};
-		for(int i = gettile(tc) - 1; i >= 0; i--) {
+		for(int i = gettile(tc).tile - 1; i >= 0; i--) {
 			int bm = 0, cm = 0;
 			for(int o = 0; o < 4; o++) {
 				if(tr[bx[o]][by[o]] == i)
@@ -208,6 +280,50 @@ public class MapView extends Widget implements DTarget {
 				sets.get(i).bt[bm - 1].draw(g, sc);
 			if(cm != 0)
 				sets.get(i).ct[cm - 1].draw(g, sc);
+		}
+	}
+	
+	private int getol(Coord tc) {
+		int ol = gettile(tc).ol;
+		for(Overlay lol : ols) {
+			if(tc.isect(lol.c1, lol.c2.add(lol.c1.inv()).add(new Coord(1, 1))))
+				ol |= lol.mask;
+		}
+		return(ol);
+	}
+	
+	private void drawol(Graphics g, Coord tc, Coord sc) {
+		int ol;
+		int i;
+		
+		Utils.AA(g);
+		ol = getol(tc) & visol;
+		if(ol == 0)
+			return;
+		for(i = 0; i < olc.length; i++) {
+			if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
+				g.setColor(olc[i]);
+				Utils.line(g, sc.add(m2s(new Coord(0, tilesz.y))), sc);
+			}
+			if(((ol & ~getol(tc.add(new Coord(0, -1)))) & (1 << i)) != 0) {
+				g.setColor(olc[i]);
+				Utils.line(g, sc.add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)));
+			}
+			if(((ol & ~getol(tc.add(new Coord(1, 0)))) & (1 << i)) != 0) {
+				g.setColor(olc[i]);
+				Utils.line(g, sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, tilesz.y))).add(new Coord(1, 0)));
+			}
+			if(((ol & ~getol(tc.add(new Coord(0, 1)))) & (1 << i)) != 0) {
+				g.setColor(olc[i]);
+				Utils.line(g, sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))));
+			}
+		}
+	}
+	
+	public void invalidate(Coord cc) {
+		synchronized(req) {
+			if(req.get(cc) == null)
+				req.put(cc, new Grid());
 		}
 	}
 	
@@ -227,8 +343,17 @@ public class MapView extends Widget implements DTarget {
 				for(i = 0; i < 2; i++) {
 					ctc = tc.add(new Coord(x + y, -x + y + i));
 					sc = m2s(ctc.mul(tilesz)).add(oc);
-					sc.x -= (tilesz.x - 1) * 2;
+					sc.x -= tilesz.x * 2;
 					drawtile(g, ctc, sc);
+				}
+			}
+		}
+		for(y = 0; y < (sz.y / sth) + 2; y++) {
+			for(x = 0; x < (sz.x / stw) + 3; x++) {
+				for(i = 0; i < 2; i++) {
+					ctc = tc.add(new Coord(x + y, -x + y + i));
+					sc = m2s(ctc.mul(tilesz)).add(oc);
+					drawol(g, ctc, sc);
 				}
 			}
 		}
@@ -305,13 +430,31 @@ public class MapView extends Widget implements DTarget {
 	
 	public void mapdata(Message msg) {
 		Coord c = msg.coord();
+		int l = 0, t = 0;
 		synchronized(req) {
 			synchronized(grids) {
 				if(req.containsKey(c)) {
 					Grid g = req.get(c);
 					for(int y = 0; y < cmaps.y; y++) {
-						for(int x = 0; x < cmaps.x; x++)
-							g.tiles[x][y] = msg.uint8();
+						for(int x = 0; x < cmaps.x; x++) {
+							if(l < 1) {
+								l = msg.uint16();
+								t = msg.uint8();
+							}
+							g.tiles[x][y].tile = t;
+							l--;
+						}
+					}
+					for(int y = 0; y < cmaps.y; y++) {
+						for(int x = 0; x < cmaps.x; x++) {
+							if(l < 1) {
+								l = msg.uint16();
+								t = msg.uint8();
+								//System.out.println(l + ", " + t);
+							}
+							g.tiles[x][y].ol = t;
+							l--;
+						}
 					}
 					req.remove(c);
 					grids.put(c, g);
