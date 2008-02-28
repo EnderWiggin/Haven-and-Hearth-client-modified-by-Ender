@@ -1,9 +1,15 @@
 package haven;
 
+import java.awt.image.BufferedImage;
+import java.awt.Color;
+
 public class Landwindow extends Window implements MapView.Grabber {
+	Widget btn;
+	Label text;
 	boolean dm = false;
-	Coord sc;
+	Coord sc, c1, c2;
 	MapView.Overlay ol;
+	static Coord boff = new Coord(7, 9);
 	
 	static {
 		Widget.addtype("land", new WidgetFactory() {
@@ -14,9 +20,13 @@ public class Landwindow extends Window implements MapView.Grabber {
 	}
 	
 	public Landwindow(Coord c, Widget parent) {
-		super(c, new Coord(200, 100), parent);
+		super(c, new Coord(200, 100), parent, Coord.z, boff);
+		BufferedImage bup = Resource.loadimg("gfx/hud/buttons/landu.gif");
+		BufferedImage bdn = Resource.loadimg("gfx/hud/buttons/landd.gif");
 		Session.current.mapdispatch.enol(3);
 		Session.current.mapdispatch.grab(this);
+		btn = new IButton(asz.add(Utils.imgsz(bup).inv()).add(boff), this, bup, bdn);
+		text = new Label(Coord.z, this, "Selected tiles: 0");
 	}
 	
 	public void destroy() {
@@ -33,10 +43,12 @@ public class Landwindow extends Window implements MapView.Grabber {
 		ol = Session.current.mapdispatch.new Overlay(tc, tc, 2);
 		sc = tc;
 		dm = true;
+		ui.grabmouse(Session.current.mapdispatch);
 	}
 	
 	public void mmouseup(Coord mc, int button) {
 		dm = false;
+		ui.grabmouse(null);
 	}
 	
 	public void mmousemove(Coord mc) {
@@ -59,5 +71,32 @@ public class Landwindow extends Window implements MapView.Grabber {
 			c2.y = tc.y;			
 		}
 		ol.update(c1, c2);
+		this.c1 = c1;
+		this.c2 = c2;
+		int a = (c2.x - c1.x + 1) * (c2.y - c1.y + 1);
+		text.settext("Selected tiles: " + a);
+		if(a > 25)
+			text.setcolor(Color.RED);
+		else
+			text.setcolor(Color.BLACK);
+	}
+	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "reset") {
+			ol.destroy();
+			ol = null;
+			c1 = c2 = null;
+		}
+	}
+	
+	public void wdgmsg(Widget sender, String msg, Object... args) {
+		if(sender == this) {
+			super.wdgmsg(this, msg, args);
+			return;
+		}
+		if(sender == btn) {
+			if((c1 != null) && (c2 != null))
+				wdgmsg("take", c1, c2);
+		}
 	}
 }
