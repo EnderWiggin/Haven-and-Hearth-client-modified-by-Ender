@@ -35,6 +35,12 @@ public class Utils {
 		return(m.getHeight());
 	}
 	
+	static Coord textsz(Graphics g, String text) {
+		java.awt.FontMetrics m = g.getFontMetrics();
+		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);
+		return(new Coord((int)ts.getWidth(), (int)ts.getHeight()));
+	}
+	
 	static void aligntext(Graphics g, String text, Coord c, double ax, double ay) {
 		java.awt.FontMetrics m = g.getFontMetrics();
 		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);
