@@ -17,7 +17,7 @@ public class MapView extends Widget implements DTarget {
 	Color[] olc = {new Color(255, 0, 128), new Color(0, 255, 0)};
 	Grabber grab = null;
 	Set<Overlay> ols = new HashSet<Overlay>();
-	public static final Coord tilesz = new Coord(8, 8);
+	public static final Coord tilesz = new Coord(11, 11);
 	public static final Coord cmaps = new Coord(100, 100);
 	
 	static {
@@ -58,11 +58,60 @@ public class MapView extends Widget implements DTarget {
 	}
 	
 	private class TileSet {
-		List<Tile> tiles = new ArrayList<Tile>();
-		CPImage[] bt = new CPImage[15];
-		CPImage[] ct = new CPImage[15];
-		int tw = 0;
+		TileList tiles = new TileList();
+		List<TileList> bt = new ArrayList<TileList>();
+		List<TileList> ct = new ArrayList<TileList>();
+		{
+			for(int i = 0; i < 15; i++)
+				bt.add(null);
+			for(int i = 0; i < 15; i++)
+				ct.add(null);
+		}
 		Random gen = new Random();
+		
+		private class TileList extends ArrayList<Tile> {
+			int tw = 0;
+			
+			public boolean add(Tile t) {
+				super.add(t);
+				tw += t.w;
+				t.i = size();
+				return(true);
+			}
+			
+			public Tile get(Coord c) {
+				int r;
+				gen.setSeed(c.x);
+				gen.setSeed(gen.nextInt() * c.y);
+				r = ((gen.nextInt()) % tw) + 1;
+				for(Tile t : this) {
+					if((r -= t.w) <= 0)
+						return(t);
+				}
+				throw(new RuntimeException("Barda"));
+			}
+		}
+		
+		private void loadtrans(String dir, List<TileList> trans) {
+			int w = 1, cnum = 1;
+			Scanner s = new Scanner(Resource.gettext(dir + "/info"));
+			TileList cur = null;
+			try {
+				while(true) {
+					String cmd = s.next().intern();
+					if(cmd == "w") {
+						w = s.nextInt();
+					} else if(cmd == "load") {
+						for(int i = s.nextInt(); i > 0; i--)
+							cur.add(new Tile(new CPImage(Resource.loadimg(String.format("%s/01-%02d-%02d.gif", dir, cnum, i)), MapView.this), w));
+					} else if(cmd == "trans") {
+						cur = new TileList();
+						cnum = s.nextInt();
+						trans.set(cnum - 1, cur);
+					}
+				}
+			} catch(NoSuchElementException e) {}
+		}
 		
 		public TileSet(String name) {
 			int w = 1, n = 1;
@@ -74,40 +123,23 @@ public class MapView extends Widget implements DTarget {
 					if(cmd == "w") {
 						w = s.nextInt();
 					} else if(cmd == "load") {
-						for(int i = s.nextInt(); i > 0; i--) {
+						for(int i = s.nextInt(); i > 0; i--)
 							tiles.add(new Tile(new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/%02d.gif", name, n++)), MapView.this), w));
-							tw += w;
-						}
 					} else if(cmd == "notrans") {
 						loadtrn = false;
 					}
 				}
 			} catch(NoSuchElementException e) {}
 			if(loadtrn) {
-				for(int i = 0; i < 15; i++) {
-					bt[i] = new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/transitions/00-%02d.gif", name, i)), MapView.this);
-					ct[i] = new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/transitions/01-%02d.gif", name, i)), MapView.this);
-				}
+				loadtrans(String.format("gfx/tiles/%s/mtrans", name), bt);
+				loadtrans(String.format("gfx/tiles/%s/ctrans", name), ct);
 			}
-		}
-		
-		public Tile get(Coord c) {
-			int r = 1;
-			gen.setSeed(c.x);
-			gen.setSeed(gen.nextInt() * c.y);
-			r = gen.nextInt();
-			r %= tw;
-			for(Tile t : tiles) {
-				if((r -= t.w) <= 0)
-					return(t);
-			}
-			throw(new RuntimeException("Barda"));
 		}
 	}
 	
 	private class Tile {
 		CPImage img;
-		int w;
+		int w, i;
 		
 		Tile(CPImage img, int w) {
 			this.img = img;
@@ -245,8 +277,10 @@ public class MapView extends Widget implements DTarget {
 	private void drawtile(Graphics g, Coord tc, Coord sc) {
 		Tile t;
 		
-		t = sets.get(gettile(tc).tile).get(tc);
+		t = sets.get(gettile(tc).tile).tiles.get(tc);
 		t.img.draw(g, sc);
+		g.setColor(FlowerMenu.pink);
+		//Utils.drawtext(g, Integer.toString(t.i), sc);
 		int tr[][] = new int[3][3];
 		for(int y = -1; y <= 1; y++) {
 			for(int x = -1; x <= 1; x++) {
@@ -276,9 +310,9 @@ public class MapView extends Widget implements DTarget {
 					cm |= 1 << o;
 			}
 			if(bm != 0)
-				sets.get(i).bt[bm - 1].draw(g, sc);
+				sets.get(i).bt.get(bm - 1).get(tc).img.draw(g, sc);
 			if(cm != 0)
-				sets.get(i).ct[cm - 1].draw(g, sc);
+				sets.get(i).ct.get(cm - 1).get(tc).img.draw(g, sc);
 		}
 	}
 	
