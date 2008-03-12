@@ -68,29 +68,58 @@ public class MapView extends Widget implements DTarget {
 			for(int i = 0; i < 15; i++)
 				ct.add(null);
 		}
+		FlavorList flavors = new FlavorList();
+		int fp = -1;
 		Random gen = new Random();
 		
-		private class TileList extends ArrayList<Tile> {
+		private class FlavorList extends WeigthList<FSprite> {}
+		private class TileList extends WeigthList<Tile> {}
+		
+		private class WeigthList<T extends Weigthed> extends ArrayList<T> {
 			int tw = 0;
 			
-			public boolean add(Tile t) {
+			public boolean add(T t) {
 				super.add(t);
-				tw += t.w;
-				t.i = size();
+				tw += t.w();
 				return(true);
 			}
 			
-			public Tile get(Coord c) {
-				int r;
-				gen.setSeed(c.x);
-				gen.setSeed(gen.nextInt() * c.y);
-				r = ((gen.nextInt()) % tw) + 1;
-				for(Tile t : this) {
-					if((r -= t.w) <= 0)
+			public T get(Coord c) {
+				int r = randoom(c, tw) + 1;
+				for(T t : this) {
+					if((r -= t.w()) <= 0)
 						return(t);
 				}
 				throw(new RuntimeException("Barda"));
 			}
+		}
+		
+		public int randoom(Coord c, int r) {
+			int ret;
+			
+			if(c != null) {
+				gen.setSeed(c.x);
+				gen.setSeed(gen.nextInt() * c.y);
+			}
+			ret = Math.abs(gen.nextInt()) % r;
+			ret %= r;
+			return(ret);
+		}
+		
+		private void loadflv(String dir) {
+			int w = 1, cur = 1;
+			Scanner s = new Scanner(Resource.gettext(dir + "/info"));
+			try {
+				while(true) {
+					String cmd = s.next().intern();
+					if(cmd == "w") {
+						w = s.nextInt();
+					} else if(cmd == "load") {
+						for(int i = s.nextInt(); i > 0; i--)
+							flavors.add(new FSprite(Resource.loadsprite(String.format("%s/%02d.spr", dir, cur++)), w));
+					}
+				}
+			} catch(NoSuchElementException e) {}
 		}
 		
 		private void loadtrans(String dir, List<TileList> trans) {
@@ -117,6 +146,7 @@ public class MapView extends Widget implements DTarget {
 		public TileSet(String name) {
 			int w = 1, n = 1;
 			boolean loadtrn = true;
+			boolean loadflv = false;
 			Scanner s = new Scanner(Resource.gettext(String.format("gfx/tiles/%s/info", name)));
 			try {
 				while(true) {
@@ -128,6 +158,9 @@ public class MapView extends Widget implements DTarget {
 							tiles.add(new Tile(new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/%02d.gif", name, n++)), MapView.this), w));
 					} else if(cmd == "notrans") {
 						loadtrn = false;
+					} else if(cmd == "flavor") {
+						loadflv = true;
+						fp = s.nextInt();
 					}
 				}
 			} catch(NoSuchElementException e) {}
@@ -135,16 +168,40 @@ public class MapView extends Widget implements DTarget {
 				loadtrans(String.format("gfx/tiles/%s/mtrans", name), bt);
 				loadtrans(String.format("gfx/tiles/%s/ctrans", name), ct);
 			}
+			if(loadflv)
+				loadflv(String.format("gfx/tiles/%s/flavobjs", name));
+		}
+	}
+
+	private interface Weigthed {
+		int w();
+	}
+	
+	private class FSprite implements Weigthed {
+		Sprite spr;
+		int w;
+		
+		FSprite(Sprite spr, int w) {
+			this.spr = spr;
+			this.w = w;
+		}
+		
+		public int w() {
+			return(w);
 		}
 	}
 	
-	private class Tile {
+	private class Tile implements Weigthed {
 		CPImage img;
-		int w, i;
+		int w;
 		
 		Tile(CPImage img, int w) {
 			this.img = img;
 			this.w = w;
+		}
+		
+		public int w() {
+			return(w);
 		}
 	}
 	
@@ -155,9 +212,12 @@ public class MapView extends Widget implements DTarget {
 	
 	private class Grid {
 		public GridTile tiles[][];
+		Collection<Gob> fo = new LinkedList<Gob>();
 		public long lastreq = 0;
+		Coord gc;
 		
-		public Grid() {
+		public Grid(Coord gc) {
+			this.gc = gc;
 			tiles = new GridTile[cmaps.x][cmaps.y];
 			for(int y = 0; y < cmaps.x; y++) {
 				for(int x = 0; x < cmaps.y; x++)
@@ -167,6 +227,27 @@ public class MapView extends Widget implements DTarget {
 		
 		public GridTile gettile(Coord tc) {
 			return(tiles[tc.x][tc.y]);
+		}
+		
+		public void remove() {
+			Session.current.oc.lrem(fo);
+		}
+		
+		public void makeflavor() {
+			Coord c = new Coord(0, 0);
+			Coord tc = gc.mul(cmaps);
+			for(c.y = 0; c.y < cmaps.x; c.y++) {
+				for(c.x = 0; c.x < cmaps.y; c.x++) {
+					TileSet set = sets.get(tiles[c.x][c.y].tile);
+					if((set.fp != -1) && (set.randoom(c.add(tc), set.fp) == 0)) {
+						FSprite f = set.flavors.get(null);
+						Gob g = new Gob(c.add(tc).mul(tilesz), 0, 0); 
+						g.setattr(new SimpleSprite(g, f.spr));
+						fo.add(g);
+					}
+				}
+			}
+			Session.current.oc.ladd(fo);
 		}
 	}
 	
@@ -259,9 +340,23 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
+	public void move(Coord mc) {
+		this.mc = mc;
+		Coord cc = mc.div(cmaps.mul(tilesz));
+		for(Iterator<Map.Entry<Coord, Grid>> i = grids.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<Coord, Grid> e = i.next();
+			Coord gc = e.getKey();
+			Grid g = e.getValue();
+			if((Math.abs(gc.x - cc.x) > 1) || (Math.abs(gc.y - cc.y) > 1)) {
+				i.remove();
+				g.remove();
+			}
+		}
+	}
+	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "move") {
-			mc = (Coord)args[0];
+			move((Coord)args[0]);
 		} else {
 			super.uimsg(msg, args);
 		}
@@ -357,7 +452,7 @@ public class MapView extends Widget implements DTarget {
 	public void invalidate(Coord cc) {
 		synchronized(req) {
 			if(req.get(cc) == null)
-				req.put(cc, new Grid());
+				req.put(cc, new Grid(cc));
 		}
 	}
 	
@@ -397,9 +492,7 @@ public class MapView extends Widget implements DTarget {
 		ArrayList<Gob> clickable = new ArrayList<Gob>();
 		ArrayList<Gob> speaking = new ArrayList<Gob>();
 		synchronized(Session.current.oc) {
-			for(Map.Entry<Integer, Gob> e : Session.current.oc.objs.entrySet()) {
-				Gob gob = e.getValue();
-				/* int id = e.getKey(); */
+			for(Gob gob : Session.current.oc) {
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
 				Drawable d = gob.getattr(Drawable.class);
@@ -491,6 +584,11 @@ public class MapView extends Widget implements DTarget {
 						}
 					}
 					req.remove(c);
+					try {
+						g.makeflavor();
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
 					grids.put(c, g);
 				}
 			}
@@ -503,7 +601,7 @@ public class MapView extends Widget implements DTarget {
 			for(int x = -1; x <= 1; x++) {
 				Coord cgc = gc.add(new Coord(x, y));
 				if((grids.get(cgc) == null) && (req.get(cgc) == null))
-					req.put(cgc, new Grid());
+					req.put(cgc, new Grid(cgc));
 			}
 		}
 		long now = System.currentTimeMillis();

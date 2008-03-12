@@ -2,9 +2,11 @@ package haven;
 
 import java.util.*;
 
-public class OCache {
-	Map<Integer, Gob> objs = new TreeMap<Integer, Gob>();
-	Map<Integer, Integer> deleted = new TreeMap<Integer, Integer>();
+public class OCache implements Iterable<Gob> {
+	/* XXX: Use weak refs */
+	private Collection<Collection<Gob>> local = new LinkedList<Collection<Gob>>();
+	private Map<Integer, Gob> objs = new TreeMap<Integer, Gob>();
+	private Map<Integer, Integer> deleted = new TreeMap<Integer, Integer>();
 	long lastctick = 0;
 
 	public synchronized void remove(int id, int frame) {
@@ -18,6 +20,21 @@ public class OCache {
 		for(Gob g : objs.values()) {
 			g.tick();
 		}
+	}
+	
+	public Iterator<Gob> iterator() {
+		Collection<Iterator<Gob>> is = new LinkedList<Iterator<Gob>>();
+		for(Collection<Gob> gc : local)
+			is.add(gc.iterator());
+		return(new I2<Gob>(objs.values().iterator(), new I2<Gob>(is)));
+	}
+	
+	public synchronized void ladd(Collection<Gob> gob) {
+		local.add(gob);
+	}
+	
+	public synchronized void lrem(Collection<Gob> gob) {
+		local.remove(gob);
 	}
 	
 	public void ctick() {
