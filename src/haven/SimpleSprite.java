@@ -8,8 +8,12 @@ public class SimpleSprite extends SimpleDrawable {
 	
 	public SimpleSprite(Gob gob, String res) {
 		super(gob, res);
-		this.res = res;
 		spr = Resource.loadsprite(res);
+	}
+	
+	public SimpleSprite(Gob gob, Sprite spr) {
+		super(gob, "");
+		this.spr = spr;
 	}
 	
 	public Coord getoffset() {
