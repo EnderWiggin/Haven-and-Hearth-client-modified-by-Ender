@@ -584,11 +584,7 @@ public class MapView extends Widget implements DTarget {
 						}
 					}
 					req.remove(c);
-					try {
-						g.makeflavor();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
+					g.makeflavor();
 					grids.put(c, g);
 				}
 			}
