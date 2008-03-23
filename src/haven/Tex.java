@@ -21,6 +21,15 @@ public class Tex {
 	dim = Utils.imgsz(img);
 	tdim = new Coord(nextp2(dim.x), nextp2(dim.y));
 	pixels = convert(img, tdim);
+	/*
+	for(int i = 0; i < pixels.length; i++) {
+	    System.out.print(String.format("%02x", pixels[i]));
+	    if(i % 32 == 31)
+		System.out.println();
+	    else if(i % 4 == 3)
+		System.out.print(" ");
+	}
+	*/
     }
     
     public static int nextp2(int in) {
@@ -45,7 +54,9 @@ public class Tex {
 	gl.glGenTextures(1, buf, 0);
 	id = buf[0];
 	gl.glBindTexture(GL.GL_TEXTURE_2D, id);
+	/*
 	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+	*/
 	gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 	gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
 	ByteBuffer data = ByteBuffer.allocate(pixels.length);
@@ -58,11 +69,12 @@ public class Tex {
 	if(id < 0)
 	    create(gl);
 	gl.glEnable(gl.GL_TEXTURE_2D);
-	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
 	gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 	gl.glBegin(GL.GL_QUADS);
 	float w = ((float)dim.x) / ((float)tdim.x);
 	float h = ((float)dim.y) / ((float)tdim.y);
+	gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	gl.glTexCoord2f(0, 0); gl.glVertex3i(c.x, c.y, 0);
 	gl.glTexCoord2f(w, 0); gl.glVertex3i(c.x + dim.x, c.y, 0);
 	gl.glTexCoord2f(w, h); gl.glVertex3i(c.x + dim.x, c.y + dim.y, 0);
