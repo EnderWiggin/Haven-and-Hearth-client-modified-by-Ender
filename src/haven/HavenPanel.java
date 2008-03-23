@@ -13,9 +13,10 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
 	int w, h;
-	long fd = 60, fps = 0;
+	long fd = 20, fps = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
-	Tex tt = new Tex(Resource.loadimg("gfx/hud/buttons/godu.gif"));
+	Tex tt1 = new Tex(Resource.loadimg("gfx/hud/buttons/godu.gif"));
+	Tex tt2 = new Tex(Resource.loadimg("gfx/tiles/water/01.gif"));
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
@@ -36,6 +37,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				gl.glColor3f(1, 1, 1);
 				gl.glPointSize(4);
 				gl.setSwapInterval(1);
+				gl.glEnable(GL.GL_BLEND);
+				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 				synchronized(this) {
 					notifyAll();
 				}
@@ -126,7 +129,12 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		tt.render(gl, Coord.z);
+		for(int i = 0; i < 2000; i++) {
+			if(Math.random() < 0.5)
+				tt1.render(gl, new Coord((int)(Math.random() * 800), (int)(Math.random() * 600)));
+			else
+				tt2.render(gl, new Coord((int)(Math.random() * 800), (int)(Math.random() * 600)));
+		}
 	}
 	
 /*
