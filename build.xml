@@ -27,6 +27,7 @@
       <fileset dir="build" includes="res/**" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
+	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar" />
       </manifest>
     </jar>
     <signjar jar="build/haven.jar" alias="haven" storepass="autosign" keystore="etc/keys" />
