@@ -38,7 +38,7 @@ public class MainFrame extends Frame implements Runnable {
 		} catch(InterruptedException e) {
 		}
 	}
-
+	
 	public static void main(String[] args) {
 		final MainFrame f = new MainFrame(800, 600);
 		ThreadGroup g;

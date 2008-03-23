@@ -6,8 +6,10 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.awt.Graphics;
 import java.util.*;
+import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 
-public class HavenPanel extends Canvas implements Runnable, Graphical {
+public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
 	int w, h;
@@ -18,11 +20,50 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 		setSize(this.w = w, this.h = h);
 	}
 	
+	private void initgl() {
+		GLEventListener o;
+		
+		addGLEventListener(o = new GLEventListener() {
+			public void display(GLAutoDrawable d) {
+				GL gl = d.getGL();
+				redraw(gl);
+			}
+			
+			public void init(GLAutoDrawable d) {
+				GL gl = d.getGL();
+				gl.glClearColor(0, 0, 0, 1);
+				gl.glColor3f(1, 1, 1);
+				gl.glPointSize(4);
+				gl.setSwapInterval(1);
+				synchronized(this) {
+					notifyAll();
+				}
+			}
+
+			public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
+				GL gl = d.getGL();
+				GLU glu = new GLU();
+				gl.glMatrixMode(GL.GL_PROJECTION);
+				gl.glLoadIdentity();
+				glu.gluOrtho2D(0, w - 1, h - 1, 0);
+			}
+			
+			public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
+		});
+		
+		try {
+			synchronized(o) {
+				o.wait();
+			}
+		} catch(InterruptedException e) {}
+	}
+	
 	public void init() {
-		setFocusTraversalKeysEnabled(false);
-		createBufferStrategy(2);
+		//setFocusTraversalKeysEnabled(false);
+		//createBufferStrategy(2);
 		root = new RootWidget(new Coord(w, h), this);
 		ui = new UI(root);
+		initgl();
 		addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
 				synchronized(events) {
@@ -82,6 +123,15 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 		});
 	}
 	
+	void redraw(GL gl) {
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		gl.glBegin(GL.GL_LINES);
+		gl.glVertex2i(40, 40);
+		gl.glVertex2i(50, 50);
+		gl.glEnd();
+	}
+	
+/*
 	void redraw() {
 		BufferStrategy bs = getBufferStrategy();
 		Graphics g = bs.getDrawGraphics();
@@ -94,6 +144,7 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 		}
 		bs.show();
 	}
+*/
 	
 	void dispatch() {
 		synchronized(events) {
@@ -138,7 +189,8 @@ public class HavenPanel extends Canvas implements Runnable, Graphical {
 						if(Session.current != null)
 							Session.current.oc.ctick();
 						dispatch();
-						redraw();
+						//redraw();
+						display();
 					} catch(Throwable t) {
 						t.printStackTrace();
 					}
