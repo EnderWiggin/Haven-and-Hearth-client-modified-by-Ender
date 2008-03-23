@@ -15,6 +15,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	int w, h;
 	long fd = 60, fps = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
+	Tex tt = new Tex(Resource.loadimg("gfx/hud/buttons/godu.gif"));
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
@@ -125,10 +126,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		gl.glBegin(GL.GL_LINES);
-		gl.glVertex2i(40, 40);
-		gl.glVertex2i(50, 50);
-		gl.glEnd();
+		tt.render(gl, Coord.z);
 	}
 	
 /*
