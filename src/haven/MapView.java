@@ -1,7 +1,6 @@
 package haven;
 
 import java.awt.image.BufferedImage;
-import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.geom.Rectangle2D;
@@ -133,7 +132,7 @@ public class MapView extends Widget implements DTarget {
 						w = s.nextInt();
 					} else if(cmd == "load") {
 						for(int i = s.nextInt(); i > 0; i--)
-							cur.add(new Tile(new CPImage(Resource.loadimg(String.format("%s/01-%02d-%02d.gif", dir, cnum, i)), MapView.this), w));
+							cur.add(new Tile(new Tex(Resource.loadimg(String.format("%s/01-%02d-%02d.gif", dir, cnum, i))), w));
 					} else if(cmd == "trans") {
 						cur = new TileList();
 						cnum = s.nextInt();
@@ -155,7 +154,7 @@ public class MapView extends Widget implements DTarget {
 						w = s.nextInt();
 					} else if(cmd == "load") {
 						for(int i = s.nextInt(); i > 0; i--)
-							tiles.add(new Tile(new CPImage(Resource.loadimg(String.format("gfx/tiles/%s/%02d.gif", name, n++)), MapView.this), w));
+							tiles.add(new Tile(new Tex(Resource.loadimg(String.format("gfx/tiles/%s/%02d.gif", name, n++))), w));
 					} else if(cmd == "notrans") {
 						loadtrn = false;
 					} else if(cmd == "flavor") {
@@ -192,10 +191,10 @@ public class MapView extends Widget implements DTarget {
 	}
 	
 	private class Tile implements Weigthed {
-		CPImage img;
+		Tex img;
 		int w;
 		
-		Tile(CPImage img, int w) {
+		Tile(Tex img, int w) {
 			this.img = img;
 			this.w = w;
 		}
@@ -370,12 +369,12 @@ public class MapView extends Widget implements DTarget {
 		visol &= ~mask;
 	}
 	
-	private void drawtile(Graphics g, Coord tc, Coord sc) {
+	private void drawtile(GOut g, Coord tc, Coord sc) {
 		Tile t;
 		
 		t = sets.get(gettile(tc).tile).tiles.get(tc);
-		t.img.draw(g, sc);
-		g.setColor(FlowerMenu.pink);
+		g.image(t.img, sc);
+		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
 		int tr[][] = new int[3][3];
 		for(int y = -1; y <= 1; y++) {
@@ -406,9 +405,9 @@ public class MapView extends Widget implements DTarget {
 					cm |= 1 << o;
 			}
 			if(bm != 0)
-				sets.get(i).bt.get(bm - 1).get(tc).img.draw(g, sc);
+				g.image(sets.get(i).bt.get(bm - 1).get(tc).img, sc);
 			if(cm != 0)
-				sets.get(i).ct.get(cm - 1).get(tc).img.draw(g, sc);
+				g.image(sets.get(i).ct.get(cm - 1).get(tc).img, sc);
 		}
 	}
 	
@@ -421,30 +420,30 @@ public class MapView extends Widget implements DTarget {
 		return(ol);
 	}
 	
-	private void drawol(Graphics g, Coord tc, Coord sc) {
+	private void drawol(GOut g, Coord tc, Coord sc) {
 		int ol;
 		int i;
 		
-		Utils.AA(g);
+		//Utils.AA(g);
 		ol = getol(tc) & visol;
 		if(ol == 0)
 			return;
 		for(i = 0; i < olc.length; i++) {
 			if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
-				g.setColor(olc[i]);
-				Utils.line(g, sc.add(m2s(new Coord(0, tilesz.y))), sc);
+				g.chcolor(olc[i]);
+				g.line(sc.add(m2s(new Coord(0, tilesz.y))), sc);
 			}
 			if(((ol & ~getol(tc.add(new Coord(0, -1)))) & (1 << i)) != 0) {
-				g.setColor(olc[i]);
-				Utils.line(g, sc.add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)));
+				g.chcolor(olc[i]);
+				g.line(sc.add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)));
 			}
 			if(((ol & ~getol(tc.add(new Coord(1, 0)))) & (1 << i)) != 0) {
-				g.setColor(olc[i]);
-				Utils.line(g, sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, tilesz.y))).add(new Coord(1, 0)));
+				g.chcolor(olc[i]);
+				g.line(sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, tilesz.y))).add(new Coord(1, 0)));
 			}
 			if(((ol & ~getol(tc.add(new Coord(0, 1)))) & (1 << i)) != 0) {
-				g.setColor(olc[i]);
-				Utils.line(g, sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))));
+				g.chcolor(olc[i]);
+				g.line(sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))));
 			}
 		}
 	}
@@ -456,7 +455,7 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
-	public void drawmap(Graphics g) {
+	public void drawmap(GOut g) {
 		int x, y, i;
 		int stw, sth;
 		Coord oc, tc, ctc, sc;
@@ -591,7 +590,7 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(GOut g) {
 		Coord gc = mc.div(tilesz).div(cmaps);
 		for(int y = -1; y <= 1; y++) {
 			for(int x = -1; x <= 1; x++) {
@@ -615,13 +614,13 @@ public class MapView extends Widget implements DTarget {
 		}
 		try {
 			drawmap(g);
-			g.setColor(java.awt.Color.WHITE);
-			Utils.drawtext(g, mc.toString(), new Coord(0, 20));
+			g.chcolor(Color.WHITE);
+			g.text(mc.toString(), new Coord(0, 20));
 		} catch(Loading l) {
 			String text = "Loading...";
-			g.setColor(Color.BLACK);
-			g.fillRect(0, 0, sz.x, sz.y);
-			g.setColor(Color.WHITE);
+			g.chcolor(Color.BLACK);
+			g.frect(Coord.z, sz);
+			g.chcolor(Color.WHITE);
 			FontMetrics m = g.getFontMetrics();
 			Rectangle2D b = m.getStringBounds(text, g);
 			g.drawString(text, sz.x / 2 - (int)b.getWidth() / 2, sz.y / 2 - m.getAscent());

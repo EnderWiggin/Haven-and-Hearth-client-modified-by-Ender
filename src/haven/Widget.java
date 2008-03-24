@@ -1,6 +1,5 @@
 package haven;
 
-import java.awt.Graphics;
 import java.util.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -219,10 +218,10 @@ public class Widget implements Graphical {
 			parent.wdgmsg(sender, msg, args);
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(GOut g) {
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
 			Coord cc = xlate(wdg.c, true);
-			wdg.draw(g.create(cc.x, cc.y, wdg.sz.x, wdg.sz.y));
+			wdg.draw(g.reclip(cc, wdg.sz));
 		}
 	}
 	

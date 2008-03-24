@@ -27,7 +27,7 @@ public class Speaking extends GAttrib {
 		this.text = text;
 	}
 	
-	public void draw(Graphics g, Coord c) {
+	public void draw(GOut g, Coord c) {
 		FontMetrics m = g.getFontMetrics();
 		java.awt.geom.Rectangle2D ts = m.getStringBounds(text, g);
 		Coord sz = new Coord((int)ts.getWidth(), (int)ts.getHeight());

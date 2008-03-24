@@ -9,7 +9,7 @@ public class Sprite {
 	int prio;
 	boolean isgay;
 	Sprite shadow;
-	CPImage cp;
+	Tex tex;
 	
 	public Sprite(BufferedImage img, Coord cc, int prio) {
 		this.img = img;
@@ -17,6 +17,6 @@ public class Sprite {
 		this.cc = cc;
 		this.prio = prio;
 		this.isgay = Resource.detectgay(img);
-		cp = new CPImage(img, null);
+		tex = new Tex(img);
 	}
 }
