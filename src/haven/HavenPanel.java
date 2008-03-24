@@ -129,12 +129,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		for(int i = 0; i < 2000; i++) {
-			if(Math.random() < 0.5)
-				tt1.render(gl, new Coord((int)(Math.random() * 800), (int)(Math.random() * 600)));
-			else
-				tt2.render(gl, new Coord((int)(Math.random() * 800), (int)(Math.random() * 600)));
-		}
+		GOut g = new GOut(gl, new Coord(800, 600));
+		root.draw(g);
 	}
 	
 /*

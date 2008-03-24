@@ -65,20 +65,47 @@ public class Tex {
 	gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
     }
 
-    public void render(GL gl, Coord c) {
+    public void render(GL gl, Coord c, Coord ul, Coord sz) {
 	if(id < 0)
 	    create(gl);
 	gl.glEnable(gl.GL_TEXTURE_2D);
 	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
 	gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 	gl.glBegin(GL.GL_QUADS);
-	float w = ((float)dim.x) / ((float)tdim.x);
-	float h = ((float)dim.y) / ((float)tdim.y);
+	float l = ((float)ul.x) / ((float)tdim.x);
+	float t = ((float)ul.y) / ((float)tdim.y);
+	float r = ((float)sz.x) / ((float)tdim.x) + l;
+	float b = ((float)sz.y) / ((float)tdim.y) + t;
 	gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	gl.glTexCoord2f(0, 0); gl.glVertex3i(c.x, c.y, 0);
-	gl.glTexCoord2f(w, 0); gl.glVertex3i(c.x + dim.x, c.y, 0);
-	gl.glTexCoord2f(w, h); gl.glVertex3i(c.x + dim.x, c.y + dim.y, 0);
-	gl.glTexCoord2f(0, h); gl.glVertex3i(c.x, c.y + dim.y, 0);
+	gl.glTexCoord2f(l, t); gl.glVertex3i(c.x, c.y, 0);
+	gl.glTexCoord2f(r, t); gl.glVertex3i(c.x + sz.x, c.y, 0);
+	gl.glTexCoord2f(t, b); gl.glVertex3i(c.x + sz.x, c.y + sz.y, 0);
+	gl.glTexCoord2f(l, b); gl.glVertex3i(c.x, c.y + sz.y, 0);
 	gl.glEnd();
+    }
+
+    public void render(GL gl, Coord c) {
+	render(gl, c, Coord.z, dim);
+    }
+    
+    public void crender(GL gl, Coord c, Coord ul, Coord sz) {
+	Coord t = new Coord(c);
+	Coord uld = new Coord(0, 0);
+	Coord szd = new Coord(dim);
+	if(c.x < ul.x) {
+	    t.x = ul.x;
+	    uld.x = ul.x - c.x;
+	    szd.x -= uld.x;
+	}
+	if(c.y < ul.y) {
+	    t.y = ul.y;
+	    uld.y = ul.y - c.y;
+	    szd.y -= uld.y;
+	}
+	if(c.x + dim.x > ul.x + sz.x)
+	    szd.x -= c.x + dim.x - ul.x - sz.x;
+	if(c.y + dim.y > ul.y + sz.y)
+	    szd.y -= c.y + dim.y - ul.y - sz.y;
+	render(gl, t, uld, szd);
     }
 }
