@@ -134,7 +134,7 @@ public class OCache implements Iterable<Gob> {
 				g.setattr(new Speaking(g, off, text));
 			} else {
 				m.off = off;
-				m.text = text;
+				m.update(text);
 			}
 		}
 	}

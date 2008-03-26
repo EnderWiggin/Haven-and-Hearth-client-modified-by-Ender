@@ -4,10 +4,10 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
 public class IBox {
-	BufferedImage ctl, ctr, cbl, cbr;
-	BufferedImage bl, br, bt, bb;
+	Tex ctl, ctr, cbl, cbr;
+	Tex bl, br, bt, bb;
 	
-	public IBox(BufferedImage ctl, BufferedImage ctr, BufferedImage cbl, BufferedImage cbr, BufferedImage bl, BufferedImage br, BufferedImage bt, BufferedImage bb) {
+	public IBox(Tex ctl, Tex ctr, Tex cbl, Tex cbr, Tex bl, Tex br, Tex bt, Tex bb) {
 		this.ctl = ctl;
 		this.ctr = ctr;
 		this.cbl = cbl;
@@ -19,29 +19,29 @@ public class IBox {
 	}
 	
 	public Coord tloff() {
-		return(new Coord(bl.getWidth(), bt.getHeight()));
+		return(new Coord(bl.sz().x, bt.sz().y));
 	}
 	
 	public Coord ctloff() {
-		return(Utils.imgsz(ctl));
+		return(ctl.sz());
 	}
 	
 	public Coord bsz() {
-		return(Utils.imgsz(ctl).add(Utils.imgsz(cbr)));
+		return(ctl.sz().add(cbr.sz()));
 	}
 	
-	public void draw(Graphics g, Coord tl, Coord sz) {
-		for(int x = ctl.getWidth(); x < sz.x - ctr.getWidth(); x++)
-			g.drawImage(bt, x + tl.x, tl.y, null);
-		for(int x = cbl.getWidth(); x < sz.x - cbr.getWidth(); x++)
-			g.drawImage(bb, x + tl.x, sz.y - bb.getHeight() + tl.y, null);
-		for(int y = ctl.getHeight(); y < sz.y - cbl.getHeight(); y++)
-			g.drawImage(bl, tl.x, y + tl.y, null);
-		for(int y = ctr.getHeight(); y < sz.y - cbr.getHeight(); y++)
-			g.drawImage(br, sz.x - br.getWidth() + tl.x, y + tl.y, null);
-		g.drawImage(ctl, tl.x, tl.y, null);
-		g.drawImage(ctr, sz.x - ctr.getWidth() + tl.x, tl.y, null);
-		g.drawImage(cbl, tl.x, sz.y - cbl.getHeight() + tl.y, null);
-		g.drawImage(cbr, sz.x - cbr.getWidth() + tl.x, sz.y - cbr.getHeight() + tl.y, null);
+	public void draw(GOut g, Coord tl, Coord sz) {
+		for(int x = ctl.sz().x; x < sz.x - ctr.sz().x; x++)
+			g.image(bt, tl.add(x, 0));
+		for(int x = cbl.sz().x; x < sz.x - cbr.sz().x; x++)
+			g.image(bb, new Coord(x + tl.x, sz.y - bb.sz().y + tl.y));
+		for(int y = ctl.sz().y; y < sz.y - cbl.sz().y; y++)
+			g.image(bl, tl.add(0, y));
+		for(int y = ctr.sz().y; y < sz.y - cbr.sz().y; y++)
+			g.image(br, new Coord(sz.x - br.sz().x + tl.x, y + tl.y));
+		g.image(ctl, tl);
+		g.image(ctr, sz.add(tl.x - ctr.sz().x, 0));
+		g.image(cbl, tl.add(0, sz.y - cbl.sz().y));
+		g.image(cbr, new Coord(sz.x - cbr.sz().x + tl.x, sz.y - cbr.sz().y + tl.y));
 	}
 }

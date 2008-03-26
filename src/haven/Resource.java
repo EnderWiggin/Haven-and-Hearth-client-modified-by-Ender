@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 public class Resource {
 	private static Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
+	private static Map<String, Tex> texes = new HashMap<String, Tex>();
 	private static Map<String, Sprite> sprites = new HashMap<String, Sprite>();
 	private static Map<String, Anim> anims = new HashMap<String, Anim>();
 	
@@ -63,6 +64,16 @@ public class Resource {
 			} catch(IOException e) {
 				throw(new RuntimeException(e));
 			}
+		}
+	}
+	
+	public static Tex loadtex(String name) {
+		synchronized(texes) {
+			if(texes.containsKey(name))
+				return(texes.get(name));
+			Tex tex = new Tex(loadimg(name));
+			texes.put(name, tex);
+			return(tex);
 		}
 	}
 	

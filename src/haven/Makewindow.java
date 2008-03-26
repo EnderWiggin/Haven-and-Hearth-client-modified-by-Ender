@@ -60,10 +60,10 @@ public class Makewindow extends Window {
 		}
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(GOut g) {
 		super.draw(g);
-		Utils.drawtext(g, "Ingredients:", xlate(new Coord(110, 0), true));
-		Utils.drawtext(g, "Products:", xlate(new Coord(110, 60), true));
+		g.text("Ingredients:", xlate(new Coord(110, 0), true));
+		g.text("Products:", xlate(new Coord(110, 60), true));
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {

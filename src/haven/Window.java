@@ -25,20 +25,20 @@ public class Window extends Widget {
 		this.tlo = tlo;
 		this.rbo = rbo;
 		if(wbox == null) {
-			wbox = new IBox(Resource.loadimg("gfx/hud/tl.gif"),
-					Resource.loadimg("gfx/hud/tr.gif"),
-					Resource.loadimg("gfx/hud/bl.gif"),
-					Resource.loadimg("gfx/hud/br.gif"),
-					Resource.loadimg("gfx/hud/extvl.gif"),
-					Resource.loadimg("gfx/hud/extvr.gif"),
-					Resource.loadimg("gfx/hud/extht.gif"),
-					Resource.loadimg("gfx/hud/exthb.gif"));
+			wbox = new IBox(Resource.loadtex("gfx/hud/tl.gif"),
+					Resource.loadtex("gfx/hud/tr.gif"),
+					Resource.loadtex("gfx/hud/bl.gif"),
+					Resource.loadtex("gfx/hud/br.gif"),
+					Resource.loadtex("gfx/hud/extvl.gif"),
+					Resource.loadtex("gfx/hud/extvr.gif"),
+					Resource.loadtex("gfx/hud/extht.gif"),
+					Resource.loadtex("gfx/hud/exthb.gif"));
 		}
-		sz = sz.add(tlo).add(rbo).add(new Coord(wbox.bl.getWidth() + wbox.br.getWidth(), wbox.bt.getHeight() + wbox.bb.getHeight()));
+		sz = sz.add(tlo).add(rbo).add(new Coord(wbox.bl.sz().x + wbox.br.sz().x, wbox.bt.sz().y + wbox.bb.sz().y));
 		this.sz = sz;
-		atl = new Coord(wbox.bl.getWidth(), wbox.bt.getHeight()).add(tlo);
+		atl = new Coord(wbox.bl.sz().x, wbox.bt.sz().y).add(tlo);
 		wsz = sz.add(tlo.inv()).add(rbo.inv());
-		asz = new Coord(wsz.x - wbox.bl.getWidth() - wbox.br.getWidth(), wsz.y - wbox.bt.getHeight() - wbox.bb.getHeight());
+		asz = new Coord(wsz.x - wbox.bl.sz().x - wbox.br.sz().x, wsz.y - wbox.bt.sz().y - wbox.bb.sz().y);
 		setfocustab(true);
 	}
 	
@@ -46,10 +46,10 @@ public class Window extends Widget {
 		this(c, sz, parent, new Coord(0, 0), new Coord(0, 0));
 	}
 	
-	public void draw(Graphics og) {
-		Graphics g = og.create(tlo.x, tlo.y, wsz.x, wsz.y);
-		g.setColor(bg);
-		g.fillRect(wbox.tloff().x, wbox.tloff().y, asz.x, asz.y);
+	public void draw(GOut og) {
+		GOut g = og.reclip(tlo, wsz);
+		g.chcolor(bg);
+		g.frect(wbox.tloff(), asz);
 		wbox.draw(g, Coord.z, wsz);
 		super.draw(og);
 	}
@@ -65,7 +65,7 @@ public class Window extends Widget {
 		}
 		sz = max.add(wbox.bsz().add(tlo).add(rbo));
 		wsz = sz.add(tlo.inv()).add(rbo.inv());
-		asz = new Coord(wsz.x - wbox.bl.getWidth() - wbox.br.getWidth(), wsz.y - wbox.bt.getHeight() - wbox.bb.getHeight());
+		asz = new Coord(wsz.x - wbox.bl.sz().x - wbox.br.sz().x, wsz.y - wbox.bt.sz().y - wbox.bb.sz().y);
 	}
 	
 	public void uimsg(String msg, Object... args) {
@@ -77,7 +77,7 @@ public class Window extends Widget {
 	}
 	
 	public Coord xlate(Coord c, boolean in) {
-		Coord ctl = new Coord(wbox.bl.getWidth(), wbox.bt.getHeight());
+		Coord ctl = new Coord(wbox.bl.sz());
 		if(in)
 			return(c.add(ctl).add(tlo));
 		else

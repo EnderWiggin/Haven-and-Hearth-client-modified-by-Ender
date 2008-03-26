@@ -1,10 +1,7 @@
 package haven;
 
-import java.awt.image.BufferedImage;
-import java.awt.Graphics;
-
 public class Inventory extends Widget implements DTarget {
-	BufferedImage invsq;
+	Tex invsq;
 	Coord isz;
 
 	static {
@@ -15,10 +12,12 @@ public class Inventory extends Widget implements DTarget {
 		});
 	}
 
-	public void draw(Graphics g) {
-		for(int y = 0; y < isz.y; y++) {
-			for(int x = 0; x < isz.x; x++) {
-				g.drawImage(invsq, x * (invsq.getWidth() - 1), y * (invsq.getHeight() - 1), null);
+	public void draw(GOut g) {
+		Coord c = new Coord();
+		Coord sz = invsq.sz().add(new Coord(-1, -1));
+		for(c.y = 0; c.y < isz.y; c.y++) {
+			for(c.x = 0; c.x < isz.x; c.x++) {
+				g.image(invsq, c.mul(sz));
 			}
 		}
 		super.draw(g);
@@ -27,10 +26,10 @@ public class Inventory extends Widget implements DTarget {
 	public Inventory(Coord c, Coord sz, Widget parent) {
 		super(c, Utils.imgsz(Resource.loadimg("gfx/hud/invsq.gif")).add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
 		isz = sz;
-		invsq = Resource.loadimg("gfx/hud/invsq.gif");
+		invsq = Resource.loadtex("gfx/hud/invsq.gif");
 	}
 	
 	public void drop(Coord cc, Coord ul) {
-		wdgmsg("drop", ul.add(new Coord(15, 15)).div(Utils.imgsz(invsq)));
+		wdgmsg("drop", ul.add(new Coord(15, 15)).div(invsq.sz()));
 	}
 }
