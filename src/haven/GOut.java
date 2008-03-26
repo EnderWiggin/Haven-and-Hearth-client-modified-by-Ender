@@ -1,7 +1,10 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import javax.media.opengl.*;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
 public class GOut {
 	private GL gl;
@@ -28,6 +31,12 @@ public class GOut {
 			     (float)color.getAlpha() / 255.0f);
 	}
 
+	public void image(BufferedImage img, Coord c) {
+		Tex tex = new Tex(img);
+		image(tex, c);
+		tex.dispose();
+	}
+	
 	public void image(Tex tex, Coord c) {
 		tex.crender(gl, c.add(ul), ul, sz);
 	}
@@ -45,7 +54,15 @@ public class GOut {
 	}
     
 	public void text(String text, Coord c) {
+		atext(text, c, 0, 0);
+	}
 	
+	public void atext(String text, Coord c, double ax, double ay) {
+		Text t = Text.render(text);
+		Tex T = t.tex();
+		Coord sz = t.sz();
+		image(T, c.add((int)((double)sz.x * -ax), (int)((double)sz.y * -ay)));
+		T.dispose();
 	}
     
 	public void frect(Coord ul, Coord sz) {

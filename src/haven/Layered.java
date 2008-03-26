@@ -38,15 +38,14 @@ public class Layered extends Drawable {
 		return(false);
 	}
 
-	public void draw(Graphics g, Coord sc) {
-		GraphicsConfiguration gc = ((Graphics2D)g).getDeviceConfiguration();
+	public void draw(GOut g, Coord sc) {
 		Coord sz = getsize();
-		BufferedImage buf = gc.createCompatibleImage(sz.x, sz.y, Transparency.BITMASK);
+		BufferedImage buf = Tex.mkbuf(sz);
 		Coord cc = getoffset();
 		for(SimpleDrawable d : layers)
 			d.draw2(buf, cc);
 		Coord dc = sc.add(getoffset().inv());
-		g.drawImage(buf, dc.x, dc.y, null);
+		g.image(buf, dc);
 	}
 
 	public Coord getoffset() {

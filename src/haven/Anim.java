@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 public class Anim {
 	List<BufferedImage> frames;
+	Tex[] texes;
 	List<Integer> prio;
 	List<Integer> dur;
 	Coord cc;
@@ -17,6 +18,13 @@ public class Anim {
 		this.dur = dur;
 		this.cc = cc;
 		this.sz = sz;
+		texes = new Tex[frames.size()];
 		isgay = Resource.detectgay(frames.get(0));
+	}
+	
+	public Tex tex(int f) {
+		if(texes[f] == null)
+			texes[f] = new Tex(frames.get(f));
+		return(texes[f]);
 	}
 }

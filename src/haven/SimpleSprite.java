@@ -29,15 +29,15 @@ public class SimpleSprite extends SimpleDrawable {
 		return(Utils.imgsz(spr.img));
 	}
 	
-	public void draw(Graphics g, Coord sc) {
-		g.drawImage(spr.img, sc.x - spr.cc.x, sc.y - spr.cc.y, null);
+	public void draw(GOut g, Coord sc) {
+		g.image(spr.tex, sc.add(spr.cc.inv()));
 	}
 	
 	public void draw2(BufferedImage t, Coord sc) {
 		if(spr.isgay)
 			Utils.drawgay(t, spr.img, sc.add(spr.cc.inv()));
 		else
-			draw(t.getGraphics(), sc);
+			t.getGraphics().drawImage(spr.img, sc.x - spr.cc.x, sc.y - spr.cc.y, null);
 	}
 	
 	public Sprite shadow() {

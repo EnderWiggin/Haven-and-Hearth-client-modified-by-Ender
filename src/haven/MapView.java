@@ -131,7 +131,7 @@ public class MapView extends Widget implements DTarget {
 						w = s.nextInt();
 					} else if(cmd == "load") {
 						for(int i = s.nextInt(); i > 0; i--)
-							cur.add(new Tile(new Tex(Resource.loadimg(String.format("%s/01-%02d-%02d.gif", dir, cnum, i))), w));
+							cur.add(new Tile(Resource.loadtex(String.format("%s/01-%02d-%02d.gif", dir, cnum, i)), w));
 					} else if(cmd == "trans") {
 						cur = new TileList();
 						cnum = s.nextInt();
@@ -153,7 +153,7 @@ public class MapView extends Widget implements DTarget {
 						w = s.nextInt();
 					} else if(cmd == "load") {
 						for(int i = s.nextInt(); i > 0; i--)
-							tiles.add(new Tile(new Tex(Resource.loadimg(String.format("gfx/tiles/%s/%02d.gif", name, n++))), w));
+							tiles.add(new Tile(Resource.loadtex(String.format("gfx/tiles/%s/%02d.gif", name, n++)), w));
 					} else if(cmd == "notrans") {
 						loadtrn = false;
 					} else if(cmd == "flavor") {
@@ -624,9 +624,7 @@ public class MapView extends Widget implements DTarget {
 			g.chcolor(Color.BLACK);
 			g.frect(Coord.z, sz);
 			g.chcolor(Color.WHITE);
-			FontMetrics m = g.getFontMetrics();
-			Rectangle2D b = m.getStringBounds(text, g);
-			g.drawString(text, sz.x / 2 - (int)b.getWidth() / 2, sz.y / 2 - m.getAscent());
+			g.atext(text, sz.div(2), 0.5, 0.5);
 		}
 		super.draw(g);
 	}

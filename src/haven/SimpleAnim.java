@@ -21,15 +21,15 @@ public class SimpleAnim extends SimpleDrawable {
 		return(Utils.rgbm.getAlpha(cl) >= 128);
 	}
 
-	public void draw(Graphics g, Coord sc) {
-		g.drawImage(anim.frames.get(cf), sc.x - anim.cc.x, sc.y - anim.cc.y, null);
+	public void draw(GOut g, Coord sc) {
+		g.image(anim.tex(cf), sc.add(anim.cc.inv()));
 	}
 
 	public void draw2(BufferedImage t, Coord sc) {
 		if(anim.isgay)
 			Utils.drawgay(t, anim.frames.get(cf), sc.add(anim.cc.inv()));
 		else
-			draw(t.getGraphics(), sc);
+			t.getGraphics().drawImage(anim.frames.get(cf), sc.x - anim.cc.x, sc.y - anim.cc.y, null);
 	}
 	
 	public Coord getoffset() {

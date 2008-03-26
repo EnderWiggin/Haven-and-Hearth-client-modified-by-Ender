@@ -10,12 +10,14 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import javax.media.opengl.*;
+import java.util.*;
 
 public class Tex {
 	private int id = -1;
 	private byte[] pixels;
-	private Coord dim, tdim;
-	private static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
+	protected Coord dim, tdim;
+	public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
+	protected static Collection<Integer> disposed = new LinkedList<Integer>();
     
 	public Tex(BufferedImage img) {
 		dim = Utils.imgsz(img);
@@ -32,6 +34,29 @@ public class Tex {
 		*/
 	}
     
+	protected Tex(Coord sz) {
+		dim = sz;
+		tdim = new Coord(Tex.nextp2(sz.x), Tex.nextp2(sz.y));
+		pixels = new byte[tdim.x * tdim.y * 4];
+	}
+	
+	protected void update(byte[] n) {
+		if(n.length != pixels.length)
+			throw(new RuntimeException("Illegal new texbuf size"));
+		pixels = n;
+		dispose();
+	}
+	
+	public Coord sz() {
+		return(dim);
+	}
+	
+	public static BufferedImage mkbuf(Coord sz) {
+		WritableRaster buf = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, sz.x, sz.y, 4, null);
+		BufferedImage tgt = new BufferedImage(glcm, buf, false, null);
+		return(tgt);
+	}
+	
 	public static int nextp2(int in) {
 		int ret;
 	
@@ -107,5 +132,35 @@ public class Tex {
 		if(c.y + dim.y > ul.y + sz.y)
 			szd.y -= c.y + dim.y - ul.y - sz.y;
 		render(gl, t, uld, szd);
+	}
+	
+	public void dispose() {
+		if(id == -1)
+			return;
+		synchronized(disposed) {
+			disposed.add(id);
+		}
+		id = -1;
+	}
+	
+	protected void finalize() {
+		if(id != -1) {
+			synchronized(disposed) {
+				disposed.add(id);
+			}
+			id = -1;
+		}
+	}
+	
+	public static void disposeall(GL gl) {
+		synchronized(disposed) {
+			if(disposed.isEmpty())
+				return;
+			int[] da = new int[disposed.size()];
+			int i = 0;
+			for(int id : disposed)
+				da[i++] = id;
+			gl.glDeleteTextures(da.length, da, 0);
+		}
 	}
 }

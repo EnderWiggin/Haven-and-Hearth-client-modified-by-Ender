@@ -13,6 +13,10 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	    this(c.x, c.y);
 	}
 	
+	public Coord() {
+		this(0, 0);
+	}
+	
 	public Coord(java.awt.Dimension d) {
 		this(d.width, d.height);
 	}
@@ -32,8 +36,12 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 		return(0);
 	}
 	
+	public Coord add(int ax, int ay) {
+		return(new Coord(x + ax, y + ay));
+	}
+	
 	public Coord add(Coord b) {
-		return(new Coord(x + b.x, y + b.y));
+		return(add(b.x, b.y));
 	}
 	
 	public Coord mul(int f) {
@@ -58,6 +66,10 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 		if(y < 0)
 			w--;
 		return(new Coord(v, w));
+	}
+	
+	public Coord div(int d) {
+		return(div(new Coord(d, d)));
 	}
 	
 	public Coord mod(Coord d) {
