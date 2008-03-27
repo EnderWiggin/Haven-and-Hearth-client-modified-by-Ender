@@ -1,6 +1,7 @@
 package haven;
 
 import java.nio.*;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentColorModel;
@@ -14,7 +15,7 @@ import java.util.*;
 
 public class Tex {
 	private int id = -1;
-	private byte[] pixels;
+	protected byte[] pixels;
 	protected Coord dim, tdim;
 	public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 	protected static Collection<Integer> disposed = new LinkedList<Integer>();
@@ -80,6 +81,13 @@ public class Tex {
 			throw(new RuntimeException("GL Error: " + err));
 	}
 	
+	protected void fill(GL gl) {
+		ByteBuffer data = ByteBuffer.allocate(pixels.length);
+		data.put(pixels);
+		data.rewind();
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+	}
+	
 	private void create(GL gl) {
 		int[] buf = new int[1];
 		gl.glGenTextures(1, buf, 0);
@@ -87,38 +95,31 @@ public class Tex {
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		ByteBuffer data = ByteBuffer.allocate(pixels.length);
-		data.put(pixels);
-		data.rewind();
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+		fill(gl);
 		checkerr(gl);
 	}
-
+	
+	protected Color setenv(GL gl) {
+		gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+		return(Color.WHITE);
+	}
+	
 	public void render(GL gl, Coord c, Coord ul, Coord sz) {
-		boolean created = false;
-		if(id < 0) {
+		if(id < 0)
 			create(gl);
-			created = true;
-		}
 		gl.glEnable(GL.GL_TEXTURE_2D);
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
-		gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
-		boolean res = true;
-		if(!created) {
-			int[] buf = new int[1];
-			gl.glGetTexParameteriv(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_RESIDENT, buf, 0);
-			if(buf[0] == GL.GL_FALSE)
-				res = false;
-		}
+		Color amb = setenv(gl);
+		checkerr(gl);
 		gl.glBegin(GL.GL_QUADS);
 		float l = ((float)ul.x) / ((float)tdim.x);
 		float t = ((float)ul.y) / ((float)tdim.y);
 		float r = ((float)sz.x) / ((float)tdim.x) + l;
 		float b = ((float)sz.y) / ((float)tdim.y) + t;
-		if(!res)
-			gl.glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-		else
-			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		gl.glColor4f((float)amb.getRed() / 255.0f,
+			     (float)amb.getGreen() / 255.0f,
+			     (float)amb.getBlue() / 255.0f,
+			     (float)amb.getAlpha() / 255.0f);
 		gl.glTexCoord2f(l, t); gl.glVertex3i(c.x, c.y, 0);
 		gl.glTexCoord2f(r, t); gl.glVertex3i(c.x + sz.x, c.y, 0);
 		gl.glTexCoord2f(r, b); gl.glVertex3i(c.x + sz.x, c.y + sz.y, 0);
