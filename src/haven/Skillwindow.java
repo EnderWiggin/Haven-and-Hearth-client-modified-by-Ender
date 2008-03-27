@@ -26,10 +26,10 @@ public class Skillwindow extends Window {
 			exptext.settext("Learning points: " + (Integer)args[0]);
 		} else if(msg == "ask") {
 			BufferedImage oski = Resource.loadimg("gfx/hud/skills/" + (String)args[0] + ".gif");
-			BufferedImage ski = getconf().createCompatibleImage(sksz.x, sksz.y);
+			BufferedImage ski = Tex.mkbuf(sksz);
 			Graphics g = ski.getGraphics();
 			g.drawImage(oski, 0, 0, sksz.x, sksz.y, null);
-			new Img(new Coord(skx, 20), ski, this);
+			new Img(new Coord(skx, 20), new Tex(ski), this);
 			skx += Utils.imgsz(ski).x;
 		}
 	}

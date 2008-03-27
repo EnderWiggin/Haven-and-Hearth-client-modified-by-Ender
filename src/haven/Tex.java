@@ -73,40 +73,63 @@ public class Tex {
 		g.dispose();
 		return(((DataBufferByte)buf.getDataBuffer()).getData());
 	}
-    
+	
+	private void checkerr(GL gl) {
+		int err = gl.glGetError();
+		if(err != 0)
+			throw(new RuntimeException("GL Error: " + err));
+	}
+	
+	private void render(GL gl) {
+		System.out.println("Rendering " + id);
+		ByteBuffer data = ByteBuffer.allocate(pixels.length);
+		data.put(pixels);
+		data.rewind();
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+		checkerr(gl);
+	}
+	
 	private void create(GL gl) {
 		int[] buf = new int[1];
 		gl.glGenTextures(1, buf, 0);
 		id = buf[0];
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
-		/*
-		  gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-		*/
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		ByteBuffer data = ByteBuffer.allocate(pixels.length);
-		data.put(pixels);
-		data.rewind();
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+		render(gl);
 	}
 
 	public void render(GL gl, Coord c, Coord ul, Coord sz) {
-		if(id < 0)
+		boolean created = false;
+		if(id < 0) {
 			create(gl);
-		gl.glEnable(gl.GL_TEXTURE_2D);
-		gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+			created = true;
+		}
+		gl.glEnable(GL.GL_TEXTURE_2D);
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
+		gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+		boolean res = true;
+		if(!created) {
+			int[] buf = new int[1];
+			gl.glGetTexParameteriv(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_RESIDENT, buf, 0);
+			if(buf[0] == GL.GL_FALSE)
+				res = false;
+		}
 		gl.glBegin(GL.GL_QUADS);
 		float l = ((float)ul.x) / ((float)tdim.x);
 		float t = ((float)ul.y) / ((float)tdim.y);
 		float r = ((float)sz.x) / ((float)tdim.x) + l;
 		float b = ((float)sz.y) / ((float)tdim.y) + t;
-		gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		if(!res)
+			gl.glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+		else
+			gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		gl.glTexCoord2f(l, t); gl.glVertex3i(c.x, c.y, 0);
 		gl.glTexCoord2f(r, t); gl.glVertex3i(c.x + sz.x, c.y, 0);
-		gl.glTexCoord2f(t, b); gl.glVertex3i(c.x + sz.x, c.y + sz.y, 0);
+		gl.glTexCoord2f(r, b); gl.glVertex3i(c.x + sz.x, c.y + sz.y, 0);
 		gl.glTexCoord2f(l, b); gl.glVertex3i(c.x, c.y + sz.y, 0);
 		gl.glEnd();
+		checkerr(gl);
 	}
 
 	public void render(GL gl, Coord c) {
