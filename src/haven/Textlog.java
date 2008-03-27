@@ -31,10 +31,11 @@ public class Textlog extends SSWidget {
 			y -= m.getHeight();
 			l--;
 		}
+		update();
 	}
 	
 	public Textlog(Coord c, Coord sz, Widget parent) {
-		super(c, sz, parent, false);
+		super(c, sz, parent);
 		lines = new LinkedList<String>();
 		lastline = -0;
 		render();

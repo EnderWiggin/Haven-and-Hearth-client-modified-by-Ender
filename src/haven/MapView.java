@@ -1,10 +1,6 @@
 package haven;
 
-import java.awt.image.BufferedImage;
 import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
-import java.awt.Transparency;
 import java.util.*;
 
 public class MapView extends Widget implements DTarget {
@@ -423,27 +419,27 @@ public class MapView extends Widget implements DTarget {
 	private void drawol(GOut g, Coord tc, Coord sc) {
 		int ol;
 		int i;
+		double w = 2;
 		
-		//Utils.AA(g);
 		ol = getol(tc) & visol;
 		if(ol == 0)
 			return;
 		for(i = 0; i < olc.length; i++) {
 			if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(m2s(new Coord(0, tilesz.y))), sc);
+				g.line(sc.add(m2s(new Coord(0, tilesz.y))), sc, w);
 			}
 			if(((ol & ~getol(tc.add(new Coord(0, -1)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)));
+				g.line(sc.add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), w);
 			}
 			if(((ol & ~getol(tc.add(new Coord(1, 0)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, tilesz.y))).add(new Coord(1, 0)));
+				g.line(sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, tilesz.y))).add(new Coord(1, 0)), w);
 			}
 			if(((ol & ~getol(tc.add(new Coord(0, 1)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))));
+				g.line(sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))), w);
 			}
 		}
 	}
@@ -533,7 +529,7 @@ public class MapView extends Widget implements DTarget {
 				Sprite s = d.shadow();
 				Coord dc = gob.sc;
 				dc = dc.add(s.cc.inv());
-				//g.drawImage(s.img, dc.x, dc.y, null);
+				g.image(s.tex, dc);
 			}
 			for(Gob gob : sprites) {
 				Drawable d = gob.getattr(Drawable.class);

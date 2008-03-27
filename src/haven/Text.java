@@ -27,12 +27,13 @@ public class Text {
 			m = g.getFontMetrics();
 		}
 		
-		public Text render(String text) {
+		public Text render(String text, Color c) {
 			Text t = new Text(text);
 			Rectangle2D b = font.getStringBounds(text, m.getFontRenderContext());
 			t.img = Tex.mkbuf(new Coord((int)b.getWidth(), m.getHeight()));
 			Graphics g = t.img.createGraphics();
 			g.setFont(font);
+			g.setColor(c);
 			t.m = g.getFontMetrics();
 			g.drawString(text, 0, t.m.getAscent());
 			g.dispose();
@@ -52,8 +53,12 @@ public class Text {
 		return(new Coord(0, m.getAscent()));
 	}
 	
+	public static Text render(String text, Color c) {
+		return(std.render(text, c));
+	}
+	
 	public static Text render(String text) {
-		return(std.render(text));
+		return(render(text, Color.WHITE));
 	}
 	
 	public Tex tex() {

@@ -1,8 +1,5 @@
 package haven;
 
-import java.awt.image.BufferedImage;
-import java.awt.Graphics;
-
 public class Img extends Widget {
 	private Tex img;
 	

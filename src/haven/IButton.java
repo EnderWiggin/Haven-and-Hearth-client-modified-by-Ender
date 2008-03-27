@@ -16,15 +16,16 @@ public class IButton extends SSWidget {
 	}
 	
 	public IButton(Coord c, Widget parent, BufferedImage up, BufferedImage down) {
-		super(c, Utils.imgsz(up), parent, false);
+		super(c, Utils.imgsz(up), parent);
 		this.up = up;
 		this.down = down;
 		render();
 	}
 	
 	public void render() {
-		Graphics g = surf.getGraphics();
+		Graphics g = graphics();
 		g.drawImage(a?down:up, 0, 0, null);
+		update();
 	}
 
 	public boolean checkhit(Coord c) {

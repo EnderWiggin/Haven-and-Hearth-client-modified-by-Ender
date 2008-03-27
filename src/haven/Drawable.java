@@ -1,7 +1,5 @@
 package haven;
 
-import java.awt.Graphics;
-
 public abstract class Drawable extends GAttrib {
 	public Drawable(Gob gob) {
 		super(gob);

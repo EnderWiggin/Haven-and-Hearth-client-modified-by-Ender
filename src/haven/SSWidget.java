@@ -1,30 +1,29 @@
 package haven;
 
-import java.awt.image.BufferedImage;
-import java.awt.Transparency;
 import java.awt.Graphics;
 
 public class SSWidget extends Widget {
-	BufferedImage surf;
-	private boolean t;
+	private Tex2 surf;
 	
-	public SSWidget(Coord c, Coord sz, Widget parent, boolean t) {
+	public SSWidget(Coord c, Coord sz, Widget parent) {
 		super(c, sz, parent);
-		this.t = t;
-		clear();
+		surf = new Tex2(sz);
 	}
 	
-	public void draw(Graphics g) {
-		g.drawImage(surf, 0, 0, null);
+	public void draw(GOut g) {
+		g.image(surf, Coord.z);
 	}
 	
-	Graphics graphics() {
-		Graphics g = surf.getGraphics();
-		Utils.AA(g);
+	public Graphics graphics() {
+		Graphics g = surf.graphics();
 		return(g);
 	}
 	
+	public void update() {
+		surf.update();
+	}
+	
 	public void clear() {
-		surf = getconf().createCompatibleImage(sz.x, sz.y, t?Transparency.TRANSLUCENT:Transparency.BITMASK);	
+		surf.clear();
 	}
 }

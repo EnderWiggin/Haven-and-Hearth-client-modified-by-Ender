@@ -1,8 +1,5 @@
 package haven;
 
-import java.awt.image.BufferedImage;
-import java.awt.Graphics;
-
 public class IBox {
 	Tex ctl, ctr, cbl, cbr;
 	Tex bl, br, bt, bb;
@@ -40,7 +37,7 @@ public class IBox {
 		for(int y = ctr.sz().y; y < sz.y - cbr.sz().y; y++)
 			g.image(br, new Coord(sz.x - br.sz().x + tl.x, y + tl.y));
 		g.image(ctl, tl);
-		g.image(ctr, sz.add(tl.x - ctr.sz().x, 0));
+		g.image(ctr, tl.add(sz.x - ctr.sz().x, 0));
 		g.image(cbl, tl.add(0, sz.y - cbl.sz().y));
 		g.image(cbr, new Coord(sz.x - cbr.sz().x + tl.x, sz.y - cbr.sz().y + tl.y));
 	}

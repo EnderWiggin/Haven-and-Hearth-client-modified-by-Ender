@@ -1,6 +1,5 @@
 package haven;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class SimpleSprite extends SimpleDrawable {

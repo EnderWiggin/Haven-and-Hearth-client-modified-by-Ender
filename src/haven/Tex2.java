@@ -14,8 +14,7 @@ public class Tex2 extends Tex {
 	
 	public Tex2(Coord sz) {
 		super(sz);
-		buf = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, tdim.x, tdim.y, 4, null);
-		bufw = new BufferedImage(Tex.glcm, buf, false, null);
+		clear();
 	}
 	
 	public Graphics graphics() {
@@ -28,5 +27,10 @@ public class Tex2 extends Tex {
 		cg.dispose();
 		cg = null;
 		super.update(((DataBufferByte)buf.getDataBuffer()).getData());
+	}
+	
+	public void clear() {
+		buf = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, tdim.x, tdim.y, 4, null);
+		bufw = new BufferedImage(Tex.glcm, buf, false, null);
 	}
 }

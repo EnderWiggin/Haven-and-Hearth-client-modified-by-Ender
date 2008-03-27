@@ -1,8 +1,6 @@
 package haven;
 
-import java.awt.Graphics;
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 
 public class Window extends Widget {
 	static Color bg = new Color(179, 129, 95);
@@ -77,7 +75,7 @@ public class Window extends Widget {
 	}
 	
 	public Coord xlate(Coord c, boolean in) {
-		Coord ctl = new Coord(wbox.bl.sz());
+		Coord ctl = new Coord(wbox.bl.sz().x, wbox.bt.sz().y);
 		if(in)
 			return(c.add(ctl).add(tlo));
 		else
