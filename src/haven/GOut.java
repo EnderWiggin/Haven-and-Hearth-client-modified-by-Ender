@@ -3,8 +3,6 @@ package haven;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import javax.media.opengl.*;
-import java.awt.Font;
-import java.awt.FontMetrics;
 
 public class GOut {
 	private GL gl;
@@ -24,6 +22,12 @@ public class GOut {
 		this.sz = sz;
 	}
     
+	private void checkerr() {
+		int err = gl.glGetError();
+		if(err != 0)
+			throw(new RuntimeException("GL Error: " + err));
+	}
+	
 	private void glcolor() {
 		gl.glColor4f((float)color.getRed() / 255.0f,
 			     (float)color.getGreen() / 255.0f,
@@ -39,6 +43,7 @@ public class GOut {
 	
 	public void image(Tex tex, Coord c) {
 		tex.crender(gl, c.add(ul), ul, sz);
+		checkerr();
 	}
     
 	private void vertex(Coord c) {
@@ -51,6 +56,7 @@ public class GOut {
 		vertex(c1);
 		vertex(c2);
 		gl.glEnd();
+		checkerr();
 	}
     
 	public void text(String text, Coord c) {
@@ -63,17 +69,19 @@ public class GOut {
 		Coord sz = t.sz();
 		image(T, c.add((int)((double)sz.x * -ax), (int)((double)sz.y * -ay)));
 		T.dispose();
+		checkerr();
 	}
     
 	public void frect(Coord ul, Coord sz) {
 		glcolor();
-		gl.glDisable(gl.GL_TEXTURE_2D);
+		gl.glDisable(GL.GL_TEXTURE_2D);
 		gl.glBegin(GL.GL_QUADS);
 		vertex(ul);
 		vertex(ul.add(new Coord(sz.x, 0)));
 		vertex(ul.add(sz));
 		vertex(ul.add(new Coord(0, sz.y)));
 		gl.glEnd();
+		checkerr();
 	}
 
 	public void chcolor(Color c) {

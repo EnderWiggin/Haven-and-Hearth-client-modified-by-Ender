@@ -26,7 +26,7 @@ public class Makewindow extends Window {
 		super(c, new Coord(0, 0), parent, new Coord(0, 0), boff);
 		cr = opts.get(0).name;
 		BufferedImage bup = Resource.loadimg("gfx/hud/btn-mk-up.gif");
-		new Img(Coord.z, Resource.loadimg("gfx/hud/mkbg.gif"), this);
+		new Img(Coord.z, Resource.loadtex("gfx/hud/mkbg.gif"), this);
 		list = new Listbox(new Coord(0, 0), new Coord(100, 200), this, opts);
 		pack();
 		btn = new IButton(asz.add(new Coord(5, 5)).add(Utils.imgsz(bup).inv()).add(boff), this, bup, Resource.loadimg("gfx/hud/btn-mk-dn.gif"));
