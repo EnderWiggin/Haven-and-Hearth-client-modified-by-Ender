@@ -15,6 +15,8 @@ public class MapView extends Widget implements DTarget {
 	Set<Overlay> ols = new HashSet<Overlay>();
 	public static final Coord tilesz = new Coord(11, 11);
 	public static final Coord cmaps = new Coord(100, 100);
+	ILM mask;
+	int alpha = 0;
 	
 	static {
 		Widget.addtype("mapview", new WidgetFactory() {
@@ -248,6 +250,7 @@ public class MapView extends Widget implements DTarget {
 	
 	public MapView(Coord c, Coord sz, Widget parent, Coord mc) {
 		super(c, sz, parent);
+		mask = new ILM(sz);
 		Scanner s = new Scanner(Resource.gettext("gfx/tiles/tilesets"));
 		try {
 			while(true)
@@ -614,6 +617,10 @@ public class MapView extends Widget implements DTarget {
 		}
 		try {
 			drawmap(g);
+			mask.amb = new Color(255, 0, 128, alpha++);
+			if(alpha > 255)
+				alpha = 0;
+			g.image(mask, Coord.z);
 			g.chcolor(Color.WHITE);
 			g.text(mc.toString(), new Coord(0, 20));
 		} catch(Loading l) {
