@@ -36,7 +36,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				gl.glPointSize(4);
 				gl.setSwapInterval(1);
 				gl.glEnable(GL.GL_BLEND);
-				gl.glEnable(GL.GL_LINE_SMOOTH);
+				//gl.glEnable(GL.GL_LINE_SMOOTH);
 				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 				synchronized(this) {
 					notifyAll();
