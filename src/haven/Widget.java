@@ -218,6 +218,9 @@ public class Widget implements Graphical {
 			parent.wdgmsg(sender, msg, args);
 	}
 	
+	public final void draw(java.awt.Graphics g) {
+	}
+	
 	public void draw(GOut g) {
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
 			Coord cc = xlate(wdg.c, true);

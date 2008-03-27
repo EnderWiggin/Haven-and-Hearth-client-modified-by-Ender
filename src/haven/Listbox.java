@@ -1,6 +1,5 @@
 package haven;
 
-import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.*;
@@ -30,15 +29,18 @@ public class Listbox extends Widget {
 		}
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(GOut g) {
 		int y = 0, i = 0;
 		for(Option o : opts) {
+			Color c;
 			if(i++ == chosen)
-				g.setColor(FlowerMenu.pink);
+				c = FlowerMenu.pink;
 			else
-				g.setColor(Color.BLACK);
+				c = Color.BLACK;
+			Text t = Text.render(o.disp, c);
 			o.y1 = y;
-			y += Utils.drawtext(g, o.disp, new Coord(0, y));
+			g.image(t.tex(), new Coord(0, y));
+			y += t.sz().y;
 			o.y2 = y;
 		}
 	}

@@ -37,7 +37,7 @@ public class Item extends SSWidget {
 	
 	void render() {
 		clear();
-		Graphics g = surf.getGraphics();
+		Graphics g = graphics();
 		if(dm)
 			g.drawImage(sh, shoff.x, shoff.y, null);
 		g.drawImage(img, 0, 0, null);
@@ -45,6 +45,7 @@ public class Item extends SSWidget {
 			g.setColor(Color.BLACK);
 			Utils.aligntext(g, Integer.toString(num), Utils.imgsz(img), 1, 1);
 		}
+		update();
 	}
 	
 	static BufferedImage makesh(BufferedImage img) {
@@ -63,7 +64,7 @@ public class Item extends SSWidget {
 	}
 	
 	public Item(Coord c, BufferedImage img, Widget parent, Coord drag, int num) {
-		super(c, Utils.imgsz(img).add(shoff), parent, drag != null);
+		super(c, Utils.imgsz(img).add(shoff), parent);
 		this.img = img;
 		this.num = num;
 		if(drag == null) {

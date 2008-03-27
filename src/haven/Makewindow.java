@@ -2,7 +2,6 @@ package haven;
 
 import java.util.*;
 import java.awt.image.BufferedImage;
-import java.awt.Graphics;
 
 public class Makewindow extends Window {
 	Widget list, btn;

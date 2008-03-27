@@ -49,8 +49,7 @@ public class TextEntry extends SSWidget {
 		} else {
 			dtext = text;
 		}
-		Graphics g = surf.getGraphics();
-		Utils.AA(g);
+		Graphics g = graphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, sz.x, sz.y);
 		g.setColor(Color.BLACK);
@@ -61,6 +60,7 @@ public class TextEntry extends SSWidget {
 			Rectangle2D tm = m.getStringBounds(dtext.substring(0, pos), g);
 			g.drawLine((int)tm.getWidth(), 1, (int)tm.getWidth(), m.getHeight() - 1);
 		}
+		update();
 	}
 	
 	private int textwidth(String text) {
@@ -77,7 +77,7 @@ public class TextEntry extends SSWidget {
 	}
 	
 	public TextEntry(Coord c, Coord sz, Widget parent, String deftext) {
-		super(c, sz, parent, false);
+		super(c, sz, parent);
 		text = deftext;
 		pos = text.length();
 		render();
@@ -135,7 +135,7 @@ public class TextEntry extends SSWidget {
 		return(true);
 	}
 	
-	public void draw(Graphics g) {
+	public void draw(GOut g) {
 		boolean prompt = System.currentTimeMillis() % 1000 > 500;
 		if(prompt != this.prompt) {
 			this.prompt = prompt;

@@ -1,10 +1,7 @@
 package haven;
 
-import java.awt.Canvas;
 import java.awt.GraphicsConfiguration;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.awt.Graphics;
 import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
@@ -39,6 +36,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				gl.glPointSize(4);
 				gl.setSwapInterval(1);
 				gl.glEnable(GL.GL_BLEND);
+				gl.glEnable(GL.GL_LINE_SMOOTH);
 				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 				synchronized(this) {
 					notifyAll();
@@ -50,7 +48,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				GLU glu = new GLU();
 				gl.glMatrixMode(GL.GL_PROJECTION);
 				gl.glLoadIdentity();
-				glu.gluOrtho2D(0, w - 1, h - 1, 0);
+				glu.gluOrtho2D(0, w, h, 0);
 			}
 			
 			public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
@@ -131,7 +129,10 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		GOut g = new GOut(gl, new Coord(800, 600));
-		root.draw(g);
+		synchronized(ui) {
+			root.draw(g);
+		}
+		g.text("FPS: " + fps, Coord.z);
 	}
 	
 /*
@@ -180,6 +181,17 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		}
 	}
 	
+	public void uglyjoglhack() throws InterruptedException {
+		try {
+			display();
+		} catch(GLException e) {
+			if(e.getCause() instanceof InterruptedException)
+				throw((InterruptedException)e.getCause());
+			else
+				throw(e);
+		}
+	}
+	
 	public void run() {
 		try {
 			long now, fthen, then;
@@ -193,11 +205,11 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 							Session.current.oc.ctick();
 						dispatch();
 						//redraw();
-						display();
 					} catch(Throwable t) {
 						t.printStackTrace();
 					}
 				}
+				uglyjoglhack();
 				frames++;
 				now = System.currentTimeMillis();
 				if(now - then < fd) {

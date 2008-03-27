@@ -1,13 +1,15 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class FlowerMenu extends Widget {
 	public static Color pink = new Color(255, 0, 128);
 	static int r = 50;
 	String[] opts;
-	BufferedImage neg;
+	BufferedImage neg, pos;
+	Tex pt;
 	
 	static {
 		Widget.addtype("sm", new WidgetFactory() {
@@ -24,39 +26,37 @@ public class FlowerMenu extends Widget {
 		super(c.add(new Coord(-r - 100, -r - 20)), new Coord(r * 2 + 200, r * 2 + 40), parent);
 		opts = options;
 		neg = new BufferedImage(sz.x, sz.y, BufferedImage.TYPE_INT_RGB);
-		drawneg(neg.getGraphics());
+		pos = Tex.mkbuf(sz);
+		drawmenu();
 		ui.grabmouse(this);
 	}
 	
-	private void drawneg(java.awt.Graphics g) {
+	private void drawmenu() {
 		double a;
 		int i;
+		Graphics gn = neg.createGraphics();
+		Graphics gp = pos.createGraphics();
+		Utils.AA(gp);
 		for(a = Math.PI / 2, i = 0; i < opts.length; a += Math.PI * 2 / opts.length, i++) {
 			int x = sz.x / 2 + (int)(Math.cos(a) * r);
 			int y = sz.y / 2 - (int)(Math.sin(a) * r);
-			java.awt.FontMetrics m = g.getFontMetrics();
-			java.awt.geom.Rectangle2D ts = m.getStringBounds(opts[i], g);
-			g.setColor(new Color(i + 1));
+			java.awt.FontMetrics m = gn.getFontMetrics();
+			java.awt.geom.Rectangle2D ts = m.getStringBounds(opts[i], gn);
 			Coord os = new Coord((int)ts.getWidth() * 2, (int)ts.getHeight() * 2);
-			g.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
+			
+			gp.setColor(pink);
+			gp.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
+			gp.setColor(Color.BLACK);
+			gp.drawString(opts[i], (int)(x - ts.getWidth() / 2), (int)(y + m.getAscent() - ts.getHeight() / 2));
+			
+			gn.setColor(new Color(i + 1));
+			gn.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
 		}
+		pt = new Tex(pos);
 	}
 	
-	public void draw(java.awt.Graphics g) {
-		double a;
-		int i;
-		Utils.AA(g);
-		for(a = Math.PI / 2, i = 0; i < opts.length; a += Math.PI * 2 / opts.length, i++) {
-			int x = sz.x / 2 + (int)(Math.cos(a) * r);
-			int y = sz.y / 2 - (int)(Math.sin(a) * r);
-			java.awt.FontMetrics m = g.getFontMetrics();
-			java.awt.geom.Rectangle2D ts = m.getStringBounds(opts[i], g);
-			g.setColor(pink);
-			Coord os = new Coord((int)ts.getWidth() * 2, (int)ts.getHeight() * 2);
-			g.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
-			g.setColor(Color.BLACK);
-			g.drawString(opts[i], (int)(x - ts.getWidth() / 2), (int)(y + m.getAscent() - ts.getHeight() / 2));
-		}
+	public void draw(GOut g) {
+		g.image(pt, Coord.z);
 	}
 	
 	public boolean mousedown(Coord c, int button) {

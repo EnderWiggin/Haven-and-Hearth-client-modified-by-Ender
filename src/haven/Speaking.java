@@ -1,7 +1,6 @@
 package haven;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Speaking extends GAttrib {
 	Coord off;
@@ -24,11 +23,11 @@ public class Speaking extends GAttrib {
 		}
 		svans = Resource.loadtex("gfx/hud/emote/svans.gif");
 		this.off = off;
-		this.text = Text.render(text);
+		this.text = Text.render(text, Color.BLACK);
 	}
 	
 	public void update(String text) {
-		this.text = Text.render(text);
+		this.text = Text.render(text, Color.BLACK);
 	}
 	
 	public void draw(GOut g, Coord c) {

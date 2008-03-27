@@ -50,9 +50,11 @@ public class GOut {
 		gl.glVertex2i(c.x + ul.x, c.y + ul.y);
 	}
 
-	public void line(Coord c1, Coord c2) {
-		glcolor();
+	public void line(Coord c1, Coord c2, double w) {
+		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glLineWidth((float)w);
 		gl.glBegin(GL.GL_LINES);
+		glcolor();
 		vertex(c1);
 		vertex(c2);
 		gl.glEnd();

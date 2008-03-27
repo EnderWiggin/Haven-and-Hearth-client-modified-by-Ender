@@ -80,15 +80,6 @@ public class Tex {
 			throw(new RuntimeException("GL Error: " + err));
 	}
 	
-	private void render(GL gl) {
-		System.out.println("Rendering " + id);
-		ByteBuffer data = ByteBuffer.allocate(pixels.length);
-		data.put(pixels);
-		data.rewind();
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
-		checkerr(gl);
-	}
-	
 	private void create(GL gl) {
 		int[] buf = new int[1];
 		gl.glGenTextures(1, buf, 0);
@@ -96,7 +87,11 @@ public class Tex {
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		render(gl);
+		ByteBuffer data = ByteBuffer.allocate(pixels.length);
+		data.put(pixels);
+		data.rewind();
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+		checkerr(gl);
 	}
 
 	public void render(GL gl, Coord c, Coord ul, Coord sz) {
@@ -183,6 +178,7 @@ public class Tex {
 			int i = 0;
 			for(int id : disposed)
 				da[i++] = id;
+			disposed.clear();
 			gl.glDeleteTextures(da.length, da, 0);
 		}
 	}
