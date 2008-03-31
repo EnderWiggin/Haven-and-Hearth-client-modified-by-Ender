@@ -110,12 +110,7 @@ public abstract class Tex {
 	}
 	
 	protected void finalize() {
-		if(id != -1) {
-			synchronized(disposed) {
-				disposed.add(id);
-			}
-			id = -1;
-		}
+		dispose();
 	}
 	
 	public static void disposeall(GL gl) {
