@@ -22,25 +22,34 @@ public class Session {
 	public static final int OD_SPEECH = 5;
 	public static final int OD_LAYERS = 6;
 	public static final int OD_DRAWOFF = 7;
+	public static final int OD_LUMIN = 8;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
-	public static final int SESSERR_BUST = 2;
+	public static final int SESSERR_BUSY = 2;
 	public static final int SESSERR_CONN = 3;
 	
-	public static Session current; /* XXX: Should not exist */
 	DatagramSocket sk;
 	InetAddress server;
 	Thread rworker, sworker, ticker;
 	int connfailed = 0;
-	boolean connected = false;
+	String state = "conn";
 	int tseq = 0, rseq = 0;
-	MapView mapdispatch; /* XXX */
-	LinkedList<Message> received = new LinkedList<Message>();
+	LinkedList<Message> uimsgs = new LinkedList<Message>();
 	Map<Integer, Message> waiting = new TreeMap<Integer, Message>();
 	LinkedList<Message> pending = new LinkedList<Message>();
 	Map<Integer, ObjAck> objacks = new TreeMap<Integer, ObjAck>();
-	OCache oc = new OCache();
 	String username, password;
+	final Glob glob;
+	
+	@SuppressWarnings("serial")
+	public class MessageException extends RuntimeException {
+		public Message msg;
+		
+		public MessageException(String text, Message msg) {
+			super(text);
+			this.msg = msg;
+		}
+	}
 	
 	private class ObjAck {
 		int id;
@@ -67,7 +76,7 @@ public class Session {
 				while(true) {
 					long now, then;
 					then = System.currentTimeMillis();
-					oc.tick();
+					glob.oc.tick();
 					now = System.currentTimeMillis();
 					if(now - then < 70)
 						Thread.sleep(70 - (now - then));
@@ -99,6 +108,7 @@ public class Session {
 		}
 		
 		private void getobjdata(Message msg) {
+			OCache oc = glob.oc;
 			while(msg.off < msg.blob.length) {
 				int id = msg.int32();
 				int frame = msg.int32();
@@ -141,10 +151,12 @@ public class Session {
 						} else if(type == OD_DRAWOFF) {
 							Coord off = msg.coord();
 							oc.drawoff(id, frame, off);
+						} else if(type == OD_LUMIN) {
+							oc.lumin(id, frame, msg.coord(), msg.uint16(), msg.uint8());
 						} else if(type == OD_END) {
 							break;
 						} else {
-							throw(new RuntimeException("Unknown objdelta type: " + type));
+							throw(new MessageException("Unknown objdelta type: " + type, msg));
 						}
 					}
 					Gob g = oc.getgob(id, frame);
@@ -166,17 +178,41 @@ public class Session {
 			}
 		}
 		
+		private void handlerel(Message msg) {
+			if(msg.type == Message.RMSG_NEWWDG) {
+				synchronized(uimsgs) {
+					uimsgs.add(msg);
+				}
+			} else if(msg.type == Message.RMSG_WDGMSG) {
+				synchronized(uimsgs) {
+					uimsgs.add(msg);
+				}
+			} else if(msg.type == Message.RMSG_DSTWDG) {
+				synchronized(uimsgs) {
+					uimsgs.add(msg);
+				}
+			} else if(msg.type == Message.RMSG_MAPIV) {
+				glob.map.invalidate(msg.coord());
+			} else if(msg.type == Message.RMSG_GLOBLOB) {
+				glob.blob(msg);
+				if(state == "syn")
+					state = "";
+			} else {
+				throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
+			}
+		}
+		
 		private void getrel(Message msg) {
 			int seq = msg.uint16();
 			msg = new Message(msg.uint8(), msg.blob, msg.off, msg.blob.length - msg.off);
 			if(seq == rseq) {
-				synchronized(received) {
-					received.add(msg);
+				synchronized(uimsgs) {
+					handlerel(msg);
 					while(true) {
 						rseq = (rseq + 1) % 65536;
 						if(!waiting.containsKey(rseq))
 							break;
-						received.add(waiting.get(rseq));
+						handlerel(waiting.get(rseq));
 						waiting.remove(rseq);
 					}
 				}
@@ -204,36 +240,31 @@ public class Session {
 					continue;
 				Message msg = new Message(p.getData()[0], p.getData(), 1, p.getLength() - 1);
 				if(msg.type == MSG_SESS) {
-					if(!connected) {
+					if(state == "conn") {
 						int error = msg.uint8();
 						synchronized(Session.this) {
-							if(error == 0) {
-								connected = true;
-							} else {
-								connected = false;
+							if(error == 0)
+								state = "syn";
+							else
 								connfailed = error;
-							}
 							Session.this.notifyAll();
 						}
 					}
 				}
-				if(connected) {
+				if(state != "conn") {
 					if(msg.type == MSG_SESS) {
 					} else if(msg.type == MSG_REL) {
 						getrel(msg);
 					} else if(msg.type == MSG_ACK) {
 						gotack(msg.uint16());
 					} else if(msg.type == MSG_MAPDATA) {
-						if(mapdispatch != null)
-							mapdispatch.mapdata(msg);
+						glob.map.mapdata(msg);
 					} else if(msg.type == MSG_OBJDATA) {
 						getobjdata(msg);
 					} else if(msg.type == MSG_CLOSE) {
 						getThreadGroup().interrupt();
 					} else {
-						for(int i = 0; i < msg.blob.length; i++)
-							System.out.format("%02x ", msg.blob[i]);
-						System.out.println();
+						throw(new MessageException("Unknown message type: " + msg.type, msg));
 					}
 				}
 			}
@@ -252,7 +283,7 @@ public class Session {
 			try {
 				while(true) {
 					long now = System.currentTimeMillis();
-					if(!connected) {
+					if(state == "conn") {
 						if(now - last > 500) {
 							if(++retries > 5) {
 								synchronized(Session.this) {
@@ -325,7 +356,7 @@ public class Session {
 					}
 				}
 			} catch(InterruptedException e) {}
-			if(connected)
+			if(state != "conn")
 				sendmsg(new Message(MSG_CLOSE));
 		}
 	}
@@ -334,6 +365,7 @@ public class Session {
 		this.server = server;
 		this.username = username;
 		this.password = password;
+		glob = new Glob(this);
 		try {
 			sk = new DatagramSocket();
 		} catch(SocketException e) {
@@ -345,14 +377,12 @@ public class Session {
 		sworker.start();
 		ticker = new Ticker();
 		ticker.start();
-		current = this;
 	}
 	
 	public void close() {
 		sworker.interrupt();
 		rworker.interrupt();
 		ticker.interrupt();
-		current = null;
 	}
 	
 	public void queuemsg(Message msg) {
@@ -369,11 +399,11 @@ public class Session {
 		}
 	}
 	
-	public Message unqueuer() {
-		synchronized(received) {
-			if(received.size() == 0)
+	public Message getuimsg() {
+		synchronized(uimsgs) {
+			if(uimsgs.size() == 0)
 				return(null);
-			return(received.remove());
+			return(uimsgs.remove());
 		}
 	}
 	

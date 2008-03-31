@@ -8,8 +8,9 @@ public class Landwindow extends Window implements MapView.Grabber {
 	Label text;
 	boolean dm = false;
 	Coord sc, c1, c2;
-	MapView.Overlay ol;
+	MCache.Overlay ol;
 	static Coord boff = new Coord(7, 9);
+	MCache map;
 	
 	static {
 		Widget.addtype("land", new WidgetFactory() {
@@ -21,29 +22,30 @@ public class Landwindow extends Window implements MapView.Grabber {
 	
 	public Landwindow(Coord c, Widget parent) {
 		super(c, new Coord(200, 100), parent, Coord.z, boff);
+		map = ui.sess.glob.map;
 		BufferedImage bup = Resource.loadimg("gfx/hud/buttons/landu.gif");
 		BufferedImage bdn = Resource.loadimg("gfx/hud/buttons/landd.gif");
-		Session.current.mapdispatch.enol(3);
-		Session.current.mapdispatch.grab(this);
+		ui.mainview.enol(3);
+		ui.mainview.grab(this);
 		btn = new IButton(asz.add(Utils.imgsz(bup).inv()).add(boff), this, bup, bdn);
 		text = new Label(Coord.z, this, "Selected tiles: 0");
 	}
 	
 	public void destroy() {
-		Session.current.mapdispatch.disol(3);
-		Session.current.mapdispatch.release(this);
+		ui.mainview.disol(3);
+		ui.mainview.release(this);
 		if(ol != null)
 			ol.destroy();
 	}
 	
 	public void mmousedown(Coord mc, int button) {
-		Coord tc = mc.div(MapView.tilesz);
+		Coord tc = mc.div(MCache.tilesz);
 		if(ol != null)
 			ol.destroy();
-		ol = Session.current.mapdispatch.new Overlay(tc, tc, 2);
+		ol = map.new Overlay(tc, tc, 2);
 		sc = tc;
 		dm = true;
-		ui.grabmouse(Session.current.mapdispatch);
+		ui.grabmouse(ui.mainview);
 	}
 	
 	public void mmouseup(Coord mc, int button) {
@@ -54,7 +56,7 @@ public class Landwindow extends Window implements MapView.Grabber {
 	public void mmousemove(Coord mc) {
 		if(!dm)
 			return;
-		Coord tc = mc.div(MapView.tilesz);
+		Coord tc = mc.div(MCache.tilesz);
 		Coord c1 = new Coord(0, 0), c2 = new Coord(0, 0);
 		if(tc.x < sc.x) {
 			c1.x = tc.x;

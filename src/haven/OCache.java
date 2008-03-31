@@ -22,21 +22,6 @@ public class OCache implements Iterable<Gob> {
 		}
 	}
 	
-	public Iterator<Gob> iterator() {
-		Collection<Iterator<Gob>> is = new LinkedList<Iterator<Gob>>();
-		for(Collection<Gob> gc : local)
-			is.add(gc.iterator());
-		return(new I2<Gob>(objs.values().iterator(), new I2<Gob>(is)));
-	}
-	
-	public synchronized void ladd(Collection<Gob> gob) {
-		local.add(gob);
-	}
-	
-	public synchronized void lrem(Collection<Gob> gob) {
-		local.remove(gob);
-	}
-	
 	public void ctick() {
 		long now;
 		int dt;
@@ -51,6 +36,21 @@ public class OCache implements Iterable<Gob> {
 				g.ctick(dt);
 		}
 		lastctick = now; 
+	}
+	
+	public Iterator<Gob> iterator() {
+		Collection<Iterator<Gob>> is = new LinkedList<Iterator<Gob>>();
+		for(Collection<Gob> gc : local)
+			is.add(gc.iterator());
+		return(new I2<Gob>(objs.values().iterator(), new I2<Gob>(is)));
+	}
+	
+	public synchronized void ladd(Collection<Gob> gob) {
+		local.add(gob);
+	}
+	
+	public synchronized void lrem(Collection<Gob> gob) {
+		local.remove(gob);
 	}
 	
 	public synchronized Gob getgob(int id, int frame) {
@@ -169,5 +169,12 @@ public class OCache implements Iterable<Gob> {
 				dro.off = off;
 			}
 		}
+	}
+	
+	public synchronized void lumin(int id, int frame, Coord off, int sz, int str) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		g.setattr(new Lumin(g, off, sz, str));
 	}
 }

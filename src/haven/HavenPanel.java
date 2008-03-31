@@ -6,6 +6,7 @@ import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 
+@SuppressWarnings("serial")
 public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
@@ -65,7 +66,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		//setFocusTraversalKeysEnabled(false);
 		//createBufferStrategy(2);
 		root = new RootWidget(new Coord(w, h), this);
-		ui = new UI(root);
+		ui = new UI(root, null);
 		initgl();
 		addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
@@ -200,8 +201,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 			while(true) {
 				then = System.currentTimeMillis();
 				synchronized(ui) {
-					if(Session.current != null)
-						Session.current.oc.ctick();
+					if(ui.sess != null)
+						ui.sess.glob.oc.ctick();
 					dispatch();
 				}
 				uglyjoglhack();

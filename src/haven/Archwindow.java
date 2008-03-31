@@ -1,10 +1,12 @@
 package haven;
 
+import static haven.MCache.tilesz;
 import java.util.*;
 
 public class Archwindow extends Window implements MapView.Grabber {
 	Collection<Gob> vob = new LinkedList<Gob>();
 	Coord sc;
+	OCache oc;
 	
 	static {
 		Widget.addtype("arch", new WidgetFactory() {
@@ -16,20 +18,21 @@ public class Archwindow extends Window implements MapView.Grabber {
 	
 	public Archwindow(Coord c, Widget parent) {
 		super(c, new Coord(150, 100), parent);
-		Session.current.mapdispatch.grab(this);
-		Session.current.oc.ladd(vob);
+		oc = ui.sess.glob.oc;
+		ui.mainview.grab(this);
+		oc.ladd(vob);
 	}
 	
 	public void destroy() {
-		Session.current.mapdispatch.release(this);
-		Session.current.oc.lrem(vob);
+		ui.mainview.release(this);
+		oc.lrem(vob);
 	}
 	
 	void makevob(Coord mc) {
 		vob.clear();
-		Coord wc = sc.mul(MapView.tilesz);
+		Coord wc = sc.mul(tilesz);
 		if(Math.abs(wc.x - mc.x) > Math.abs(wc.y - mc.y)) {
-			 Coord ec = mc.div(MapView.tilesz);
+			 Coord ec = mc.div(tilesz);
 			 ec.y = sc.y;
 			 int s;
 			 if(ec.x < sc.x)
@@ -38,7 +41,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 				 s = 1;
 			 wc = sc.add(Coord.z);
 			 while(true) {
-				 Gob g = new Gob(wc.mul(MapView.tilesz), 0, 0);
+				 Gob g = new Gob(wc.mul(tilesz), 0, 0);
 				 g.setattr(new SimpleSprite(g, "gfx/arch/walls/wood-we.spr"));
 				 vob.add(g);
 				 if(wc.x == ec.x)
@@ -46,7 +49,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 				 wc.x += s;
 			 }
 		} else {
-			 Coord ec = mc.div(MapView.tilesz);
+			 Coord ec = mc.div(tilesz);
 			 ec.x = sc.x;
 			 int s;
 			 if(ec.y < sc.y)
@@ -55,7 +58,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 				 s = 1;
 			 wc = sc.add(Coord.z);
 			 while(true) {
-				 Gob g = new Gob(wc.mul(MapView.tilesz), 0, 0);
+				 Gob g = new Gob(wc.mul(tilesz), 0, 0);
 				 g.setattr(new SimpleSprite(g, "gfx/arch/walls/wood-ns.spr"));
 				 vob.add(g);
 				 if(wc.y == ec.y)
@@ -68,7 +71,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 	public void mmousedown(Coord c, int button) {
 		if((sc != null) || (button != 1))
 			return;
-		sc = c.div(MapView.tilesz);
+		sc = c.div(tilesz);
 		makevob(c);
 	}
 	
