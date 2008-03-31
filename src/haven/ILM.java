@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import javax.media.opengl.GL;
 
-public class ILM extends Tex {
+public class ILM extends TexI {
 	BufferedImage bufw;
 	WritableRaster buf;
 	public final static BufferedImage ljusboll;

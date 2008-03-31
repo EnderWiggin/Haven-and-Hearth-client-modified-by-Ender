@@ -17,6 +17,6 @@ public class Sprite {
 		this.cc = cc;
 		this.prio = prio;
 		this.isgay = Resource.detectgay(img);
-		tex = new Tex(img);
+		tex = new TexI(img);
 	}
 }

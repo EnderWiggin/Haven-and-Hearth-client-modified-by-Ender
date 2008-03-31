@@ -13,8 +13,6 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	int w, h;
 	long fd = 20, fps = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
-	Tex tt1 = new Tex(Resource.loadimg("gfx/hud/buttons/godu.gif"));
-	Tex tt2 = new Tex(Resource.loadimg("gfx/tiles/water/01.gif"));
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);

@@ -21,7 +21,7 @@ public class Text {
 		
 		public Foundry(Font f) {
 			font = f;
-			BufferedImage junk = Tex.mkbuf(new Coord(10, 10));
+			BufferedImage junk = TexI.mkbuf(new Coord(10, 10));
 			Graphics g = junk.getGraphics();
 			g.setFont(f);
 			m = g.getFontMetrics();
@@ -30,7 +30,7 @@ public class Text {
 		public Text render(String text, Color c) {
 			Text t = new Text(text);
 			Rectangle2D b = font.getStringBounds(text, m.getFontRenderContext());
-			t.img = Tex.mkbuf(new Coord((int)b.getWidth(), m.getHeight()));
+			t.img = TexI.mkbuf(new Coord((int)b.getWidth(), m.getHeight()));
 			Graphics g = t.img.createGraphics();
 			g.setFont(font);
 			g.setColor(c);
@@ -63,7 +63,7 @@ public class Text {
 	
 	public Tex tex() {
 		if(tex == null)
-			tex = new Tex(img);
+			tex = new TexI(img);
 		return(tex);
 	}
 }

@@ -26,7 +26,7 @@ public class FlowerMenu extends Widget {
 		super(c.add(new Coord(-r - 100, -r - 20)), new Coord(r * 2 + 200, r * 2 + 40), parent);
 		opts = options;
 		neg = new BufferedImage(sz.x, sz.y, BufferedImage.TYPE_INT_RGB);
-		pos = Tex.mkbuf(sz);
+		pos = TexI.mkbuf(sz);
 		drawmenu();
 		ui.grabmouse(this);
 	}
@@ -52,7 +52,7 @@ public class FlowerMenu extends Widget {
 			gn.setColor(new Color(i + 1));
 			gn.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
 		}
-		pt = new Tex(pos);
+		pt = new TexI(pos);
 	}
 	
 	public void draw(GOut g) {

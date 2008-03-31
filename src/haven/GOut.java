@@ -36,7 +36,7 @@ public class GOut {
 	}
 
 	public void image(BufferedImage img, Coord c) {
-		Tex tex = new Tex(img);
+		Tex tex = new TexI(img);
 		image(tex, c);
 		tex.dispose();
 	}
