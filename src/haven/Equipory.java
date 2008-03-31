@@ -9,7 +9,7 @@ public class Equipory extends Window implements DTarget {
 	List<Inventory> epoints;
 	List<Item> equed;
 	List<Layer> layers;
-	Tex2 bg;
+	TexIM bg;
 	static List<String> prios = null;
 	
 	private class Layer {
@@ -88,7 +88,7 @@ public class Equipory extends Window implements DTarget {
 		addlayer("gfx/hud/equip/bg.gif");
 		addlayer("gfx/hud/equip/body.gif");
 		Coord sz = Utils.imgsz(layers.get(0).img);
-		bg = new Tex2(sz);
+		bg = new TexIM(sz);
 		renderbg();
 		new Img(new Coord(32, 0), bg, this);
 		for(int i = 0; i < ecoords.length; i++) {
