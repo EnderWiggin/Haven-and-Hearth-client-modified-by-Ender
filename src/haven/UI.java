@@ -10,11 +10,14 @@ public class UI {
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
 	Receiver rcvr;
 	Coord mc;
+	Session sess;
+	MapView mainview;
 	
 	public interface Receiver {
 		public void rcvmsg(int widget, String msg, Object... args);
 	}
 	
+	@SuppressWarnings("serial")
 	private static class UIException extends RuntimeException {
 		String mname;
 		Object[] args;
@@ -26,11 +29,12 @@ public class UI {
 		}
 	}
 	
-	public UI(RootWidget root) {
+	public UI(RootWidget root, Session sess) {
 		root.setui(this);
 		this.root = root;
 		widgets.put(0, root);
 		rwidgets.put(root, 0);
+		this.sess = sess;
 	}
 	
 	public void setreceiver(Receiver rcvr) {
@@ -46,6 +50,8 @@ public class UI {
 				Widget wdg = Widget.create(type, c, pwdg, args);
 				widgets.put(id, wdg);
 				rwidgets.put(wdg, id);
+				if(wdg instanceof MapView)
+					mainview = (MapView)wdg;
 			}
 		} catch(Throwable t) {
 			t.printStackTrace();

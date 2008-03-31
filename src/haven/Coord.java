@@ -21,6 +21,10 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 		this(d.width, d.height);
 	}
 	
+	public static Coord sc(double a, double r) {
+		return(new Coord((int)(Math.cos(a) * r), -(int)(Math.sin(a)* r)));
+	}
+	
 	public boolean equals(Object o) {
 		if(!(o instanceof Coord))
 			return(false);

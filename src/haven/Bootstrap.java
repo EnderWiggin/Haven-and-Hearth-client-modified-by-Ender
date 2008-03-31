@@ -67,7 +67,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 				return;
 			}
 			while(true) {
-				if(sess.connected) {
+				if(sess.state == "") {
 					System.out.println("Connected!");
 					Utils.setpref("server", address);
 					Utils.setpref("username", username);

@@ -9,19 +9,46 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
-
+import java.util.Collection;
 import javax.media.opengl.GL;
 
 public class ILM extends Tex {
 	BufferedImage bufw;
 	WritableRaster buf;
+	public final static BufferedImage ljusboll;
 	public static ComponentColorModel acm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), new int[] {8}, false, false, ComponentColorModel.OPAQUE, DataBuffer.TYPE_BYTE);
 	Color amb;
+	
+	static {
+		int sz = 200, min = 50;
+		BufferedImage lb = new BufferedImage(sz, sz, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = lb.createGraphics();
+		for(int y = 0; y < sz; y++) {
+			for(int x = 0; x < sz; x++) {
+				double dx = sz / 2 - x;
+				double dy = sz / 2 - y;
+				double d = Math.sqrt(dx * dx + dy * dy);
+				int gs;
+				if(d > sz / 2)
+					gs = 255;
+				else if(d < min)
+					gs = 0;
+				else
+					gs = (int)(((d - min) / ((sz / 2) - min)) * 255);
+				gs /= 2;
+				Color c = new Color(gs, gs, gs, 128 - gs);
+				g.setColor(c);
+				g.fillRect(x, y, 1, 1);
+			}
+		}
+		ljusboll = lb;
+	}
 	
 	public ILM(Coord sz) {
 		super(sz);
 		clear();
-		redraw();
+		Collection<Gob> el = java.util.Collections.emptyList();
+		redraw(el);
 		amb = new Color(0, 0, 0, 0);
 	}
 	
@@ -31,20 +58,18 @@ public class ILM extends Tex {
 	}
 	
 	protected void fill(GL gl) {
-		ByteBuffer data = ByteBuffer.allocate(pixels.length);
-		data.put(pixels);
-		data.rewind();
+		ByteBuffer data = ByteBuffer.wrap(pixels);
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_ALPHA, tdim.x, tdim.y, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, data);
 	}
 	
-	public void redraw() {
+	public void redraw(Collection<Gob> objs) {
 		Graphics2D g = bufw.createGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, dim.x, dim.y);
-		for(int i = 0; i < 10; i++) {
-			int c = (int)(Math.random() * 128);
-			g.setColor(new Color(c, c, c));
-			g.fillRect((int)(Math.random() * 800), (int)(Math.random() * 600), (int)(Math.random() * 200) + 50, (int)(Math.random() * 200) + 50);
+		for(Gob gob : objs) {
+			Lumin lum = gob.getattr(Lumin.class);
+			Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
+			g.drawImage(ljusboll, sc.x, sc.y, lum.sz * 2, lum.sz * 2, null);
 		}
 		g.dispose();
 		pixels = ((DataBufferByte)buf.getDataBuffer()).getData();

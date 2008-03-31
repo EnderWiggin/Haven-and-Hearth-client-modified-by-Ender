@@ -82,9 +82,7 @@ public class Tex {
 	}
 	
 	protected void fill(GL gl) {
-		ByteBuffer data = ByteBuffer.allocate(pixels.length);
-		data.put(pixels);
-		data.rewind();
+		ByteBuffer data = ByteBuffer.wrap(pixels);
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
 	}
 	
