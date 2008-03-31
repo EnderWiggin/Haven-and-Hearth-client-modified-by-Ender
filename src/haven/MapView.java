@@ -340,7 +340,7 @@ public class MapView extends Widget implements DTarget {
 		double hs = Math.pow(Math.sin(glob.dt * p2), 2);
 		double nl = clip(-sa * 2, 0, 1);
 		hs = clip((hs - 0.5) * 2, 0, 1);
-		double ml = 0.2 + la * 0.2;
+		double ml = 0.1 + la * 0.2;
 		sa = anorm(clip(sa * 1.5, -1, 1));
 		double ll = ml + ((1 - ml) * sa);
 		mask.amb = mkc(hs * 0.4, hs * 0.2, nl * 0.25 * ll, 1 - ll);
