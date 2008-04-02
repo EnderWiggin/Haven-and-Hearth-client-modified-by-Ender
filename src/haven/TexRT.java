@@ -20,7 +20,7 @@ public abstract class TexRT extends TexGL {
 	}
 	
 	protected abstract void init(GL gl);
-	protected abstract void subrend(GL gl);
+	protected abstract void subrend(GOut g);
 	
 	protected void fill(GOut g) {
 		if(pbuf == null) {
@@ -62,11 +62,13 @@ public abstract class TexRT extends TexGL {
 	}
 	
 	public void update() {
-		pbuf.display();
+		if(pbuf != null)
+			pbuf.display();
 	}
 	
 	private void subrend2(GL gl) {
-		subrend(gl);
+		GOut g = new GOut(gl, pbuf.getContext(), dim);
+		subrend(g);
 		if(id < 0)
 			throw(new RuntimeException("Negative tex id when updating pbuf texture"));
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);

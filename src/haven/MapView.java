@@ -393,7 +393,7 @@ public class MapView extends Widget implements DTarget {
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
 	    curf.tick("draw");
-	    mask.redraw(lumin);
+	    mask.update(lumin);
 	    g.image(mask, Coord.z);
 	    for(Speaking s : speaking) {
 		s.draw(g, s.gob.sc.add(s.off));

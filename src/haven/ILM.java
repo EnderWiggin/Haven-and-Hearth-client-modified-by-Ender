@@ -12,11 +12,10 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import javax.media.opengl.GL;
 
-public class ILM extends TexI {
-	BufferedImage bufw;
-	WritableRaster buf;
+public class ILM extends TexRT {
 	public final static BufferedImage ljusboll;
-	public static ComponentColorModel acm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_GRAY), new int[] {8}, false, false, ComponentColorModel.OPAQUE, DataBuffer.TYPE_BYTE);
+	Collection<Gob> ll;
+	TexI lbtex;
 	Color amb;
 	
 	static {
@@ -46,9 +45,6 @@ public class ILM extends TexI {
 	
 	public ILM(Coord sz) {
 		super(sz);
-		clear();
-		Collection<Lumin> el = java.util.Collections.emptyList();
-		redraw(el);
 		amb = new Color(0, 0, 0, 0);
 	}
 	
@@ -57,27 +53,27 @@ public class ILM extends TexI {
 		return(amb);
 	}
 	
-	protected void fill(GOut g) {
+	public void init(GL gl) {
+		if(lbtex == null)
+			lbtex = new TexI(ljusboll);
+		gl.glClearColor(0, 0, 0, 0);
+	}
+	
+	public void subrend(GOut g) {
 		GL gl = g.gl;
-		ByteBuffer data = ByteBuffer.wrap(pixels);
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_ALPHA, tdim.x, tdim.y, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, data);
-	}
-	
-	public void redraw(Collection<Lumin> objs) {
-		Graphics2D g = bufw.createGraphics();
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, dim.x, dim.y);
-		for(Lumin lum : objs) {
-			Coord sc = lum.gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
-			g.drawImage(ljusboll, sc.x, sc.y, lum.sz * 2, lum.sz * 2, null);
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		if(ll != null) {
+			for(Gob gob : ll) {
+				Lumin lum = gob.getattr(Lumin.class);
+				Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
+				g.image(lbtex, sc);
+			}
 		}
-		g.dispose();
-		pixels = ((DataBufferByte)buf.getDataBuffer()).getData();
-		dispose();
 	}
 	
-	public void clear() {
-		buf = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, tdim.x, tdim.y, 1, null);
-		bufw = new BufferedImage(acm, buf, false, null);
+	public void update(Collection<Gob> objs) {
+		ll = objs;
+		update();
+		ll = null;
 	}
 }
