@@ -6,7 +6,7 @@ import java.util.*;
 import javax.media.opengl.*;
 
 public abstract class Tex {
-	private int id = -1;
+	protected int id = -1;
 	protected Coord dim, tdim;
 	protected static Collection<Integer> disposed = new LinkedList<Integer>();
     
