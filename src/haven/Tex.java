@@ -33,16 +33,17 @@ public abstract class Tex {
 			throw(new RuntimeException("GL Error: " + err));
 	}
 	
-	protected abstract void fill(GL gl);
+	protected abstract void fill(GOut gl);
 
-	private void create(GL gl) {
+	private void create(GOut g) {
+		GL gl = g.gl;
 		int[] buf = new int[1];
 		gl.glGenTextures(1, buf, 0);
 		id = buf[0];
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		fill(gl);
+		fill(g);
 		checkerr(gl);
 	}
 	
@@ -51,9 +52,10 @@ public abstract class Tex {
 		return(Color.WHITE);
 	}
 	
-	public void render(GL gl, Coord c, Coord ul, Coord sz) {
+	public void render(GOut g, Coord c, Coord ul, Coord sz) {
+		GL gl = g.gl;
 		if(id < 0)
-			create(gl);
+			create(g);
 		gl.glEnable(GL.GL_TEXTURE_2D);
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 		Color amb = setenv(gl);
@@ -75,11 +77,11 @@ public abstract class Tex {
 		checkerr(gl);
 	}
 
-	public void render(GL gl, Coord c) {
-		render(gl, c, Coord.z, dim);
+	public void render(GOut g, Coord c) {
+		render(g, c, Coord.z, dim);
 	}
     
-	public void crender(GL gl, Coord c, Coord ul, Coord sz) {
+	public void crender(GOut g, Coord c, Coord ul, Coord sz) {
 		Coord t = new Coord(c);
 		Coord uld = new Coord(0, 0);
 		Coord szd = new Coord(dim);
@@ -97,7 +99,7 @@ public abstract class Tex {
 			szd.x -= c.x + dim.x - ul.x - sz.x;
 		if(c.y + dim.y > ul.y + sz.y)
 			szd.y -= c.y + dim.y - ul.y - sz.y;
-		render(gl, t, uld, szd);
+		render(g, t, uld, szd);
 	}
 	
 	public void dispose() {

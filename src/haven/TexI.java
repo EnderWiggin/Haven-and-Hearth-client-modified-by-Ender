@@ -25,7 +25,8 @@ public class TexI extends Tex {
 		pixels = new byte[tdim.x * tdim.y * 4];
 	}
 
-	protected void fill(GL gl) {
+	protected void fill(GOut g) {
+		GL gl = g.gl;
 		ByteBuffer data = ByteBuffer.wrap(pixels);
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
 	}

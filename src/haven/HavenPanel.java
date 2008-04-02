@@ -127,7 +127,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		GOut g = new GOut(gl, new Coord(800, 600));
+		GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 		synchronized(ui) {
 			root.draw(g);
 		}
