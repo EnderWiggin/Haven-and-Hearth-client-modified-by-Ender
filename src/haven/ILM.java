@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import javax.media.opengl.GL;
 
-public class ILM extends Tex {
+public class ILM extends TexI {
 	BufferedImage bufw;
 	WritableRaster buf;
 	public final static BufferedImage ljusboll;
@@ -57,7 +57,8 @@ public class ILM extends Tex {
 		return(amb);
 	}
 	
-	protected void fill(GL gl) {
+	protected void fill(GOut g) {
+		GL gl = g.gl;
 		ByteBuffer data = ByteBuffer.wrap(pixels);
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_ALPHA, tdim.x, tdim.y, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, data);
 	}

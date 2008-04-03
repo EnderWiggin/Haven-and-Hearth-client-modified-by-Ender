@@ -24,7 +24,7 @@ public class Anim {
 	
 	public Tex tex(int f) {
 		if(texes[f] == null)
-			texes[f] = new Tex(frames.get(f));
+			texes[f] = new TexI(frames.get(f));
 		return(texes[f]);
 	}
 }

@@ -7,19 +7,19 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.awt.Graphics2D;
 
-public class Tex2 extends Tex {
+public class TexIM extends TexI {
 	BufferedImage bufw;
 	WritableRaster buf;
 	Graphics2D cg = null;
 	
-	public Tex2(Coord sz) {
+	public TexIM(Coord sz) {
 		super(sz);
 		clear();
 	}
 	
 	public Graphics2D graphics() {
 		if(cg != null)
-			throw(new RuntimeException("Multiple Tex2 Graphics created"));
+			throw(new RuntimeException("Multiple TexIM Graphics created"));
 		return(cg = bufw.createGraphics());
 	}
 	
@@ -31,6 +31,6 @@ public class Tex2 extends Tex {
 	
 	public void clear() {
 		buf = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, tdim.x, tdim.y, 4, null);
-		bufw = new BufferedImage(Tex.glcm, buf, false, null);
+		bufw = new BufferedImage(glcm, buf, false, null);
 	}
 }

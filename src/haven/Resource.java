@@ -71,7 +71,7 @@ public class Resource {
 		synchronized(texes) {
 			if(texes.containsKey(name))
 				return(texes.get(name));
-			Tex tex = new Tex(loadimg(name));
+			Tex tex = new TexI(loadimg(name));
 			texes.put(name, tex);
 			return(tex);
 		}

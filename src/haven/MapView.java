@@ -309,11 +309,12 @@ public class MapView extends Widget implements DTarget {
 				  g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
 				*/
 			}
+			mask.redraw(lumin);
+			g.image(mask, Coord.z);
 			for(Gob gob : speaking) {
 				Speaking s = gob.getattr(Speaking.class);
 				s.draw(g, gob.sc.add(s.off));
 			}
-			mask.redraw(lumin);
 		}
 	}
 	
@@ -334,27 +335,17 @@ public class MapView extends Widget implements DTarget {
 	}
 	
 	private void fixlight() {
+		Astronomy a = glob.ast;
 		double p2 = Math.PI * 2;
-		double sa = -Math.cos(glob.dt * p2);
-		double la = anorm(-Math.cos(glob.mp * p2));
-		double hs = Math.pow(Math.sin(glob.dt * p2), 2);
+		double sa = -Math.cos(a.dt * p2);
+		double la = anorm(-Math.cos(a.mp * p2));
+		double hs = Math.pow(Math.sin(a.dt * p2), 2);
 		double nl = clip(-sa * 2, 0, 1);
 		hs = clip((hs - 0.5) * 2, 0, 1);
 		double ml = 0.1 + la * 0.2;
 		sa = anorm(clip(sa * 1.5, -1, 1));
 		double ll = ml + ((1 - ml) * sa);
 		mask.amb = mkc(hs * 0.4, hs * 0.2, nl * 0.25 * ll, 1 - ll);
-	}
-	
-	private void drawmeter(GOut g, Coord c, double a) {
-		g.line(c, c.add(Coord.sc(a, 30)), 1);
-	}
-	
-	private void drawmeters(GOut g) {
-		double p2 = Math.PI * 2;
-		drawmeter(g, new Coord(330, 50), p2 * (glob.dt + 0.25));
-		drawmeter(g, new Coord(400, 50), p2 * (glob.mp + 0.25));
-		drawmeter(g, new Coord(470, 50), p2 * (glob.yt + 0.25));
 	}
 	
 	public void draw(GOut g) {
@@ -368,12 +359,10 @@ public class MapView extends Widget implements DTarget {
 		}
 		map.sendreqs();
 		try {
-			drawmap(g);
 			fixlight();
-			g.image(mask, Coord.z);
+			drawmap(g);
 			g.chcolor(Color.WHITE);
-			g.text(mc.toString(), new Coord(0, 20));
-			drawmeters(g);
+			g.atext(mc.toString(), new Coord(10, 590), 0, 1);
 		} catch(Loading l) {
 			String text = "Loading...";
 			g.chcolor(Color.BLACK);

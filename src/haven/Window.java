@@ -4,7 +4,7 @@ import java.awt.Color;
 
 public class Window extends Widget {
 	static Color bg = new Color(179, 129, 95);
-	static IBox wbox = null;
+	static IBox wbox;
 	boolean dm = false;
 	Coord atl, asz, wsz;
 	Coord tlo, rbo;
@@ -16,23 +16,21 @@ public class Window extends Widget {
 				return(new Window(c, (Coord)args[0], parent));
 			}
 		});
+		wbox = new IBox(Resource.loadtex("gfx/hud/tl.gif"),
+				Resource.loadtex("gfx/hud/tr.gif"),
+				Resource.loadtex("gfx/hud/bl.gif"),
+				Resource.loadtex("gfx/hud/br.gif"),
+				Resource.loadtex("gfx/hud/extvl.gif"),
+				Resource.loadtex("gfx/hud/extvr.gif"),
+				Resource.loadtex("gfx/hud/extht.gif"),
+				Resource.loadtex("gfx/hud/exthb.gif"));
 	}
 
 	public Window(Coord c, Coord sz, Widget parent, Coord tlo, Coord rbo) {
 		super(c, new Coord(0, 0), parent);
 		this.tlo = tlo;
 		this.rbo = rbo;
-		if(wbox == null) {
-			wbox = new IBox(Resource.loadtex("gfx/hud/tl.gif"),
-					Resource.loadtex("gfx/hud/tr.gif"),
-					Resource.loadtex("gfx/hud/bl.gif"),
-					Resource.loadtex("gfx/hud/br.gif"),
-					Resource.loadtex("gfx/hud/extvl.gif"),
-					Resource.loadtex("gfx/hud/extvr.gif"),
-					Resource.loadtex("gfx/hud/extht.gif"),
-					Resource.loadtex("gfx/hud/exthb.gif"));
-		}
-		sz = sz.add(tlo).add(rbo).add(new Coord(wbox.bl.sz().x + wbox.br.sz().x, wbox.bt.sz().y + wbox.bb.sz().y));
+		sz = sz.add(tlo).add(rbo).add(wbox.bisz());
 		this.sz = sz;
 		atl = new Coord(wbox.bl.sz().x, wbox.bt.sz().y).add(tlo);
 		wsz = sz.add(tlo.inv()).add(rbo.inv());
@@ -75,7 +73,7 @@ public class Window extends Widget {
 	}
 	
 	public Coord xlate(Coord c, boolean in) {
-		Coord ctl = new Coord(wbox.bl.sz().x, wbox.bt.sz().y);
+		Coord ctl = wbox.tloff();
 		if(in)
 			return(c.add(ctl).add(tlo));
 		else

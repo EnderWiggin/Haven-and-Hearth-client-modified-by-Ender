@@ -5,21 +5,24 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.*;
 
 public class GOut {
-	private GL gl;
+	GL gl;
 	private Coord ul, sz;
 	private Color color;
+	final GLContext ctx;
     
 	private GOut(GOut o) {
 		this.gl = o.gl;
 		this.ul = o.ul;
 		this.sz = o.sz;
 		this.color = o.color;
+		this.ctx = o.ctx;
 	}
 
-	public GOut(GL gl, Coord sz) {
+	public GOut(GL gl, GLContext ctx, Coord sz) {
 		this.gl = gl;
 		this.ul = Coord.z;
 		this.sz = sz;
+		this.ctx = ctx;
 	}
     
 	private void checkerr() {
@@ -36,16 +39,20 @@ public class GOut {
 	}
 
 	public void image(BufferedImage img, Coord c) {
-		Tex tex = new Tex(img);
+		Tex tex = new TexI(img);
 		image(tex, c);
 		tex.dispose();
 	}
 	
-	public void image(Tex tex, Coord c) {
-		tex.crender(gl, c.add(ul), ul, sz);
+	public void image(Tex tex, Coord c, Coord off) {
+		tex.crender(this, c.add(ul.add(off.inv())), ul, sz);
 		checkerr();
 	}
     
+	public void image(Tex tex, Coord c) {
+		image(tex, c, Coord.z);
+	}
+	
 	private void vertex(Coord c) {
 		gl.glVertex2i(c.x + ul.x, c.y + ul.y);
 	}

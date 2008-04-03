@@ -23,6 +23,7 @@ public class Session {
 	public static final int OD_LAYERS = 6;
 	public static final int OD_DRAWOFF = 7;
 	public static final int OD_LUMIN = 8;
+	public static final int OD_AVATAR = 9;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
@@ -136,7 +137,7 @@ public class Session {
 							Coord off = msg.coord();
 							String text = msg.string();
 							oc.speak(id, frame, off, text);
-						} else if(type == OD_LAYERS) {
+						} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
 							List<Integer> types = new LinkedList<Integer>();
 							List<String> layers = new LinkedList<String>();
 							while(true) {
@@ -147,7 +148,10 @@ public class Session {
 								types.add(rtype);
 								layers.add(layer);
 							}
-							oc.layers(id, frame, types, layers);
+							if(type == OD_LAYERS)
+								oc.layers(id, frame, types, layers);
+							else
+								oc.avatar(id, frame, types, layers);
 						} else if(type == OD_DRAWOFF) {
 							Coord off = msg.coord();
 							oc.drawoff(id, frame, off);

@@ -36,7 +36,7 @@ public class Layered extends Drawable {
 
 	public void draw(GOut g, Coord sc) {
 		Coord sz = getsize();
-		BufferedImage buf = Tex.mkbuf(sz);
+		BufferedImage buf = TexI.mkbuf(sz);
 		Coord cc = getoffset();
 		for(SimpleDrawable d : layers)
 			d.draw2(buf, cc);

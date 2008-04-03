@@ -23,6 +23,10 @@ public class IBox {
 		return(ctl.sz());
 	}
 	
+	public Coord bisz() {
+		return(new Coord(bl.sz().x + br.sz().x, bt.sz().y + bb.sz().y));
+	}
+	
 	public Coord bsz() {
 		return(ctl.sz().add(cbr.sz()));
 	}

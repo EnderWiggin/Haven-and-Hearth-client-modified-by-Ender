@@ -13,8 +13,6 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	int w, h;
 	long fd = 20, fps = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
-	Tex tt1 = new Tex(Resource.loadimg("gfx/hud/buttons/godu.gif"));
-	Tex tt2 = new Tex(Resource.loadimg("gfx/tiles/water/01.gif"));
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
@@ -129,11 +127,11 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		GOut g = new GOut(gl, new Coord(800, 600));
+		GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 		synchronized(ui) {
 			root.draw(g);
 		}
-		g.text("FPS: " + fps, Coord.z);
+		g.atext("FPS: " + fps, new Coord(790, 590), 1, 1);
 	}
 	
 /*
@@ -186,10 +184,12 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		try {
 			display();
 		} catch(GLException e) {
-			if(e.getCause() instanceof InterruptedException)
+			if(e.getCause() instanceof InterruptedException) {
 				throw((InterruptedException)e.getCause());
-			else
+			} else {
+				e.printStackTrace();
 				throw(e);
+			}
 		}
 	}
 	
