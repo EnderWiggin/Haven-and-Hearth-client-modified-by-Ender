@@ -53,6 +53,10 @@ public class OCache implements Iterable<Gob> {
 		local.remove(gob);
 	}
 	
+	public synchronized Gob getgob(int id) {
+		return(objs.get(id));
+	}
+	
 	public synchronized Gob getgob(int id, int frame) {
 		if(!objs.containsKey(id)) {
 			boolean r = false;
@@ -152,6 +156,18 @@ public class OCache implements Iterable<Gob> {
 		 for(int i = 0; i < types.size(); i++)
 			 ll.add(loaddrw(g, types.get(i), layers.get(i)));
 		 lay.setlayers(ll);
+	}
+	
+	public synchronized void avatar(int id, int frame, List<Integer> types, List<String> layers) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		 Avatar ava = g.getattr(Avatar.class);
+		 if(ava == null) {
+			 ava = new Avatar(g);
+			 g.setattr(ava);
+		 }
+		 ava.setlayers(layers);
 	}
 	
 	public synchronized void drawoff(int id, int frame, Coord off) {

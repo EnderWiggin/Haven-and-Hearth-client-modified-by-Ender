@@ -131,7 +131,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		synchronized(ui) {
 			root.draw(g);
 		}
-		g.text("FPS: " + fps, Coord.z);
+		g.atext("FPS: " + fps, new Coord(790, 590), 1, 1);
 	}
 	
 /*
@@ -184,10 +184,12 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		try {
 			display();
 		} catch(GLException e) {
-			if(e.getCause() instanceof InterruptedException)
+			if(e.getCause() instanceof InterruptedException) {
 				throw((InterruptedException)e.getCause());
-			else
+			} else {
+				e.printStackTrace();
 				throw(e);
+			}
 		}
 	}
 	

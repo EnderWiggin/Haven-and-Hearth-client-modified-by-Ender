@@ -8,25 +8,8 @@ import java.io.Reader;
 public class Equipory extends Window implements DTarget {
 	List<Inventory> epoints;
 	List<Item> equed;
-	List<Layer> layers;
-	TexIM bg;
-	static List<String> prios = null;
-	
-	private class Layer {
-		String res;
-		BufferedImage img;
-		int prio;
-		
-		Layer(String res, BufferedImage img, int prio) {
-			this.res = res;
-			this.img = img;
-			this.prio = prio;
-		}
-		
-		public String toString() {
-			return(res);
-		}
-	}
+	static final Tex bg = Resource.loadtex("gfx/hud/equip/bg.gif");
+	int avagob = -1;
 	
 	static Coord ecoords[] = {
 		new Coord(0, 0),
@@ -55,53 +38,15 @@ public class Equipory extends Window implements DTarget {
 		});
 	}
 	
-	private void loadprios() {
-		prios = new ArrayList<String>();
-		Reader r = Resource.gettext("gfx/hud/equip/prio");
-		Scanner s = new Scanner(r);
-		try {
-			while(true)
-				prios.add(s.nextLine());
-		} catch(NoSuchElementException e) {}
-	}
-	
-	public void addlayer(String res) {
-		String name;
-		name = res.substring(res.lastIndexOf('/') + 1);
-		name = name.substring(0, name.indexOf('.'));
-		int prio = prios.indexOf(name);
-		int i;
-		for(i = 0; i < layers.size(); i++) {
-			if(layers.get(i).prio > prio)
-				break;
-		}
-		layers.add(i, new Layer(res, Resource.loadimg(res), prio));
-	}
-	
 	public Equipory(Coord c, Widget parent) {
 		super(c, new Coord(276, 249), parent);
-		if(prios == null)
-			loadprios();
 		epoints = new ArrayList<Inventory>();
 		equed = new ArrayList<Item>(ecoords.length);
-		layers = new ArrayList<Layer>();
-		addlayer("gfx/hud/equip/bg.gif");
-		addlayer("gfx/hud/equip/body.gif");
-		Coord sz = Utils.imgsz(layers.get(0).img);
-		bg = new TexIM(sz);
-		renderbg();
 		new Img(new Coord(32, 0), bg, this);
 		for(int i = 0; i < ecoords.length; i++) {
 			epoints.add(new Inventory(ecoords[i], new Coord(1, 1), this));
 			equed.add(null);
 		}
-	}
-	
-	private void renderbg() {
-		Graphics g = bg.graphics();
-		for(Layer l : layers)
-			g.drawImage(l.img, 0, 0, null);
-		bg.update();
 	}
 	
 	public void uimsg(String msg, Object... args) {
@@ -117,28 +62,8 @@ public class Equipory extends Window implements DTarget {
 						equed.set(i, null);
 				}
 			}
-		} else if(msg == "al") {
-			for(Object o : args)
-				addlayer((String)o);
-		} else if(msg == "sl") {
-			layers.clear();
-			addlayer("gfx/hud/equip/bg.gif");
-			addlayer("gfx/hud/equip/body.gif");
-			for(Object o : args)
-				addlayer((String)o);
-			synchronized(bg) {
-				renderbg();
-			}
-		} else if(msg == "rl") {
-			for(Object o : args) {
-				String res = (String)o;
-				for(Layer l : layers) {
-					if(l.res.equals(res)) {
-						layers.remove(l);
-						break;
-					}
-				}
-			}
+		} else if(msg == "ava") {
+			avagob = (Integer)args[0];
 		}
 	}
 	
@@ -160,5 +85,19 @@ public class Equipory extends Window implements DTarget {
 	
 	public void drop(Coord cc, Coord ul) {
 		wdgmsg("drop", -1);
+	}
+	
+	public void draw(GOut g) {
+		super.draw(g);
+		Coord avac = xlate(new Coord(32, 0), true);
+		g.image(bg, avac);
+		if(avagob != -1) {
+			Gob gob = ui.sess.glob.oc.getgob(avagob);
+			if(gob != null) {
+				Avatar ava = gob.getattr(Avatar.class);
+				if(ava != null)
+					g.image(ava.tex(), avac);
+			}
+		}
 	}
 }

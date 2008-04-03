@@ -2,7 +2,7 @@ package haven;
 
 public class Glob {
 	long time;
-	double dt, mp, yt;
+	Astronomy ast;
 	OCache oc = new OCache();
 	MCache map;
 	Session sess;
@@ -18,8 +18,10 @@ public class Glob {
 	
 	public void blob(Message msg) {
 		time = msg.int32();
-		dt = defix(msg.int32());
-		mp = defix(msg.int32());
-		yt = defix(msg.int32());
+		double dt = defix(msg.int32());
+		double mp = defix(msg.int32());
+		double yt = defix(msg.int32());
+		boolean night = (dt < 0.25) || (dt > 0.75);
+		ast = new Astronomy(dt, mp, yt, night);
 	}
 }

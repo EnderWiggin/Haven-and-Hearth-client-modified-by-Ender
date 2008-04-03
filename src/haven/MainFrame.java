@@ -8,6 +8,7 @@ public class MainFrame extends Frame implements Runnable {
 	ThreadGroup g;
 	
 	public MainFrame(int w, int h) {
+		super("Haven and Hearth");
 		p = new HavenPanel(w, h);
 		add(p);
 		pack();

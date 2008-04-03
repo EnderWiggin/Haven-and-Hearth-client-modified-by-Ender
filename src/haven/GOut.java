@@ -44,11 +44,15 @@ public class GOut {
 		tex.dispose();
 	}
 	
-	public void image(Tex tex, Coord c) {
-		tex.crender(this, c.add(ul), ul, sz);
+	public void image(Tex tex, Coord c, Coord off) {
+		tex.crender(this, c.add(ul.add(off.inv())), ul, sz);
 		checkerr();
 	}
     
+	public void image(Tex tex, Coord c) {
+		image(tex, c, Coord.z);
+	}
+	
 	private void vertex(Coord c) {
 		gl.glVertex2i(c.x + ul.x, c.y + ul.y);
 	}
