@@ -10,21 +10,22 @@ import javax.media.opengl.glu.GLU;
 public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	RootWidget root;
 	UI ui;
+	boolean inited = false;
 	int w, h;
 	long fd = 20, fps = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
+		initgl();
 	}
 	
 	private void initgl() {
-		GLEventListener o;
-		
-		addGLEventListener(o = new GLEventListener() {
+		addGLEventListener(new GLEventListener() {
 			public void display(GLAutoDrawable d) {
 				GL gl = d.getGL();
-				redraw(gl);
+				if(inited)
+					redraw(gl);
 				Tex.disposeall(gl);
 			}
 			
@@ -37,9 +38,6 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				gl.glEnable(GL.GL_BLEND);
 				gl.glEnable(GL.GL_LINE_SMOOTH);
 				gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-				synchronized(this) {
-					notifyAll();
-				}
 			}
 
 			public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
@@ -52,12 +50,6 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 			
 			public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
 		});
-		
-		try {
-			synchronized(o) {
-				o.wait();
-			}
-		} catch(InterruptedException e) {}
 	}
 	
 	public void init() {
@@ -65,7 +57,6 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		//createBufferStrategy(2);
 		root = new RootWidget(new Coord(w, h), this);
 		ui = new UI(root, null);
-		initgl();
 		addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
 				synchronized(events) {
@@ -123,6 +114,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				}
 			}
 		});
+		inited = true;
 	}
 	
 	void redraw(GL gl) {
