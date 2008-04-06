@@ -21,7 +21,7 @@ public class Avatar extends GAttrib {
 		} catch(NoSuchElementException e) {}
 	}
 	
-	private class Layer {
+	private static class Layer {
 		String res;
 		BufferedImage img = null;
 		int prio;
@@ -42,6 +42,15 @@ public class Avatar extends GAttrib {
 		public String toString() {
 			return(res + ":" + prio);
 		}
+                
+                public boolean equals(Object o) {
+                        if(!(o instanceof Layer))
+                                return(false);
+                        Layer l = (Layer)o;
+                        if(!l.res.equals(res))
+                            return(false);
+                        return(true);
+                }
 	}
 	
 	public Avatar(Gob gob) {
@@ -49,17 +58,20 @@ public class Avatar extends GAttrib {
 	}
 	
 	void setlayers(List<String> layers) {
-		this.layers = new ArrayList<Layer>();
+                List<Layer> nl = new ArrayList<Layer>();
 		for(String res : layers)
-			this.layers.add(new Layer(res));
-		sort();
-		if(image != null)
-			image.dispose();
-		image = null;
+			nl.add(new Layer(res));
+		sort(nl);
+                if(!nl.equals(this.layers)) {
+                        this.layers = nl;
+                        if(image != null)
+                                image.dispose();
+                        image = null;
+                }
 	}
 
-	private void sort() {
-		Collections.sort(layers, new Comparator<Layer>() {
+	private static void sort(List<Layer> l) {
+		Collections.sort(l, new Comparator<Layer>() {
 			public int compare(Layer a, Layer b) {
 				return(a.prio - b.prio);
 			}
@@ -69,12 +81,14 @@ public class Avatar extends GAttrib {
 	public Tex tex() {
 		TexIM image = this.image;
 		if(image == null) {
+                        long begin = System.currentTimeMillis();
 			image = new TexIM(sz);
 			Graphics g = image.graphics();
 			for(Layer l : layers)
 				g.drawImage(l.img(), 0, 0, null);
 			image.update();
 			this.image = image;
+                        System.out.println(System.currentTimeMillis() - begin);
 		}
 		return(image);
 	}
