@@ -14,6 +14,8 @@ public class FlowerMenu extends Widget {
 	static {
 		Widget.addtype("sm", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
+				if((c.x == -1) && (c.y == -1))
+					c = parent.ui.lcc;
 				String[] opts = new String[args.length];
 				for(int i = 0; i < args.length; i++)
 					opts[i] = (String)args[i];

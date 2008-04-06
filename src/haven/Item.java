@@ -118,6 +118,9 @@ public class Item extends SSWidget {
 			if(button == 1) {
 				wdgmsg("take", c);
 				return(true);
+			} else if(button == 3) {
+				wdgmsg("iact", c);
+				return(true);
 			}
 		} else {
 			if(button == 1) {
