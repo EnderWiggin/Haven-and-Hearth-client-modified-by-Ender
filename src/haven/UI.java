@@ -9,7 +9,7 @@ public class UI {
 	Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
 	Receiver rcvr;
-	Coord mc;
+	Coord mc, lcc = Coord.z;
 	Session sess;
 	MapView mainview;
 	
@@ -136,7 +136,7 @@ public class UI {
 	}
 	
 	public void mousedown(Coord c, int button) {
-		mc = c;
+		lcc = mc = c;
 		if(mousegrab == null)
 			root.mousedown(c, button);
 		else
@@ -160,7 +160,7 @@ public class UI {
 	}
 	
 	public void mousewheel(Coord c, int amount) {
-		mc = c;
+		lcc = mc = c;
 		if(mousegrab == null)
 			root.mousewheel(c, amount);
 		else

@@ -363,6 +363,8 @@ public class MapView extends Widget implements DTarget {
 			drawmap(g);
 			g.chcolor(Color.WHITE);
 			g.atext(mc.toString(), new Coord(10, 590), 0, 1);
+			g.atext("Hunger meter: " + glob.glut / (glob.fcap / 100) + "%", new Coord(10, 560), 0, 1);
+			g.atext("Stamina meter: " + glob.stamina / (glob.stamcap / 100) + "%", new Coord(10, 575), 0, 1);
 		} catch(Loading l) {
 			String text = "Loading...";
 			g.chcolor(Color.BLACK);
