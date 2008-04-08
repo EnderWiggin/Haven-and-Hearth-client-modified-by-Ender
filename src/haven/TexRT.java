@@ -45,6 +45,7 @@ public abstract class TexRT extends TexGL {
 						//gl.glEnable(GL.GL_LINE_SMOOTH);
 						gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 						TexRT.this.init(gl);
+						reshape(d, 0, 0, dim.x, dim.y);
 					}
 
 					public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
@@ -52,6 +53,7 @@ public abstract class TexRT extends TexGL {
 						GLU glu = new GLU();
 						gl.glMatrixMode(GL.GL_PROJECTION);
 						gl.glLoadIdentity();
+						System.out.println(x + ", " + y + ", " + w + ", " + h);
 						glu.gluOrtho2D(0, w, h, 0);
 					}
 			
@@ -62,8 +64,10 @@ public abstract class TexRT extends TexGL {
 	}
 	
 	public void update() {
-		if(pbuf != null)
+		if(pbuf != null) {
 			pbuf.display();
+			pbuf.swapBuffers();
+		}
 	}
 	
 	private void subrend2(GL gl) {
