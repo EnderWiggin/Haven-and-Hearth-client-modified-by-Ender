@@ -171,7 +171,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public abstract void init();
 	}
 	
-	public class Image extends Layer implements Serializable{
+	public class Image extends Layer implements Serializable, Comparable<Image> {
 		transient BufferedImage img;
 		transient private Tex tex;
 		final int z;
@@ -196,6 +196,10 @@ public class Resource implements Comparable<Resource>, Serializable {
 				return(tex);
 			tex = new TexI(img);
 			return(tex);
+		}
+		
+		public int compareTo(Image other) {
+			return(z - other.z);
 		}
 		
 		public void init() {}
