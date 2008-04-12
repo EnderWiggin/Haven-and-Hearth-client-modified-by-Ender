@@ -370,14 +370,20 @@ public class Resource implements Comparable<Resource>, Serializable {
 		try {
 			return(new FileInputStream(f));
 		} catch(FileNotFoundException e) {
-			throw(new LoadException("Resource not found locally", e));
-		}		
+			throw(new LoadException("Resource not found locally", e, null));
+		}
 	}
 	
 	public static BufferedImage loadimg(String name) {
 		Resource res = load(name);
 		res.loadwait();
 		return(res.layer(imgc).img);
+	}
+	
+	public static Tex loadtex(String name) {
+		Resource res = load(name);
+		res.loadwait();
+		return(res.layer(imgc).tex());
 	}
 	
 	/* Beware! Olde functions be here! */
