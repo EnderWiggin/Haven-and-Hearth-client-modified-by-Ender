@@ -86,21 +86,14 @@ public class OCache implements Iterable<Gob> {
 		g.move(c);
 	}
 	
-	static SimpleDrawable loaddrw(Gob g, int type, String name) {
-		if(type == 0)
-			return(new SimpleSprite(g, name));
-		else if(type == 2)
-			return(new SimpleAnim(g, name));
-		throw(new RuntimeException("Unknown resource type: " + type));
-	}
-	
 	public synchronized void cres(int id, int frame, String res, int ver) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
-		SimpleDrawable d = (SimpleDrawable)g.getattr(Drawable.class);
-		if((d == null) || !d.res.equals(res)) {
-			g.setattr(loaddrw(g, type, res));
+		Resource rres = Resource.load(res, ver);
+		ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
+		if((d == null) || (d.res != rres)) {
+			g.setattr(new ResDrawable(g, rres));
 		}
 	}
 	
@@ -143,13 +136,14 @@ public class OCache implements Iterable<Gob> {
 		}
 	}
 	
-	public synchronized void layers(int id, int frame, List<String> layers, List<Integer> vers) {
+	public synchronized void layers(int id, int frame, String baseres, int basever, List<String> layers, List<Integer> vers) {
+		Resource base = Resource.load(baseres, basever);
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
 		 Layered lay = (Layered)g.getattr(Drawable.class);
-		 if(lay == null) {
-			 lay = new Layered(g);
+		 if((lay == null) || (lay.base != base)) {
+			 lay = new Layered(g, base);
 			 g.setattr(lay);
 		 }
 		 List<Resource> ll = new ArrayList<Resource>();

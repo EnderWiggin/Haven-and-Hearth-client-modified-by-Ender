@@ -139,9 +139,11 @@ public class Session {
 								String text = msg.string();
 								oc.speak(id, frame, off, text);
 							} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
+								String baseres;
+								int basever;
 								if(type == OD_LAYERS) {
-									String baseres = msg.string();
-									int basever = msg.uint16();
+									baseres = msg.string();
+									basever = msg.uint16();
 								}
 								List<String> layers = new LinkedList<String>();
 								List<Integer> vers = new LinkedList<Integer>();
