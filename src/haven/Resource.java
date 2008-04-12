@@ -49,10 +49,8 @@ public class Resource implements Comparable<Resource>, Serializable {
 			cache.put(name, res);
 		}
 		synchronized(Resource.class) {
-			if(loader == null) {
+			if(loader == null)
 				loader = new Loader();
-				loader.start();
-			}
 			loader.load(res);
 		}
 		return(res);
@@ -91,6 +89,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public Loader() {
 			super(Utils.tg(), "Haven resource loader");
 			setDaemon(true);
+			start();
 		}
 		
 		public void run() {
