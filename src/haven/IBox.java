@@ -15,6 +15,17 @@ public class IBox {
 		this.bb = bb;
 	}
 	
+	public IBox(String base, String ctl, String ctr, String cbl, String cbr, String bl, String br, String bt, String bb) {
+		this(Resource.loadtex(base + "/" + ctl),
+		     Resource.loadtex(base + "/" + ctr),
+		     Resource.loadtex(base + "/" + cbl),
+		     Resource.loadtex(base + "/" + cbr),
+		     Resource.loadtex(base + "/" + bl),
+		     Resource.loadtex(base + "/" + br),
+		     Resource.loadtex(base + "/" + bt),
+		     Resource.loadtex(base + "/" + bb));
+	}
+	
 	public Coord tloff() {
 		return(new Coord(bl.sz().x, bt.sz().y));
 	}
