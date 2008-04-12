@@ -305,8 +305,14 @@ public class Resource implements Comparable<Resource>, Serializable {
 		if(ver != other.ver)
 			return(ver - other.ver);
 		if(other != this)
-			throw(new RuntimeException("Resource identity broken!"));
+			throw(new RuntimeException("Resource identity crisis!"));
 		return(0);
+	}
+	
+	public boolean equals(Object other) {
+		if(!(other instanceof Resource) || (other == null))
+			return(false);
+		return(compareTo((Resource)other) == 0);
 	}
 	
 	private void load(InputStream in) throws IOException {
