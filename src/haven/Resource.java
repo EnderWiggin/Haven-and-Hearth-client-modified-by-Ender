@@ -1,23 +1,372 @@
 package haven;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.net.*;
 import java.io.*;
 import javax.imageio.*;
 import java.awt.image.BufferedImage;
 
-public class Resource {
-	private static Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
-	private static Map<String, Tex> texes = new HashMap<String, Tex>();
-	private static Map<String, Sprite> sprites = new HashMap<String, Sprite>();
-	private static Map<String, Anim> anims = new HashMap<String, Anim>();
+public class Resource implements Comparable<Resource> {
+	public static URL baseurl = null;
+	private static Map<String, Resource> cache = new TreeMap<String, Resource>();
+	private static Loader loader;
+	private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
+	public static Class<Image> imgc = Image.class;
+	public static Class<Neg> negc = Neg.class;
+	public static Class<Anim> animc = Anim.class;
 	
-	public static InputStream getres(String name) {
+	private LoadException error;
+	private Collection<? extends Layer> layers = new LinkedList<Layer>();
+	final String name;
+	int ver;
+	boolean loading;
+
+	private Resource(String name, int ver) {
+		this.name = name;
+		this.ver = ver;
+		error = null;
+		loading = true;
+	}
+	
+	public static Resource load(String name, int ver) {
+		Resource res;
+		synchronized(cache) {
+			res = cache.get(name);
+			if(ver != -1) {
+				if(res.ver < ver) {
+					res = null;
+					cache.remove(name);
+				} else if(res.ver > ver) {
+					throw(new RuntimeException("Weird version number on " + name));
+				}
+			}
+			if(res != null)
+				return res;
+			res = new Resource(name, ver);
+			cache.put(name, res);
+		}
+		synchronized(Resource.class) {
+			if(loader == null) {
+				loader = new Loader();
+				loader.start();
+			}
+			loader.load(res);
+		}
+		return(res);
+	}
+	
+	public static Resource load(String name) {
+		return(load(name, -1));
+	}
+	
+	public void loadwaitint() throws InterruptedException {
+		synchronized(this) {
+			while(loading) {
+				wait();
+			}
+		}
+	}
+	
+	public void loadwait() {
+		boolean i = false;
+		synchronized(this) {
+			while(loading) {
+				try {
+					wait();
+				} catch(InterruptedException e) {
+					i = true;
+				}
+			}
+		}
+		if(i)
+			Thread.currentThread().interrupt();
+	}
+	
+	private static class Loader extends Thread {
+		private Queue<Resource> queue = new LinkedList<Resource>();
+		
+		public Loader() {
+			super(Utils.tg(), "Haven resource loader");
+			setDaemon(true);
+		}
+		
+		public void run() {
+			try {
+				while(true) {
+					Resource cur;
+					synchronized(queue) {
+						while((cur = queue.poll()) == null)
+							queue.wait();
+					}
+					synchronized(cur) {
+						try {
+							try {
+								handle(cur);
+							} catch(IOException e) {
+								cur.error = new LoadException(e);
+							} catch(LoadException e) {
+								cur.error = e;
+							}
+						} finally {
+							cur.loading = false;
+							cur.notifyAll();
+						}
+					}
+					cur = null;
+				}
+			} catch(InterruptedException e) {}
+		}
+		
+		private void handle(Resource res) throws IOException {
+			try {
+				res.load(getres(res.name));
+				return;
+			} catch(LoadException e) {}
+			URL resurl;
+			try {
+				resurl = new URL(baseurl, res.name);
+			} catch(MalformedURLException e) {
+				throw(new LoadException("Could not construct res URL", e));
+			}
+			URLConnection c = resurl.openConnection();
+			c.connect();
+			res.load(c.getInputStream());
+		}
+		
+		public void load(Resource res) { 
+			synchronized(queue) {
+				queue.add(res);
+				queue.notifyAll();
+			}
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static class LoadException extends RuntimeException {
+		public LoadException(String msg) {
+			super(msg);
+		}
+
+		public LoadException(String msg, Throwable cause) {
+			super(msg, cause);
+		}
+		
+		public LoadException(Throwable cause) {
+			super(cause);
+		}
+	}
+	
+	public static Coord cdec(byte[] buf, int off) {
+		return(new Coord(Utils.int16d(buf, off), Utils.int16d(buf, off + 2)));
+	}
+	
+	public abstract class Layer {
+		public abstract void init();
+	}
+	
+	public class Image extends Layer {
+		BufferedImage img;
+		private Tex tex;
+		final int z;
+		final boolean l;
+		final int id;
+		Coord o;
+		
+		public Image(byte[] buf) {
+			z = Utils.int16d(buf, 0);
+			l = buf[2] != 0;
+			id = Utils.int16d(buf, 3);
+			o = cdec(buf, 5);
+			try {
+				img = ImageIO.read(new ByteArrayInputStream(buf, 9, buf.length - 9));
+			} catch(IOException e) {
+				throw(new RuntimeException(e));
+			}
+		}
+		
+		public synchronized Tex tex() {
+			if(tex != null)
+				return(tex);
+			tex = new TexI(img);
+			return(tex);
+		}
+		
+		public void init() {}
+	}
+	static {ltypes.put("image", Image.class);}
+	
+	public class Neg extends Layer {
+		Coord cc;
+		Coord bc, bs;
+		Coord sz;
+		
+		public Neg(byte[] buf) {
+			cc = cdec(buf, 0);
+			bc = cdec(buf, 4);
+			bs = cdec(buf, 8);
+			sz = cdec(buf, 12);
+			bc = MapView.s2m(bc.add(cc.inv()));
+			bs = MapView.s2m(bs.add(cc.inv())).add(bc.inv());
+		}
+		
+		public void init() {}
+	}
+	static {ltypes.put("neg", Neg.class);}
+	
+	public class Anim extends Layer {
+		Image[] f;
+		private int[] ids;
+		int d;
+		
+		public Anim(byte[] buf) {
+			d = Utils.uint16d(buf, 0);
+			ids = new int[Utils.uint16d(buf, 2)];
+			if(buf.length - 4 != ids.length * 2)
+				throw(new LoadException("Invalid anim descriptor in " + name));
+			for(int i = 0; i < ids.length; i++)
+				ids[i] = Utils.int16d(buf, 4 + (i * 2));
+		}
+		
+		public void init() {
+			f = new Image[ids.length];
+			for(int i = 0; i < ids.length; i++) {
+				for(Image img : layers(Image.class)) {
+					if(img.id == ids[i])
+						f[i] = img;
+				}
+			}
+		}
+	}
+	static {ltypes.put("anim", Anim.class);}
+	
+	private void readall(InputStream in, byte[] buf) throws IOException {
+		int ret, off = 0;
+		while(off < buf.length) {
+			ret = in.read(buf, off, buf.length - off);
+			if(ret < 0)
+				throw(new LoadException("Incomplete resource at " + name));
+			off += ret;
+		}
+	}
+	
+	public <L extends Layer> Collection<L> layers(Class<L> cl) {
+		checkerr();
+		Collection<L> ret = new LinkedList<L>();
+		for(Layer l : layers) {
+			if(cl.isInstance(l))
+				ret.add(cl.cast(l));
+		}
+		return(ret);
+	}
+	
+	public <L extends Layer> L layer(Class<L> cl) {
+		checkerr();
+		for(Layer l : layers) {
+			if(cl.isInstance(l))
+				return(cl.cast(l));
+		}
+		return(null);
+	}
+	
+	public int compareTo(Resource other) {
+		checkerr();
+		int nc = name.compareTo(other.name);
+		if(nc != 0)
+			return(nc);
+		if(ver != other.ver)
+			return(ver - other.ver);
+		if(other != this)
+			throw(new RuntimeException("Resource identity broken!"));
+		return(0);
+	}
+	
+	private void load(InputStream in) throws IOException {
+		String sig = "Haven Resource 1";
+		byte buf[] = new byte[sig.length()];
+		readall(in, buf);
+		if(!sig.equals(new String(buf)))
+			throw(new LoadException("Invalid res signature"));
+		buf = new byte[2];
+		readall(in, buf);
+		int ver = Utils.uint16d(buf, 0);
+		List<Layer> layers = new LinkedList<Layer>();
+		if(this.ver == -1) {
+			this.ver = ver;
+		} else {
+			if(ver != this.ver)
+				throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")"));
+		}
+		outer: while(true) {
+			StringBuilder tbuf = new StringBuilder();
+			while(true) {
+				byte bb;
+				int ib;
+				if((ib = in.read()) == -1) {
+					if(tbuf.length() == 0)
+						break outer;
+					throw(new LoadException("Incomplete resource at " + name));
+				}
+				bb = (byte)ib;
+				if(bb == 0)
+					break;
+				tbuf.append((char)bb);
+			}
+			buf = new byte[4];
+			readall(in, buf);
+			int len = Utils.int32d(buf, 0);
+			buf = new byte[len];
+			readall(in, buf);
+			Class<? extends Layer> lc = ltypes.get(tbuf.toString());
+			Constructor<? extends Layer> cons;
+			try {
+				cons = lc.getConstructor(byte[].class);
+			} catch(NoSuchMethodException e) {
+				throw(new RuntimeException(e));
+			}
+			Layer l;
+			try {
+				l = cons.newInstance(buf);
+			} catch(InstantiationException e) {
+				throw(new RuntimeException(e));
+			} catch(InvocationTargetException e) {
+				Throwable c = e.getCause();
+				if(c instanceof RuntimeException) 
+					throw((RuntimeException)c);
+				else
+					throw(new RuntimeException(c));
+			} catch(IllegalAccessException e) {
+				throw(new RuntimeException(e));
+			}
+			layers.add(l);
+		}
+		for(Layer l : layers)
+			l.init();
+		this.layers = layers;
+	}
+	
+	private void checkerr() {
+		if(error != null)
+			throw(new RuntimeException(error));
+	}
+	
+	private static InputStream getres(String name) {
 		InputStream s = Resource.class.getResourceAsStream("/res/" + name);
 		if(s == null)
-			throw(new RuntimeException("Could not find resource: " + name));
+			throw(new LoadException("Could not find resource locally: " + name));
 		return(s);
 	}
 	
+	public static BufferedImage loadimg(String name) {
+		Resource res = load(name);
+		res.loadwait();
+		return(res.layer(imgc).img);
+	}
+	
+	/* Beware! Olde functions be here! */
+	
+	/*
 	public static Reader gettext(String name) {
 		try {
 			return(new InputStreamReader(getres(name), "utf-8"));
@@ -195,4 +544,5 @@ public class Resource {
 			}
 		}
 	}
+	*/
 }

@@ -6,12 +6,12 @@ import java.awt.image.BufferedImage;
 
 public class Cal extends SSWidget {
 	public static final double hbr = 23;
-	static BufferedImage bg = Resource.loadimg("gfx/hud/calendar/setting.gif");
-	static BufferedImage dlnd = Resource.loadimg("gfx/hud/calendar/dayscape.gif");
-	static BufferedImage dsky = Resource.loadimg("gfx/hud/calendar/daysky.gif");
-	static BufferedImage nlnd = Resource.loadimg("gfx/hud/calendar/nightscape.gif");
-	static BufferedImage nsky = Resource.loadimg("gfx/hud/calendar/nightsky.gif");
-	static BufferedImage sun = Resource.loadimg("gfx/hud/calendar/sun.png");
+	static BufferedImage bg = Resource.loadimg("gfx/hud/calendar/setting");
+	static BufferedImage dlnd = Resource.loadimg("gfx/hud/calendar/dayscape");
+	static BufferedImage dsky = Resource.loadimg("gfx/hud/calendar/daysky");
+	static BufferedImage nlnd = Resource.loadimg("gfx/hud/calendar/nightscape");
+	static BufferedImage nsky = Resource.loadimg("gfx/hud/calendar/nightsky");
+	static BufferedImage sun = Resource.loadimg("gfx/hud/calendar/sun");
 	static BufferedImage moon[];
 	long update = 0;
 	Astronomy current;
@@ -19,7 +19,7 @@ public class Cal extends SSWidget {
 	static {
 		moon = new BufferedImage[8];
 		for(int i = 0; i < moon.length; i++)
-			moon[i] = Resource.loadimg(String.format("gfx/hud/calendar/m%02d.png", i));
+			moon[i] = Resource.loadimg(String.format("gfx/hud/calendar/m%02d", i));
 		Widget.addtype("cal", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				return(new Cal(c, parent));
@@ -34,7 +34,7 @@ public class Cal extends SSWidget {
 		g.drawImage(bg, 0, 0, null);
 		g.drawImage(a.night?nsky:dsky, 0, 0, null);
 		int mp = (int)((a.mp + (0.5 / (double)moon.length)) * (double)moon.length);
-		BufferedImage moon = this.moon[mp];
+		BufferedImage moon = Cal.moon[mp];
 		Coord mc = Coord.sc((a.dt + 0.25) * 2 * PI, hbr).add(sz.div(2)).add(Utils.imgsz(moon).div(2).inv());
 		Coord sc = Coord.sc((a.dt + 0.75) * 2 * PI, hbr).add(sz.div(2)).add(Utils.imgsz(sun).div(2).inv());
 		g.drawImage(moon, mc.x, mc.y, null);

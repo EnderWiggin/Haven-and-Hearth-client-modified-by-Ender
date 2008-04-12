@@ -53,8 +53,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	}
 	
 	public void init() {
-		//setFocusTraversalKeysEnabled(false);
-		//createBufferStrategy(2);
+		setFocusTraversalKeysEnabled(false);
 		root = new RootWidget(new Coord(w, h), this);
 		ui = new UI(root, null);
 		addKeyListener(new KeyAdapter() {
