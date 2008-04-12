@@ -182,7 +182,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		
 		public Image(byte[] buf) {
 			z = Utils.int16d(buf, 0);
-			l = buf[2] != 0;
+			l = (buf[2] & 1) != 0;
 			id = Utils.int16d(buf, 3);
 			o = cdec(buf, 5);
 			try {
@@ -243,7 +243,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	static {ltypes.put("neg", Neg.class);}
 	
 	public class Anim extends Layer implements Serializable {
-		Image[] f;
+		Image[][] f;
 		private int[] ids;
 		int d;
 		
@@ -257,12 +257,15 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 		
 		public void init() {
-			f = new Image[ids.length];
+			f = new Image[ids.length][];
+			Image[] typeinfo = new Image[0];
 			for(int i = 0; i < ids.length; i++) {
+				LinkedList<Image> buf = new LinkedList<Image>();
 				for(Image img : layers(Image.class)) {
 					if(img.id == ids[i])
-						f[i] = img;
+						buf.add(img);
 				}
+				f[i] = buf.toArray(typeinfo);
 			}
 		}
 	}
