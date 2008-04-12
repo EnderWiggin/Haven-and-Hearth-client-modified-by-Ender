@@ -8,7 +8,7 @@ import java.io.*;
 import javax.imageio.*;
 import java.awt.image.BufferedImage;
 
-public class Resource implements Comparable<Resource> {
+public class Resource implements Comparable<Resource>, Serializable {
 	private static File basedir = new File("Y:\\res");
 	public static URL baseurl = null;
 	private static Map<String, Resource> cache = new TreeMap<String, Resource>();
@@ -106,7 +106,7 @@ public class Resource implements Comparable<Resource> {
 							try {
 								handle(cur);
 							} catch(IOException e) {
-								cur.error = new LoadException(e);
+								cur.error = new LoadException(e, cur);
 							} catch(LoadException e) {
 								cur.error = e;
 							}
@@ -129,7 +129,7 @@ public class Resource implements Comparable<Resource> {
 			try {
 				resurl = new URL(baseurl, res.name);
 			} catch(MalformedURLException e) {
-				throw(new LoadException("Could not construct res URL", e));
+				throw(new LoadException("Could not construct res URL", e, res));
 			}
 			URLConnection c = resurl.openConnection();
 			c.connect();
@@ -146,16 +146,21 @@ public class Resource implements Comparable<Resource> {
 	
 	@SuppressWarnings("serial")
 	public static class LoadException extends RuntimeException {
-		public LoadException(String msg) {
+		public Resource res;
+		
+		public LoadException(String msg, Resource res) {
 			super(msg);
+			this.res = res;
 		}
 
-		public LoadException(String msg, Throwable cause) {
+		public LoadException(String msg, Throwable cause, Resource res) {
 			super(msg, cause);
+			this.res = res;
 		}
 		
-		public LoadException(Throwable cause) {
+		public LoadException(Throwable cause, Resource res) {
 			super(cause);
+			this.res = res;
 		}
 	}
 	
@@ -163,13 +168,13 @@ public class Resource implements Comparable<Resource> {
 		return(new Coord(Utils.int16d(buf, off), Utils.int16d(buf, off + 2)));
 	}
 	
-	public abstract class Layer {
+	public abstract class Layer implements Serializable {
 		public abstract void init();
 	}
 	
-	public class Image extends Layer {
-		BufferedImage img;
-		private Tex tex;
+	public class Image extends Layer implements Serializable{
+		transient BufferedImage img;
+		transient private Tex tex;
 		final int z;
 		final boolean l;
 		final int id;
@@ -198,7 +203,7 @@ public class Resource implements Comparable<Resource> {
 	}
 	static {ltypes.put("image", Image.class);}
 	
-	public class Neg extends Layer {
+	public class Neg extends Layer implements Serializable {
 		Coord cc;
 		Coord bc, bs;
 		Coord sz;
@@ -216,7 +221,7 @@ public class Resource implements Comparable<Resource> {
 	}
 	static {ltypes.put("neg", Neg.class);}
 	
-	public class Anim extends Layer {
+	public class Anim extends Layer implements Serializable {
 		Image[] f;
 		private int[] ids;
 		int d;
@@ -225,7 +230,7 @@ public class Resource implements Comparable<Resource> {
 			d = Utils.uint16d(buf, 0);
 			ids = new int[Utils.uint16d(buf, 2)];
 			if(buf.length - 4 != ids.length * 2)
-				throw(new LoadException("Invalid anim descriptor in " + name));
+				throw(new LoadException("Invalid anim descriptor in " + name, Resource.this));
 			for(int i = 0; i < ids.length; i++)
 				ids[i] = Utils.int16d(buf, 4 + (i * 2));
 		}
@@ -247,7 +252,7 @@ public class Resource implements Comparable<Resource> {
 		while(off < buf.length) {
 			ret = in.read(buf, off, buf.length - off);
 			if(ret < 0)
-				throw(new LoadException("Incomplete resource at " + name));
+				throw(new LoadException("Incomplete resource at " + name, this));
 			off += ret;
 		}
 	}
@@ -288,7 +293,7 @@ public class Resource implements Comparable<Resource> {
 		byte buf[] = new byte[sig.length()];
 		readall(in, buf);
 		if(!sig.equals(new String(buf)))
-			throw(new LoadException("Invalid res signature"));
+			throw(new LoadException("Invalid res signature", this));
 		buf = new byte[2];
 		readall(in, buf);
 		int ver = Utils.uint16d(buf, 0);
@@ -297,7 +302,7 @@ public class Resource implements Comparable<Resource> {
 			this.ver = ver;
 		} else {
 			if(ver != this.ver)
-				throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")"));
+				throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")", this));
 		}
 		outer: while(true) {
 			StringBuilder tbuf = new StringBuilder();
@@ -307,7 +312,7 @@ public class Resource implements Comparable<Resource> {
 				if((ib = in.read()) == -1) {
 					if(tbuf.length() == 0)
 						break outer;
-					throw(new LoadException("Incomplete resource at " + name));
+					throw(new LoadException("Incomplete resource at " + name, this));
 				}
 				bb = (byte)ib;
 				if(bb == 0)
