@@ -8,7 +8,7 @@ import java.util.*;
 
 public class MapView extends Widget implements DTarget {
 	Coord mc;
-	List<Gob> clickable = null;
+	List<Drawable> clickable = null;
 	int visol = 0;
 	Color[] olc = {new Color(255, 0, 128), new Color(0, 255, 0)};
 	Grabber grab = null;
@@ -73,10 +73,8 @@ public class MapView extends Widget implements DTarget {
 	public boolean mousedown(Coord c, int button) {
 		setfocus(this);
 		Drawable hit = null;
-		for(Gob g : clickable) {
-			Drawable d = g.getattr(Drawable.class);
-			if(d == null)
-				continue;
+		for(Drawable d : clickable) {
+			Gob g = d.gob;
 			Coord ulc = g.sc.add(d.getoffset().inv());
 			if(c.isect(ulc, d.getsize())) {
 				if(d.checkhit(c.add(ulc.inv()))) {
@@ -246,74 +244,53 @@ public class MapView extends Widget implements DTarget {
 			}
 		}
 		
-		ArrayList<Gob> shadows = new ArrayList<Gob>();
-		ArrayList<Gob> sprites = new ArrayList<Gob>();
-		ArrayList<Gob> clickable = new ArrayList<Gob>();
-		ArrayList<Gob> speaking = new ArrayList<Gob>();
-		ArrayList<Gob> lumin = new ArrayList<Gob>();
+		final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
+		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
+		ArrayList<Speaking> speaking = new ArrayList<Speaking>();
+		ArrayList<Lumin> lumin = new ArrayList<Lumin>();
+		Sprite.Drawer drawer = new Sprite.Drawer() {
+				public void addpart(Sprite.Part p) {
+					sprites.add(p);
+				}
+			};
 		synchronized(glob.oc) {
 			for(Gob gob : glob.oc) {
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
+				DrawOffset dro = gob.getattr(DrawOffset.class);
 				Drawable d = gob.getattr(Drawable.class);
-				Sprite sdw = null;
 				if(d != null) {
-					sdw = d.shadow();
 					Coord ulc = dc.add(d.getoffset().inv());
+					if(dro != null)
+						ulc = ulc.add(dro.off);
 					Coord lrc = ulc.add(d.getsize());
 					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
-						sprites.add(gob);
-						clickable.add(gob);
+						d.setup(drawer, dc, ulc);
+						clickable.add(d);
 					}
 				}
-				if(sdw != null) {
-					Coord ulc = dc.add(sdw.cc.inv());
-					Coord lrc = ulc.add(sdw.sz);
-					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y))
-						shadows.add(gob);
-				}
-				if(gob.getattr(Speaking.class) != null)
-					speaking.add(gob);
-				if(gob.getattr(Lumin.class) != null)
-					lumin.add(gob);
+				Speaking s = gob.getattr(Speaking.class);
+				if(s != null)
+					speaking.add(s);
+				Lumin l = gob.getattr(Lumin.class);
+				if(l != null)
+					lumin.add(l);
 			}
-			Collections.sort(clickable, new Comparator<Gob>() {
-					public int compare(Gob a, Gob b) {
-						if(a.clprio != b.clprio)
-							return(a.clprio - b.clprio);
-						return(b.sc.y - a.sc.y);
+			Collections.sort(clickable, new Comparator<Drawable>() {
+					public int compare(Drawable a, Drawable b) {
+						if(a.gob.clprio != b.gob.clprio)
+							return(a.gob.clprio - b.gob.clprio);
+						return(b.gob.sc.y - a.gob.sc.y);
 					}
 				});
 			this.clickable = clickable;
-			Collections.sort(sprites, new Comparator<Gob>() {
-					public int compare(Gob a, Gob b) {
-						return(a.sc.y - b.sc.y);
-					}
-				});
-			for(Gob gob : shadows) {
-				Drawable d = gob.getattr(Drawable.class);
-				Sprite s = d.shadow();
-				Coord dc = gob.sc;
-				dc = dc.add(s.cc.inv());
-				g.image(s.tex, dc);
-			}
-			for(Gob gob : sprites) {
-				Drawable d = gob.getattr(Drawable.class);
-				Coord dc = gob.sc;
-				DrawOffset dro = gob.getattr(DrawOffset.class);
-				if(dro != null)
-					dc = dc.add(dro.off);
-				d.draw(g, dc);
-				/*
-				  g.setColor(Color.WHITE);
-				  g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
-				*/
-			}
+			Collections.sort(sprites);
+			for(Sprite.Part part : sprites)
+				part.draw(g);
 			mask.redraw(lumin);
 			g.image(mask, Coord.z);
-			for(Gob gob : speaking) {
-				Speaking s = gob.getattr(Speaking.class);
-				s.draw(g, gob.sc.add(s.off));
+			for(Speaking s : speaking) {
+				s.draw(g, s.gob.sc.add(s.off));
 			}
 		}
 	}

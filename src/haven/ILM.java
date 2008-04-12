@@ -47,7 +47,7 @@ public class ILM extends TexI {
 	public ILM(Coord sz) {
 		super(sz);
 		clear();
-		Collection<Gob> el = java.util.Collections.emptyList();
+		Collection<Lumin> el = java.util.Collections.emptyList();
 		redraw(el);
 		amb = new Color(0, 0, 0, 0);
 	}
@@ -63,13 +63,12 @@ public class ILM extends TexI {
 		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_ALPHA, tdim.x, tdim.y, 0, GL.GL_ALPHA, GL.GL_UNSIGNED_BYTE, data);
 	}
 	
-	public void redraw(Collection<Gob> objs) {
+	public void redraw(Collection<Lumin> objs) {
 		Graphics2D g = bufw.createGraphics();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, dim.x, dim.y);
-		for(Gob gob : objs) {
-			Lumin lum = gob.getattr(Lumin.class);
-			Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
+		for(Lumin lum : objs) {
+			Coord sc = lum.gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
 			g.drawImage(ljusboll, sc.x, sc.y, lum.sz * 2, lum.sz * 2, null);
 		}
 		g.dispose();
