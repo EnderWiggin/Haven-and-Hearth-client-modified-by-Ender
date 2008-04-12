@@ -177,6 +177,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		final int z;
 		final boolean l;
 		final int id;
+		private int gay = -1;
 		Coord o;
 		
 		public Image(byte[] buf) {
@@ -198,6 +199,23 @@ public class Resource implements Comparable<Resource>, Serializable {
 			return(tex);
 		}
 		
+		private boolean detectgay() {
+			Coord sz = Utils.imgsz(img);
+			for(int y = 0; y < sz.y; y++) {
+				for(int x = 0; x < sz.x; x++) {
+					if((img.getRGB(x, y) & 0x00ffffff) == 0x00ff0080)
+						return(true);
+				}
+			}
+			return(false);
+		}
+		
+		public boolean gayp() {
+			if(gay == -1)
+				gay = detectgay()?1:0;
+			return(gay == 1);
+		}
+
 		public int compareTo(Image other) {
 			return(z - other.z);
 		}
