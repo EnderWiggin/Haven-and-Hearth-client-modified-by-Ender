@@ -1,6 +1,7 @@
 package haven;
 
 import java.applet.*;
+import java.net.URL;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -86,6 +87,11 @@ public class HavenApplet extends Applet {
 		public void run() {
 		    Bootstrap b = new Bootstrap(h.ui, false);
 		    b.setaddr(getCodeBase().getHost());
+		    try {
+		    	Resource.baseurl = new URL("http", getCodeBase().getHost(), 80, "/res");
+		    } catch(java.net.MalformedURLException e) {
+		    	throw(new RuntimeException(e));
+		    }
 		    b.start();
 		    Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
 		    main.start();

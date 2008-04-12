@@ -97,6 +97,14 @@ public class Utils {
 		return(ub(buf[off]) + (ub(buf[off + 1]) * 256));
 	}
 	
+	static int int16d(byte[] buf, int off) {
+		int u = uint16d(buf, off);
+		if(u > 32767)
+			return(-65536 + u);
+		else
+			return(u);
+	}
+	
 	static long uint32d(byte[] buf, int off) {
 		return(ub(buf[off]) + (ub(buf[off + 1]) * 256) + (ub(buf[off + 2]) * 65536) + (ub(buf[off + 3]) * 16777216));
 	}

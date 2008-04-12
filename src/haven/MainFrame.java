@@ -1,6 +1,7 @@
 package haven;
 
 import java.awt.*;
+import java.net.URL;
 import java.awt.event.*;
 
 public class MainFrame extends Frame implements Runnable {
@@ -41,6 +42,11 @@ public class MainFrame extends Frame implements Runnable {
 	
 	public static void main(String[] args) {
 		final MainFrame f = new MainFrame(800, 600);
+		try {
+			Resource.baseurl = new URL(System.getProperty("haven.resurl", "http://www.havenandhearth.com/res/"));
+		} catch(java.net.MalformedURLException e) {
+			throw(new RuntimeException(e));
+		}
 		ThreadGroup g;
 		if(System.getProperty("haven.errorhandler", "off").equals("on")) {
 			g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {

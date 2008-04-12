@@ -123,9 +123,9 @@ public class Session {
 								Coord c = msg.coord();
 								oc.move(id, frame, c);
 							} else if(type == OD_RES) {
-								int rtype = msg.uint8();
 								String res = msg.string();
-								oc.cres(id, frame, rtype, res);
+								int ver = msg.uint16();
+								oc.cres(id, frame, res, ver);
 							} else if(type == OD_LINBEG) {
 								Coord s = msg.coord();
 								Coord t = msg.coord();
@@ -139,20 +139,20 @@ public class Session {
 								String text = msg.string();
 								oc.speak(id, frame, off, text);
 							} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
-								List<Integer> types = new LinkedList<Integer>();
 								List<String> layers = new LinkedList<String>();
+								List<Integer> vers = new LinkedList<Integer>();
 								while(true) {
-									int rtype = msg.uint8();
 									String layer = msg.string();
+									int ver = msg.uint16();
 									if(layer.equals(""))
 										break;
-									types.add(rtype);
 									layers.add(layer);
+									vers.add(ver);
 								}
 								if(type == OD_LAYERS)
-									oc.layers(id, frame, types, layers);
+									oc.layers(id, frame, layers, vers);
 								else
-									oc.avatar(id, frame, types, layers);
+									oc.avatar(id, frame, layers, vers);
 							} else if(type == OD_DRAWOFF) {
 								Coord off = msg.coord();
 								oc.drawoff(id, frame, off);

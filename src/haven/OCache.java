@@ -94,7 +94,7 @@ public class OCache implements Iterable<Gob> {
 		throw(new RuntimeException("Unknown resource type: " + type));
 	}
 	
-	public synchronized void cres(int id, int frame, int type, String res) {
+	public synchronized void cres(int id, int frame, String res, int ver) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
@@ -143,7 +143,7 @@ public class OCache implements Iterable<Gob> {
 		}
 	}
 	
-	public synchronized void layers(int id, int frame, List<Integer> types, List<String> layers) {
+	public synchronized void layers(int id, int frame, List<String> layers, List<Integer> vers) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
@@ -152,13 +152,13 @@ public class OCache implements Iterable<Gob> {
 			 lay = new Layered(g);
 			 g.setattr(lay);
 		 }
-		 List<SimpleDrawable> ll = new ArrayList<SimpleDrawable>();
-		 for(int i = 0; i < types.size(); i++)
-			 ll.add(loaddrw(g, types.get(i), layers.get(i)));
+		 List<Resource> ll = new ArrayList<Resource>();
+		 for(int i = 0; i < layers.size(); i++)
+			 ll.add(Resource.load(layers.get(i), vers.get(i)));
 		 lay.setlayers(ll);
 	}
 	
-	public synchronized void avatar(int id, int frame, List<Integer> types, List<String> layers) {
+	public synchronized void avatar(int id, int frame, List<String> layers, List<Integer> vers) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
@@ -167,7 +167,10 @@ public class OCache implements Iterable<Gob> {
 			 ava = new Avatar(g);
 			 g.setattr(ava);
 		 }
-		 ava.setlayers(layers);
+		 List<Resource> ll = new ArrayList<Resource>();
+		 for(int i = 0; i < layers.size(); i++)
+			 ll.add(Resource.load(layers.get(i), vers.get(i)));
+		 ava.setlayers(ll);
 	}
 	
 	public synchronized void drawoff(int id, int frame, Coord off) {
