@@ -33,6 +33,12 @@ public class Layered extends Drawable {
 	}
 	
 	public boolean checkhit(Coord c) {
+		if(base.loading)
+			return(false);
+		for(Sprite spr : sprites.values()) {
+			if(spr.checkhit(c))
+				return(true);
+		}
 		return(false);
 	}
 

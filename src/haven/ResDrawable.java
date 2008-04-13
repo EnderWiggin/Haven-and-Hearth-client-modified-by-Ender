@@ -35,6 +35,8 @@ public class ResDrawable extends Drawable {
 	
 	public boolean checkhit(Coord c) {
 		init();
+		if(spr != null)
+			return(spr.checkhit(c));
 		return(false);
 	}
 	

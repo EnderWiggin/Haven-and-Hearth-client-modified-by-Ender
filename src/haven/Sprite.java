@@ -36,12 +36,22 @@ public class Sprite {
 		public abstract void draw(GOut g);
 	}
 	
-	private class ImagePart extends Part {
+	private abstract class SpritePart extends Part {
+		public abstract boolean checkhit(Coord c);
+		
+		public SpritePart(int z) {
+			super(z);
+		}
+	}
+	
+	private class ImagePart extends SpritePart {
 		Resource.Image img;
+		Coord sz;
 		
 		public ImagePart(Resource.Image img) {
 			super(img.z);
 			this.img = img;
+			sz = Utils.imgsz(img.img);
 		}
 		
 		public void draw(BufferedImage b, Graphics g) {
@@ -53,10 +63,17 @@ public class Sprite {
 			Coord sc = this.sc.add(img.o);
 			g.image(img.tex(), sc);
 		}
+		
+		public boolean checkhit(Coord c) {
+			if((c.x < img.o.x) || (c.y < img.o.y) || (c.x >= img.o.x + sz.x) || (c.y >= img.o.y + sz.y))
+				return(false);
+			int cl = img.img.getRGB(c.x - img.o.x, c.y - img.o.y);
+			return(Utils.rgbm.getAlpha(cl) >= 128);
+		}
 	}
 
 	private class Frame {
-		Collection<Part> parts = new LinkedList<Part>();
+		Collection<SpritePart> parts = new LinkedList<SpritePart>();
 		int dur = 1000;
 	}
 	
@@ -99,7 +116,15 @@ public class Sprite {
 		}
 		throw(new ResourceException("Does not know how to draw resource " + res.name, res));
 	}
-
+	
+	public boolean checkhit(Coord c) {
+		for(SpritePart p : frames[fno].parts) {
+			if(p.checkhit(c))
+				return(true);
+		}
+		return(false);
+	}
+	
 	private void initsprite() {
 		Frame f = new Frame();
 		for(Resource.Image img : res.layers(imgc)) {
