@@ -20,7 +20,7 @@ public class Layered extends Drawable {
 		makepart();
 	}
 
-	public void setlayers(List<Resource> layers) {
+	public synchronized void setlayers(List<Resource> layers) {
 		Collections.sort(layers);
 		if(layers.equals(this.layers))
 			return;
@@ -29,13 +29,14 @@ public class Layered extends Drawable {
 		delays = new TreeMap<Resource, Integer>();
 		for(Resource r : layers)
 			delays.put(r, 0);
+		sprites = new TreeMap<Resource, Sprite>();
 	}
 	
 	public boolean checkhit(Coord c) {
 		return(false);
 	}
 
-	public void setup(Sprite.Drawer drw, final Coord cc, final Coord sc) {
+	public synchronized void setup(Sprite.Drawer drw, final Coord cc, final Coord sc) {
 		if(base.loading)
 			return;
 		if(loading) {

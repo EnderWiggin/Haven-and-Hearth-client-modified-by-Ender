@@ -456,9 +456,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 			System.out.println("Added " + l + " to " + name);
 			layers.add(l);
 		}
+		this.layers = layers;
 		for(Layer l : layers)
 			l.init();
-		this.layers = layers;
 	}
 	
 	private void checkerr() {

@@ -74,7 +74,7 @@ public class Sprite {
 			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
 		this.res = res;
 		this.layered = layered;
-		initneg();
+		initneg(negres);
 		Resource.Anim ad = res.layer(animc);
 		if(ad == null)
 			initsprite();
@@ -90,8 +90,8 @@ public class Sprite {
 		this(res, false);
 	}
 	
-	private void initneg() {
-		Resource.Neg neg = res.layer(Resource.negc);
+	private void initneg(Resource negres) {
+		Resource.Neg neg = negres.layer(Resource.negc);
 		if(neg != null) {
 			cc = neg.cc;
 			sz = neg.sz;
