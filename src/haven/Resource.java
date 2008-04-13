@@ -180,6 +180,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		final boolean l;
 		final int id;
 		private int gay = -1;
+		Coord sz;
 		Coord o;
 		
 		public Image(byte[] buf) {
@@ -192,6 +193,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} catch(IOException e) {
 				throw(new RuntimeException(e));
 			}
+			if(img == null)
+				throw(new LoadException("Invalid image data in " + name, Resource.this));
+			sz = Utils.imgsz(img);
 		}
 		
 		public synchronized Tex tex() {
@@ -202,7 +206,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 		
 		private boolean detectgay() {
-			Coord sz = Utils.imgsz(img);
 			for(int y = 0; y < sz.y; y++) {
 				for(int x = 0; x < sz.x; x++) {
 					if((img.getRGB(x, y) & 0x00ffffff) == 0x00ff0080)
@@ -242,6 +245,8 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} catch(IOException e) {
 				throw(new RuntimeException(e));
 			}
+			if(img == null)
+				throw(new LoadException("Invalid image data in " + name, Resource.this));
 		}
 
 		public synchronized Tex tex() {
