@@ -92,7 +92,18 @@ public class GOut {
 		gl.glEnd();
 		checkerr();
 	}
-
+	
+	public void rect(Coord ul, Coord sz) {
+		Coord ur, bl, br;
+		ur = new Coord(ul.x + sz.x - 1, ul.y);
+		bl = new Coord(ul.x, ul.y + sz.y - 1);
+		br = new Coord(ur.x, bl.y);
+		line(ul, ur);
+		line(ur, br);
+		line(br, bl);
+		line(bl, ul);
+	}
+	
 	public void chcolor(Color c) {
 		this.color = c;
 	}
