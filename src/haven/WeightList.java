@@ -19,6 +19,7 @@ public class WeightList<T> {
     }
     
     public T pick(int p) {
+	p %= tw;
 	int i = 0;
 	while(true) {
 	    if((p -= w.get(i)) <= 0)

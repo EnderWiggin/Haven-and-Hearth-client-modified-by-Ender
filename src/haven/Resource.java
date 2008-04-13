@@ -325,7 +325,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public void init() {
 			flavobjs = new WeightList<Resource>();
 			for(int i = 0; i < flw.length; i++)
-				flavobjs.add(load(String.format("%s/%i", fobase, i + 1)), flw[i]);
+				flavobjs.add(load(String.format("%s/%d", fobase, i + 1)), flw[i]);
 			ground = new WeightList<Tile>();
 			if((fl & 1) != 0) {
 				ctrans = new WeightList[15];
@@ -345,6 +345,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 			}
 		}
 	}
+	static {ltypes.put("tileset", Tileset.class);}
 	
 	private void readall(InputStream in, byte[] buf) throws IOException {
 		int ret, off = 0;
@@ -452,6 +453,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} catch(IllegalAccessException e) {
 				throw(new RuntimeException(e));
 			}
+			System.out.println("Added " + l + " to " + name);
 			layers.add(l);
 		}
 		for(Layer l : layers)
