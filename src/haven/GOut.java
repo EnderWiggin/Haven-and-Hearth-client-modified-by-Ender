@@ -98,10 +98,10 @@ public class GOut {
 		ur = new Coord(ul.x + sz.x - 1, ul.y);
 		bl = new Coord(ul.x, ul.y + sz.y - 1);
 		br = new Coord(ur.x, bl.y);
-		line(ul, ur);
-		line(ur, br);
-		line(br, bl);
-		line(bl, ul);
+		line(ul, ur, 1);
+		line(ur, br, 1);
+		line(br, bl, 1);
+		line(bl, ul, 1);
 	}
 	
 	public void chcolor(Color c) {
