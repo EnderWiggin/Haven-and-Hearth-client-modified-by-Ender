@@ -306,15 +306,17 @@ public class Resource implements Comparable<Resource>, Serializable {
 		private int[] flw;
 		WeightList<Resource> flavobjs;
 		WeightList<Tile> ground, ctrans, btrans;
+		int flavprob;
 		
 		public Tileset(byte[] buf) {
 			int[] off = new int[1];
 			off[0] = 0;
 			fobase = Utils.strd(buf, off);
-			flw = new int[Utils.uint16d(buf, off[0])];
-			fl = Utils.ub(buf[off[0] + 2]);
+			fl = Utils.ub(buf[off[0]]);
+			flw = new int[Utils.uint16d(buf, off[0] + 1)];
+			flavprob = Utils.uint16d(buf, off[0] + 3);
 			for(int i = 0; i < flw.length; i++)
-				flw[i] = Utils.ub(buf[off[0] + 3]);
+				flw[i] = Utils.ub(buf[off[0] + 5]);
 		}
 		
 		public void init() {
