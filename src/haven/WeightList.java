@@ -17,4 +17,15 @@ public class WeightList<T> {
 	this.w.add(w);
 	tw += w;
     }
+    
+    public T pick(Random gen) {
+	int p = gen.nextInt() % tw;
+	int i = 0;
+	while(true) {
+	    if((p -= w.get(i)) <= 0)
+		break;
+	    i++;
+	}
+	return(c.get(i));
+    }
 }
