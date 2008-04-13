@@ -171,7 +171,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public abstract void init();
 	}
 	
-	public class Image extends Layer implements Serializable, Comparable<Image> {
+	public class Image extends Layer implements Comparable<Image> {
 		transient BufferedImage img;
 		transient private Tex tex;
 		final int z;
@@ -224,7 +224,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 	static {ltypes.put("image", Image.class);}
 	
-	public class Neg extends Layer implements Serializable {
+	public class Neg extends Layer {
 		Coord cc;
 		Coord bc, bs;
 		Coord sz;
@@ -242,7 +242,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 	static {ltypes.put("neg", Neg.class);}
 	
-	public class Anim extends Layer implements Serializable {
+	public class Anim extends Layer {
 		Image[][] f;
 		private int[] ids;
 		int d;
@@ -396,7 +396,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 			else
 				fn += c;
 		}
-		File f = new File(basedir, fn);
+		File f = new File(basedir, fn + ".res");
 		try {
 			return(new FileInputStream(f));
 		} catch(FileNotFoundException e) {
