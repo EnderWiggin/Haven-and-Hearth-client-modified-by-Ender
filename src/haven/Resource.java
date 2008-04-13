@@ -18,7 +18,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public static Class<Tile> tile = Tile.class;
 	public static Class<Neg> negc = Neg.class;
 	public static Class<Anim> animc = Anim.class;
-	public static CLass<Tileset> tileset = Tileset.class;
+	public static Class<Tileset> tileset = Tileset.class;
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -307,7 +307,8 @@ public class Resource implements Comparable<Resource>, Serializable {
 		private String fobase;
 		private int[] flw;
 		WeightList<Resource> flavobjs;
-		WeightList<Tile> ground, ctrans, btrans;
+		WeightList<Tile> ground;
+		WeightList<Tile>[] ctrans, btrans;
 		int flavprob;
 		
 		public Tileset(byte[] buf) {
@@ -327,16 +328,20 @@ public class Resource implements Comparable<Resource>, Serializable {
 				flavobjs.add(load(String.format("%s/%i", fobase, i + 1)), flw[i]);
 			ground = new WeightList<Tile>();
 			if((fl & 1) != 0) {
-				ctrans = new WeightList<Tile>();
-				btrans = new WeightList<Tile>();
+				ctrans = new WeightList[15];
+				btrans = new WeightList[15];
+				for(int i = 0; i < 15; i++) {
+					ctrans[i] = new WeightList<Tile>();
+					btrans[i] = new WeightList<Tile>();
+				}
 			}
 			for(Tile t : layers(Tile.class)) {
 				if(t.t == 'g')
 					ground.add(t, t.w);
 				else if(t.t == 'b')
-					btrans.add(t, t.w);
+					btrans[t.id - 1].add(t, t.w);
 				else if(t.t == 'c')
-					ctrans.add(t, t.w);
+					ctrans[t.id - 1].add(t, t.w);
 			}
 		}
 	}
@@ -429,13 +434,13 @@ public class Resource implements Comparable<Resource>, Serializable {
 				continue;
 			Constructor<? extends Layer> cons;
 			try {
-				cons = lc.getConstructor(byte[].class);
+				cons = lc.getConstructor(Resource.class, byte[].class);
 			} catch(NoSuchMethodException e) {
 				throw(new RuntimeException(e));
 			}
 			Layer l;
 			try {
-				l = cons.newInstance(buf);
+				l = cons.newInstance(this, buf);
 			} catch(InstantiationException e) {
 				throw(new RuntimeException(e));
 			} catch(InvocationTargetException e) {

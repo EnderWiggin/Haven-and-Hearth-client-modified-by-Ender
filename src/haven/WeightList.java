@@ -18,8 +18,7 @@ public class WeightList<T> {
 	tw += w;
     }
     
-    public T pick(Random gen) {
-	int p = gen.nextInt() % tw;
+    public T pick(int p) {
 	int i = 0;
 	while(true) {
 	    if((p -= w.get(i)) <= 0)
@@ -27,5 +26,13 @@ public class WeightList<T> {
 	    i++;
 	}
 	return(c.get(i));
+    }
+    
+    public T pick(Random gen) {
+	return(pick(gen.nextInt(tw)));
+    }
+    
+    public int size() {
+	return(c.size());
     }
 }

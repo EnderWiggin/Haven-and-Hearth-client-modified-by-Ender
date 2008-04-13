@@ -2,7 +2,8 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
-import haven.MCache.*;
+import haven.Resource.Tile;
+import haven.Resource.Tileset;
 import java.awt.Color;
 import java.util.*;
 
@@ -52,13 +53,6 @@ public class MapView extends Widget implements DTarget {
 	
 	static Coord viewoffset(Coord sz, Coord vc) {
 		return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
-	}
-	
-	private GridTile gettile(Coord tc) {
-		GridTile r = map.gettile(tc);
-		if(r == null)
-			throw(new Loading());
-		return(r);
 	}
 	
 	public void grab(Grabber grab) {
@@ -134,11 +128,32 @@ public class MapView extends Widget implements DTarget {
 		visol &= ~mask;
 	}
 	
+	private int gettilen(Coord tc) {
+		int r = map.gettilen(tc);
+		if(r == -1)
+			throw(new Loading());
+		return(r);
+	}
+	
+	private Tileset gettile(Coord tc) {
+		Tileset r = map.gettile(tc);
+		if(r == null)
+			throw(new Loading());
+		return(r);
+	}
+	
+	private int getol(Coord tc) {
+		int ol = map.getol(tc);
+		if(ol == -1)
+			throw(new Loading());
+		return(ol);
+	}
+	
 	private void drawtile(GOut g, Coord tc, Coord sc) {
 		Tile t;
 		
-		t = map.sets.get(gettile(tc).tile).tiles.get(tc);
-		g.image(t.img, sc);
+		t = gettile(tc).ground.pick(map.randoom(tc));
+		g.image(t.tex(), sc);
 		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
 		int tr[][] = new int[3][3];
@@ -146,7 +161,7 @@ public class MapView extends Widget implements DTarget {
 			for(int x = -1; x <= 1; x++) {
 				if((x == 0) && (y == 0))
 					continue;
-				tr[x + 1][y + 1] = gettile(tc.add(new Coord(x, y))).tile;
+				tr[x + 1][y + 1] = gettilen(tc.add(new Coord(x, y)));
 			}
 		}
 		if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
@@ -161,7 +176,7 @@ public class MapView extends Widget implements DTarget {
 		int by[] = {1, 0, 1, 2};
 		int cx[] = {0, 2, 2, 0};
 		int cy[] = {0, 0, 2, 2};
-		for(int i = gettile(tc).tile - 1; i >= 0; i--) {
+		for(int i = gettilen(tc) - 1; i >= 0; i--) {
 			int bm = 0, cm = 0;
 			for(int o = 0; o < 4; o++) {
 				if(tr[bx[o]][by[o]] == i)
@@ -170,19 +185,10 @@ public class MapView extends Widget implements DTarget {
 					cm |= 1 << o;
 			}
 			if(bm != 0)
-				g.image(map.sets.get(i).bt.get(bm - 1).get(tc).img, sc);
+				g.image(map.sets.get(i).btrans[bm - 1].pick(map.randoom(tc)).tex(), sc);
 			if(cm != 0)
-				g.image(map.sets.get(i).ct.get(cm - 1).get(tc).img, sc);
+				g.image(map.sets.get(i).ctrans[cm - 1].pick(map.randoom(tc)).tex(), sc);
 		}
-	}
-	
-	private int getol(Coord tc) {
-		int ol = gettile(tc).ol;
-		for(Overlay lol : map.ols) {
-			if(tc.isect(lol.c1, lol.c2.add(lol.c1.inv()).add(new Coord(1, 1))))
-				ol |= lol.mask;
-		}
-		return(ol);
 	}
 	
 	private void drawol(GOut g, Coord tc, Coord sc) {

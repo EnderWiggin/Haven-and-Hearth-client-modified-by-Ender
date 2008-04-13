@@ -1,15 +1,18 @@
 package haven;
 
 import java.util.*;
+import haven.Resource.Tileset;
+import haven.Resource.Tile;
 
 public class MCache {
-	List<TileSet> sets = new LinkedList<TileSet>();
+	List<Tileset> sets = new LinkedList<Tileset>();
 	java.util.Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	java.util.Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Session sess;
 	Set<Overlay> ols = new HashSet<Overlay>();
 	public static final Coord tilesz = new Coord(11, 11);
 	public static final Coord cmaps = new Coord(100, 100);
+	Random gen;
 	
 	public class Overlay {
 		Coord c1, c2;
@@ -32,163 +35,9 @@ public class MCache {
 		}
 	}
 	
-	public class TileSet {
-		TileList tiles = new TileList();
-		List<TileList> bt = new ArrayList<TileList>();
-		List<TileList> ct = new ArrayList<TileList>();
-		{
-			for(int i = 0; i < 15; i++)
-				bt.add(null);
-			for(int i = 0; i < 15; i++)
-				ct.add(null);
-		}
-		FlavorList flavors = new FlavorList();
-		int fp = -1;
-		Random gen = new Random();
-		
-		@SuppressWarnings("serial")
-		public class FlavorList extends WeigthList<FSprite> {}
-		@SuppressWarnings("serial")
-		public class TileList extends WeigthList<Tile> {}
-		
-		@SuppressWarnings("serial")
-		private class WeigthList<T extends Weigthed> extends ArrayList<T> {
-			int tw = 0;
-			
-			public boolean add(T t) {
-				super.add(t);
-				tw += t.w();
-				return(true);
-			}
-			
-			public T get(Coord c) {
-				int r = randoom(c, tw) + 1;
-				for(T t : this) {
-					if((r -= t.w()) <= 0)
-						return(t);
-				}
-				throw(new RuntimeException("Barda"));
-			}
-		}
-		
-		public int randoom(Coord c, int r) {
-			int ret;
-			
-			if(c != null) {
-				gen.setSeed(c.x);
-				gen.setSeed(gen.nextInt() * c.y);
-			}
-			ret = Math.abs(gen.nextInt()) % r;
-			ret %= r;
-			return(ret);
-		}
-		
-		private void loadflv(String dir) {
-			int w = 1, cur = 1;
-			Scanner s = new Scanner(Resource.gettext(dir + "/info"));
-			try {
-				while(true) {
-					String cmd = s.next().intern();
-					if(cmd == "w") {
-						w = s.nextInt();
-					} else if(cmd == "load") {
-						for(int i = s.nextInt(); i > 0; i--)
-							flavors.add(new FSprite(Resource.loadsprite(String.format("%s/%02d.spr", dir, cur++)), w));
-					}
-				}
-			} catch(NoSuchElementException e) {}
-		}
-		
-		private void loadtrans(String dir, List<TileList> trans) {
-			int w = 1, cnum = 1;
-			Scanner s = new Scanner(Resource.gettext(dir + "/info"));
-			TileList cur = null;
-			try {
-				while(true) {
-					String cmd = s.next().intern();
-					if(cmd == "w") {
-						w = s.nextInt();
-					} else if(cmd == "load") {
-						for(int i = s.nextInt(); i > 0; i--)
-							cur.add(new Tile(Resource.loadtex(String.format("%s/01-%02d-%02d.gif", dir, cnum, i)), w));
-					} else if(cmd == "trans") {
-						cur = new TileList();
-						cnum = s.nextInt();
-						trans.set(cnum - 1, cur);
-					}
-				}
-			} catch(NoSuchElementException e) {}
-		}
-		
-		public TileSet(String name) {
-			int w = 1, n = 1;
-			boolean loadtrn = true;
-			boolean loadflv = false;
-			Scanner s = new Scanner(Resource.gettext(String.format("gfx/tiles/%s/info", name)));
-			try {
-				while(true) {
-					String cmd = s.next().intern();
-					if(cmd == "w") {
-						w = s.nextInt();
-					} else if(cmd == "load") {
-						for(int i = s.nextInt(); i > 0; i--)
-							tiles.add(new Tile(Resource.loadtex(String.format("gfx/tiles/%s/%02d.gif", name, n++)), w));
-					} else if(cmd == "notrans") {
-						loadtrn = false;
-					} else if(cmd == "flavor") {
-						loadflv = true;
-						fp = s.nextInt();
-					}
-				}
-			} catch(NoSuchElementException e) {}
-			if(loadtrn) {
-				loadtrans(String.format("gfx/tiles/%s/mtrans", name), bt);
-				loadtrans(String.format("gfx/tiles/%s/ctrans", name), ct);
-			}
-			if(loadflv)
-				loadflv(String.format("gfx/tiles/%s/flavobjs", name));
-		}
-	}
-
-	public interface Weigthed {
-		int w();
-	}
-	
-	public class FSprite implements Weigthed {
-		Sprite spr;
-		int w;
-		
-		FSprite(Sprite spr, int w) {
-			this.spr = spr;
-			this.w = w;
-		}
-		
-		public int w() {
-			return(w);
-		}
-	}
-	
-	public class Tile implements Weigthed {
-		Tex img;
-		int w;
-		
-		Tile(Tex img, int w) {
-			this.img = img;
-			this.w = w;
-		}
-		
-		public int w() {
-			return(w);
-		}
-	}
-	
-	public class GridTile {
-		public int tile = -1;
-		public int ol = -1;
-	}
-	
 	public class Grid {
-		public GridTile tiles[][];
+		public int tiles[][];
+		public int ol[][];
 		Collection<Gob> fo = new LinkedList<Gob>();
 		public long lastreq = 0;
 		Coord gc;
@@ -196,15 +45,16 @@ public class MCache {
 		
 		public Grid(Coord gc) {
 			this.gc = gc;
-			tiles = new GridTile[cmaps.x][cmaps.y];
-			for(int y = 0; y < cmaps.x; y++) {
-				for(int x = 0; x < cmaps.y; x++)
-					tiles[x][y] = new GridTile();
-			}
+			tiles = new int[cmaps.x][cmaps.y];
+			ol = new int[cmaps.x][cmaps.y];
 		}
 		
-		public GridTile gettile(Coord tc) {
+		public int gettile(Coord tc) {
 			return(tiles[tc.x][tc.y]);
+		}
+		
+		public int getol(Coord tc) {
+			return(ol[tc.x][tc.y]);
 		}
 		
 		public void remove() {
@@ -216,27 +66,68 @@ public class MCache {
 			Coord tc = gc.mul(cmaps);
 			for(c.y = 0; c.y < cmaps.x; c.y++) {
 				for(c.x = 0; c.x < cmaps.y; c.x++) {
-					TileSet set = sets.get(tiles[c.x][c.y].tile);
-					if((set.fp != -1) && (set.randoom(c.add(tc), set.fp) == 0)) {
-						FSprite f = set.flavors.get(null);
-						Gob g = new Gob(c.add(tc).mul(tilesz), 0, 0); 
-						g.setattr(new SimpleSprite(g, f.spr));
-						fo.add(g);
+					Tileset set = sets.get(tiles[c.x][c.y]);
+					if(set.flavobjs.size() > 0) {
+						Random rnd = mkrandoom(c);
+						if(rnd.nextInt(set.flavprob) == 0) {
+							Resource r = set.flavobjs.pick(rnd);
+							Gob g = new Gob(c.add(tc).mul(tilesz), 0, 0); 
+							g.setattr(new ResDrawable(g, r));
+							fo.add(g);
+						}
 					}
 				}
 			}
 			oc.ladd(fo);
 		}
-	}
+		
+		public int randoom(Coord c, int r) {
+			return(MCache.this.randoom(c.add(gc.mul(cmaps)), r));
+		}
 
+		public Random mkrandoom(Coord c) {
+			return(MCache.this.mkrandoom(c.add(gc.mul(cmaps))));
+		}
+	}
+	
+	private Tileset loadset(String name) {
+		Resource res = Resource.load(name);
+		res.loadwait();
+		return(res.layer(Resource.tileset));
+	}
+	
 	public MCache(Session sess) {
 		this.sess = sess;
-		Scanner s = new Scanner(Resource.gettext("gfx/tiles/tilesets"));
-		try {
-			while(true)
-				sets.add(new TileSet(s.nextLine()));
-		} catch(NoSuchElementException e) {}
-		s.close();
+		sets.add(loadset("gfx/tiles/grass/grass"));
+		sets.add(loadset("gfx/tiles/dirt/dirt"));
+		sets.add(loadset("gfx/tiles/swamp/swamp"));
+		sets.add(loadset("gfx/tiles/water/water"));
+		gen = new Random();
+	}
+
+	private static void initrandoom(Random r, Coord c) {
+		r.setSeed(c.x);
+		r.setSeed(r.nextInt() ^ c.y);
+	}
+
+	public int randoom(Coord c) {
+		int ret;
+		
+		synchronized(gen) {
+			initrandoom(gen, c);
+			ret = Math.abs(gen.nextInt());
+			return(ret);
+		}
+	}
+	
+	public int randoom(Coord c, int r) {
+		return(randoom(c) % r);
+	}
+	
+	public Random mkrandoom(Coord c) {
+		Random ret = new Random();
+		initrandoom(ret, c);
+		return(ret);
 	}
 
 	public void invalidate(Coord cc) {
@@ -246,14 +137,36 @@ public class MCache {
 		}
 	}
 	
-	public GridTile gettile(Coord tc) {
+	public int gettilen(Coord tc) {
 		Grid g;
 		synchronized(grids) {
 			g = grids.get(tc.div(cmaps));
 		}
 		if(g == null)
-			return(null);
+			return(-1);
 		return(g.gettile(tc.mod(cmaps)));
+	}
+	
+	public Tileset gettile(Coord tc) {
+		int tn = gettilen(tc);
+		if(tn == -1)
+			return(null);
+		return(sets.get(tn));
+	}
+	
+	public int getol(Coord tc) {
+		Grid g;
+		synchronized(grids) {
+			g = grids.get(tc.div(cmaps));
+		}
+		if(g == null)
+			return(-1);
+		int ol = g.getol(tc.mod(cmaps));
+		for(Overlay lol : ols) {
+			if(tc.isect(lol.c1, lol.c2.add(lol.c1.inv()).add(new Coord(1, 1))))
+				ol |= lol.mask;
+		}
+		return(ol);
 	}
 	
 	public void mapdata(Message msg) {
@@ -269,7 +182,7 @@ public class MCache {
 								l = msg.uint16();
 								t = msg.uint8();
 							}
-							g.tiles[x][y].tile = t;
+							g.tiles[x][y] = t;
 							l--;
 						}
 					}
@@ -280,16 +193,12 @@ public class MCache {
 								t = msg.uint8();
 								//System.out.println(l + ", " + t);
 							}
-							g.tiles[x][y].ol = t;
+							g.ol[x][y] = t;
 							l--;
 						}
 					}
 					req.remove(c);
-					try {
-						g.makeflavor();
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
+					g.makeflavor();
 					grids.put(c, g);
 				}
 			}
