@@ -224,6 +224,35 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 	static {ltypes.put("image", Image.class);}
 	
+	public class Tile extends Layer {
+		transient BufferedImage img;
+		transient private Tex tex;
+		int id;
+		int w;
+		char t;
+		
+		public Tile(byte[] buf) {
+			t = (char)Utils.ub(buf[0]);
+			id = Utils.ub(buf[1]);
+			w = Utils.uint16d(buf, 2);
+			try {
+				img = ImageIO.read(new ByteArrayInputStream(buf, 4, buf.length - 4));
+			} catch(IOException e) {
+				throw(new RuntimeException(e));
+			}
+		}
+
+		public synchronized Tex tex() {
+			if(tex != null)
+				return(tex);
+			tex = new TexI(img);
+			return(tex);
+		}
+		
+		public void init() {}
+	}
+	static {ltypes.put("tile", Tile.class);}
+	
 	public class Neg extends Layer {
 		Coord cc;
 		Coord bc, bs;
@@ -270,6 +299,43 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 	}
 	static {ltypes.put("anim", Anim.class);}
+	
+	public class Tileset extends Layer {
+		private int fl;
+		private String fobase;
+		private int[] flw;
+		WeightList<Resource> flavobjs;
+		WeightList<Tile> ground, ctrans, btrans;
+		
+		public Tileset(byte[] buf) {
+			int[] off = new int[1];
+			off[0] = 0;
+			fobase = Utils.strd(buf, off);
+			flw = new int[Utils.uint16d(buf, off[0])];
+			fl = Utils.ub(buf[off[0] + 2]);
+			for(int i = 0; i < flw.length; i++)
+				flw[i] = Utils.ub(buf[off[0] + 3]);
+		}
+		
+		public void init() {
+			flavobjs = new WeightList<Resource>();
+			for(int i = 0; i < flw.length; i++)
+				flavobjs.add(load(String.format("%s/%i", fobase, i + 1)), flw[i]);
+			ground = new WeightList<Tile>();
+			if((fl & 1) != 0) {
+				ctrans = new WeightList<Tile>();
+				btrans = new WeightList<Tile>();
+			}
+			for(Tile t : layers(Tile.class)) {
+				if(t.t == 'g')
+					ground.add(t, t.w);
+				else if(t.t == 'b')
+					btrans.add(t, t.w);
+				else if(t.t == 'c')
+					ctrans.add(t, t.w);
+			}
+		}
+	}
 	
 	private void readall(InputStream in, byte[] buf) throws IOException {
 		int ret, off = 0;
@@ -355,6 +421,8 @@ public class Resource implements Comparable<Resource>, Serializable {
 			buf = new byte[len];
 			readall(in, buf);
 			Class<? extends Layer> lc = ltypes.get(tbuf.toString());
+			if(lc == null)
+				continue;
 			Constructor<? extends Layer> cons;
 			try {
 				cons = lc.getConstructor(byte[].class);
