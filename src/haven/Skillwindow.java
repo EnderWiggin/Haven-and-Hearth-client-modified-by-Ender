@@ -25,7 +25,7 @@ public class Skillwindow extends Window {
 		if(msg == "exp") {
 			exptext.settext("Learning points: " + (Integer)args[0]);
 		} else if(msg == "ask") {
-			BufferedImage oski = Resource.loadimg("gfx/hud/skills/" + (String)args[0] + ".gif");
+			BufferedImage oski = Resource.loadimg("gfx/hud/skills/" + (String)args[0]);
 			BufferedImage ski = TexI.mkbuf(sksz);
 			Graphics g = ski.getGraphics();
 			g.drawImage(oski, 0, 0, sksz.x, sksz.y, null);

@@ -11,17 +11,9 @@ public class Speaking extends GAttrib {
 	
 	public Speaking(Gob gob, Coord off, String text) {
 		super(gob);
-		if(sb == null) {
-			sb = new IBox(Resource.loadtex("gfx/hud/emote/tl.gif"),
-					Resource.loadtex("gfx/hud/emote/tr.gif"),
-					Resource.loadtex("gfx/hud/emote/bl.gif"),
-					Resource.loadtex("gfx/hud/emote/br.gif"),
-					Resource.loadtex("gfx/hud/emote/el.gif"),
-					Resource.loadtex("gfx/hud/emote/er.gif"),
-					Resource.loadtex("gfx/hud/emote/et.gif"),
-					Resource.loadtex("gfx/hud/emote/eb.gif"));
-		}
-		svans = Resource.loadtex("gfx/hud/emote/svans.gif");
+		if(sb == null)
+			sb = new IBox("gfx/hud/emote", "tl", "tr", "bl", "br", "el", "er", "et", "eb");
+		svans = Resource.loadtex("gfx/hud/emote/svans");
 		this.off = off;
 		this.text = Text.render(text, Color.BLACK);
 	}

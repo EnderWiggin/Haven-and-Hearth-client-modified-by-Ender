@@ -25,7 +25,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	public void run() {
 		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
 		ui.uimsg(5, "tabfocus", 1);
-		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/loginscr.gif");
+		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/loginscr");
 		//ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), defaddr);
 		address = defaddr;
 		if(servlist) {
@@ -40,7 +40,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 		ui.newwidget(2, "text", new Coord(345, 330), 5, new Coord(150, 20), Utils.getpref("username", ""));
 		ui.newwidget(3, "text", new Coord(345, 390), 5, new Coord(150, 20), Utils.getpref("password", ""));
 		ui.uimsg(3, "pw", 1);
-		ui.newwidget(4, "ibtn", new Coord(373, 430), 5, "gfx/hud/buttons/loginu.gif", "gfx/hud/buttons/logind.gif");
+		ui.newwidget(4, "ibtn", new Coord(373, 430), 5, "gfx/hud/buttons/loginu", "gfx/hud/buttons/logind");
 		ui.uimsg(5, "act", 1);
 		ui.uimsg(5, "focus", 1);
 		retry: do {

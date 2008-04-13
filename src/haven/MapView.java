@@ -2,13 +2,14 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
-import haven.MCache.*;
+import haven.Resource.Tile;
+import haven.Resource.Tileset;
 import java.awt.Color;
 import java.util.*;
 
 public class MapView extends Widget implements DTarget {
 	Coord mc;
-	List<Gob> clickable = null;
+	List<Drawable> clickable = null;
 	int visol = 0;
 	Color[] olc = {new Color(255, 0, 128), new Color(0, 255, 0)};
 	Grabber grab = null;
@@ -54,13 +55,6 @@ public class MapView extends Widget implements DTarget {
 		return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
 	}
 	
-	private GridTile gettile(Coord tc) {
-		GridTile r = map.gettile(tc);
-		if(r == null)
-			throw(new Loading());
-		return(r);
-	}
-	
 	public void grab(Grabber grab) {
 		this.grab = grab;
 	}
@@ -73,10 +67,8 @@ public class MapView extends Widget implements DTarget {
 	public boolean mousedown(Coord c, int button) {
 		setfocus(this);
 		Drawable hit = null;
-		for(Gob g : clickable) {
-			Drawable d = g.getattr(Drawable.class);
-			if(d == null)
-				continue;
+		for(Drawable d : clickable) {
+			Gob g = d.gob;
 			Coord ulc = g.sc.add(d.getoffset().inv());
 			if(c.isect(ulc, d.getsize())) {
 				if(d.checkhit(c.add(ulc.inv()))) {
@@ -136,11 +128,32 @@ public class MapView extends Widget implements DTarget {
 		visol &= ~mask;
 	}
 	
+	private int gettilen(Coord tc) {
+		int r = map.gettilen(tc);
+		if(r == -1)
+			throw(new Loading());
+		return(r);
+	}
+	
+	private Tileset gettile(Coord tc) {
+		Tileset r = map.gettile(tc);
+		if(r == null)
+			throw(new Loading());
+		return(r);
+	}
+	
+	private int getol(Coord tc) {
+		int ol = map.getol(tc);
+		if(ol == -1)
+			throw(new Loading());
+		return(ol);
+	}
+	
 	private void drawtile(GOut g, Coord tc, Coord sc) {
 		Tile t;
 		
-		t = map.sets.get(gettile(tc).tile).tiles.get(tc);
-		g.image(t.img, sc);
+		t = gettile(tc).ground.pick(map.randoom(tc));
+		g.image(t.tex(), sc);
 		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
 		int tr[][] = new int[3][3];
@@ -148,7 +161,7 @@ public class MapView extends Widget implements DTarget {
 			for(int x = -1; x <= 1; x++) {
 				if((x == 0) && (y == 0))
 					continue;
-				tr[x + 1][y + 1] = gettile(tc.add(new Coord(x, y))).tile;
+				tr[x + 1][y + 1] = gettilen(tc.add(new Coord(x, y)));
 			}
 		}
 		if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
@@ -163,7 +176,7 @@ public class MapView extends Widget implements DTarget {
 		int by[] = {1, 0, 1, 2};
 		int cx[] = {0, 2, 2, 0};
 		int cy[] = {0, 0, 2, 2};
-		for(int i = gettile(tc).tile - 1; i >= 0; i--) {
+		for(int i = gettilen(tc) - 1; i >= 0; i--) {
 			int bm = 0, cm = 0;
 			for(int o = 0; o < 4; o++) {
 				if(tr[bx[o]][by[o]] == i)
@@ -172,19 +185,10 @@ public class MapView extends Widget implements DTarget {
 					cm |= 1 << o;
 			}
 			if(bm != 0)
-				g.image(map.sets.get(i).bt.get(bm - 1).get(tc).img, sc);
+				g.image(map.sets.get(i).btrans[bm - 1].pick(map.randoom(tc)).tex(), sc);
 			if(cm != 0)
-				g.image(map.sets.get(i).ct.get(cm - 1).get(tc).img, sc);
+				g.image(map.sets.get(i).ctrans[cm - 1].pick(map.randoom(tc)).tex(), sc);
 		}
-	}
-	
-	private int getol(Coord tc) {
-		int ol = gettile(tc).ol;
-		for(Overlay lol : map.ols) {
-			if(tc.isect(lol.c1, lol.c2.add(lol.c1.inv()).add(new Coord(1, 1))))
-				ol |= lol.mask;
-		}
-		return(ol);
 	}
 	
 	private void drawol(GOut g, Coord tc, Coord sc) {
@@ -246,74 +250,53 @@ public class MapView extends Widget implements DTarget {
 			}
 		}
 		
-		ArrayList<Gob> shadows = new ArrayList<Gob>();
-		ArrayList<Gob> sprites = new ArrayList<Gob>();
-		ArrayList<Gob> clickable = new ArrayList<Gob>();
-		ArrayList<Gob> speaking = new ArrayList<Gob>();
-		ArrayList<Gob> lumin = new ArrayList<Gob>();
+		final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
+		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
+		ArrayList<Speaking> speaking = new ArrayList<Speaking>();
+		ArrayList<Lumin> lumin = new ArrayList<Lumin>();
+		Sprite.Drawer drawer = new Sprite.Drawer() {
+				public void addpart(Sprite.Part p) {
+					sprites.add(p);
+				}
+			};
 		synchronized(glob.oc) {
 			for(Gob gob : glob.oc) {
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
+				DrawOffset dro = gob.getattr(DrawOffset.class);
 				Drawable d = gob.getattr(Drawable.class);
-				Sprite sdw = null;
 				if(d != null) {
-					sdw = d.shadow();
 					Coord ulc = dc.add(d.getoffset().inv());
+					if(dro != null)
+						ulc = ulc.add(dro.off);
 					Coord lrc = ulc.add(d.getsize());
 					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
-						sprites.add(gob);
-						clickable.add(gob);
+						d.setup(drawer, dc, ulc);
+						clickable.add(d);
 					}
 				}
-				if(sdw != null) {
-					Coord ulc = dc.add(sdw.cc.inv());
-					Coord lrc = ulc.add(sdw.sz);
-					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y))
-						shadows.add(gob);
-				}
-				if(gob.getattr(Speaking.class) != null)
-					speaking.add(gob);
-				if(gob.getattr(Lumin.class) != null)
-					lumin.add(gob);
+				Speaking s = gob.getattr(Speaking.class);
+				if(s != null)
+					speaking.add(s);
+				Lumin l = gob.getattr(Lumin.class);
+				if(l != null)
+					lumin.add(l);
 			}
-			Collections.sort(clickable, new Comparator<Gob>() {
-					public int compare(Gob a, Gob b) {
-						if(a.clprio != b.clprio)
-							return(a.clprio - b.clprio);
-						return(b.sc.y - a.sc.y);
+			Collections.sort(clickable, new Comparator<Drawable>() {
+					public int compare(Drawable a, Drawable b) {
+						if(a.gob.clprio != b.gob.clprio)
+							return(a.gob.clprio - b.gob.clprio);
+						return(b.gob.sc.y - a.gob.sc.y);
 					}
 				});
 			this.clickable = clickable;
-			Collections.sort(sprites, new Comparator<Gob>() {
-					public int compare(Gob a, Gob b) {
-						return(a.sc.y - b.sc.y);
-					}
-				});
-			for(Gob gob : shadows) {
-				Drawable d = gob.getattr(Drawable.class);
-				Sprite s = d.shadow();
-				Coord dc = gob.sc;
-				dc = dc.add(s.cc.inv());
-				g.image(s.tex, dc);
-			}
-			for(Gob gob : sprites) {
-				Drawable d = gob.getattr(Drawable.class);
-				Coord dc = gob.sc;
-				DrawOffset dro = gob.getattr(DrawOffset.class);
-				if(dro != null)
-					dc = dc.add(dro.off);
-				d.draw(g, dc);
-				/*
-				  g.setColor(Color.WHITE);
-				  g.drawString(Integer.toString(d.id), d.sc.x, d.sc.y);
-				*/
-			}
+			Collections.sort(sprites);
+			for(Sprite.Part part : sprites)
+				part.draw(g);
 			mask.redraw(lumin);
 			g.image(mask, Coord.z);
-			for(Gob gob : speaking) {
-				Speaking s = gob.getattr(Speaking.class);
-				s.draw(g, gob.sc.add(s.off));
+			for(Speaking s : speaking) {
+				s.draw(g, s.gob.sc.add(s.off));
 			}
 		}
 	}

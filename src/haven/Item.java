@@ -15,7 +15,7 @@ public class Item extends SSWidget {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				String res = (String)args[0];
-				BufferedImage img = getres(res);
+				BufferedImage img = Resource.loadimg(res);
 				int num = -1;
 				int ca = 2;
 				Coord drag = null;
@@ -26,13 +26,6 @@ public class Item extends SSWidget {
 				return(new Item(c, img, parent, drag, num));
 			}
 		});
-	}
-	
-	static BufferedImage getres(String res) {
-		if(res.substring(res.length() - 4).equals(".spr"))
-			return(Resource.loadsprite(res).img);
-		else
-			return(Resource.loadimg(res));
 	}
 	
 	void render() {
@@ -80,7 +73,7 @@ public class Item extends SSWidget {
 	}
 
 	public Item(Coord c, String res, Widget parent, Coord drag, int num) {
-		this(c, getres(res), parent, drag, num);
+		this(c, Resource.loadimg(res), parent, drag, num);
 	}
 
 	public Item(Coord c, BufferedImage img, Widget parent, Coord drag) {
@@ -88,7 +81,7 @@ public class Item extends SSWidget {
 	}
 	
 	public Item(Coord c, String res, Widget parent, Coord drag) {
-		this(c, getres(res), parent, drag);
+		this(c, Resource.loadimg(res), parent, drag);
 	}
 
 	public boolean findrelevant(Widget w, Coord c) {

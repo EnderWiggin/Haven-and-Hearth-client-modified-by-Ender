@@ -8,7 +8,7 @@ import java.io.Reader;
 public class Equipory extends Window implements DTarget {
 	List<Inventory> epoints;
 	List<Item> equed;
-	static final Tex bg = Resource.loadtex("gfx/hud/equip/bg.gif");
+	static final Tex bg = Resource.loadtex("gfx/hud/equip/bg");
 	int avagob = -1;
 	
 	static Coord ecoords[] = {

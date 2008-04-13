@@ -138,6 +138,12 @@ public class Session {
 							String text = msg.string();
 							oc.speak(id, frame, off, text);
 						} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
+							String baseres = "";
+							int basever = 0;
+							if(type == OD_LAYERS) {
+								baseres = msg.string();
+								basever = msg.uint16();
+							}
 							List<String> layers = new LinkedList<String>();
 							List<Integer> vers = new LinkedList<Integer>();
 							while(true) {
@@ -149,7 +155,7 @@ public class Session {
 								vers.add(ver);
 							}
 							if(type == OD_LAYERS)
-								oc.layers(id, frame, layers, vers);
+								oc.layers(id, frame, baseres, basever, layers, vers);
 							else
 								oc.avatar(id, frame, layers, vers);
 						} else if(type == OD_DRAWOFF) {

@@ -16,14 +16,7 @@ public class Window extends Widget {
 				return(new Window(c, (Coord)args[0], parent));
 			}
 		});
-		wbox = new IBox(Resource.loadtex("gfx/hud/tl.gif"),
-				Resource.loadtex("gfx/hud/tr.gif"),
-				Resource.loadtex("gfx/hud/bl.gif"),
-				Resource.loadtex("gfx/hud/br.gif"),
-				Resource.loadtex("gfx/hud/extvl.gif"),
-				Resource.loadtex("gfx/hud/extvr.gif"),
-				Resource.loadtex("gfx/hud/extht.gif"),
-				Resource.loadtex("gfx/hud/exthb.gif"));
+		wbox = new IBox("gfx/hud", "tl", "tr", "bl", "br", "extvl", "extvr", "extht", "exthb");
 	}
 
 	public Window(Coord c, Coord sz, Widget parent, Coord tlo, Coord rbo) {
