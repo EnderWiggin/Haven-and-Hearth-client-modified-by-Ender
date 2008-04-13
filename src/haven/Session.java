@@ -168,10 +168,10 @@ public class Session {
 						} else {
 							throw(new MessageException("Unknown objdelta type: " + type, msg));
 						}
-						Gob g = oc.getgob(id, frame);
-						if(g != null)
-							g.frame = frame;
 					}
+					Gob g = oc.getgob(id, frame);
+					if(g != null)
+						g.frame = frame;
 				}
 				synchronized(objacks) {
 					if(objacks.containsKey(id)) {
