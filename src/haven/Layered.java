@@ -88,8 +88,7 @@ public class Layered extends Drawable {
 					BufferedImage buf = TexI.mkbuf(sz);
 					Graphics gr = buf.getGraphics();
 					draw(buf, gr, getoffset(), Coord.z);
-					Coord dc = sc.add(getoffset().inv());
-					g.image(buf, dc);
+					g.image(buf, sc);
 				}
 			};
 	}
