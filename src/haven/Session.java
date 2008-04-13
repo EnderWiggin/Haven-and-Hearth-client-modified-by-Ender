@@ -113,69 +113,65 @@ public class Session {
 			while(msg.off < msg.blob.length) {
 				int id = msg.int32();
 				int frame = msg.int32();
-				try {
-					synchronized(oc) {
-						while(true) {
-							int type = msg.uint8();
-							if(type == OD_REM) {
-								oc.remove(id, frame);
-							} else if(type == OD_MOVE) {
-								Coord c = msg.coord();
-								oc.move(id, frame, c);
-							} else if(type == OD_RES) {
-								String res = msg.string();
-								int ver = msg.uint16();
-								oc.cres(id, frame, res, ver);
-							} else if(type == OD_LINBEG) {
-								Coord s = msg.coord();
-								Coord t = msg.coord();
-								int c = msg.int32();
-								oc.linbeg(id, frame, s, t, c);
-							} else if(type == OD_LINSTEP) {
-								int l = msg.int32();
-								oc.linstep(id, frame, l);
-							} else if(type == OD_SPEECH) {
-								Coord off = msg.coord();
-								String text = msg.string();
-								oc.speak(id, frame, off, text);
-							} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
-								String baseres = "";
-								int basever = 0;
-								if(type == OD_LAYERS) {
-									baseres = msg.string();
-									basever = msg.uint16();
-								}
-								List<String> layers = new LinkedList<String>();
-								List<Integer> vers = new LinkedList<Integer>();
-								while(true) {
-									String layer = msg.string();
-									int ver = msg.uint16();
-									if(layer.equals(""))
-										break;
-									layers.add(layer);
-									vers.add(ver);
-								}
-								if(type == OD_LAYERS)
-									oc.layers(id, frame, baseres, basever, layers, vers);
-								else
-									oc.avatar(id, frame, layers, vers);
-							} else if(type == OD_DRAWOFF) {
-								Coord off = msg.coord();
-								oc.drawoff(id, frame, off);
-							} else if(type == OD_LUMIN) {
-								oc.lumin(id, frame, msg.coord(), msg.uint16(), msg.uint8());
-							} else if(type == OD_END) {
-								break;
-							} else {
-								throw(new MessageException("Unknown objdelta type: " + type, msg));
+				synchronized(oc) {
+					while(true) {
+						int type = msg.uint8();
+						if(type == OD_REM) {
+							oc.remove(id, frame);
+						} else if(type == OD_MOVE) {
+							Coord c = msg.coord();
+							oc.move(id, frame, c);
+						} else if(type == OD_RES) {
+							String res = msg.string();
+							int ver = msg.uint16();
+							oc.cres(id, frame, res, ver);
+						} else if(type == OD_LINBEG) {
+							Coord s = msg.coord();
+							Coord t = msg.coord();
+							int c = msg.int32();
+							oc.linbeg(id, frame, s, t, c);
+						} else if(type == OD_LINSTEP) {
+							int l = msg.int32();
+							oc.linstep(id, frame, l);
+						} else if(type == OD_SPEECH) {
+							Coord off = msg.coord();
+							String text = msg.string();
+							oc.speak(id, frame, off, text);
+						} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
+							String baseres = "";
+							int basever = 0;
+							if(type == OD_LAYERS) {
+								baseres = msg.string();
+								basever = msg.uint16();
 							}
-							Gob g = oc.getgob(id, frame);
-							if(g != null)
-								g.frame = frame;
+							List<String> layers = new LinkedList<String>();
+							List<Integer> vers = new LinkedList<Integer>();
+							while(true) {
+								String layer = msg.string();
+								int ver = msg.uint16();
+								if(layer.equals(""))
+									break;
+								layers.add(layer);
+								vers.add(ver);
+							}
+							if(type == OD_LAYERS)
+								oc.layers(id, frame, baseres, basever, layers, vers);
+							else
+								oc.avatar(id, frame, layers, vers);
+						} else if(type == OD_DRAWOFF) {
+							Coord off = msg.coord();
+							oc.drawoff(id, frame, off);
+						} else if(type == OD_LUMIN) {
+							oc.lumin(id, frame, msg.coord(), msg.uint16(), msg.uint8());
+						} else if(type == OD_END) {
+							break;
+						} else {
+							throw(new MessageException("Unknown objdelta type: " + type, msg));
 						}
+						Gob g = oc.getgob(id, frame);
+						if(g != null)
+							g.frame = frame;
 					}
-				} catch (Throwable e) {
-					e.printStackTrace();
 				}
 				synchronized(objacks) {
 					if(objacks.containsKey(id)) {
