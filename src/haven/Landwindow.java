@@ -23,8 +23,8 @@ public class Landwindow extends Window implements MapView.Grabber {
 	public Landwindow(Coord c, Widget parent) {
 		super(c, new Coord(200, 100), parent, Coord.z, boff);
 		map = ui.sess.glob.map;
-		BufferedImage bup = Resource.loadimg("gfx/hud/buttons/landu.gif");
-		BufferedImage bdn = Resource.loadimg("gfx/hud/buttons/landd.gif");
+		BufferedImage bup = Resource.loadimg("gfx/hud/buttons/landu");
+		BufferedImage bdn = Resource.loadimg("gfx/hud/buttons/landd");
 		ui.mainview.enol(3);
 		ui.mainview.grab(this);
 		btn = new IButton(asz.add(Utils.imgsz(bup).inv()).add(boff), this, bup, bdn);

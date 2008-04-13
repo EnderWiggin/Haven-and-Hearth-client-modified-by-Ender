@@ -24,9 +24,9 @@ public class Inventory extends Widget implements DTarget {
 	}
 	
 	public Inventory(Coord c, Coord sz, Widget parent) {
-		super(c, Utils.imgsz(Resource.loadimg("gfx/hud/invsq.gif")).add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
+		super(c, Utils.imgsz(Resource.loadimg("gfx/hud/invsq")).add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
 		isz = sz;
-		invsq = Resource.loadtex("gfx/hud/invsq.gif");
+		invsq = Resource.loadtex("gfx/hud/invsq");
 	}
 	
 	public void drop(Coord cc, Coord ul) {
