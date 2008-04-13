@@ -139,8 +139,8 @@ public class Session {
 								String text = msg.string();
 								oc.speak(id, frame, off, text);
 							} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
-								String baseres;
-								int basever;
+								String baseres = "";
+								int basever = 0;
 								if(type == OD_LAYERS) {
 									baseres = msg.string();
 									basever = msg.uint16();
