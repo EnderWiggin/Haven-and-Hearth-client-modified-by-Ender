@@ -8,6 +8,12 @@ public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
 	ThreadGroup g;
 	
+	static {
+		try {
+			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+		} catch(Exception e) {}
+	}
+
 	public MainFrame(int w, int h) {
 		super("Haven and Hearth");
 		p = new HavenPanel(w, h);
