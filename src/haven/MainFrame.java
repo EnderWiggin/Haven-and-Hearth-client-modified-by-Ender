@@ -24,8 +24,12 @@ public class MainFrame extends Frame implements Runnable {
 			public void windowClosing(WindowEvent e) {
 				synchronized(p.ui) {
 					exiting = true;
-					g.interrupt();
-					setVisible(false);
+					if(p.ui.sess != null) {
+						p.ui.sess.close();
+					} else {
+						g.interrupt();
+						setVisible(false);
+					}
 				}
 			}
 		});
