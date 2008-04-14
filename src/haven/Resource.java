@@ -128,7 +128,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} catch(LoadException e) {}
 			URL resurl;
 			try {
-				resurl = new URL(baseurl, res.name);
+				resurl = new URL(baseurl, res.name + ".res");
 			} catch(MalformedURLException e) {
 				throw(new LoadException("Could not construct res URL", e, res));
 			}
@@ -458,7 +458,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} catch(IllegalAccessException e) {
 				throw(new RuntimeException(e));
 			}
-			System.out.println("Added " + l + " to " + name);
 			layers.add(l);
 		}
 		this.layers = layers;
