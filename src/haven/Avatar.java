@@ -48,7 +48,7 @@ public class Avatar extends GAttrib {
 			Graphics g = image.graphics();
 			loading = false;
 			for(Resource.Image i : images)
-				g.drawImage(i.img, 0, 0, null);
+				g.drawImage(i.img, i.o.x, i.o.y, null);
 			image.update();
 			this.image = image;
                         System.out.println(System.currentTimeMillis() - begin);
