@@ -7,7 +7,14 @@ import java.awt.event.*;
 public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
 	ThreadGroup g;
+	boolean exiting = false;
 	
+	static {
+		try {
+			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+		} catch(Exception e) {}
+	}
+
 	public MainFrame(int w, int h) {
 		super("Haven and Hearth");
 		p = new HavenPanel(w, h);
@@ -22,8 +29,13 @@ public class MainFrame extends Frame implements Runnable {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				synchronized(p.ui) {
-					g.interrupt();
-					setVisible(false);
+					exiting = true;
+					if(p.ui.sess != null) {
+						p.ui.sess.close();
+					} else {
+						g.interrupt();
+						setVisible(false);
+					}
 				}
 			}
 		});
@@ -58,12 +70,14 @@ public class MainFrame extends Frame implements Runnable {
 			g = new ThreadGroup("Haven client");
 		}
 		f.g = g;
-		Thread main = new Thread(g, f);
-		main.start();
-		try {
-			main.join();
-		} catch(InterruptedException e) {
-			return;
+		while(!f.exiting) {
+			Thread main = new Thread(g, f);
+			main.start();
+			try {
+				main.join();
+			} catch(InterruptedException e) {
+				return;
+			}
 		}
 		System.exit(0);
 	}
