@@ -1,6 +1,11 @@
 <?xml version="1.0" ?>
 
-<project name="haven" default="jar">
+<project name="haven" default="jars">
+  <path id="classpath">
+    <pathelement path="lib/jogl.jar" />
+    <pathelement path="lib/gluegen-rt.jar" />
+  </path>
+
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
@@ -8,7 +13,10 @@
   </target>
   
   <target name="haven-client" depends="build-env">
-    <javac srcdir="src" destdir="build/classes" debug="on" />
+    <javac srcdir="src" destdir="build/classes" debug="on">
+      <classpath refid="classpath" />
+      <!-- <compilerarg value="-Xbarda" /> -->
+    </javac>
   </target>
   
   <target name="resources" depends="build-env">
@@ -21,7 +29,7 @@
     <copy file="etc/test.html" todir="build" />
   </target>
 
-  <target name="jar" depends="haven-client,resources,appletview">
+  <target name="jar" depends="haven-client, resources, appletview">
     <jar destfile="build/haven.jar">
       <fileset dir="build/classes" />
       <fileset dir="build" includes="res/**" />
@@ -31,5 +39,11 @@
       </manifest>
     </jar>
     <signjar jar="build/haven.jar" alias="haven" storepass="autosign" keystore="etc/keys" />
+  </target>
+  
+  <target name="jars" depends="build-env, jar">
+    <copy todir="build">
+      <fileset dir="lib" />
+    </copy>
   </target>
 </project>
