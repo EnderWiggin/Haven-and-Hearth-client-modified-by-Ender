@@ -73,7 +73,7 @@ public class HavenApplet extends Applet {
     }
     
     public void destroy() {
-	p.interrupt();
+	stopgame();
     }
     
     public void startgame() {
@@ -85,16 +85,21 @@ public class HavenApplet extends Applet {
 	p = new haven.error.ErrorHandler(new ErrorPanel());
 	Thread main = new Thread(p, new Runnable() {
 		public void run() {
-		    Bootstrap b = new Bootstrap(h.ui, false);
-		    b.setaddr(getCodeBase().getHost());
-		    try {
-		    	Resource.baseurl = new URL("http", getCodeBase().getHost(), 80, "/res");
-		    } catch(java.net.MalformedURLException e) {
-		    	throw(new RuntimeException(e));
+		    while(running) {
+			Bootstrap b = new Bootstrap(h.ui, false);
+			b.setaddr(getCodeBase().getHost());
+			try {
+			    Resource.baseurl = new URL("http", getCodeBase().getHost(), 80, "/res");
+			} catch(java.net.MalformedURLException e) {
+			    throw(new RuntimeException(e));
+			}
+			b.start();
+			Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
+			main.start();
+			try {
+			    main.join();
+			} catch(InterruptedException e) {}
 		    }
-		    b.start();
-		    Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
-		    main.start();
 		}
 	    });
 	main.start();
@@ -104,11 +109,11 @@ public class HavenApplet extends Applet {
     public void stopgame() {
 	if(!running)
 	    return;
+	running = false;
 	p.interrupt();
 	remove(h);
 	p = null;
 	h = null;
-	running = false;
     }
     
     public void init() {
