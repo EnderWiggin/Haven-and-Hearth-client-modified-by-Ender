@@ -46,4 +46,8 @@
       <fileset dir="lib" />
     </copy>
   </target>
+  
+  <target name="run" depends="jars">
+    <java jar="build/haven.jar" fork="true" />
+  </target>
 </project>
