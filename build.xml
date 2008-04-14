@@ -28,7 +28,7 @@
   </target>
 
   <target name="jar" depends="haven-client, resources, appletview">
-    <jar destfile="build/haven.jar">
+    <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" />
       <fileset dir="build" includes="res/**" />
       <manifest>
