@@ -31,7 +31,8 @@ public class Session {
 	
 	DatagramSocket sk;
 	InetAddress server;
-	Thread rworker, sworker, ticker;
+	Thread rworker, ticker;
+	SWorker sworker;
 	int connfailed = 0;
 	String state = "conn";
 	int tseq = 0, rseq = 0;
@@ -272,6 +273,9 @@ public class Session {
 					} else if(msg.type == MSG_OBJDATA) {
 						getobjdata(msg);
 					} else if(msg.type == MSG_CLOSE) {
+						synchronized(Session.this) {
+							state = "fin";
+						}
 						getThreadGroup().interrupt();
 					} else {
 						throw(new MessageException("Unknown message type: " + msg.type, msg));
@@ -282,9 +286,18 @@ public class Session {
 	}
 	
 	private class SWorker extends Thread {
+		long closing = -1;
+		int ctries = 0;
+		
 		public SWorker() {
 			super(Utils.tg(), "Session writer");
 			setDaemon(true);
+		}
+		
+		public synchronized void close() {
+			if(closing == -1)
+				closing = 0;
+			notify();
 		}
 		
 		public void run() {
@@ -319,11 +332,20 @@ public class Session {
 							if((objacks.size() > 0) && (to > 120))
 								to = 200;
 						}
+						if(closing != -1)
+							to = 500;
 						synchronized(this) {
 							this.wait(to);
 						}
 						now = System.currentTimeMillis();
 						boolean beat = true;
+						if((closing != -1) && (now - closing > 500)) {
+							Message cm = new Message(MSG_CLOSE);
+							sendmsg(cm);
+							closing = now;
+							if(++ctries > 5)
+								getThreadGroup().interrupt();
+						}
 						synchronized(pending) {
 							if(pending.size() > 0) {
 								for(Message msg : pending) {
@@ -366,7 +388,7 @@ public class Session {
 					}
 				}
 			} catch(InterruptedException e) {}
-			if(state != "conn")
+			if((state != "conn") && (state != "fin"))
 				sendmsg(new Message(MSG_CLOSE));
 		}
 	}
@@ -390,9 +412,7 @@ public class Session {
 	}
 	
 	public void close() {
-		sworker.interrupt();
-		rworker.interrupt();
-		ticker.interrupt();
+		sworker.close();
 	}
 	
 	public void queuemsg(Message msg) {
