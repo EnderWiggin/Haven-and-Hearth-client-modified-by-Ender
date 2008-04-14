@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 
 <project name="haven" default="jars">
-  <path id="classpath">
-    <pathelement path="lib/jogl.jar" />
-    <pathelement path="lib/gluegen-rt.jar" />
-  </path>
-
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
@@ -14,7 +9,10 @@
   
   <target name="haven-client" depends="build-env">
     <javac srcdir="src" destdir="build/classes" debug="on">
-      <classpath refid="classpath" />
+      <classpath>
+	<pathelement path="lib/jogl.jar" />
+	<pathelement path="lib/gluegen-rt.jar" />
+      </classpath>
       <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
   </target>
