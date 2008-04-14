@@ -46,12 +46,10 @@ public class Sprite {
 	
 	private class ImagePart extends SpritePart {
 		Resource.Image img;
-		Coord sz;
 		
 		public ImagePart(Resource.Image img) {
 			super(img.z);
 			this.img = img;
-			sz = Utils.imgsz(img.img);
 		}
 		
 		public void draw(BufferedImage b, Graphics g) {
@@ -65,7 +63,7 @@ public class Sprite {
 		}
 		
 		public boolean checkhit(Coord c) {
-			if((c.x < img.o.x) || (c.y < img.o.y) || (c.x >= img.o.x + sz.x) || (c.y >= img.o.y + sz.y))
+			if((c.x < img.o.x) || (c.y < img.o.y) || (c.x >= img.o.x + img.sz.x) || (c.y >= img.o.y + img.sz.y))
 				return(false);
 			int cl = img.img.getRGB(c.x - img.o.x, c.y - img.o.y);
 			return(Utils.rgbm.getAlpha(cl) >= 128);
