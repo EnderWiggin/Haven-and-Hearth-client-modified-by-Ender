@@ -8,10 +8,9 @@ import java.awt.Graphics;
 import java.util.*;
 
 public class Sprite {
-	Resource res;
-	Frame[] frames;
+	public final Resource res;
+	protected Frame[] frames;
 	int fno = 0, de = 0;
-	boolean layered;
 	Coord cc, sz;
 	
 	public interface Drawer {
@@ -74,9 +73,13 @@ public class Sprite {
 		}
 	}
 
-	private class Frame {
+	protected class Frame {
 		Collection<SpritePart> parts = new LinkedList<SpritePart>();
 		int dur = 1000;
+		
+		public void add(Resource.Image img) {
+			parts.add(new ImagePart(img));
+		}
 	}
 	
 	public static class ResourceException extends RuntimeException {
@@ -88,27 +91,61 @@ public class Sprite {
 		}
 	}
 
-	public Sprite(Resource res, Resource negres, boolean layered) {
-		if(res.loading)
-			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
+	private Sprite(Resource res, Resource neg, int frames) {
 		this.res = res;
-		this.layered = layered;
-		initneg(negres);
+		this.frames = new Frame[frames];
+		initneg(neg);
+	}
+
+	protected Sprite(Resource res, int frames) {
+		this(res, res, frames);
+	}
+	
+	private static Sprite mksprite(Resource res, Resource neg, boolean layered) {
+		Sprite spr = new Sprite(res, neg, 1);
+		Frame f = spr.new Frame();
+		for(Resource.Image img : res.layers(imgc)) {
+			if(img.l == layered)
+				f.add(img);
+		}
+		spr.frames[0] = f;
+		return(spr);
+	}
+
+	private static Sprite mkanim(Resource res, Resource neg, boolean layered, Resource.Anim ad) {
+		Sprite spr = new Sprite(res, neg, ad.f.length);
+		for(int i = 0; i < ad.f.length; i++) {
+			Frame f = spr.new Frame();
+			f.dur = ad.d;
+			for(int o = 0; o < ad.f[i].length; o++) {
+				if(ad.f[i][o].l == layered)
+					f.add(ad.f[i][o]);
+			}
+			spr.frames[i] = f;
+		}
+		return(spr);
+	}
+
+	private static Sprite create(Resource res, Resource neg, boolean layered) {
 		Resource.Anim ad = res.layer(animc);
 		if(ad == null)
-			initsprite();
+			return(mksprite(res, neg, layered));
 		else
-			initanim(ad);
+			return(mkanim(res, neg, layered, ad));
+	}
+
+	public static Sprite create(Resource res, Resource neg) {
+		if(res.loading || neg.loading)
+			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
+		return(create(res, neg, true));
 	}
 	
-	public Sprite(Resource res, boolean layered) {
-		this(res, res, layered);
+	public static Sprite create(Resource res) {
+		if(res.loading)
+			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
+		return(create(res, res, false));
 	}
-	
-	public Sprite(Resource res) {
-		this(res, false);
-	}
-	
+
 	private void initneg(Resource negres) {
 		Resource.Neg neg = negres.layer(Resource.negc);
 		if(neg != null) {
@@ -116,7 +153,7 @@ public class Sprite {
 			sz = neg.sz;
 			return;
 		}
-		throw(new ResourceException("Does not know how to draw resource " + res.name, res));
+		throw(new ResourceException("Does not know how to draw resource " + negres.name, negres));
 	}
 	
 	public boolean checkhit(Coord c) {
@@ -127,27 +164,7 @@ public class Sprite {
 		return(false);
 	}
 	
-	private void initsprite() {
-		Frame f = new Frame();
-		for(Resource.Image img : res.layers(imgc)) {
-			if(img.l == layered)
-				f.parts.add(new ImagePart(img));
-		}
-		frames = new Frame[1];
-		frames[0] = f;
-	}
-	
 	private void initanim(Resource.Anim ad) {
-		frames = new Frame[ad.f.length];
-		for(int i = 0; i < frames.length; i++) {
-			Frame f = new Frame();
-			f.dur = ad.d;
-			for(int o = 0; o < ad.f[i].length; o++) {
-				if(ad.f[i][o].l == layered)
-					f.parts.add(new ImagePart(ad.f[i][o]));
-			}
-			frames[i] = f;
-		}
 	}
 
 	public void setup(Drawer d, Coord cc, Coord sc) {
