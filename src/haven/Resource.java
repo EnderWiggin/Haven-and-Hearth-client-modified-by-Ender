@@ -58,6 +58,10 @@ public class Resource implements Comparable<Resource>, Serializable {
 		return(res);
 	}
 	
+	public static int qdepth() {
+		return(loader.queue.size());
+	}
+	
 	public static Resource load(String name) {
 		return(load(name, -1));
 	}

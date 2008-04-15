@@ -33,7 +33,7 @@ public class Cal extends SSWidget {
 		Graphics g = graphics();
 		g.drawImage(bg, 0, 0, null);
 		g.drawImage(a.night?nsky:dsky, 0, 0, null);
-		int mp = (int)((a.mp + (0.5 / (double)moon.length)) * (double)moon.length);
+		int mp = (int)(a.mp * (double)moon.length);
 		BufferedImage moon = Cal.moon[mp];
 		Coord mc = Coord.sc((a.dt + 0.25) * 2 * PI, hbr).add(sz.div(2)).add(Utils.imgsz(moon).div(2).inv());
 		Coord sc = Coord.sc((a.dt + 0.75) * 2 * PI, hbr).add(sz.div(2)).add(Utils.imgsz(sun).div(2).inv());
