@@ -37,7 +37,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		Resource res;
 		synchronized(cache) {
 			res = cache.get(name);
-			if((res != null) && (ver != -1)) {
+			if((res != null) && (res.ver != -1) && (ver != -1)) {
 				if(res.ver < ver) {
 					res = null;
 					cache.remove(name);
