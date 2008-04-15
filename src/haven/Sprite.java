@@ -54,7 +54,11 @@ public class Sprite {
 		
 		public void draw(BufferedImage b, Graphics g) {
 			Coord sc = this.sc.add(img.o);
-			g.drawImage(img.img, sc.x, sc.y, null);
+			if(img.gayp()) {
+				Utils.drawgay(b, img.img, sc);
+			} else {
+				g.drawImage(img.img, sc.x, sc.y, null);
+			}
 		}
 		
 		public void draw(GOut g) {

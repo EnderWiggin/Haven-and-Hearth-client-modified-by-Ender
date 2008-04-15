@@ -122,6 +122,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		synchronized(ui) {
 			root.draw(g);
 		}
+		if(Resource.qdepth() > 0)
+			g.atext("RQ depth: " + Resource.qdepth(), new Coord(790, 575), 1, 1);
 		g.atext("FPS: " + fps, new Coord(790, 590), 1, 1);
 	}
 	
