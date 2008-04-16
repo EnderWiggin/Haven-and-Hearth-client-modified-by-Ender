@@ -41,7 +41,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 				 s = 1;
 			 wc = sc.add(Coord.z);
 			 while(true) {
-				 Gob g = new Gob(wc.mul(tilesz), 0, 0);
+				 Gob g = new Gob(ui.sess.glob, wc.mul(tilesz), 0, 0);
 				 g.setattr(new ResDrawable(g, Resource.load("gfx/arch/walls/wood-we")));
 				 vob.add(g);
 				 if(wc.x == ec.x)
@@ -58,7 +58,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 				 s = 1;
 			 wc = sc.add(Coord.z);
 			 while(true) {
-				 Gob g = new Gob(wc.mul(tilesz), 0, 0);
+				 Gob g = new Gob(ui.sess.glob, wc.mul(tilesz), 0, 0);
 				 g.setattr(new ResDrawable(g, Resource.load("gfx/arch/walls/wood-ns")));
 				 vob.add(g);
 				 if(wc.y == ec.y)

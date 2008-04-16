@@ -7,8 +7,13 @@ public class OCache implements Iterable<Gob> {
 	private Collection<Collection<Gob>> local = new LinkedList<Collection<Gob>>();
 	private Map<Integer, Gob> objs = new TreeMap<Integer, Gob>();
 	private Map<Integer, Integer> deleted = new TreeMap<Integer, Integer>();
+	private Glob glob;
 	long lastctick = 0;
-
+	
+	public OCache(Glob glob) {
+	    this.glob = glob;
+	}
+	
 	public synchronized void remove(int id, int frame) {
 		if(objs.containsKey(id)) {
 			objs.remove(id);
@@ -69,7 +74,7 @@ public class OCache implements Iterable<Gob> {
 			if(r) {
 				return(null);
 			} else {
-				Gob g = new Gob(Coord.z, id, frame);
+				Gob g = new Gob(glob, Coord.z, id, frame);
 				objs.put(id, g);
 				return(g);
 			}

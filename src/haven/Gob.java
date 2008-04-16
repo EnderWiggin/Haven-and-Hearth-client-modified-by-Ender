@@ -6,9 +6,11 @@ public class Gob {
 	Coord rc, sc;
 	int clprio = 0;
 	int id, frame;
+	public final Glob glob;
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
 	
-	public Gob(Coord c, int id, int frame) {
+	public Gob(Glob glob, Coord c, int id, int frame) {
+		this.glob = glob;
 		this.rc = c;
 		this.id = id;
 		this.frame = frame;
