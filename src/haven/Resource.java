@@ -22,9 +22,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
-	final String name;
-	int ver;
-	boolean loading;
+	public final String name;
+	public int ver;
+	public boolean loading;
 
 	private Resource(String name, int ver) {
 		this.name = name;
