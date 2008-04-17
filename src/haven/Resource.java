@@ -21,9 +21,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
-	final String name;
-	int ver;
-	boolean loading;
+	public final String name;
+	public int ver;
+	public boolean loading;
 
 	private Resource(String name, int ver) {
 		this.name = name;
@@ -90,6 +90,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	private static class Loader extends Thread {
 		private Queue<Resource> queue = new LinkedList<Resource>();
+		private SslHelper ssl;
 		
 		public Loader() {
 			super(Utils.tg(), "Haven resource loader");
@@ -121,23 +122,41 @@ public class Resource implements Comparable<Resource>, Serializable {
 					}
 					cur = null;
 				}
-			} catch(InterruptedException e) {}
+			} catch(InterruptedException e) {
+			} finally {
+				synchronized(Resource.class) {
+					Resource.loader = null;
+				}
+			}
 		}
 		
-		private void handle(Resource res) throws IOException {
-			try {
-				res.load(getres(res.name));
-				return;
-			} catch(LoadException e) {}
-			URL resurl;
-			try {
-				resurl = new URL(baseurl, res.name + ".res");
-			} catch(MalformedURLException e) {
-				throw(new LoadException("Could not construct res URL", e, res));
+		private InputStream getreshttp(Resource res) throws IOException {
+			if(ssl == null) {
+				ssl = new SslHelper();
+				try {
+					ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
+				} catch(java.security.cert.CertificateException e) {
+					throw(new LoadException("Invalid built-in certificate", e, res));
+				}
+				ssl.ignoreName();
 			}
-			URLConnection c = resurl.openConnection();
-			c.connect();
-			res.load(c.getInputStream());
+			URL resurl = new URL(baseurl, res.name + ".res");
+			URLConnection c = ssl.connect(resurl);
+			return(c.getInputStream());
+		}
+
+		private void handle(Resource res) throws IOException {
+			InputStream in = null;
+			try {
+				try {
+					res.load(getres(res.name));
+					return;
+				} catch(LoadException e) {}
+				res.load(getreshttp(res));
+			} finally {
+				if(in != null)
+					in.close();
+			}
 		}
 		
 		public void load(Resource res) { 

@@ -27,9 +27,11 @@ public class Layered extends Drawable {
 		loading = true;
 		this.layers = layers;
 		delays = new TreeMap<Resource, Integer>();
-		for(Resource r : layers)
-			delays.put(r, 0);
 		sprites = new TreeMap<Resource, Sprite>();
+		for(Resource r : layers) {
+			delays.put(r, 0);
+			sprites.put(r, null);
+		}
 	}
 	
 	public boolean checkhit(Coord c) {

@@ -2,7 +2,7 @@ package haven;
 
 import java.util.*;
 
-public class WeightList<T> {
+public class WeightList<T> implements java.io.Serializable {
     List<T> c;
     List<Integer> w;
     int tw = 0;
