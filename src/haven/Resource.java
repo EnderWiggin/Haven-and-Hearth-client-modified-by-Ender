@@ -91,6 +91,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	private static class Loader extends Thread {
 		private Queue<Resource> queue = new LinkedList<Resource>();
+		private SslHelper ssl = new SslHelper();
 		
 		public Loader() {
 			super(Utils.tg(), "Haven resource loader");
@@ -125,20 +126,30 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} catch(InterruptedException e) {}
 		}
 		
+		private InputStream getreshttp(Resource res) throws IOException {
+				URL resurl;
+				try {
+					resurl = new URL(baseurl, res.name + ".res");
+				} catch(MalformedURLException e) {
+					throw(new LoadException("Could not construct res URL", e, res));
+				}
+				URLConnection c = resurl.openConnection();
+				c.connect();
+				return(c.getInputStream());
+		}
+
 		private void handle(Resource res) throws IOException {
+			InputStream in = null;
 			try {
-				res.load(getres(res.name));
-				return;
-			} catch(LoadException e) {}
-			URL resurl;
-			try {
-				resurl = new URL(baseurl, res.name + ".res");
-			} catch(MalformedURLException e) {
-				throw(new LoadException("Could not construct res URL", e, res));
+				try {
+					res.load(getres(res.name));
+					return;
+				} catch(LoadException e) {}
+				res.load(getreshttp(res));
+			} finally {
+				if(in != null)
+					in.close();
 			}
-			URLConnection c = resurl.openConnection();
-			c.connect();
-			res.load(c.getInputStream());
 		}
 		
 		public void load(Resource res) { 
