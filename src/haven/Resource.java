@@ -127,12 +127,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 		
 		private InputStream getreshttp(Resource res) throws IOException {
-				URL resurl;
-				try {
-					resurl = new URL(baseurl, res.name + ".res");
-				} catch(MalformedURLException e) {
-					throw(new LoadException("Could not construct res URL", e, res));
-				}
+				URL resurl = new URL(baseurl, res.name + ".res");
 				URLConnection c = resurl.openConnection();
 				c.connect();
 				return(c.getInputStream());
