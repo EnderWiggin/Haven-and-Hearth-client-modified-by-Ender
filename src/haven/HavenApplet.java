@@ -89,7 +89,7 @@ public class HavenApplet extends Applet {
 			Bootstrap b = new Bootstrap(h.ui, false);
 			b.setaddr(getCodeBase().getHost());
 			try {
-			    Resource.baseurl = new URL("http", getCodeBase().getHost(), 80, "/res/");
+			    Resource.baseurl = new URL("https", getCodeBase().getHost(), 443, "/res/");
 			} catch(java.net.MalformedURLException e) {
 			    throw(new RuntimeException(e));
 			}

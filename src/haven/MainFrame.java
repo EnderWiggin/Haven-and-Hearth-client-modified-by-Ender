@@ -55,7 +55,7 @@ public class MainFrame extends Frame implements Runnable {
 	public static void main(String[] args) {
 		final MainFrame f = new MainFrame(800, 600);
 		try {
-			Resource.baseurl = new URL(System.getProperty("haven.resurl", "http://www.havenandhearth.com/res/"));
+			Resource.baseurl = new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/"));
 		} catch(java.net.MalformedURLException e) {
 			throw(new RuntimeException(e));
 		}
