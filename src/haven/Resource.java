@@ -123,7 +123,12 @@ public class Resource implements Comparable<Resource>, Serializable {
 					}
 					cur = null;
 				}
-			} catch(InterruptedException e) {}
+			} catch(InterruptedException e) {
+			} finally {
+				synchronized(Resource.class) {
+					Resource.loader = null;
+				}
+			}
 		}
 		
 		private InputStream getreshttp(Resource res) throws IOException {
