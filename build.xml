@@ -15,6 +15,7 @@
       </classpath>
       <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
+    <copy todir="build/classes/haven" file="etc/ressrv.crt" />
   </target>
   
   <target name="resources" depends="build-env">
