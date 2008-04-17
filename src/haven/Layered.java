@@ -56,7 +56,7 @@ public class Layered extends Drawable {
 					if(r.loading)
 						loading = true;
 					else
-						sprites.put(r, Sprite.create(r, base));
+						sprites.put(r, Sprite.create(gob, r, base));
 				}
 			}
 		}

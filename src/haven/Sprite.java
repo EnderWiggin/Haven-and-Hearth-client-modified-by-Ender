@@ -10,6 +10,7 @@ import java.util.*;
 public class Sprite {
 	public final Resource res;
 	protected Frame[] frames;
+	public final Gob gob;
 	int fno = 0, de = 0;
 	Coord cc, sz;
 	
@@ -91,18 +92,19 @@ public class Sprite {
 		}
 	}
 
-	private Sprite(Resource res, Resource neg, int frames) {
+	private Sprite(Gob gob, Resource res, Resource neg, int frames) {
 		this.res = res;
 		this.frames = new Frame[frames];
+		this.gob = gob;
 		initneg(neg);
 	}
 
-	protected Sprite(Resource res, int frames) {
-		this(res, res, frames);
+	protected Sprite(Gob gob, Resource res, int frames) {
+		this(gob, res, res, frames);
 	}
 	
-	private static Sprite mksprite(Resource res, Resource neg, boolean layered) {
-		Sprite spr = new Sprite(res, neg, 1);
+	private static Sprite mksprite(Gob gob, Resource res, Resource neg, boolean layered) {
+		Sprite spr = new Sprite(gob, res, neg, 1);
 		Frame f = spr.new Frame();
 		for(Resource.Image img : res.layers(imgc)) {
 			if(img.l == layered)
@@ -112,8 +114,8 @@ public class Sprite {
 		return(spr);
 	}
 
-	private static Sprite mkanim(Resource res, Resource neg, boolean layered, Resource.Anim ad) {
-		Sprite spr = new Sprite(res, neg, ad.f.length);
+	private static Sprite mkanim(Gob gob, Resource res, Resource neg, boolean layered, Resource.Anim ad) {
+		Sprite spr = new Sprite(gob, res, neg, ad.f.length);
 		for(int i = 0; i < ad.f.length; i++) {
 			Frame f = spr.new Frame();
 			f.dur = ad.d;
@@ -126,24 +128,24 @@ public class Sprite {
 		return(spr);
 	}
 
-	private static Sprite create(Resource res, Resource neg, boolean layered) {
+	private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered) {
 		Resource.Anim ad = res.layer(animc);
 		if(ad == null)
-			return(mksprite(res, neg, layered));
+			return(mksprite(gob, res, neg, layered));
 		else
-			return(mkanim(res, neg, layered, ad));
+			return(mkanim(gob, res, neg, layered, ad));
 	}
 
-	public static Sprite create(Resource res, Resource neg) {
+	public static Sprite create(Gob gob, Resource res, Resource neg) {
 		if(res.loading || neg.loading)
 			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
-		return(create(res, neg, true));
+		return(create(gob, res, neg, true));
 	}
 	
-	public static Sprite create(Resource res) {
+	public static Sprite create(Gob gob, Resource res) {
 		if(res.loading)
 			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
-		return(create(res, res, false));
+		return(create(gob, res, res, false));
 	}
 
 	private void initneg(Resource negres) {
