@@ -91,7 +91,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	private static class Loader extends Thread {
 		private Queue<Resource> queue = new LinkedList<Resource>();
-		private SslHelper ssl = new SslHelper();
+		private SslHelper ssl;
 		
 		public Loader() {
 			super(Utils.tg(), "Haven resource loader");
@@ -127,10 +127,18 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 		
 		private InputStream getreshttp(Resource res) throws IOException {
-				URL resurl = new URL(baseurl, res.name + ".res");
-				URLConnection c = resurl.openConnection();
-				c.connect();
-				return(c.getInputStream());
+			if(ssl == null) {
+				ssl = new SslHelper();
+				try {
+					ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
+				} catch(java.security.cert.CertificateException e) {
+					throw(new LoadException("Invalid built-in certificate", e, res));
+				}
+				ssl.ignoreName();
+			}
+			URL resurl = new URL(baseurl, res.name + ".res");
+			URLConnection c = ssl.connect(resurl);
+			return(c.getInputStream());
 		}
 
 		private void handle(Resource res) throws IOException {
