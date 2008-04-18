@@ -36,7 +36,7 @@ public class Sprite {
 		public abstract void draw(GOut g);
 	}
 	
-	private abstract class SpritePart extends Part {
+	protected abstract class SpritePart extends Part {
 		public abstract boolean checkhit(Coord c);
 		
 		public SpritePart(int z) {
@@ -159,9 +159,12 @@ public class Sprite {
 	}
 	
 	public boolean checkhit(Coord c) {
-		for(SpritePart p : frames[fno].parts) {
-			if(p.checkhit(c))
-				return(true);
+		Frame f = frames[fno];
+		synchronized(f.parts) {
+			for(SpritePart p : f.parts) {
+				if(p.checkhit(c))
+					return(true);
+			}
 		}
 		return(false);
 	}
@@ -170,10 +173,13 @@ public class Sprite {
 	}
 
 	public void setup(Drawer d, Coord cc, Coord sc) {
-		for(Part p : frames[fno].parts) {
-			p.cc = cc;
-			p.sc = sc;
-			d.addpart(p);
+		Frame f = frames[fno];
+		synchronized(f.parts) {
+			for(Part p : f.parts) {
+				p.cc = cc;
+				p.sc = sc;
+				d.addpart(p);
+			}
 		}
 	}
 	
