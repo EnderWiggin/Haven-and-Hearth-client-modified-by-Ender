@@ -3,15 +3,57 @@ package haven;
 import java.awt.RenderingHints;
 import java.io.*;
 import java.util.prefs.*;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Utils {
 	private static Preferences prefs = null;
 	public static java.awt.image.ColorModel rgbm = java.awt.image.ColorModel.getRGBdefault();
+	private static Background bgworker = null;
 
 	static Coord imgsz(BufferedImage img) {
 		return(new Coord(img.getWidth(), img.getHeight()));
+	}
+	
+	public static class Background extends Thread {
+		Queue<Runnable> q = new LinkedList<Runnable>();
+		
+		public Background() {
+			super(tg(), "Haven deferred procedure thread");
+			setDaemon(true);
+			start();
+		}
+		
+		public void run() {
+			try {
+				while(true) {
+					Runnable cur;
+					synchronized(q) {
+						while((cur = q.poll()) == null)
+							q.wait();
+					}
+					cur.run();
+					cur = null;
+				}
+			} catch(InterruptedException e) {}
+		}
+		
+		public void defer(Runnable r) {
+			synchronized(q) {
+				q.add(r);
+				q.notify();
+			}
+		}
+	}
+	
+	static void defer(Runnable r) {
+		synchronized(Utils.class) {
+			if(bgworker == null)
+				bgworker = new Background();
+		}
+		bgworker.defer(r);
 	}
 	
 	static void drawgay(BufferedImage t, BufferedImage img, Coord c) {
