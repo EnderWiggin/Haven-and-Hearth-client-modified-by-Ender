@@ -31,7 +31,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 		if(servlist) {
 			ui.newwidget(1, "lb", new Coord(50, 50), 5, new Object[] {new Coord(200, 300),
 				"127.0.0.1", "localhost",
-				"192.168.0.116", "dolda",
+				"192.168.0.149", "dolda",
 				"192.168.0.144", "server",
 				"sh.seatribe.se", "Seatribe"
 				});

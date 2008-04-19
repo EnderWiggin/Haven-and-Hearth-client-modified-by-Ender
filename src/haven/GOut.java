@@ -9,6 +9,7 @@ public class GOut {
 	private Coord ul, sz;
 	private Color color;
 	final GLContext ctx;
+	int curtex = -1;
     
 	private GOut(GOut o) {
 		this.gl = o.gl;
@@ -56,9 +57,21 @@ public class GOut {
 	private void vertex(Coord c) {
 		gl.glVertex2i(c.x + ul.x, c.y + ul.y);
 	}
-
+	
+	void texsel(int id) {
+		if(id != curtex) {
+			if(id == -1) {
+				gl.glDisable(GL.GL_TEXTURE_2D);
+			} else {
+				gl.glEnable(GL.GL_TEXTURE_2D);
+				gl.glBindTexture(GL.GL_TEXTURE_2D, id);
+			}
+			curtex = id;
+		}
+	}
+	
 	public void line(Coord c1, Coord c2, double w) {
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		texsel(-1);
 		gl.glLineWidth((float)w);
 		gl.glBegin(GL.GL_LINES);
 		glcolor();
@@ -83,7 +96,7 @@ public class GOut {
     
 	public void frect(Coord ul, Coord sz) {
 		glcolor();
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		texsel(-1);
 		gl.glBegin(GL.GL_QUADS);
 		vertex(ul);
 		vertex(ul.add(new Coord(sz.x, 0)));

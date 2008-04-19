@@ -16,6 +16,8 @@ public class MapView extends Widget implements DTarget {
 	ILM mask;
 	final MCache map;
 	final Glob glob;
+	private List<Long> pdata = new LinkedList<Long>();
+	private List<String> pname = new LinkedList<String>();
 	
 	static {
 		Widget.addtype("mapview", new WidgetFactory() {
@@ -153,6 +155,7 @@ public class MapView extends Widget implements DTarget {
 		Tile t;
 		
 		t = gettile(tc).ground.pick(map.randoom(tc));
+		//t = gettile(tc).ground.pick(0);
 		g.image(t.tex(), sc);
 		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
@@ -219,11 +222,32 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
+	private void profrst() {
+		pdata = new LinkedList<Long>();
+		pname = new LinkedList<String>();
+		profpnt("start");
+	}
+	
+	private void profpnt(String nm) {
+		pdata.add(System.nanoTime());
+		pname.add(nm);
+	}
+	
+	private void profprint() {
+		for(int i = 1; i < pdata.size(); i++) {
+			if(i > 1)
+				System.out.print(", ");
+			System.out.print(pname.get(i) + ": " + (pdata.get(i) - pdata.get(i - 1)));
+		}
+		System.out.println();
+	}
+	
 	public void drawmap(GOut g) {
 		int x, y, i;
 		int stw, sth;
 		Coord oc, tc, ctc, sc;
 		
+		profrst();
 		stw = (tilesz.x * 4) - 2;
 		sth = tilesz.y * 2;
 		oc = viewoffset(sz, mc);
@@ -249,6 +273,7 @@ public class MapView extends Widget implements DTarget {
 				}
 			}
 		}
+		profpnt("map");
 		
 		final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
@@ -291,13 +316,17 @@ public class MapView extends Widget implements DTarget {
 				});
 			this.clickable = clickable;
 			Collections.sort(sprites);
+			profpnt("sort");
 			for(Sprite.Part part : sprites)
 				part.draw(g);
+			profpnt("draw");
 			mask.redraw(lumin);
 			g.image(mask, Coord.z);
 			for(Speaking s : speaking) {
 				s.draw(g, s.gob.sc.add(s.off));
 			}
+			profpnt("aux");
+			//profprint();
 		}
 	}
 	
