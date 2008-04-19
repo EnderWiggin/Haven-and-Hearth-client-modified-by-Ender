@@ -38,6 +38,8 @@ public class Layered extends Drawable {
 		if(base.loading)
 			return(false);
 		for(Sprite spr : sprites.values()) {
+			if(spr == null)
+				continue;
 			if(spr.checkhit(c))
 				return(true);
 		}

@@ -56,8 +56,7 @@ public abstract class Tex {
 		GL gl = g.gl;
 		if(id < 0)
 			create(g);
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
+		g.texsel(id);
 		Color amb = setenv(gl);
 		checkerr(gl);
 		gl.glBegin(GL.GL_QUADS);

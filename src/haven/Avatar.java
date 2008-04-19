@@ -43,7 +43,6 @@ public class Avatar extends GAttrib {
 			}
 		}
 		if(image == null) {
-                        long begin = System.currentTimeMillis();
 			image = new TexIM(sz);
 			Graphics g = image.graphics();
 			loading = false;
@@ -51,7 +50,6 @@ public class Avatar extends GAttrib {
 				g.drawImage(i.img, i.o.x, i.o.y, null);
 			image.update();
 			this.image = image;
-                        System.out.println(System.currentTimeMillis() - begin);
 		}
 		return(image);
 	}
