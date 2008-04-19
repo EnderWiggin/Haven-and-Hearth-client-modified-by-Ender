@@ -98,9 +98,11 @@ public class MCache {
 	
 	public MCache(Session sess) {
 		this.sess = sess;
+		sets.add(loadset("gfx/tiles/wald/wald"));
 		sets.add(loadset("gfx/tiles/grass/grass"));
-		sets.add(loadset("gfx/tiles/dirt/dirt"));
 		sets.add(loadset("gfx/tiles/swamp/swamp"));
+		sets.add(loadset("gfx/tiles/dirt/dirt"));
+		sets.add(loadset("gfx/tiles/playa/playa"));
 		sets.add(loadset("gfx/tiles/water/water"));
 		gen = new Random();
 	}
