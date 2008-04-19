@@ -78,6 +78,8 @@ public class Sprite {
 		Collection<SpritePart> parts = new LinkedList<SpritePart>();
 		int dur = 1000;
 		
+		public Frame() {}
+		
 		public void add(Resource.Image img) {
 			parts.add(new ImagePart(img));
 		}
