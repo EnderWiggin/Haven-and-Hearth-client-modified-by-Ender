@@ -74,6 +74,34 @@ public class Sprite {
 		}
 	}
 
+	private class J2dPart extends SpritePart {
+		BufferedImage img;
+		Tex tex;
+		Coord sz;
+		
+		public J2dPart(BufferedImage img, int z) {
+			super(z);
+			this.img = img;
+			this.tex = new TexI(img);
+			this.sz = Utils.imgsz(img);
+		}
+		
+		public void draw(BufferedImage b, Graphics g) {
+			g.drawImage(img, sc.x, sc.y, null);
+		}
+		
+		public void draw(GOut g) {
+			g.image(tex, sc);
+		}
+		
+		public boolean checkhit(Coord c) {
+			if((c.x < 0) || (c.y < 0) || (c.x >= sz.x) || (c.y >= sz.y))
+				return(false);
+			int cl = img.getRGB(c.x, c.y);
+			return(Utils.rgbm.getAlpha(cl) >= 128);
+		}
+	}
+
 	protected class Frame {
 		Collection<SpritePart> parts = new LinkedList<SpritePart>();
 		int dur = 1000;
@@ -82,6 +110,10 @@ public class Sprite {
 		
 		public void add(Resource.Image img) {
 			parts.add(new ImagePart(img));
+		}
+		
+		public void add(BufferedImage img, int z) {
+			parts.add(new J2dPart(img, z));
 		}
 	}
 	
