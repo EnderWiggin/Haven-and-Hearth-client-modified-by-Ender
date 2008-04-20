@@ -197,14 +197,14 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 	
 	public class Image extends Layer implements Comparable<Image> {
-		transient BufferedImage img;
+		public transient BufferedImage img;
 		transient private Tex tex;
-		final int z;
-		final boolean l;
-		final int id;
+		public final int z;
+		public final boolean l;
+		public final int id;
 		private int gay = -1;
-		Coord sz;
-		Coord o;
+		public Coord sz;
+		public Coord o;
 		
 		public Image(byte[] buf) {
 			z = Utils.int16d(buf, 0);

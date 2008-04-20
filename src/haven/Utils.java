@@ -71,7 +71,7 @@ public class Utils {
 		}
 	}
 	
-	static int drawtext(Graphics g, String text, Coord c) {
+	public static int drawtext(Graphics g, String text, Coord c) {
 		java.awt.FontMetrics m = g.getFontMetrics();
 		g.drawString(text, c.x, c.y + m.getAscent());
 		return(m.getHeight());

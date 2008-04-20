@@ -5,7 +5,7 @@ import java.util.*;
 public class Gob {
 	Coord rc, sc;
 	int clprio = 0;
-	int id, frame;
+	public int id, frame;
 	public final Glob glob;
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
 	

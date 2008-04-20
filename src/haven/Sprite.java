@@ -12,7 +12,7 @@ public class Sprite {
 	protected Frame[] frames;
 	public final Gob gob;
 	int fno = 0, de = 0;
-	Coord cc, sz;
+	public Coord cc, sz;
 	
 	public interface Drawer {
 		public void addpart(Part p);

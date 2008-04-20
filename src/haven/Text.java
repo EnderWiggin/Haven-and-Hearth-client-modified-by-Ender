@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 
 public class Text {
 	private static Foundry std;
-	private BufferedImage img;
+	public BufferedImage img;
 	public final String text;
 	private FontMetrics m;
 	private Tex tex;
