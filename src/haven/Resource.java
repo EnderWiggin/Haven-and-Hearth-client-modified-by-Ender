@@ -375,6 +375,57 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 	static {ltypes.put("tileset", Tileset.class);}
 	
+	public class Code extends Layer {
+		public final String name;
+		transient public final byte[] data;
+		
+		public Code(byte[] buf) {
+			int[] off = new int[1];
+			off[0] = 0;
+			name = Utils.strd(buf, off);
+			data = new byte[buf.length - off[0]];
+			System.arraycopy(buf, off[0], data, 0, data.length);
+		}
+		
+		public void init() {}
+	}
+	static {ltypes.put("code", Code.class);}
+	
+	public class SpriteCode extends Layer {
+		private String clnm;
+		private Map<String, Code> clmap = new TreeMap<String, Code>();
+		transient private ClassLoader loader;
+		transient public Class<? extends Sprite> cl;
+		
+		public SpriteCode(byte[] buf) {
+			int[] off = new int[1];
+			off[0] = 0;
+			clnm = Utils.strd(buf, off);
+		}
+		
+		public void init() {
+			for(Code c : layers(Code.class))
+				clmap.put(c.name, c);
+			loader = new ClassLoader(Resource.class.getClassLoader()) {
+					public Class<?> findClass(String name) throws ClassNotFoundException {
+						System.out.println(name);
+						Code c = clmap.get(name);
+						if(c == null)
+							throw(new ClassNotFoundException("Could not find main sprite class"));
+						return(defineClass(name, c.data, 0, c.data.length));
+					}
+				};
+			Class<?> cl;
+			try {
+				cl = loader.loadClass(clnm);
+			} catch(ClassNotFoundException e) {
+				throw(new LoadException(e, Resource.this));
+			}
+			this.cl = cl.asSubclass(Sprite.class);
+		}
+	}
+	static {ltypes.put("sprcode", SpriteCode.class);}
+	
 	private void readall(InputStream in, byte[] buf) throws IOException {
 		int ret, off = 0;
 		while(off < buf.length) {
