@@ -3,16 +3,17 @@ package haven;
 import static haven.Resource.imgc;
 import static haven.Resource.negc;
 import static haven.Resource.animc;
+import java.lang.reflect.Method;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.util.*;
 
 public class Sprite {
-	Resource res;
-	Frame[] frames;
+	public final Resource res;
+	protected Frame[] frames;
+	public final Gob gob;
 	int fno = 0, de = 0;
-	boolean layered;
-	Coord cc, sz;
+	public Coord cc, sz;
 	
 	public interface Drawer {
 		public void addpart(Part p);
@@ -36,7 +37,7 @@ public class Sprite {
 		public abstract void draw(GOut g);
 	}
 	
-	private abstract class SpritePart extends Part {
+	protected abstract class SpritePart extends Part {
 		public abstract boolean checkhit(Coord c);
 		
 		public SpritePart(int z) {
@@ -74,9 +75,47 @@ public class Sprite {
 		}
 	}
 
-	private class Frame {
+	private class J2dPart extends SpritePart {
+		BufferedImage img;
+		Tex tex;
+		Coord sz;
+		
+		public J2dPart(BufferedImage img, int z) {
+			super(z);
+			this.img = img;
+			this.tex = new TexI(img);
+			this.sz = Utils.imgsz(img);
+		}
+		
+		public void draw(BufferedImage b, Graphics g) {
+			g.drawImage(img, sc.x, sc.y, null);
+		}
+		
+		public void draw(GOut g) {
+			g.image(tex, sc);
+		}
+		
+		public boolean checkhit(Coord c) {
+			if((c.x < 0) || (c.y < 0) || (c.x >= sz.x) || (c.y >= sz.y))
+				return(false);
+			int cl = img.getRGB(c.x, c.y);
+			return(Utils.rgbm.getAlpha(cl) >= 128);
+		}
+	}
+
+	protected class Frame {
 		Collection<SpritePart> parts = new LinkedList<SpritePart>();
 		int dur = 1000;
+		
+		public Frame() {}
+		
+		public void add(Resource.Image img) {
+			parts.add(new ImagePart(img));
+		}
+		
+		public void add(BufferedImage img, int z) {
+			parts.add(new J2dPart(img, z));
+		}
 	}
 	
 	public static class ResourceException extends RuntimeException {
@@ -86,29 +125,88 @@ public class Sprite {
 			super(msg);
 			this.res = res;
 		}
+		
+		public ResourceException(String msg, Throwable cause, Resource res) {
+			super(msg, cause);
+			this.res = res;
+		}
 	}
 
-	public Sprite(Resource res, Resource negres, boolean layered) {
+	private Sprite(Gob gob, Resource res, Resource neg, int frames) {
+		this.res = res;
+		this.frames = new Frame[frames];
+		this.gob = gob;
+		initneg(neg);
+	}
+
+	protected Sprite(Gob gob, Resource res, int frames) {
+		this(gob, res, res, frames);
+	}
+	
+	private static Sprite mksprite(Gob gob, Resource res, Resource neg, boolean layered) {
+		Sprite spr = new Sprite(gob, res, neg, 1);
+		Frame f = spr.new Frame();
+		for(Resource.Image img : res.layers(imgc)) {
+			if(img.l == layered)
+				f.add(img);
+		}
+		spr.frames[0] = f;
+		return(spr);
+	}
+
+	private static Sprite mkanim(Gob gob, Resource res, Resource neg, boolean layered, Resource.Anim ad) {
+		Sprite spr = new Sprite(gob, res, neg, ad.f.length);
+		for(int i = 0; i < ad.f.length; i++) {
+			Frame f = spr.new Frame();
+			f.dur = ad.d;
+			for(int o = 0; o < ad.f[i].length; o++) {
+				if(ad.f[i][o].l == layered)
+					f.add(ad.f[i][o]);
+			}
+			spr.frames[i] = f;
+		}
+		return(spr);
+	}
+
+	private static Sprite mkdyn(Gob gob, Resource res, Resource neg, Resource.SpriteCode sc) {
+		Method m;
+		try {
+			m = sc.cl.getMethod("create", Gob.class, Resource.class);
+		} catch(NoSuchMethodException e) {
+			throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
+		}
+		try {
+			return((Sprite)m.invoke(null, gob, res));
+		} catch(IllegalAccessException e) {
+			throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
+		} catch(java.lang.reflect.InvocationTargetException e) {
+			throw(new ResourceException("Sprite code of dynamic resource threw an exception", e.getCause(), res));
+		}
+	}
+
+	private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered) {
+		Resource.Anim ad = res.layer(animc);
+		Resource.SpriteCode sc = res.layer(Resource.SpriteCode.class);
+		if(sc != null)
+			return(mkdyn(gob, res, neg, sc));
+		else if(ad != null)
+			return(mkanim(gob, res, neg, layered, ad));
+		else
+			return(mksprite(gob, res, neg, layered));
+	}
+
+	public static Sprite create(Gob gob, Resource res, Resource neg) {
+		if(res.loading || neg.loading)
+			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
+		return(create(gob, res, neg, true));
+	}
+	
+	public static Sprite create(Gob gob, Resource res) {
 		if(res.loading)
 			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
-		this.res = res;
-		this.layered = layered;
-		initneg(negres);
-		Resource.Anim ad = res.layer(animc);
-		if(ad == null)
-			initsprite();
-		else
-			initanim(ad);
+		return(create(gob, res, res, false));
 	}
-	
-	public Sprite(Resource res, boolean layered) {
-		this(res, res, layered);
-	}
-	
-	public Sprite(Resource res) {
-		this(res, false);
-	}
-	
+
 	private void initneg(Resource negres) {
 		Resource.Neg neg = negres.layer(Resource.negc);
 		if(neg != null) {
@@ -116,45 +214,31 @@ public class Sprite {
 			sz = neg.sz;
 			return;
 		}
-		throw(new ResourceException("Does not know how to draw resource " + res.name, res));
+		throw(new ResourceException("Does not know how to draw resource " + negres.name, negres));
 	}
 	
 	public boolean checkhit(Coord c) {
-		for(SpritePart p : frames[fno].parts) {
-			if(p.checkhit(c))
-				return(true);
+		Frame f = frames[fno];
+		synchronized(f.parts) {
+			for(SpritePart p : f.parts) {
+				if(p.checkhit(c))
+					return(true);
+			}
 		}
 		return(false);
 	}
 	
-	private void initsprite() {
-		Frame f = new Frame();
-		for(Resource.Image img : res.layers(imgc)) {
-			if(img.l == layered)
-				f.parts.add(new ImagePart(img));
-		}
-		frames = new Frame[1];
-		frames[0] = f;
-	}
-	
 	private void initanim(Resource.Anim ad) {
-		frames = new Frame[ad.f.length];
-		for(int i = 0; i < frames.length; i++) {
-			Frame f = new Frame();
-			f.dur = ad.d;
-			for(int o = 0; o < ad.f[i].length; o++) {
-				if(ad.f[i][o].l == layered)
-					f.parts.add(new ImagePart(ad.f[i][o]));
-			}
-			frames[i] = f;
-		}
 	}
 
 	public void setup(Drawer d, Coord cc, Coord sc) {
-		for(Part p : frames[fno].parts) {
-			p.cc = cc;
-			p.sc = sc;
-			d.addpart(p);
+		Frame f = frames[fno];
+		synchronized(f.parts) {
+			for(Part p : f.parts) {
+				p.cc = cc;
+				p.sc = sc;
+				d.addpart(p);
+			}
 		}
 	}
 	

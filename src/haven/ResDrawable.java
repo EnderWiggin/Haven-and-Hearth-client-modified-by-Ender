@@ -16,7 +16,7 @@ public class ResDrawable extends Drawable {
 			return;
 		if(res.loading)
 			return;
-		spr = new Sprite(res);
+		spr = Sprite.create(gob, res);
 	}
 	
 	public Coord getsize() {

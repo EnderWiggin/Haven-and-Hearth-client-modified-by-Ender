@@ -3,7 +3,7 @@ package haven;
 public class Glob {
 	long time;
 	Astronomy ast;
-	OCache oc = new OCache();
+	OCache oc = new OCache(this);
 	MCache map;
 	Session sess;
 	int glut, fcap, stamina, stamcap;
