@@ -187,7 +187,7 @@ public class Sprite {
 	private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered) {
 		Resource.Anim ad = res.layer(animc);
 		Resource.SpriteCode sc = res.layer(Resource.SpriteCode.class);
-		if(sc == null)
+		if(sc != null)
 			return(mkdyn(gob, res, neg, sc));
 		else if(ad != null)
 			return(mkanim(gob, res, neg, layered, ad));
