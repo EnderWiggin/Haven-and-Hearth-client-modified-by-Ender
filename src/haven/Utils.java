@@ -48,7 +48,7 @@ public class Utils {
 		}
 	}
 	
-	static void defer(Runnable r) {
+	public static void defer(Runnable r) {
 		synchronized(Utils.class) {
 			if(bgworker == null)
 				bgworker = new Background();
