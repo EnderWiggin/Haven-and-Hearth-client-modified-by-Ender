@@ -3,6 +3,7 @@ package haven;
 import static haven.Resource.imgc;
 import static haven.Resource.negc;
 import static haven.Resource.animc;
+import java.lang.reflect.Method;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.util.*;
@@ -124,6 +125,11 @@ public class Sprite {
 			super(msg);
 			this.res = res;
 		}
+		
+		public ResourceException(String msg, Throwable cause, Resource res) {
+			super(msg, cause);
+			this.res = res;
+		}
 	}
 
 	private Sprite(Gob gob, Resource res, Resource neg, int frames) {
@@ -162,12 +168,31 @@ public class Sprite {
 		return(spr);
 	}
 
+	private static Sprite mkdyn(Gob gob, Resource res, Resource neg, Resource.SpriteCode sc) {
+		Method m;
+		try {
+			m = sc.cl.getMethod("create", Gob.class, Resource.class);
+		} catch(NoSuchMethodException e) {
+			throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
+		}
+		try {
+			return((Sprite)m.invoke(null, gob, res));
+		} catch(IllegalAccessException e) {
+			throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
+		} catch(java.lang.reflect.InvocationTargetException e) {
+			throw(new ResourceException("Sprite code of dynamic resource threw an exception", e.getCause(), res));
+		}
+	}
+
 	private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered) {
 		Resource.Anim ad = res.layer(animc);
-		if(ad == null)
-			return(mksprite(gob, res, neg, layered));
-		else
+		Resource.SpriteCode sc = res.layer(Resource.SpriteCode.class);
+		if(sc == null)
+			return(mkdyn(gob, res, neg, sc));
+		else if(ad != null)
 			return(mkanim(gob, res, neg, layered, ad));
+		else
+			return(mksprite(gob, res, neg, layered));
 	}
 
 	public static Sprite create(Gob gob, Resource res, Resource neg) {
