@@ -45,11 +45,11 @@ public class MapView extends Widget implements DTarget {
 		map = glob.map;
 	}
 	
-	static Coord m2s(Coord c) {
+	public static Coord m2s(Coord c) {
 		return(new Coord((c.x * 2) - (c.y * 2), c.x + c.y));
 	}
 	
-	static Coord s2m(Coord c) {
+	public static Coord s2m(Coord c) {
 		return(new Coord((c.x / 4) + (c.y / 2), (c.y / 2) - (c.x / 4)));
 	}
 	
