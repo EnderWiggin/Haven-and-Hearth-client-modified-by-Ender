@@ -102,7 +102,7 @@ public class Sprite {
 		public boolean checkhit(Coord c) {
 			if(!(this.img instanceof TexI))
 				return(false);
-			c = c.add(off.inv());
+			c = c.add(Sprite.this.cc.inv()).add(doff.inv()).add(mcc);
 			TexI img = (TexI)this.img;
 			if((c.x < 0) || (c.y < 0) || (c.x >= img.sz().x) || (c.y >= img.sz().y))
 				return(false);
