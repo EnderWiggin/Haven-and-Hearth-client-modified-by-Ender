@@ -45,6 +45,8 @@ public class Sprite {
 		}
 	}
 	
+	
+
 	private class ImagePart extends SpritePart {
 		Resource.Image img;
 		
@@ -71,6 +73,34 @@ public class Sprite {
 			if((c.x < img.o.x) || (c.y < img.o.y) || (c.x >= img.o.x + img.sz.x) || (c.y >= img.o.y + img.sz.y))
 				return(false);
 			int cl = img.img.getRGB(c.x - img.o.x, c.y - img.o.y);
+			return(Utils.rgbm.getAlpha(cl) >= 128);
+		}
+	}
+
+	private class TexPart extends SpritePart {
+		Tex img;
+		Coord off;
+		
+		public TexPart(Tex img, int z, Coord off) {
+			super(z);
+			this.img = img;
+			this.off = off;
+		}
+		
+		public void draw(BufferedImage b, Graphics g) {
+		}
+		
+		public void draw(GOut g) {
+			g.image(img, sc);
+		}
+		
+		public boolean checkhit(Coord c) {
+			if(!(this.img instanceof TexI))
+				return(false);
+			TexI img = (TexI)this.img;
+			if((c.x < 0) || (c.y < 0) || (c.x >= img.sz().x) || (c.y >= img.sz().y))
+				return(false);
+			int cl = img.getRGB(c);
 			return(Utils.rgbm.getAlpha(cl) >= 128);
 		}
 	}
@@ -115,6 +145,14 @@ public class Sprite {
 		
 		public void add(BufferedImage img, int z) {
 			parts.add(new J2dPart(img, z));
+		}
+		
+		public void add(Tex img, int z, Coord off) {
+			parts.add(new TexPart(img, z, off));
+		}
+		
+		public void add(Tex img, int z) {
+			add(img, z, Coord.z);
 		}
 	}
 	
@@ -237,6 +275,10 @@ public class Sprite {
 			for(Part p : f.parts) {
 				p.cc = cc;
 				p.sc = sc;
+				if(p instanceof TexPart) {
+					p.cc = p.cc.add(((TexPart)p).off);
+					p.sc = p.sc.add(((TexPart)p).off);
+				}
 				d.addpart(p);
 			}
 		}

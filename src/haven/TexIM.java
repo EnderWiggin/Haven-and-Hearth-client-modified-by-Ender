@@ -8,7 +8,6 @@ import java.awt.image.WritableRaster;
 import java.awt.Graphics2D;
 
 public class TexIM extends TexI {
-	BufferedImage bufw;
 	WritableRaster buf;
 	Graphics2D cg = null;
 	Throwable cgc;
@@ -22,7 +21,7 @@ public class TexIM extends TexI {
 		if(cg != null)
 			throw(new RuntimeException("Multiple TexIM Graphics created (" + Thread.currentThread().getName() + ")", cgc));
 		cgc = new Throwable("Current Graphics created (on " + Thread.currentThread().getName() + ")");
-		return(cg = bufw.createGraphics());
+		return(cg = back.createGraphics());
 	}
 	
 	public void update() {
@@ -33,6 +32,6 @@ public class TexIM extends TexI {
 	
 	public void clear() {
 		buf = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, tdim.x, tdim.y, 4, null);
-		bufw = new BufferedImage(glcm, buf, false, null);
+		back = new BufferedImage(glcm, buf, false, null);
 	}
 }
