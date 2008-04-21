@@ -14,7 +14,7 @@ import javax.media.opengl.*;
 public class TexI extends Tex {
 	public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 	protected byte[] pixels;
-	public static BufferedImage back;
+	public BufferedImage back;
 
 	public TexI(BufferedImage img) {
 		super(Utils.imgsz(img));

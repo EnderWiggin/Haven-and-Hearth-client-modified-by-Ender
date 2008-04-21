@@ -8,5 +8,5 @@ public abstract class Drawable extends GAttrib {
 	public abstract Coord getsize();
 	public abstract Coord getoffset();
 	public abstract boolean checkhit(Coord c);
-	public abstract void setup(Sprite.Drawer d, Coord cc, Coord sc);
+	public abstract void setup(Sprite.Drawer d, Coord cc, Coord off);
 }

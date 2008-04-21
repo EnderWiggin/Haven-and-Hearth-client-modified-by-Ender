@@ -20,7 +20,7 @@ public class Sprite {
 	}
 	
 	public static abstract class Part implements Comparable<Part> {
-		Coord cc, sc;
+		Coord cc, off;
 		int z;
 		
 		public Part(int z) {
@@ -40,13 +40,15 @@ public class Sprite {
 	protected abstract class SpritePart extends Part {
 		public abstract boolean checkhit(Coord c);
 		
+		protected Coord sc() {
+			return(cc.add(Sprite.this.cc.inv()).add(off));
+		}
+		
 		public SpritePart(int z) {
 			super(z);
 		}
 	}
 	
-	
-
 	private class ImagePart extends SpritePart {
 		Resource.Image img;
 		
@@ -56,7 +58,7 @@ public class Sprite {
 		}
 		
 		public void draw(BufferedImage b, Graphics g) {
-			Coord sc = this.sc.add(img.o);
+			Coord sc = sc().add(img.o);
 			if(img.gayp()) {
 				Utils.drawgay(b, img.img, sc);
 			} else {
@@ -65,7 +67,7 @@ public class Sprite {
 		}
 		
 		public void draw(GOut g) {
-			Coord sc = this.sc.add(img.o);
+			Coord sc = this.cc.add(Sprite.this.cc.inv()).add(img.o);
 			g.image(img.tex(), sc);
 		}
 		
@@ -79,24 +81,28 @@ public class Sprite {
 
 	private class TexPart extends SpritePart {
 		Tex img;
-		Coord off;
+		Coord doff;
+		Coord mcc;
 		
-		public TexPart(Tex img, int z, Coord off) {
+		public TexPart(Tex img, int z, Coord doff, Coord mcc) {
 			super(z);
 			this.img = img;
-			this.off = off;
+			this.doff = doff;
+			this.mcc = mcc;
 		}
 		
 		public void draw(BufferedImage b, Graphics g) {
 		}
 		
 		public void draw(GOut g) {
+			Coord sc = cc.add(mcc.inv()).add(off);
 			g.image(img, sc);
 		}
 		
 		public boolean checkhit(Coord c) {
 			if(!(this.img instanceof TexI))
 				return(false);
+			c = c.add(off.inv());
 			TexI img = (TexI)this.img;
 			if((c.x < 0) || (c.y < 0) || (c.x >= img.sz().x) || (c.y >= img.sz().y))
 				return(false);
@@ -118,11 +124,11 @@ public class Sprite {
 		}
 		
 		public void draw(BufferedImage b, Graphics g) {
-			g.drawImage(img, sc.x, sc.y, null);
+			g.drawImage(img, sc().x, sc().y, null);
 		}
 		
 		public void draw(GOut g) {
-			g.image(tex, sc);
+			g.image(tex, sc());
 		}
 		
 		public boolean checkhit(Coord c) {
@@ -147,12 +153,8 @@ public class Sprite {
 			parts.add(new J2dPart(img, z));
 		}
 		
-		public void add(Tex img, int z, Coord off) {
-			parts.add(new TexPart(img, z, off));
-		}
-		
-		public void add(Tex img, int z) {
-			add(img, z, Coord.z);
+		public void add(Tex img, int z, Coord off, Coord mcc) {
+			parts.add(new TexPart(img, z, off, mcc));
 		}
 	}
 	
@@ -266,19 +268,14 @@ public class Sprite {
 		return(false);
 	}
 	
-	private void initanim(Resource.Anim ad) {
-	}
-
-	public void setup(Drawer d, Coord cc, Coord sc) {
+	public void setup(Drawer d, Coord cc, Coord off) {
 		Frame f = frames[fno];
 		synchronized(f.parts) {
 			for(Part p : f.parts) {
 				p.cc = cc;
-				p.sc = sc;
-				if(p instanceof TexPart) {
-					p.cc = p.cc.add(((TexPart)p).off);
-					p.sc = p.sc.add(((TexPart)p).off);
-				}
+				p.off = off;
+				if(p instanceof TexPart)
+					p.cc = p.cc.add(((TexPart)p).doff);
 				d.addpart(p);
 			}
 		}

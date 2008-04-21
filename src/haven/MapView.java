@@ -290,13 +290,16 @@ public class MapView extends Widget implements DTarget {
 				gob.sc = dc;
 				DrawOffset dro = gob.getattr(DrawOffset.class);
 				Drawable d = gob.getattr(Drawable.class);
+				Coord off = Coord.z;
 				if(d != null) {
 					Coord ulc = dc.add(d.getoffset().inv());
-					if(dro != null)
+					if(dro != null) {
 						ulc = ulc.add(dro.off);
+						off = off.add(dro.off);
+					}
 					Coord lrc = ulc.add(d.getsize());
 					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
-						d.setup(drawer, dc, ulc);
+						d.setup(drawer, dc, off);
 						clickable.add(d);
 					}
 				}

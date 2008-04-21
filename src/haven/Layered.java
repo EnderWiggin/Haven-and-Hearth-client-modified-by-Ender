@@ -46,7 +46,7 @@ public class Layered extends Drawable {
 		return(false);
 	}
 
-	public synchronized void setup(Sprite.Drawer drw, final Coord cc, final Coord sc) {
+	public synchronized void setup(Sprite.Drawer drw, final Coord cc, final Coord off) {
 		if(base.loading)
 			return;
 		if(loading) {
@@ -61,13 +61,13 @@ public class Layered extends Drawable {
 			}
 		}
 		me.cc = cc;
-		me.sc = sc;
+		me.off = off;
 		drw.addpart(me);
 	}
 	
 	private void makepart() {
 		me = new Sprite.Part(z) {
-				public void draw(BufferedImage buf, Graphics g, Coord cc, Coord sc) {
+				public void draw(BufferedImage buf, Graphics g, Coord cc, Coord off) {
 					final ArrayList<Sprite.Part> parts = new ArrayList<Sprite.Part>();
 					Sprite.Drawer drw = new Sprite.Drawer() {
 							public void addpart(Sprite.Part p) {
@@ -76,7 +76,7 @@ public class Layered extends Drawable {
 						};
 					for(Sprite spr : sprites.values()) {
 						if(spr != null)
-							spr.setup(drw, cc, sc);
+							spr.setup(drw, cc, off);
 					}
 					Collections.sort(parts);
 					for(Sprite.Part part : parts)
@@ -84,7 +84,7 @@ public class Layered extends Drawable {
 				}
 				
 				public void draw(BufferedImage buf, Graphics g) {
-					draw(buf, g, cc, sc);
+					draw(buf, g, cc, off);
 				}
 				
 				public void draw(GOut g) {
@@ -92,7 +92,7 @@ public class Layered extends Drawable {
 					BufferedImage buf = TexI.mkbuf(sz);
 					Graphics gr = buf.getGraphics();
 					draw(buf, gr, getoffset(), Coord.z);
-					g.image(buf, sc);
+					g.image(buf, cc.add(getoffset().inv()).add(off));
 				}
 			};
 	}
