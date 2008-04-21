@@ -40,10 +40,10 @@ public class ResDrawable extends Drawable {
 		return(false);
 	}
 	
-	public void setup(Sprite.Drawer d, Coord cc, Coord sc) {
+	public void setup(Sprite.Drawer d, Coord cc, Coord off) {
 		init();
 		if(spr != null)
-			spr.setup(d, cc, sc);
+			spr.setup(d, cc, off);
 	}
 	
 	public void ctick(int dt) {
