@@ -283,9 +283,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 	static {ltypes.put("tile", Tile.class);}
 	
 	public class Neg extends Layer {
-		Coord cc;
-		Coord bc, bs;
-		Coord sz;
+		public Coord cc;
+		public Coord bc, bs;
+		public Coord sz;
 		
 		public Neg(byte[] buf) {
 			cc = cdec(buf, 0);
