@@ -9,6 +9,7 @@ public class GOut {
 	private Coord ul, sz;
 	private Color color;
 	final GLContext ctx;
+	private GOut parent;
 	int curtex = -1;
     
 	private GOut(GOut o) {
@@ -17,6 +18,7 @@ public class GOut {
 		this.sz = o.sz;
 		this.color = o.color;
 		this.ctx = o.ctx;
+		this.parent = o;
 	}
 
 	public GOut(GL gl, GLContext ctx, Coord sz) {
@@ -24,8 +26,16 @@ public class GOut {
 		this.ul = Coord.z;
 		this.sz = sz;
 		this.ctx = ctx;
+		this.parent = null;
 	}
     
+	private GOut topmost() {
+		GOut ret = this;
+		while(ret.parent != null)
+			ret = ret.parent;
+		return(ret);
+	}
+	
 	private void checkerr() {
 		int err = gl.glGetError();
 		if(err != 0)
@@ -59,14 +69,15 @@ public class GOut {
 	}
 	
 	void texsel(int id) {
-		if(id != curtex) {
+		GOut tm = topmost();
+		if(id != tm.curtex) {
 			if(id == -1) {
 				gl.glDisable(GL.GL_TEXTURE_2D);
 			} else {
 				gl.glEnable(GL.GL_TEXTURE_2D);
 				gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 			}
-			curtex = id;
+			tm.curtex = id;
 		}
 	}
 	

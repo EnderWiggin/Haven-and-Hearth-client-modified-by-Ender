@@ -35,11 +35,15 @@ public class Window extends Widget {
 		this(c, sz, parent, new Coord(0, 0), new Coord(0, 0));
 	}
 	
+	public void cdraw(GOut g) {
+	}
+	
 	public void draw(GOut og) {
 		GOut g = og.reclip(tlo, wsz);
 		g.chcolor(bg);
 		g.frect(wbox.tloff(), asz);
 		wbox.draw(g, Coord.z, wsz);
+		cdraw(og.reclip(xlate(Coord.z, true), sz));
 		super.draw(og);
 	}
 	
