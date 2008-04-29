@@ -16,6 +16,10 @@ public class Gob {
 		this.frame = frame;
 	}
 	
+	public Gob(Glob glob, Coord c) {
+		this(glob, c, 0, 0);
+	}
+	
 	public void ctick(int dt) {
 		for(GAttrib a : attr.values())
 			a.ctick(dt);

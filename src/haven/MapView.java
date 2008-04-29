@@ -16,6 +16,8 @@ public class MapView extends Widget implements DTarget {
 	ILM mask;
 	final MCache map;
 	final Glob glob;
+	Collection<Gob> plob = null;
+	boolean plontile;
 	private List<Long> pdata = new LinkedList<Long>();
 	private List<String> pname = new LinkedList<String>();
 	
@@ -82,6 +84,11 @@ public class MapView extends Widget implements DTarget {
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 		if(grab != null) {
 			grab.mmousedown(mc, button);
+		} else if(plob != null) {
+			Gob gob = null;
+			for(Gob g : plob)
+				gob = g;
+			wdgmsg("place", gob.rc, button);
 		} else {
 			if(hit == null)
 				wdgmsg("click", c, mc, button);
@@ -105,6 +112,11 @@ public class MapView extends Widget implements DTarget {
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 		if(grab != null) {
 			grab.mmousemove(mc);
+		} else if(plob != null) {
+			Gob gob = null;
+			for(Gob g : plob)
+				gob = g;
+			gob.move(plontile?tilify(mc):mc);
 		}
 	}
 	
@@ -114,9 +126,30 @@ public class MapView extends Widget implements DTarget {
 		map.trim(cc);
 	}
 	
+	private static Coord tilify(Coord c) {
+		c = c.div(tilesz);
+		c = c.mul(tilesz);
+		c = c.add(tilesz.div(2));
+		return(c);
+	}
+	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "move") {
 			move((Coord)args[0]);
+		} else if(msg == "place") {
+			if(plob != null)
+				glob.oc.lrem(plob);
+			plob = new LinkedList<Gob>();
+			plontile = (Integer)args[2] != 0;
+			Gob gob = new Gob(glob, plontile?tilify(mc):mc);
+			Resource res = Resource.load((String)args[0], (Integer)args[1]);
+			gob.setattr(new ResDrawable(gob, res));
+			plob.add(gob);
+			glob.oc.ladd(plob);
+		} else if(msg == "unplace") {
+			if(plob != null)
+				glob.oc.lrem(plob);
+			plob = null;
 		} else {
 			super.uimsg(msg, args);
 		}
