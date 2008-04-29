@@ -7,6 +7,14 @@ public class Label extends Widget {
 	String texts;
 	Color c = Color.BLACK;
 	
+	static {
+		Widget.addtype("lbl", new WidgetFactory() {
+			public Widget create(Coord c, Widget parent, Object[] args) {
+				return(new Label(c, parent, (String)args[0]));
+			}
+		});
+	}
+	
 	public void draw(GOut g) {
 		g.image(text.tex(), Coord.z);
 	}
