@@ -7,7 +7,6 @@ import java.awt.event.*;
 public class MainFrame extends Frame implements Runnable {
 	HavenPanel p;
 	ThreadGroup g;
-	boolean exiting = false;
 	
 	static {
 		try {
@@ -28,27 +27,25 @@ public class MainFrame extends Frame implements Runnable {
 	public void run() {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				synchronized(p.ui) {
-					exiting = true;
-					if(p.ui.sess != null) {
-						p.ui.sess.close();
-					} else {
-						g.interrupt();
-						setVisible(false);
-					}
-				}
+				g.interrupt();
 			}
 		});
-		Bootstrap bill = new Bootstrap(p.ui, System.getProperty("haven.srvlist", "off").equals("on"));
-		String defaddr = System.getProperty("haven.defserv");
-		if(defaddr != null)
-			bill.setaddr(defaddr);
-		bill.start();
 		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
 		ui.start();
 		try {
-			ui.join();
+			while(true) {
+				Bootstrap bill = new Bootstrap(System.getProperty("haven.srvlist", "off").equals("on"));
+				String defaddr = System.getProperty("haven.defserv");
+				if(defaddr != null)
+					bill.setaddr(defaddr);
+				Session sess = bill.run(p);
+				RemoteUI rui = new RemoteUI(sess);
+				rui.run(p);
+			}
 		} catch(InterruptedException e) {
+		} finally {
+			ui.interrupt();
+			dispose();
 		}
 	}
 	
@@ -70,14 +67,12 @@ public class MainFrame extends Frame implements Runnable {
 			g = new ThreadGroup("Haven client");
 		}
 		f.g = g;
-		while(!f.exiting) {
-			Thread main = new Thread(g, f);
-			main.start();
-			try {
-				main.join();
-			} catch(InterruptedException e) {
-				return;
-			}
+		Thread main = new Thread(g, f);
+		main.start();
+		try {
+		    main.join();
+		} catch(InterruptedException e) {
+		    return;
 		}
 		System.exit(0);
 	}

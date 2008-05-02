@@ -2,7 +2,7 @@ package haven;
 
 import java.net.*;
 
-public class Bootstrap extends Thread implements UI.Receiver {
+public class Bootstrap implements UI.Receiver {
 	UI ui;
 	Session sess;
 	String address, defaddr;
@@ -10,10 +10,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 	boolean servlist;
 	int cfocus = 0;
 	
-	public Bootstrap(UI ui, boolean servlist) {
-		super(Utils.tg(), "Haven bootstrap thread");
-		this.ui = ui;
-		ui.setreceiver(this);
+	public Bootstrap(boolean servlist) {
 		defaddr = "127.0.0.1";
 		this.servlist = servlist;
 	}
@@ -22,7 +19,9 @@ public class Bootstrap extends Thread implements UI.Receiver {
 		defaddr = addr;
 	}
 	
-	public void run() {
+	public Session run(HavenPanel hp) throws InterruptedException {
+		ui = hp.newui(null);
+		ui.setreceiver(this);
 		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
 		ui.uimsg(5, "tabfocus", 1);
 		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/loginscr");
@@ -47,13 +46,8 @@ public class Bootstrap extends Thread implements UI.Receiver {
 			username = null;
 			password = null;
 			synchronized(this) {
-				while((address == null) || (username == null) || (password == null)) {
-					try {
-						this.wait();
-					} catch(InterruptedException e) {
-						return;
-					}
-				}
+				while((address == null) || (username == null) || (password == null))
+					this.wait();
 			}
 			try {
 				sess = new Session(InetAddress.getByName(address), username, password);
@@ -61,11 +55,7 @@ public class Bootstrap extends Thread implements UI.Receiver {
 				/* XXX */
 				throw(new RuntimeException(e));
 			}
-			try {
-				Thread.sleep(100);
-			} catch(InterruptedException e) {
-				return;
-			}
+			Thread.sleep(100);
 			while(true) {
 				if(sess.state == "") {
 					System.out.println("Connected!");
@@ -79,16 +69,13 @@ public class Bootstrap extends Thread implements UI.Receiver {
 					sess = null;
 					continue retry;
 				}
-				try {
-					synchronized(sess) {
-						sess.wait();
-					}
-				} catch(InterruptedException e) {
-					return;
+				synchronized(sess) {
+					sess.wait();
 				}
 			}
 		} while(true);
-		(new RemoteUI(sess, ui)).start();
+		return(sess);
+		//(new RemoteUI(sess, ui)).start();
 	}
 	
 	public void rcvmsg(int widget, String msg, Object... args) {

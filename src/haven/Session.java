@@ -31,8 +31,7 @@ public class Session {
 	
 	DatagramSocket sk;
 	InetAddress server;
-	Thread rworker, ticker;
-	SWorker sworker;
+	Thread rworker, sworker, ticker;
 	int connfailed = 0;
 	String state = "conn";
 	int tseq = 0, rseq = 0;
@@ -88,6 +87,8 @@ public class Session {
 	}
 	
 	private class RWorker extends Thread {
+		boolean alive;
+		
 		public RWorker() {
 			super(Utils.tg(), "Session reader");
 			setDaemon(true);
@@ -237,74 +238,86 @@ public class Session {
 		}
 		
 		public void run() {
-			while(true) {
-				DatagramPacket p = new DatagramPacket(new byte[65536], 65536);
+			try {
+				alive = true;
 				try {
-					sk.receive(p);
-				} catch(java.nio.channels.ClosedByInterruptException e) {
-					break;
-				} catch(IOException e) {
-					System.out.println(e);
-					continue;
+					sk.setSoTimeout(1000);
+				} catch(SocketException e) {
+					throw(new RuntimeException(e));
 				}
-				if(!p.getAddress().equals(server))
-					continue;
-				Message msg = new Message(p.getData()[0], p.getData(), 1, p.getLength() - 1);
-				if(msg.type == MSG_SESS) {
-					if(state == "conn") {
-						int error = msg.uint8();
-						synchronized(Session.this) {
-							if(error == 0)
-								state = "syn";
-							else
-								connfailed = error;
-							Session.this.notifyAll();
-						}
+				while(alive) {
+					DatagramPacket p = new DatagramPacket(new byte[65536], 65536);
+					try {
+						sk.receive(p);
+					} catch(java.nio.channels.ClosedByInterruptException e) {
+						/* Except apparently Sun's J2SE doesn't throw this when interrupted :P*/
+						break;
+					} catch(SocketTimeoutException e) {
+						continue;
+					} catch(IOException e) {
+						throw(new RuntimeException(e));
 					}
-				}
-				if(state != "conn") {
+					if(!p.getAddress().equals(server))
+						continue;
+					Message msg = new Message(p.getData()[0], p.getData(), 1, p.getLength() - 1);
 					if(msg.type == MSG_SESS) {
-					} else if(msg.type == MSG_REL) {
-						getrel(msg);
-					} else if(msg.type == MSG_ACK) {
-						gotack(msg.uint16());
-					} else if(msg.type == MSG_MAPDATA) {
-						glob.map.mapdata(msg);
-					} else if(msg.type == MSG_OBJDATA) {
-						getobjdata(msg);
-					} else if(msg.type == MSG_CLOSE) {
-						synchronized(Session.this) {
-							state = "fin";
+						if(state == "conn") {
+							int error = msg.uint8();
+							synchronized(Session.this) {
+								if(error == 0)
+									state = "syn";
+								else
+									connfailed = error;
+								Session.this.notifyAll();
+							}
 						}
-						getThreadGroup().interrupt();
-					} else {
-						throw(new MessageException("Unknown message type: " + msg.type, msg));
 					}
+					if(state != "conn") {
+						if(msg.type == MSG_SESS) {
+						} else if(msg.type == MSG_REL) {
+							getrel(msg);
+						} else if(msg.type == MSG_ACK) {
+							gotack(msg.uint16());
+						} else if(msg.type == MSG_MAPDATA) {
+							glob.map.mapdata(msg);
+						} else if(msg.type == MSG_OBJDATA) {
+							getobjdata(msg);
+						} else if(msg.type == MSG_CLOSE) {
+							synchronized(Session.this) {
+								state = "fin";
+							}
+							Session.this.close();
+						} else {
+							throw(new MessageException("Unknown message type: " + msg.type, msg));
+						}
+					}
+				}
+			} finally {
+				synchronized(Session.this) {
+					state = "dead";
+					Session.this.notifyAll();
 				}
 			}
-		}		
+		}
+		
+		public void interrupt() {
+			alive = false;
+			super.interrupt();
+		}
 	}
 	
 	private class SWorker extends Thread {
-		long closing = -1;
-		int ctries = 0;
 		
 		public SWorker() {
 			super(Utils.tg(), "Session writer");
 			setDaemon(true);
 		}
 		
-		public synchronized void close() {
-			if(closing == -1)
-				closing = 0;
-			notify();
-		}
-		
 		public void run() {
-			long to, last = 0, retries = 0;
-			
 			try {
+				long to, last = 0, retries = 0;
 				while(true) {
+					
 					long now = System.currentTimeMillis();
 					if(state == "conn") {
 						if(now - last > 500) {
@@ -332,13 +345,12 @@ public class Session {
 							if((objacks.size() > 0) && (to > 120))
 								to = 200;
 						}
-						if(closing != -1)
-							to = 500;
 						synchronized(this) {
 							this.wait(to);
 						}
 						now = System.currentTimeMillis();
 						boolean beat = true;
+						/*
 						if((closing != -1) && (now - closing > 500)) {
 							Message cm = new Message(MSG_CLOSE);
 							sendmsg(cm);
@@ -346,6 +358,7 @@ public class Session {
 							if(++ctries > 5)
 								getThreadGroup().interrupt();
 						}
+						*/
 						synchronized(pending) {
 							if(pending.size() > 0) {
 								for(Message msg : pending) {
@@ -387,9 +400,27 @@ public class Session {
 						}
 					}
 				}
-			} catch(InterruptedException e) {}
-			if((state != "conn") && (state != "fin"))
-				sendmsg(new Message(MSG_CLOSE));
+			} catch(InterruptedException e) {
+				for(int i = 0; i < 5; i++) {
+					synchronized(Session.this) {
+						if((state == "conn") || (state == "fin"))
+							break;
+					}
+					sendmsg(new Message(MSG_CLOSE));
+					long f = System.currentTimeMillis();
+					while(true) {
+						long now = System.currentTimeMillis();
+						if(now - f > 500)
+							break;
+						try {
+							Thread.sleep(500 - (now - f));
+						} catch(InterruptedException e2) {}
+					}
+				}
+			} finally {
+				ticker.interrupt();
+				rworker.interrupt();
+			}
 		}
 	}
 	
@@ -412,7 +443,11 @@ public class Session {
 	}
 	
 	public void close() {
-		sworker.close();
+		sworker.interrupt();
+	}
+	
+	public synchronized boolean alive() {
+		return(state != "dead");
 	}
 	
 	public void queuemsg(Message msg) {

@@ -8,7 +8,6 @@ import javax.media.opengl.glu.GLU;
 
 @SuppressWarnings("serial")
 public class HavenPanel extends GLCanvas implements Runnable, Graphical {
-	RootWidget root;
 	UI ui;
 	boolean inited = false;
 	int w, h;
@@ -54,8 +53,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	public void init() {
 		setFocusTraversalKeysEnabled(false);
-		root = new RootWidget(new Coord(w, h), this);
-		ui = new UI(root, null);
+		ui = new UI(new Coord(w, h), this, null);
 		addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
 				synchronized(events) {
@@ -115,12 +113,17 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		});
 		inited = true;
 	}
+    
+	UI newui(Session sess) {
+		ui = new UI(new Coord(w, h), this, sess);
+		return(ui);
+	}
 	
 	void redraw(GL gl) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 		synchronized(ui) {
-			root.draw(g);
+			ui.root.draw(g);
 		}
 		if(Resource.qdepth() > 0)
 			g.atext("RQ depth: " + Resource.qdepth(), new Coord(790, 575), 1, 1);
