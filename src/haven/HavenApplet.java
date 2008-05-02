@@ -85,20 +85,24 @@ public class HavenApplet extends Applet {
 	p = new haven.error.ErrorHandler(new ErrorPanel());
 	Thread main = new Thread(p, new Runnable() {
 		public void run() {
-		    while(running) {
-			Bootstrap b = new Bootstrap(h.ui, false);
-			b.setaddr(getCodeBase().getHost());
-			try {
-			    Resource.baseurl = new URL("https", getCodeBase().getHost(), 443, "/res/");
-			} catch(java.net.MalformedURLException e) {
-			    throw(new RuntimeException(e));
+		    Thread ui = new Thread(Utils.tg(), h, "Haven UI thread");
+		    ui.start();
+		    try {
+			while(true) {
+			    Bootstrap bill = new Bootstrap(false);
+			    bill.setaddr(getCodeBase().getHost());
+			    try {
+				Resource.baseurl = new URL("https", getCodeBase().getHost(), 443, "/res/");
+			    } catch(java.net.MalformedURLException e) {
+				throw(new RuntimeException(e));
+			    }
+			    Session sess = bill.run(h);
+			    RemoteUI rui = new RemoteUI(sess);
+			    rui.run(h);
 			}
-			b.start();
-			Thread main = new Thread(Utils.tg(), h, "Haven applet main thread");
-			main.start();
-			try {
-			    main.join();
-			} catch(InterruptedException e) {}
+		    } catch(InterruptedException e) {
+		    } finally {
+			ui.interrupt();
 		    }
 		}
 	    });

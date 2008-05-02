@@ -31,8 +31,7 @@ public class Session {
 	
 	DatagramSocket sk;
 	InetAddress server;
-	Thread rworker, ticker;
-	SWorker sworker;
+	Thread rworker, sworker, ticker;
 	int connfailed = 0;
 	String state = "conn";
 	int tseq = 0, rseq = 0;
@@ -276,7 +275,7 @@ public class Session {
 						synchronized(Session.this) {
 							state = "fin";
 						}
-						getThreadGroup().interrupt();
+						Session.this.close();
 					} else {
 						throw(new MessageException("Unknown message type: " + msg.type, msg));
 					}
@@ -286,25 +285,17 @@ public class Session {
 	}
 	
 	private class SWorker extends Thread {
-		long closing = -1;
-		int ctries = 0;
 		
 		public SWorker() {
 			super(Utils.tg(), "Session writer");
 			setDaemon(true);
 		}
 		
-		public synchronized void close() {
-			if(closing == -1)
-				closing = 0;
-			notify();
-		}
-		
 		public void run() {
-			long to, last = 0, retries = 0;
-			
 			try {
+				long to, last = 0, retries = 0;
 				while(true) {
+					
 					long now = System.currentTimeMillis();
 					if(state == "conn") {
 						if(now - last > 500) {
@@ -332,13 +323,12 @@ public class Session {
 							if((objacks.size() > 0) && (to > 120))
 								to = 200;
 						}
-						if(closing != -1)
-							to = 500;
 						synchronized(this) {
 							this.wait(to);
 						}
 						now = System.currentTimeMillis();
 						boolean beat = true;
+						/*
 						if((closing != -1) && (now - closing > 500)) {
 							Message cm = new Message(MSG_CLOSE);
 							sendmsg(cm);
@@ -346,6 +336,7 @@ public class Session {
 							if(++ctries > 5)
 								getThreadGroup().interrupt();
 						}
+						*/
 						synchronized(pending) {
 							if(pending.size() > 0) {
 								for(Message msg : pending) {
@@ -387,9 +378,27 @@ public class Session {
 						}
 					}
 				}
-			} catch(InterruptedException e) {}
-			if((state != "conn") && (state != "fin"))
-				sendmsg(new Message(MSG_CLOSE));
+			} catch(InterruptedException e) {
+				for(int i = 0; i < 5; i++) {
+					synchronized(Session.this) {
+						if((state == "conn") || (state == "fin"))
+							break;
+					}
+					sendmsg(new Message(MSG_CLOSE));
+					long f = System.currentTimeMillis();
+					while(true) {
+						long now = System.currentTimeMillis();
+						if(now - f > 500)
+							break;
+						try {
+							Thread.sleep(500 - (now - f));
+						} catch(InterruptedException e2) {}
+					}
+				}
+			} finally {
+				ticker.interrupt();
+				rworker.interrupt();
+			}
 		}
 	}
 	
@@ -412,7 +421,11 @@ public class Session {
 	}
 	
 	public void close() {
-		sworker.close();
+		sworker.interrupt();
+	}
+	
+	public boolean alive() {
+		return(rworker.isAlive());
 	}
 	
 	public void queuemsg(Message msg) {

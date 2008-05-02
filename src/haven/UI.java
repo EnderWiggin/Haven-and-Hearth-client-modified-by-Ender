@@ -4,7 +4,7 @@ import java.util.*;
 import java.awt.event.KeyEvent;
 
 public class UI {
-	Widget root;
+	RootWidget root;
 	private Widget keygrab, mousegrab;
 	Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
 	Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
@@ -29,9 +29,8 @@ public class UI {
 		}
 	}
 	
-	public UI(RootWidget root, Session sess) {
-		root.setui(this);
-		this.root = root;
+	public UI(Coord sz, Graphical backer, Session sess) {
+		root = new RootWidget(this, sz, backer);
 		widgets.put(0, root);
 		rwidgets.put(root, 0);
 		this.sess = sess;
