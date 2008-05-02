@@ -87,6 +87,8 @@ public class Session {
 	}
 	
 	private class RWorker extends Thread {
+		boolean alive;
+		
 		public RWorker() {
 			super(Utils.tg(), "Session reader");
 			setDaemon(true);
@@ -236,52 +238,72 @@ public class Session {
 		}
 		
 		public void run() {
-			while(true) {
-				DatagramPacket p = new DatagramPacket(new byte[65536], 65536);
+			try {
+				alive = true;
 				try {
-					sk.receive(p);
-				} catch(java.nio.channels.ClosedByInterruptException e) {
-					break;
-				} catch(IOException e) {
-					System.out.println(e);
-					continue;
+					sk.setSoTimeout(1000);
+				} catch(SocketException e) {
+					throw(new RuntimeException(e));
 				}
-				if(!p.getAddress().equals(server))
-					continue;
-				Message msg = new Message(p.getData()[0], p.getData(), 1, p.getLength() - 1);
-				if(msg.type == MSG_SESS) {
-					if(state == "conn") {
-						int error = msg.uint8();
-						synchronized(Session.this) {
-							if(error == 0)
-								state = "syn";
-							else
-								connfailed = error;
-							Session.this.notifyAll();
-						}
+				while(alive) {
+					DatagramPacket p = new DatagramPacket(new byte[65536], 65536);
+					try {
+						sk.receive(p);
+					} catch(java.nio.channels.ClosedByInterruptException e) {
+						/* Except apparently Sun's J2SE doesn't throw this when interrupted :P*/
+						break;
+					} catch(SocketTimeoutException e) {
+						continue;
+					} catch(IOException e) {
+						throw(new RuntimeException(e));
 					}
-				}
-				if(state != "conn") {
+					if(!p.getAddress().equals(server))
+						continue;
+					Message msg = new Message(p.getData()[0], p.getData(), 1, p.getLength() - 1);
 					if(msg.type == MSG_SESS) {
-					} else if(msg.type == MSG_REL) {
-						getrel(msg);
-					} else if(msg.type == MSG_ACK) {
-						gotack(msg.uint16());
-					} else if(msg.type == MSG_MAPDATA) {
-						glob.map.mapdata(msg);
-					} else if(msg.type == MSG_OBJDATA) {
-						getobjdata(msg);
-					} else if(msg.type == MSG_CLOSE) {
-						synchronized(Session.this) {
-							state = "fin";
+						if(state == "conn") {
+							int error = msg.uint8();
+							synchronized(Session.this) {
+								if(error == 0)
+									state = "syn";
+								else
+									connfailed = error;
+								Session.this.notifyAll();
+							}
 						}
-						Session.this.close();
-					} else {
-						throw(new MessageException("Unknown message type: " + msg.type, msg));
 					}
+					if(state != "conn") {
+						if(msg.type == MSG_SESS) {
+						} else if(msg.type == MSG_REL) {
+							getrel(msg);
+						} else if(msg.type == MSG_ACK) {
+							gotack(msg.uint16());
+						} else if(msg.type == MSG_MAPDATA) {
+							glob.map.mapdata(msg);
+						} else if(msg.type == MSG_OBJDATA) {
+							getobjdata(msg);
+						} else if(msg.type == MSG_CLOSE) {
+							synchronized(Session.this) {
+								state = "fin";
+							}
+							Session.this.close();
+						} else {
+							throw(new MessageException("Unknown message type: " + msg.type, msg));
+						}
+					}
+				}
+			} finally {
+				synchronized(Session.this) {
+					state = "dead";
+					Session.this.notifyAll();
 				}
 			}
-		}		
+		}
+		
+		public void interrupt() {
+			alive = false;
+			super.interrupt();
+		}
 	}
 	
 	private class SWorker extends Thread {
@@ -424,8 +446,8 @@ public class Session {
 		sworker.interrupt();
 	}
 	
-	public boolean alive() {
-		return(rworker.isAlive());
+	public synchronized boolean alive() {
+		return(state != "dead");
 	}
 	
 	public void queuemsg(Message msg) {
