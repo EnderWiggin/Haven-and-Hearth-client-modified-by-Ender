@@ -55,13 +55,18 @@ public class GOut {
 		tex.dispose();
 	}
 	
-	public void image(Tex tex, Coord c, Coord off) {
-		tex.crender(this, c.add(ul.add(off.inv())), ul, sz);
+	public void image(Tex tex, Coord c) {
+		tex.crender(this, c.add(ul), ul, sz);
 		checkerr();
 	}
-    
-	public void image(Tex tex, Coord c) {
-		image(tex, c, Coord.z);
+	
+	public void image(Tex tex, Coord c, Coord sz) {
+		tex.crender(this, c.add(ul), ul, this.sz, sz);
+		checkerr();
+	}
+	
+	public void image(Tex tex, Coord c, Coord ul, Coord sz) {
+		tex.crender(this, c.add(this.ul), this.ul.add(ul), sz);
 	}
 	
 	private void vertex(Coord c) {

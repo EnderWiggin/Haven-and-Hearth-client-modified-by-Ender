@@ -12,7 +12,7 @@ public class Skillwindow extends Window {
 	List<Img> nsk = new LinkedList<Img>();
 	Map<Img, String> skillz = new HashMap<Img, String>();
 	Img sel = null;
-	IButton btn;
+	Button btn;
 	
 	static {
 		Widget.addtype("skill", new WidgetFactory() {
@@ -23,11 +23,11 @@ public class Skillwindow extends Window {
 	}
 	
 	public Skillwindow(Coord c, Widget parent, int exp) {
-		super(c, new Coord(300, 200), parent);
+		super(c, new Coord(300, 200), parent, "Skills");
 		exptext = new Label(new Coord(0, 184), this, "Learning points: " + exp);
 		new Label(new Coord(0, 0), this, "Skills you have:");
 		new Label(new Coord(0, 100), this, "Skills available to you:");
-		btn = new IButton(new Coord(200, 170), this, Resource.loadimg("gfx/hud/buttons/learnu"), Resource.loadimg("gfx/hud/buttons/learnd"));
+		btn = new Button(asz.add(-50, -30), 40, this, "Learn");
 	}
 	
 	public void uimsg(String msg, Object... args) {
@@ -89,13 +89,12 @@ public class Skillwindow extends Window {
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
-		if(sender == this) {
-			super.wdgmsg(this, msg, args);
-			return;
-		}
 		if(sender == btn) {
-			if(sel != null)
+			if(sel != null) {
 				super.wdgmsg("buy", skillz.get(sel));
+				return;
+			}
 		}
+		super.wdgmsg(sender, msg, args);
 	}
 }

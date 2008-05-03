@@ -9,7 +9,6 @@ public class Landwindow extends Window implements MapView.Grabber {
 	boolean dm = false;
 	Coord sc, c1, c2;
 	MCache.Overlay ol;
-	static Coord boff = new Coord(7, 9);
 	MCache map;
 	
 	static {
@@ -21,13 +20,11 @@ public class Landwindow extends Window implements MapView.Grabber {
 	}
 	
 	public Landwindow(Coord c, Widget parent) {
-		super(c, new Coord(200, 100), parent, Coord.z, boff);
+		super(c, new Coord(200, 100), parent, "Land management");
 		map = ui.sess.glob.map;
-		BufferedImage bup = Resource.loadimg("gfx/hud/buttons/landu");
-		BufferedImage bdn = Resource.loadimg("gfx/hud/buttons/landd");
 		ui.mainview.enol(3);
 		ui.mainview.grab(this);
-		btn = new IButton(asz.add(Utils.imgsz(bup).inv()).add(boff), this, bup, bdn);
+		btn = new Button(asz.add(-50, -30), 40, this, "Claim");
 		text = new Label(Coord.z, this, "Selected tiles: 0");
 	}
 	
@@ -92,13 +89,12 @@ public class Landwindow extends Window implements MapView.Grabber {
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
-		if(sender == this) {
-			super.wdgmsg(this, msg, args);
-			return;
-		}
 		if(sender == btn) {
-			if((c1 != null) && (c2 != null))
+			if((c1 != null) && (c2 != null)) {
 				wdgmsg("take", c1, c2);
+				return;
+			}
 		}
+		super.wdgmsg(sender, msg, args);
 	}
 }

@@ -16,7 +16,7 @@ public class Text {
 	}
 	
 	public static class Foundry {
-		private static FontMetrics m;
+		private FontMetrics m;
 		Font font;
 		
 		public Foundry(Font f) {

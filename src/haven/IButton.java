@@ -4,8 +4,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class IButton extends SSWidget {
-	BufferedImage up, down;
-	boolean a = false;
+	BufferedImage up, down, hover;
+	boolean a = false, h = false;
 	
 	static {
 		Widget.addtype("ibtn", new WidgetFactory() {
@@ -15,16 +15,26 @@ public class IButton extends SSWidget {
 		});
 	}
 	
-	public IButton(Coord c, Widget parent, BufferedImage up, BufferedImage down) {
+	public IButton(Coord c, Widget parent, BufferedImage up, BufferedImage down, BufferedImage hover) {
 		super(c, Utils.imgsz(up), parent);
 		this.up = up;
 		this.down = down;
+		this.hover = hover;
 		render();
+	}
+	
+	public IButton(Coord c, Widget parent, BufferedImage up, BufferedImage down) {
+		this(c, parent, up, down, up);
 	}
 	
 	public void render() {
 		Graphics g = graphics();
-		g.drawImage(a?down:up, 0, 0, null);
+		if(a)
+			g.drawImage(down, 0, 0, null);
+		else if(h)
+			g.drawImage(hover, 0, 0, null);
+		else
+			g.drawImage(up, 0, 0, null);
 		update();
 	}
 
@@ -54,5 +64,13 @@ public class IButton extends SSWidget {
 			return(true);
 		}
 		return(false);
+	}
+	
+	public void mousemove(Coord c) {
+		boolean h = c.isect(Coord.z, sz);
+		if(h != this.h) {
+			this.h = h;
+			render();
+		}
 	}
 }
