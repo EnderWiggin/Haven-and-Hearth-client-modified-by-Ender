@@ -22,7 +22,7 @@ public class Makewindow extends Window {
 	}
 	
 	public Makewindow(Coord c, Widget parent, List<Listbox.Option> opts) {
-		super(c, new Coord(0, 0), parent, new Coord(0, 0), boff);
+		super(c, new Coord(0, 0), parent, "Crafting", new Coord(0, 0), boff);
 		cr = opts.get(0).name;
 		BufferedImage bup = Resource.loadimg("gfx/hud/btn-mk-up");
 		new Img(Coord.z, Resource.loadtex("gfx/hud/mkbg"), this);
@@ -66,18 +66,18 @@ public class Makewindow extends Window {
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
-		if(sender == this) {
-			super.wdgmsg(sender, msg, args);
-			return;
-		}
 		if(sender == btn) {
-			if(msg == "activate")
+			if(msg == "activate") {
 				wdgmsg("make", cr);
+				return;
+			}
 		} else if(sender == list) {
 			if(msg == "chose") {
 				cr = (String)args[0];
 				wdgmsg(msg, cr);
+				return;
 			}
 		}
+		super.wdgmsg(sender, msg, args);
 	}
 }

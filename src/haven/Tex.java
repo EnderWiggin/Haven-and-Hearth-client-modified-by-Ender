@@ -52,7 +52,7 @@ public abstract class Tex {
 		return(Color.WHITE);
 	}
 	
-	public void render(GOut g, Coord c, Coord ul, Coord sz) {
+	public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
 		GL gl = g.gl;
 		if(id < 0)
 			create(g);
@@ -62,8 +62,8 @@ public abstract class Tex {
 		gl.glBegin(GL.GL_QUADS);
 		float l = ((float)ul.x) / ((float)tdim.x);
 		float t = ((float)ul.y) / ((float)tdim.y);
-		float r = ((float)sz.x) / ((float)tdim.x) + l;
-		float b = ((float)sz.y) / ((float)tdim.y) + t;
+		float r = ((float)br.x) / ((float)tdim.x);
+		float b = ((float)br.y) / ((float)tdim.y);
 		gl.glColor4f((float)amb.getRed() / 255.0f,
 			     (float)amb.getGreen() / 255.0f,
 			     (float)amb.getBlue() / 255.0f,
@@ -77,13 +77,14 @@ public abstract class Tex {
 	}
 
 	public void render(GOut g, Coord c) {
-		render(g, c, Coord.z, dim);
+		render(g, c, Coord.z, dim, dim);
 	}
     
-	public void crender(GOut g, Coord c, Coord ul, Coord sz) {
+	public void crender(GOut g, Coord c, Coord ul, Coord sz, Coord tsz) {
 		Coord t = new Coord(c);
 		Coord uld = new Coord(0, 0);
-		Coord szd = new Coord(dim);
+		Coord brd = new Coord(dim);
+		Coord szd = new Coord(tsz);
 		if(c.x < ul.x) {
 			t.x = ul.x;
 			uld.x = ul.x - c.x;
@@ -94,11 +95,21 @@ public abstract class Tex {
 			uld.y = ul.y - c.y;
 			szd.y -= uld.y;
 		}
-		if(c.x + dim.x > ul.x + sz.x)
-			szd.x -= c.x + dim.x - ul.x - sz.x;
-		if(c.y + dim.y > ul.y + sz.y)
-			szd.y -= c.y + dim.y - ul.y - sz.y;
-		render(g, t, uld, szd);
+		if(c.x + tsz.x > ul.x + sz.x) {
+			int pd = c.x + tsz.x - ul.x - sz.x;
+			szd.x -= pd;
+			brd.x -= (pd * dim.x) / tsz.x;
+		}
+		if(c.y + tsz.y > ul.y + sz.y) {
+			int pd = c.y + dim.y - ul.y - sz.y;
+			szd.y -= pd;
+			brd.y -= (pd * dim.y) / tsz.y;
+		}
+		render(g, t, uld, brd, szd);
+	}
+	
+	public void crender(GOut g, Coord c, Coord ul, Coord sz) {
+		crender(g, c, ul, sz, dim);
 	}
 	
 	public void dispose() {

@@ -39,7 +39,7 @@ public class Equipory extends Window implements DTarget {
 	}
 	
 	public Equipory(Coord c, Widget parent) {
-		super(c, new Coord(276, 249), parent);
+		super(c, new Coord(0, 0), parent, "Equipment");
 		epoints = new ArrayList<Inventory>();
 		equed = new ArrayList<Item>(ecoords.length);
 		new Img(new Coord(32, 0), bg, this);
@@ -47,6 +47,7 @@ public class Equipory extends Window implements DTarget {
 			epoints.add(new Inventory(ecoords[i], new Coord(1, 1), this));
 			equed.add(null);
 		}
+		pack();
 	}
 	
 	public void uimsg(String msg, Object... args) {
@@ -68,19 +69,20 @@ public class Equipory extends Window implements DTarget {
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
-		if(sender == this) {
-			super.wdgmsg(sender, msg, args);
-			return;
-		}
 		int ep;
 		if((ep = epoints.indexOf(sender)) != -1) {
-			if(msg == "drop")
+			if(msg == "drop") {
 				wdgmsg("drop", ep);
+				return;
+			}
 		}
 		if((ep = equed.indexOf(sender)) != -1) {
-			if(msg == "take")
+			if(msg == "take") {
 				wdgmsg("take", ep, args[0]);
+				return;
+			}
 		}
+		super.wdgmsg(sender, msg, args);
 	}
 	
 	public void drop(Coord cc, Coord ul) {

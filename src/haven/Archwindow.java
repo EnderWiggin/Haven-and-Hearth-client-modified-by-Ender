@@ -17,7 +17,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 	}
 	
 	public Archwindow(Coord c, Widget parent) {
-		super(c, new Coord(150, 100), parent);
+		super(c, new Coord(150, 100), parent, "Architecture");
 		oc = ui.sess.glob.oc;
 		ui.mainview.grab(this);
 		oc.ladd(vob);

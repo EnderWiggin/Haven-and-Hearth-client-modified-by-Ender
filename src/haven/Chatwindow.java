@@ -13,7 +13,7 @@ public class Chatwindow extends Window {
 	}
 	
 	public Chatwindow(Coord c, Coord sz, Widget parent) {
-		super(c, sz, parent);
+		super(c, sz, parent, "Chat");
 		in = new TextEntry(new Coord(0, sz.y - 20), new Coord(sz.x, 20), this, "");
 		in.canactivate = true;
 		out = new Textlog(Coord.z, new Coord(sz.x, sz.y - 20), this);
@@ -28,14 +28,13 @@ public class Chatwindow extends Window {
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
-		if(sender == this) {
-			super.wdgmsg(sender, msg, args);
-			return;
-		} else if(sender == in) {
+		if(sender == in) {
 			if(msg == "activate") {
 				wdgmsg("msg", args[0]);
 				in.settext("");
+				return;
 			}
 		}
+		super.wdgmsg(sender, msg, args);
 	}
 }

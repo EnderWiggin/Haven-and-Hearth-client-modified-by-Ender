@@ -268,8 +268,7 @@ public class Widget implements Graphical {
 	public void mousemove(Coord c) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
 			Coord cc = xlate(wdg.c, true);
-			if(c.isect(cc, wdg.sz))
-				wdg.mousemove(c.add(cc.inv()));
+			wdg.mousemove(c.add(cc.inv()));
 		}
 	}
 	

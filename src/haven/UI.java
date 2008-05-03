@@ -12,6 +12,7 @@ public class UI {
 	Coord mc, lcc = Coord.z;
 	Session sess;
 	MapView mainview;
+	public Widget mouseon;
 	
 	public interface Receiver {
 		public void rcvmsg(int widget, String msg, Object... args);

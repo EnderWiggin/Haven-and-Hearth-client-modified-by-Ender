@@ -26,8 +26,8 @@ public class Avaview extends Widget {
 		if(ava == null)
 			return;
 		GOut g2 = g.reclip(Window.wbox.tloff(), asz);
-		g2.image(Equipory.bg, Coord.z, new Coord(Equipory.bg.sz().x / 2 - asz.x / 2, 20));
+		g2.image(Equipory.bg, new Coord(Equipory.bg.sz().x / 2 - asz.x / 2, 20).inv());
 		Tex at = ava.tex();
-		g2.image(at, Coord.z, new Coord(at.sz().x / 2 - asz.x / 2, 20));
+		g2.image(at, new Coord(at.sz().x / 2 - asz.x / 2, 20).inv());
 	}
 }

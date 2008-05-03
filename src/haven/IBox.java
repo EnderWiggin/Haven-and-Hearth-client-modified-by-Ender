@@ -43,14 +43,10 @@ public class IBox {
 	}
 	
 	public void draw(GOut g, Coord tl, Coord sz) {
-		for(int x = ctl.sz().x; x < sz.x - ctr.sz().x; x++)
-			g.image(bt, tl.add(x, 0));
-		for(int x = cbl.sz().x; x < sz.x - cbr.sz().x; x++)
-			g.image(bb, new Coord(x + tl.x, sz.y - bb.sz().y + tl.y));
-		for(int y = ctl.sz().y; y < sz.y - cbl.sz().y; y++)
-			g.image(bl, tl.add(0, y));
-		for(int y = ctr.sz().y; y < sz.y - cbr.sz().y; y++)
-			g.image(br, new Coord(sz.x - br.sz().x + tl.x, y + tl.y));
+		g.image(bt, tl.add(new Coord(ctl.sz().x, 0)), new Coord(sz.x - ctr.sz().x - ctl.sz().x, bt.sz().y));
+		g.image(bb, tl.add(new Coord(cbl.sz().x, sz.y - bb.sz().y + tl.y)), new Coord(sz.x - cbr.sz().x - cbl.sz().x, bb.sz().y));
+		g.image(bl, tl.add(new Coord(0, ctl.sz().y)), new Coord(bl.sz().x, sz.y - cbl.sz().y - ctl.sz().y));
+		g.image(br, tl.add(new Coord(sz.x - br.sz().x + tl.x, ctr.sz().y)), new Coord(br.sz().x, sz.y - cbr.sz().y - ctr.sz().y));
 		g.image(ctl, tl);
 		g.image(ctr, tl.add(sz.x - ctr.sz().x, 0));
 		g.image(cbl, tl.add(0, sz.y - cbl.sz().y));

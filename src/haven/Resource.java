@@ -541,7 +541,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	private void checkerr() {
 		if(error != null)
-			throw(new RuntimeException(error));
+			throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + ")", error));
 	}
 	
 	private static InputStream getres(String name) {
