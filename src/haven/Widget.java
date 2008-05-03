@@ -82,6 +82,8 @@ public class Widget implements Graphical {
 				parent.lchild = prev;
 			next = null;
 			prev = null;
+			if(canfocus)
+				setcanfocus(false);
 		}
 	}
 	
@@ -143,6 +145,7 @@ public class Widget implements Graphical {
 	
 	public void setcanfocus(boolean canfocus) {
 		this.canfocus = canfocus;
+		System.out.println(canfocus + ", " + parent);
 		if(parent != null) {
 			if(canfocus) {
 				parent.newfocusable(this);
@@ -164,24 +167,28 @@ public class Widget implements Graphical {
 	public void delfocusable(Widget w) {
 		if(focusctl) {
 			if(focused == w)
-				focused = null;
+				findfocus();
 		} else {
 			parent.delfocusable(w);
 		}
 	}
 	
+	private void findfocus() {
+		/* XXX: Might need to check subwidgets recursively */
+		focused = null;
+		for(Widget w = child; w != null; w = w.next) {
+			if(w.canfocus) {
+				focused = w;
+				focused.hasfocus = true;
+				w.gotfocus();
+				break;
+			}
+		}
+	}
+	
 	public void setfocusctl(boolean focusctl) {
 		if(this.focusctl = focusctl) {
-			/* XXX: Might need to check subwidgets recursively */
-			focused = null;
-			for(Widget w = child; w != null; w = w.next) {
-				if(w.canfocus) {
-					focused = w;
-					focused.hasfocus = true;
-					w.gotfocus();
-					break;
-				}
-			}
+			findfocus();
 			setcanfocus(true);
 		}
 	}

@@ -157,6 +157,6 @@ public class Window extends Widget {
 			wdgmsg("close");
 			return(true);
 		}
-		return(false);
+		return(super.type(key, ev));
 	}
 }
