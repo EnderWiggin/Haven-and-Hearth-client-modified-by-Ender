@@ -46,16 +46,13 @@ public class Layered extends Drawable {
 			while(recency.size() > cachesz) {
 				Object[] id = recency.removeLast();
 				cache.remove(id).dispose();
-				System.out.println("Removing last cache entry");
 			}
-			System.out.println("Cache size: " + recency.size());
 		}
 		
 		public synchronized void put(Object[] id, Tex t) {
 			cache.put(id, t);
 			recency.addFirst(id);
 			cleancache();
-			System.out.println("New cached layer " + id.hashCode());
 		}
 	}
 
