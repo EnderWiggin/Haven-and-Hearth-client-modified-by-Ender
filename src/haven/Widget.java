@@ -124,7 +124,6 @@ public class Widget implements Graphical {
 	
 	public void setfocus(Widget w) {
 		if(focusctl) {
-			System.out.println("Focusing " + w + " in " + this);
 			if(w != focused) {
 				Widget last = focused;
 				focused = w;
@@ -146,7 +145,6 @@ public class Widget implements Graphical {
 	
 	public void setcanfocus(boolean canfocus) {
 		this.canfocus = canfocus;
-		System.out.println(canfocus + ", " + this + ", " + parent);
 		if(parent != null) {
 			if(canfocus) {
 				parent.newfocusable(this);
@@ -179,7 +177,6 @@ public class Widget implements Graphical {
 		focused = null;
 		for(Widget w = lchild; w != null; w = w.prev) {
 			if(w.canfocus) {
-				System.out.println("Autofocusing " + w + " in " + this);
 				focused = w;
 				focused.hasfocus = true;
 				w.gotfocus();
