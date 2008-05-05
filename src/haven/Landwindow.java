@@ -33,6 +33,7 @@ public class Landwindow extends Window implements MapView.Grabber {
 		ui.mainview.release(this);
 		if(ol != null)
 			ol.destroy();
+		super.destroy();
 	}
 	
 	public void mmousedown(Coord mc, int button) {

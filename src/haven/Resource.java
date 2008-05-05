@@ -407,7 +407,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 				clmap.put(c.name, c);
 			loader = new ClassLoader(Resource.class.getClassLoader()) {
 					public Class<?> findClass(String name) throws ClassNotFoundException {
-						System.out.println(name);
 						Code c = clmap.get(name);
 						if(c == null)
 							throw(new ClassNotFoundException("Could not find main sprite class"));

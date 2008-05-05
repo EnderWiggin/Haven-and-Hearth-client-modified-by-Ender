@@ -12,7 +12,50 @@ public class Layered extends Drawable {
 	boolean loading;
 	int z = 0;
 	Sprite.Part me;
+	static LayerCache cache = new LayerCache(1000);
 	
+	public static class LayerCache {
+		private int cachesz;
+		private Map<Object[], Tex> cache = new IdentityHashMap<Object[], Tex>();
+		private LinkedList<Object[]> recency = new LinkedList<Object[]>();
+		
+		public LayerCache(int cachesz) {
+			this.cachesz = cachesz;
+		}
+
+		private synchronized void usecache(Object[] id) {
+			for(Iterator i = recency.iterator(); i.hasNext();) {
+				Object[] cid = (Object[])i.next();
+				if(cid == id) {
+					i.remove();
+					recency.addFirst(id);
+					return;
+				}
+			}
+			throw(new RuntimeException("Used layered cache is not in recency list"));
+		}
+	
+		public synchronized Tex get(Object[] id) {
+			Tex t = cache.get(id);
+			if(t != null)
+				usecache(id);
+			return(t);
+		}
+	
+		private synchronized void cleancache() {
+			while(recency.size() > cachesz) {
+				Object[] id = recency.removeLast();
+				cache.remove(id).dispose();
+			}
+		}
+		
+		public synchronized void put(Object[] id, Tex t) {
+			cache.put(id, t);
+			recency.addFirst(id);
+			cleancache();
+		}
+	}
+
 	public Layered(Gob gob, Resource base) {
 		super(gob);
 		this.base = base;
@@ -65,6 +108,18 @@ public class Layered extends Drawable {
 		drw.addpart(me);
 	}
 	
+	private synchronized Object[] stateid() {
+		Object[] ret = new Object[layers.size()];
+		for(int i = 0; i < layers.size(); i++) {
+			Sprite spr = sprites.get(layers.get(i));
+			if(spr == null)
+				ret[i] = null;
+			else
+				ret[i] = spr.stateid();
+		}
+		return(ArrayIdentity.intern(ret));
+	}
+
 	private void makepart() {
 		me = new Sprite.Part(z) {
 				public void draw(BufferedImage buf, Graphics g, Coord cc, Coord off) {
@@ -84,15 +139,27 @@ public class Layered extends Drawable {
 				}
 				
 				public void draw(BufferedImage buf, Graphics g) {
-					draw(buf, g, cc, off);
+					synchronized(Layered.this) {
+						draw(buf, g, cc, off);
+					}
 				}
 				
 				public void draw(GOut g) {
-					Coord sz = getsize();
-					BufferedImage buf = TexI.mkbuf(sz);
-					Graphics gr = buf.getGraphics();
-					draw(buf, gr, getoffset(), Coord.z);
-					g.image(buf, cc.add(getoffset().inv()).add(off));
+					synchronized(Layered.this) {
+						Object[] id = stateid();
+						Tex t;
+						synchronized(cache) {
+							if((t = cache.get(id)) == null) {
+								Coord sz = getsize();
+								BufferedImage buf = TexI.mkbuf(sz);
+								Graphics gr = buf.getGraphics();
+								draw(buf, gr, getoffset(), Coord.z);
+								t = new TexI(buf);
+								cache.put(id, t);
+							}
+						}
+						g.image(t, cc.add(getoffset().inv()).add(off));
+					}
 				}
 			};
 	}

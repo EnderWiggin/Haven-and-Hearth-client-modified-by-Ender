@@ -142,6 +142,7 @@ public class Sprite {
 	protected class Frame {
 		Collection<SpritePart> parts = new LinkedList<SpritePart>();
 		int dur = 1000;
+		protected Object id = new Object();
 		
 		public Frame() {}
 		
@@ -186,6 +187,7 @@ public class Sprite {
 	private static Sprite mksprite(Gob gob, Resource res, Resource neg, boolean layered) {
 		Sprite spr = new Sprite(gob, res, neg, 1);
 		Frame f = spr.new Frame();
+		f.id = (res.name + ":" + neg.name).intern();
 		for(Resource.Image img : res.layers(imgc)) {
 			if(img.l == layered)
 				f.add(img);
@@ -198,6 +200,7 @@ public class Sprite {
 		Sprite spr = new Sprite(gob, res, neg, ad.f.length);
 		for(int i = 0; i < ad.f.length; i++) {
 			Frame f = spr.new Frame();
+			f.id = (res.name + ":" + neg.name + ":" + i).intern();
 			f.dur = ad.d;
 			for(int o = 0; o < ad.f[i].length; o++) {
 				if(ad.f[i][o].l == layered)
@@ -287,5 +290,9 @@ public class Sprite {
 			de -= frames[fno].dur;
 			fno = (fno + 1) % frames.length;
 		}
+	}
+	
+	public Object stateid() {
+		return(frames[fno].id);
 	}
 }

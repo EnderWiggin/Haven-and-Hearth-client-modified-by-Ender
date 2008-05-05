@@ -26,6 +26,7 @@ public class Archwindow extends Window implements MapView.Grabber {
 	public void destroy() {
 		ui.mainview.release(this);
 		oc.lrem(vob);
+		super.destroy();
 	}
 	
 	void makevob(Coord mc) {
