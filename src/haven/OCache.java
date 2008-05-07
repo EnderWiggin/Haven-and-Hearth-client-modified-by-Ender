@@ -118,10 +118,10 @@ public class OCache implements Iterable<Gob> {
 		if((m == null) || !(m instanceof LinMove))
 			return;
 		LinMove lm = (LinMove)m;
-		if(l > lm.l)
-			lm.l = l;
 		if((l < 0) || (l >= lm.c))
 			g.delattr(Moving.class);
+		else
+			lm.setl(l);
 	}
 	
 	public synchronized void speak(int id, int frame, Coord off, String text) {
