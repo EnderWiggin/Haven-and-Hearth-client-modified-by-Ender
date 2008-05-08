@@ -9,6 +9,7 @@ public class Message implements java.io.Serializable {
 	public static final int RMSG_DSTWDG = 2;
 	public static final int RMSG_MAPIV = 3;
 	public static final int RMSG_GLOBLOB = 4;
+	public static final int RMSG_PAGINAE = 5;
 	
 	public static final int T_END = 0;
 	public static final int T_INT = 1;
@@ -89,6 +90,10 @@ public class Message implements java.io.Serializable {
 				addcoord((Coord)o);
 			}
 		}
+	}
+	
+	public boolean eom() {
+		return(off >= blob.length);
 	}
 	
 	public int uint8() {

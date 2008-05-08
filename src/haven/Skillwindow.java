@@ -90,10 +90,9 @@ public class Skillwindow extends Window {
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
 		if(sender == btn) {
-			if(sel != null) {
+			if(sel != null)
 				super.wdgmsg("buy", skillz.get(sel));
-				return;
-			}
+			return;
 		}
 		super.wdgmsg(sender, msg, args);
 	}
