@@ -76,6 +76,7 @@ public class GOut {
 	void texsel(int id) {
 		GOut tm = topmost();
 		if(id != tm.curtex) {
+			HavenPanel.texmiss++;
 			if(id == -1) {
 				gl.glDisable(GL.GL_TEXTURE_2D);
 			} else {
@@ -83,6 +84,8 @@ public class GOut {
 				gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 			}
 			tm.curtex = id;
+		} else {
+			HavenPanel.texhit++;
 		}
 	}
 	
