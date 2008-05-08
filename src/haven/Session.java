@@ -209,6 +209,8 @@ public class Session {
 				glob.blob(msg);
 				if(state == "syn")
 					state = "";
+			} else if(msg.type == Message.RMSG_PAGINAE) {
+				glob.paginae(msg);
 			} else {
 				throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 			}

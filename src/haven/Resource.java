@@ -19,6 +19,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public static Class<Neg> negc = Neg.class;
 	public static Class<Anim> animc = Anim.class;
 	public static Class<Tileset> tileset = Tileset.class;
+	public static Class<Pagina> pagina = Pagina.class;
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -374,6 +375,21 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 	}
 	static {ltypes.put("tileset", Tileset.class);}
+	
+	public class Pagina extends Layer {
+		public final String text;
+		
+		public Pagina(byte[] buf) {
+			try {
+				text = new String(buf, "UTF-8");
+			} catch(UnsupportedEncodingException e) {
+				throw(new RuntimeException(e));
+			}
+		}
+		
+		public void init() {}
+	}
+	static {ltypes.put("pagina", Pagina.class);}
 	
 	public class Code extends Layer {
 		public final String name;

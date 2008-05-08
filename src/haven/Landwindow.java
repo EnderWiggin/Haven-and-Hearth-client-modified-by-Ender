@@ -91,10 +91,9 @@ public class Landwindow extends Window implements MapView.Grabber {
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
 		if(sender == btn) {
-			if((c1 != null) && (c2 != null)) {
+			if((c1 != null) && (c2 != null))
 				wdgmsg("take", c1, c2);
-				return;
-			}
+			return;
 		}
 		super.wdgmsg(sender, msg, args);
 	}

@@ -1,5 +1,7 @@
 package haven;
 
+import java.util.*;
+
 public class Glob {
 	long time;
 	Astronomy ast;
@@ -7,6 +9,7 @@ public class Glob {
 	MCache map;
 	Session sess;
 	int glut, fcap, stamina, stamcap;
+	Collection<Resource> paginae = new TreeSet<Resource>();
 	
 	public Glob(Session sess) {
 		this.sess = sess;
@@ -28,5 +31,17 @@ public class Glob {
 		stamcap = msg.int32();
 		boolean night = (dt < 0.25) || (dt > 0.75);
 		ast = new Astronomy(dt, mp, yt, night);
+	}
+	
+	public void paginae(Message msg) {
+		while(!msg.eom()) {
+			int act = msg.uint8();
+			if(act == '+') {
+				String nm = msg.string();
+				int ver = msg.uint16();
+				paginae.add(Resource.load(nm, ver)); 
+			} else if(act == '-') {
+			}
+		}
 	}
 }
