@@ -16,6 +16,13 @@ public abstract class Tex {
 		return(dim);
 	}
 
+	public static int nextp2(int in) {
+		int ret;
+	
+		for(ret = 1; ret < in; ret <<= 1);
+		return(ret);
+	}
+
 	public abstract void render(GOut g, Coord c, Coord ul, Coord br, Coord sz);
 
 	public void render(GOut g, Coord c) {

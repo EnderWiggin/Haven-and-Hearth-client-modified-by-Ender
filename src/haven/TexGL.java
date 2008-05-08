@@ -15,13 +15,6 @@ public abstract class TexGL extends Tex {
 		tdim = new Coord(nextp2(sz.x), nextp2(sz.y));
 	}
 	
-	public static int nextp2(int in) {
-		int ret;
-	
-		for(ret = 1; ret < in; ret <<= 1);
-		return(ret);
-	}
-
 	private void checkerr(GL gl) {
 		int err = gl.glGetError();
 		if(err != 0)
