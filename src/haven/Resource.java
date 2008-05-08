@@ -6,6 +6,7 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 import javax.imageio.*;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Serializable {
@@ -273,9 +274,8 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 
 		public synchronized Tex tex() {
-			if(tex != null)
-				return(tex);
-			tex = new TexI(img);
+			if(tex == null)
+				tex = new TexI(img);
 			return(tex);
 		}
 		
@@ -350,10 +350,44 @@ public class Resource implements Comparable<Resource>, Serializable {
 				flw[i] = Utils.ub(buf[off[0] + 5]);
 		}
 		
+		private void packtiles(Collection<Tile> tiles, Coord tsz) {
+			int min = -1, minw = -1, minh = -1;
+			int nt = tiles.size();
+			for(int i = 1; i <= nt; i++) {
+				int w = Tex.nextp2(tsz.x * i);
+				int h;
+				if((nt % i) == 0)
+					h = nt / i;
+				else
+					h = (nt / i) + 1;
+				h = Tex.nextp2(tsz.y * h);
+				int a = w * h;
+				if((min == -1) || (a < min)) {
+					min = a;
+					minw = w;
+					minh = h;
+				}
+			}
+			TexIM packbuf = new TexIM(new Coord(minw, minh));
+			Graphics g = packbuf.graphics();
+			int x = 0, y = 0;
+			for(Tile t :  tiles) {
+				g.drawImage(t.img, x, y, null);
+				t.tex = new TexSI(packbuf, new Coord(x, y), tsz);
+				if((x += tsz.x) >= minw) {
+					x = 0;
+					if((y += tsz.y) >= minh)
+						throw(new LoadException("Could not pack tiles into calculated minimum texture", Resource.this));
+				}
+			}
+			packbuf.update();
+		}
+		
 		public void init() {
 			flavobjs = new WeightList<Resource>();
 			for(int i = 0; i < flw.length; i++)
 				flavobjs.add(load(String.format("%s/%d", fobase, i + 1)), flw[i]);
+			Collection<Tile> tiles = new LinkedList<Tile>();
 			ground = new WeightList<Tile>();
 			if((fl & 1) != 0) {
 				ctrans = new WeightList[15];
@@ -363,6 +397,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 					btrans[i] = new WeightList<Tile>();
 				}
 			}
+			Coord tsz = null;
 			for(Tile t : layers(Tile.class)) {
 				if(t.t == 'g')
 					ground.add(t, t.w);
@@ -370,7 +405,16 @@ public class Resource implements Comparable<Resource>, Serializable {
 					btrans[t.id - 1].add(t, t.w);
 				else if(t.t == 'c')
 					ctrans[t.id - 1].add(t, t.w);
+				tiles.add(t);
+				if(tsz == null) {
+					tsz = Utils.imgsz(t.img);
+				} else {
+					if(!Utils.imgsz(t.img).equals(tsz)) {
+						throw(new LoadException("Different tile sizes within set", Resource.this));
+					}
+				}
 			}
+			packtiles(tiles, tsz);
 		}
 	}
 	static {ltypes.put("tileset", Tileset.class);}

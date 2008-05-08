@@ -12,6 +12,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	boolean inited = false;
 	int w, h;
 	long fd = 20, fps = 0;
+	int dth = 0, dtm = 0;
+	public static int texhit = 0, texmiss = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
 	
 	public HavenPanel(int w, int h) {
@@ -25,7 +27,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				GL gl = d.getGL();
 				if(inited)
 					redraw(gl);
-				Tex.disposeall(gl);
+				TexGL.disposeall(gl);
 			}
 			
 			public void init(GLAutoDrawable d) {
@@ -128,6 +130,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		if(Resource.qdepth() > 0)
 			g.atext("RQ depth: " + Resource.qdepth(), new Coord(790, 575), 1, 1);
 		g.atext("FPS: " + fps, new Coord(790, 590), 1, 1);
+		g.atext("Texhit: " + dth, new Coord(790, 575), 1, 1);
+		g.atext("Texmiss: " + dtm, new Coord(790, 560), 1, 1);
 	}
 	
 /*
@@ -212,6 +216,9 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				if(now - fthen > 1000) {
 					fps = frames;
 					frames = 0;
+					dth = texhit;
+					dtm = texmiss;
+					texhit = texmiss = 0;
 					fthen = now;
 				}
 				if(Thread.interrupted())

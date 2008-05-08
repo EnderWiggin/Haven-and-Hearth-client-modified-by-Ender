@@ -11,7 +11,7 @@ import java.awt.color.ColorSpace;
 import java.nio.ByteBuffer;
 import javax.media.opengl.*;
 
-public class TexI extends Tex {
+public class TexI extends TexGL {
 	public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 	protected byte[] pixels;
 	public BufferedImage back;
