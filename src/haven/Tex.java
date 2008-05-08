@@ -6,7 +6,7 @@ import java.util.*;
 import javax.media.opengl.*;
 
 public abstract class Tex {
-	protected Coord dim, tdim;
+	protected Coord dim;
     
 	public Tex(Coord sz) {
 		dim = sz;

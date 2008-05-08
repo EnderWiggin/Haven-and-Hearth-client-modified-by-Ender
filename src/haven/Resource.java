@@ -370,7 +370,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 				}
 			}
 			TexIM packbuf = new TexIM(new Coord(minw, minh));
-			System.out.println(name + ": " + packbuf.sz() + ", " + nt);
 			Graphics g = packbuf.graphics();
 			int x = 0, y = 0;
 			for(Tile t :  tiles) {
