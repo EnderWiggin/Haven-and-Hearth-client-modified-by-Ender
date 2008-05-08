@@ -25,7 +25,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				GL gl = d.getGL();
 				if(inited)
 					redraw(gl);
-				Tex.disposeall(gl);
+				TexGL.disposeall(gl);
 			}
 			
 			public void init(GLAutoDrawable d) {

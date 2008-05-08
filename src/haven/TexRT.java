@@ -3,7 +3,7 @@ package haven;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 
-public abstract class TexRT extends Tex {
+public abstract class TexRT extends TexGL {
 	private GLPbuffer pbuf;
 	private boolean inited = false;
 	
