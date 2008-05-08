@@ -13,13 +13,45 @@ public class MainFrame extends Frame implements Runnable {
 			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) {}
 	}
-
-	public MainFrame(int w, int h) {
+	
+	DisplayMode findmode(int w, int h) {
+		GraphicsDevice dev = getGraphicsConfiguration().getDevice();
+		if(!dev.isFullScreenSupported())
+			return(null);
+		DisplayMode b = null;
+		for(DisplayMode m : dev.getDisplayModes()) {
+			int d = m.getBitDepth();
+			if((m.getWidth() == w) && (m.getHeight() == h) && ((d == 24) || (d == 32))) {
+				if((b == null) || (d > b.getBitDepth()))
+					b = m;
+			}
+		}
+		return(b);
+	}
+	
+	void setfs(DisplayMode m) {
+		GraphicsDevice dev = getGraphicsConfiguration().getDevice();
+		try {
+			setUndecorated(true);
+			dev.setFullScreenWindow(this);
+			dev.setDisplayMode(m);
+		} catch(Exception e) {
+			setUndecorated(false);
+			dev.setFullScreenWindow(null);
+		}
+	}
+	
+	public MainFrame(int w, int h, boolean fs) {
 		super("Haven and Hearth");
 		p = new HavenPanel(w, h);
+		DisplayMode tm = findmode(w, h);
+		if(tm == null)
+			fs = false;
 		add(p);
 		pack();
 		p.requestFocus();
+		if(fs)
+		    setfs(tm);
 		setVisible(true);
 		p.init();
 	}
@@ -50,7 +82,10 @@ public class MainFrame extends Frame implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		final MainFrame f = new MainFrame(800, 600);
+		boolean fs = false;
+		if(System.getProperty("haven.fullscreen", "off").equals("on"))
+			fs = true;
+		final MainFrame f = new MainFrame(800, 600, fs);
 		try {
 			Resource.baseurl = new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/"));
 		} catch(java.net.MalformedURLException e) {
