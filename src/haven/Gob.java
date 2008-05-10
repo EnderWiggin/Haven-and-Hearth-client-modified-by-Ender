@@ -3,7 +3,7 @@ package haven;
 import java.util.*;
 
 public class Gob {
-	Coord rc, sc;
+	public Coord rc, sc;
 	int clprio = 0;
 	public int id, frame;
 	public final Glob glob;
