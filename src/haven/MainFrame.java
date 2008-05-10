@@ -36,8 +36,7 @@ public class MainFrame extends Frame implements Runnable {
 			dev.setFullScreenWindow(this);
 			dev.setDisplayMode(m);
 		} catch(Exception e) {
-			setUndecorated(false);
-			dev.setFullScreenWindow(null);
+			throw(new RuntimeException(e));
 		}
 	}
 	
@@ -47,11 +46,11 @@ public class MainFrame extends Frame implements Runnable {
 		DisplayMode tm = findmode(w, h);
 		if(tm == null)
 			fs = false;
+		if(fs)
+		    setfs(tm);
 		add(p);
 		pack();
 		p.requestFocus();
-		if(fs)
-		    setfs(tm);
 		setVisible(true);
 		p.init();
 	}

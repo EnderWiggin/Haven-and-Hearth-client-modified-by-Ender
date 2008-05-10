@@ -10,6 +10,8 @@ public class Text {
 	public final String text;
 	private FontMetrics m;
 	private Tex tex;
+	public static final Color black = Color.BLACK;
+	public static final Color white = Color.WHITE;
 	
 	static {
 		std = new Foundry(new Font("SansSerif", Font.PLAIN, 10));
@@ -55,6 +57,10 @@ public class Text {
 	
 	public static Text render(String text, Color c) {
 		return(std.render(text, c));
+	}
+	
+	public static Text renderf(Color c, String text, Object... args) {
+		return(std.render(String.format(text, args), c));
 	}
 	
 	public static Text render(String text) {

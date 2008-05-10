@@ -374,7 +374,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 			for(Tile t :  tiles) {
 				g.drawImage(t.img, x, y, null);
 				t.tex = new TexSI(packbuf, new Coord(x, y), tsz);
-				if((x += tsz.x) >= minw) {
+				if((x += tsz.x) > (minw - tsz.x)) {
 					x = 0;
 					if((y += tsz.y) >= minh)
 						throw(new LoadException("Could not pack tiles into calculated minimum texture", Resource.this));
@@ -386,7 +386,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public void init() {
 			flavobjs = new WeightList<Resource>();
 			for(int i = 0; i < flw.length; i++)
-				flavobjs.add(load(String.format("%s/%d", fobase, i + 1)), flw[i]);
+				flavobjs.add(load(String.format("%s/f%d", fobase, i + 1)), flw[i]);
 			Collection<Tile> tiles = new LinkedList<Tile>();
 			ground = new WeightList<Tile>();
 			if((fl & 1) != 0) {
