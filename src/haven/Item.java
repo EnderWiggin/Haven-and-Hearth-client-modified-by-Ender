@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Color;
 
-public class Item extends SSWidget {
+public class Item extends SSWidget implements DTarget {
 	static Coord shoff = new Coord(1, 3);
 	boolean dm = false;
 	Coord doff;
@@ -84,17 +84,36 @@ public class Item extends SSWidget {
 		this(c, Resource.loadimg(res), parent, drag);
 	}
 
-	public boolean findrelevant(Widget w, Coord c) {
+	public boolean dropon(Widget w, Coord c) {
 		for(Widget wdg = w.lchild; wdg != null; wdg = wdg.prev) {
+			if(wdg == this)
+				continue;
 			Coord cc = w.xlate(wdg.c, true);
 			if(c.isect(cc, wdg.sz)) {
-				if(findrelevant(wdg, c.add(cc.inv())))
+				if(dropon(wdg, c.add(cc.inv())))
 					return(true);
 			}
 		}
 		if(w instanceof DTarget) {
-			((DTarget)w).drop(c, c.add(doff.inv()));
-			return(true);
+			if(((DTarget)w).drop(c, c.add(doff.inv())))
+				return(true);
+		}
+		return(false);
+	}
+	
+	public boolean interact(Widget w, Coord c) {
+		for(Widget wdg = w.lchild; wdg != null; wdg = wdg.prev) {
+			if(wdg == this)
+				continue;
+			Coord cc = w.xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if(interact(wdg, c.add(cc.inv())))
+					return(true);
+			}
+		}
+		if(w instanceof DTarget) {
+			if(((DTarget)w).iteminteract(c, c.add(doff.inv())))
+				return(true);
 		}
 		return(false);
 	}
@@ -102,6 +121,10 @@ public class Item extends SSWidget {
 	public void uimsg(String name, Object... args)  {
 		if(name == "num") {
 			num = (Integer)args[0];
+			render();
+		} else if(name == "chres") {
+			img = Resource.loadimg((String)args[0]);
+			sh = makesh(img);
 			render();
 		}
 	}
@@ -117,7 +140,9 @@ public class Item extends SSWidget {
 			}
 		} else {
 			if(button == 1) {
-				findrelevant(parent, c.add(this.c));
+				dropon(parent, c.add(this.c));
+			} else if(button == 3) {
+				interact(parent, c.add(this.c));
 			}
 			return(true);
 		}
@@ -127,5 +152,14 @@ public class Item extends SSWidget {
 	public void mousemove(Coord c) {
 		if(dm)
 			this.c = this.c.add(c.add(doff.inv()));
+	}
+	
+	public boolean drop(Coord cc, Coord ul) {
+		return(false);
+	}
+	
+	public boolean iteminteract(Coord cc, Coord ul) {
+		wdgmsg("itemact");
+		return(true);
 	}
 }

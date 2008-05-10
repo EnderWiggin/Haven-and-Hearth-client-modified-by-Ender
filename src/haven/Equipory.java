@@ -85,8 +85,13 @@ public class Equipory extends Window implements DTarget {
 		super.wdgmsg(sender, msg, args);
 	}
 	
-	public void drop(Coord cc, Coord ul) {
+	public boolean drop(Coord cc, Coord ul) {
 		wdgmsg("drop", -1);
+		return(true);
+	}
+	
+	public boolean iteminteract(Coord cc, Coord ul) {
+		return(false);
 	}
 	
 	public void draw(GOut g) {

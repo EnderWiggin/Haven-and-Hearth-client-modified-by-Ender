@@ -423,7 +423,28 @@ public class MapView extends Widget implements DTarget {
 		super.draw(g);
 	}
 	
-	public void drop(Coord cc, Coord ul) {
+	public boolean drop(Coord cc, Coord ul) {
 		wdgmsg("drop");
+		return(true);
+	}
+	
+	public boolean iteminteract(Coord cc, Coord ul) {
+		Drawable hit = null;
+		for(Drawable d : clickable) {
+			Gob g = d.gob;
+			Coord ulc = g.sc.add(d.getoffset().inv());
+			if(cc.isect(ulc, d.getsize())) {
+				if(d.checkhit(cc.add(ulc.inv()))) {
+					hit = d;
+					break;
+				}
+			}
+		}
+		Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
+		if(hit == null)
+			wdgmsg("itemact", cc, mc);
+		else
+			wdgmsg("itemact", cc, mc, hit.gob.id, hit.gob.getc());
+		return(true);
 	}
 }

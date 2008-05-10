@@ -29,7 +29,12 @@ public class Inventory extends Widget implements DTarget {
 		invsq = Resource.loadtex("gfx/hud/invsq");
 	}
 	
-	public void drop(Coord cc, Coord ul) {
+	public boolean drop(Coord cc, Coord ul) {
 		wdgmsg("drop", ul.add(new Coord(15, 15)).div(invsq.sz()));
+		return(true);
+	}
+	
+	public boolean iteminteract(Coord cc, Coord ul) {
+		return(false);
 	}
 }

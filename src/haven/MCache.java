@@ -126,7 +126,7 @@ public class MCache {
 		return(randoom(c) % r);
 	}
 	
-	public Random mkrandoom(Coord c) {
+	public static Random mkrandoom(Coord c) {
 		Random ret = new Random();
 		initrandoom(ret, c);
 		return(ret);
