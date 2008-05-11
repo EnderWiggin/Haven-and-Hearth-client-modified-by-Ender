@@ -100,8 +100,8 @@ public class TextEntry extends SSWidget {
 		} else if(c == 127) {
 			if(pos < text.length())
 				text = text.substring(0, pos) + text.substring(pos + 1);
-		} else if(c == '\t') {
-			return(false);
+		} else if(c < 32) {
+			super.type(c, ev);
 		} else {
 			String nt = text.substring(0, pos) + c + text.substring(pos);
 			if((limit == 0) || ((limit > 0) && (nt.length() <= limit)) || ((limit == -1) && (textwidth(nt) < sz.x))) {

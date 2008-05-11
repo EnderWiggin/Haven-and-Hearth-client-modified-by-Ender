@@ -11,8 +11,8 @@ public class Widget implements Graphical {
 	Coord c, sz;
 	Widget next, prev, child, lchild, parent;
 	boolean focustab = false, focusctl = false, hasfocus = false;
-	private boolean canfocus = false;
-	boolean canactivate = false;
+	private boolean canfocus = false, autofocus = false;
+	boolean canactivate = false, cancancel = false;
 	Widget focused;
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
 	static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
@@ -144,7 +144,7 @@ public class Widget implements Graphical {
 	}
 	
 	public void setcanfocus(boolean canfocus) {
-		this.canfocus = canfocus;
+		this.autofocus = this.canfocus = canfocus;
 		if(parent != null) {
 			if(canfocus) {
 				parent.newfocusable(this);
@@ -176,7 +176,7 @@ public class Widget implements Graphical {
 		/* XXX: Might need to check subwidgets recursively */
 		focused = null;
 		for(Widget w = lchild; w != null; w = w.prev) {
-			if(w.canfocus) {
+			if(w.autofocus) {
 				focused = w;
 				focused.hasfocus = true;
 				w.gotfocus();
@@ -200,9 +200,13 @@ public class Widget implements Graphical {
 	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "tabfocus") {
-			setfocustab(((Integer)args[0] == 1));
+			setfocustab(((Integer)args[0] != 0));
 		} else if(msg == "act") {
-			canactivate = (Integer)args[0] == 1;
+			canactivate = (Integer)args[0] != 0;
+		} else if(msg == "cancel") {
+			cancancel = (Integer)args[0] != 0;
+		} else if(msg == "autofocus") {
+			autofocus = (Integer)args[0] != 0;
 		} else if(msg == "focus") {
 			Widget w = ui.widgets.get((Integer)args[0]); 
 			if(w != null) {
@@ -282,6 +286,12 @@ public class Widget implements Graphical {
 		if(canactivate) {
 			if(key == 10) {
 				wdgmsg("activate");
+				return(true);
+			}
+		}
+		if(cancancel) {
+			if(key == 27) {
+				wdgmsg("cancel");
 				return(true);
 			}
 		}
