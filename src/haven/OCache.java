@@ -195,4 +195,21 @@ public class OCache implements Iterable<Gob> {
 			return;
 		g.setattr(new Lumin(g, off, sz, str));
 	}
+	
+	public synchronized void follow(int id, int frame, int oid, Coord off) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+		    return;
+		if(oid == -1) {
+			g.delattr(Following.class);
+		} else {
+			Following flw = g.getattr(Following.class);
+			if(flw == null) {
+				flw = new Following(g, getgob(oid), off);
+				g.setattr(flw);
+			} else {
+				flw.tgt = getgob(oid);
+			}
+		}
+	}
 }

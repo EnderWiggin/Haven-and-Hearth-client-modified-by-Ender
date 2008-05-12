@@ -67,8 +67,7 @@ public class Sprite {
 		}
 		
 		public void draw(GOut g) {
-			Coord sc = this.cc.add(Sprite.this.cc.inv()).add(img.o);
-			g.image(img.tex(), sc);
+			g.image(img.tex(), sc().add(img.o));
 		}
 		
 		public boolean checkhit(Coord c) {

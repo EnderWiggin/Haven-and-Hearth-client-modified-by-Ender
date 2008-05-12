@@ -321,14 +321,14 @@ public class MapView extends Widget implements DTarget {
 			for(Gob gob : glob.oc) {
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
-				DrawOffset dro = gob.getattr(DrawOffset.class);
+				Coord dro = gob.drawoff();
 				Drawable d = gob.getattr(Drawable.class);
 				Coord off = Coord.z;
 				if(d != null) {
 					Coord ulc = dc.add(d.getoffset().inv());
 					if(dro != null) {
-						ulc = ulc.add(dro.off);
-						off = off.add(dro.off);
+						ulc = ulc.add(dro);
+						off = off.add(dro);
 					}
 					Coord lrc = ulc.add(d.getsize());
 					if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {

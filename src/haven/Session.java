@@ -24,6 +24,7 @@ public class Session {
 	public static final int OD_DRAWOFF = 7;
 	public static final int OD_LUMIN = 8;
 	public static final int OD_AVATAR = 9;
+	public static final int OD_FOLLOW = 10;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
@@ -165,6 +166,12 @@ public class Session {
 							oc.drawoff(id, frame, off);
 						} else if(type == OD_LUMIN) {
 							oc.lumin(id, frame, msg.coord(), msg.uint16(), msg.uint8());
+						} else if(type == OD_FOLLOW) {
+							int oid = msg.int32();
+							Coord off = Coord.z;
+							if(oid != -1)
+								off = msg.coord();
+							oc.follow(id, frame, oid, off);
 						} else if(type == OD_END) {
 							break;
 						} else {

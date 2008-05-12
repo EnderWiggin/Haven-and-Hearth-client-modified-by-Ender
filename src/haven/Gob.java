@@ -42,22 +42,39 @@ public class Gob {
 			return(rc);
 	}
 	
-	public void setattr(GAttrib a) {
-		Class<? extends GAttrib> ac = a.getClass();
+	private Class<? extends GAttrib> attrclass(Class<? extends GAttrib> cl) {
 		while(true) {
-			Class<?> p = ac.getSuperclass();
+			Class<?> p = cl.getSuperclass();
 			if(p == GAttrib.class)
-				break;
-			ac = p.asSubclass(GAttrib.class);
+				return(cl);
+			cl = p.asSubclass(GAttrib.class);
 		}
+	}
+
+	public void setattr(GAttrib a) {
+		Class<? extends GAttrib> ac = attrclass(a.getClass());
 		attr.put(ac, a);
 	}
 	
 	public <C extends GAttrib> C getattr(Class<C> c) {
-		return((C)attr.get(c));
+		GAttrib attr = this.attr.get(attrclass(c));
+		if(!c.isInstance(attr))
+			return(null);
+		return(c.cast(attr));
 	}
 	
 	public void delattr(Class<? extends GAttrib> c) {
-		attr.remove(c);
+		attr.remove(attrclass(c));
+	}
+	
+	public Coord drawoff() {
+		Coord ret = Coord.z;
+		DrawOffset dro = getattr(DrawOffset.class);
+		if(dro != null)
+			ret = ret.add(dro.off);
+		Following flw = getattr(Following.class);
+		if(flw != null)
+			ret = ret.add(flw.doff);
+		return(ret);
 	}
 }
