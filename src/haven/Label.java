@@ -35,4 +35,9 @@ public class Label extends Widget {
 		this.text = Text.render(texts, c);
 		sz = this.text.sz();
 	}
+	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "set")
+			settext((String)args[0]);
+	}
 }
