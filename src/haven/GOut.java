@@ -7,7 +7,7 @@ import javax.media.opengl.*;
 public class GOut {
 	GL gl;
 	private Coord ul, sz;
-	private Color color;
+	private Color color = Color.WHITE;
 	final GLContext ctx;
 	private Shared sh;
 	
@@ -46,23 +46,32 @@ public class GOut {
 	}
 
 	public void image(BufferedImage img, Coord c) {
+		if(img == null)
+			return;
 		Tex tex = new TexI(img);
 		image(tex, c);
 		tex.dispose();
 	}
 	
 	public void image(Tex tex, Coord c) {
+		if(tex == null)
+			return;
 		tex.crender(this, c.add(ul), ul, sz);
 		checkerr();
 	}
 	
 	public void image(Tex tex, Coord c, Coord sz) {
+		if(tex == null)
+			return;
 		tex.crender(this, c.add(ul), ul, this.sz, sz);
 		checkerr();
 	}
 	
 	public void image(Tex tex, Coord c, Coord ul, Coord sz) {
+		if(tex == null)
+			return;
 		tex.crender(this, c.add(this.ul), this.ul.add(ul), sz);
+		checkerr();
 	}
 	
 	private void vertex(Coord c) {
@@ -135,6 +144,10 @@ public class GOut {
 		this.color = c;
 	}
     
+	Color getcolor() {
+		return(color);
+	}
+	
 	public GOut reclip(Coord ul, Coord sz) {
 		GOut g = new GOut(this);
 		g.ul = this.ul.add(ul);

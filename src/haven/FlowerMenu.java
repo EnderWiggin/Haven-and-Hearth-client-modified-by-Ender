@@ -1,15 +1,20 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import static java.lang.Math.PI;
 
 public class FlowerMenu extends Widget {
 	public static Color pink = new Color(255, 0, 128);
-	static int r = 50;
-	String[] opts;
-	BufferedImage neg, pos;
-	Tex pt;
+	public static IBox pbox; 
+	public static Tex pbg = Resource.loadtex("gfx/hud/bgtex");
+	static Color ptc = Color.YELLOW;
+	static Text.Foundry ptf = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12));
+	static int ph = 30, ppl = 8;
+	Petal[] opts;
+	Anim anim;
 	
 	static {
 		Widget.addtype("sm", new WidgetFactory() {
@@ -22,52 +27,170 @@ public class FlowerMenu extends Widget {
 				return(new FlowerMenu(c, parent, opts));
 			}
 		});
+		pbox = new IBox("gfx/hud", "tl", "tr", "bl", "br", "extvl", "extvr", "extht", "exthb");
+	}
+	
+	public class Petal extends Widget {
+		public String name;
+		public double ta, tr;
+		public int num;
+		Text text;
+		double a = 1;
+		
+		public Petal(String name) {
+			super(Coord.z, Coord.z, FlowerMenu.this);
+			this.name = name;
+			text = ptf.render(name, ptc);
+			sz = new Coord(text.sz().x + 25, ph);
+		}
+		
+		public void move(Coord c) {
+			this.c = c.add(sz.div(2).inv());
+		}
+		
+		public void move(double a, double r) {
+			move(Coord.sc(a, r));
+		}
+		
+		public void draw(GOut g) {
+			g.chcolor(new Color(255, 255, 255, (int)(255 * a)));
+			g.image(pbg, new Coord(3, 3), new Coord(3, 3), sz.add(new Coord(-6, -6)));
+			pbox.draw(g, Coord.z, sz);
+			g.image(text.tex(), sz.div(2).add(text.sz().div(2).inv()));
+		}
+		
+		public boolean mousedown(Coord c, int button) {
+			wdgmsg(FlowerMenu.this, "cl", num);
+			return(true);
+		}
+	}
+	
+	public abstract class Anim {
+		long st = System.currentTimeMillis();
+		int ms = 250;
+		double s = 0.0;
+		
+		public void tick() {
+			int dt = (int)(System.currentTimeMillis() - st);
+			if(dt < ms)
+				s = (double)dt / ms;
+			else
+				s = 1;
+			if(dt >= ms)
+				end();
+			tick2();
+		}
+		
+		public void end() {
+			anim = null;
+		}
+		
+		public abstract void tick2();
+	}
+	
+	public class Opening extends Anim {
+		public void tick2() {
+			for(Petal p : opts) {
+				p.move(p.ta + ((1 - s) * PI), p.tr * s);
+				p.a = s;
+			}
+		}
+	}
+	
+	public class Chosen extends Anim {
+		Petal chosen;
+		
+		Chosen(Petal c) {
+			ms = 750;
+			chosen = c;
+		}
+		
+		public void tick2() {
+			for(Petal p : opts) {
+				if(p == chosen) {
+					if(s > 0.6) {
+						p.a = 1 - ((s - 0.6) / 0.4);
+					} else if(s < 0.3) {
+						p.move(p.ta, p.tr * (1 - (s / 0.3)));
+					}
+				} else {
+					if(s > 0.3)
+						p.a = 0;
+					else
+						p.a = 1 - (s / 0.3);
+				}
+			}
+		}
+		
+		public void end() {
+			ui.destroy(FlowerMenu.this);
+		}
+	}
+	
+	public class Cancel extends Anim {
+		public void tick2() {
+			for(Petal p : opts) {
+				p.move(p.ta + ((s) * PI), p.tr * (1 - s));
+				p.a = 1 - s;
+			}
+		}
+		
+		public void end() {
+			ui.destroy(FlowerMenu.this);
+		}
+	}
+	
+	private static void organize(Petal[] opts) {
+		int l = 1, p = 0, i = 0;
+		int lr = -1;
+		for(i = 0; i < opts.length; i++) {
+			if(lr == -1) {
+				//lr = (int)(ph / (1 - Math.cos((2 * PI) / (ppl * l))));
+				lr = 75 + (50 * (l - 1));
+			}
+			opts[i].ta = (PI / 2) - (p * (2 * PI / (l * ppl)));
+			opts[i].tr = lr;
+			if(++p >= (ppl * l)) {
+				l++;
+				p = 0;
+				lr = -1;
+			}
+		}
 	}
 	
 	public FlowerMenu(Coord c, Widget parent, String... options) {
-		super(c.add(new Coord(-r - 100, -r - 20)), new Coord(r * 2 + 200, r * 2 + 40), parent);
-		opts = options;
-		neg = new BufferedImage(sz.x, sz.y, BufferedImage.TYPE_INT_RGB);
-		pos = TexI.mkbuf(sz);
-		drawmenu();
-		ui.grabmouse(this);
-	}
-	
-	private void drawmenu() {
-		double a;
-		int i;
-		Graphics gn = neg.createGraphics();
-		Graphics gp = pos.createGraphics();
-		Utils.AA(gp);
-		for(a = Math.PI / 2, i = 0; i < opts.length; a += Math.PI * 2 / opts.length, i++) {
-			int x = sz.x / 2 + (int)(Math.cos(a) * r);
-			int y = sz.y / 2 - (int)(Math.sin(a) * r);
-			java.awt.FontMetrics m = gn.getFontMetrics();
-			java.awt.geom.Rectangle2D ts = m.getStringBounds(opts[i], gn);
-			Coord os = new Coord((int)ts.getWidth() * 2, (int)ts.getHeight() * 2);
-			
-			gp.setColor(pink);
-			gp.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
-			gp.setColor(Color.BLACK);
-			gp.drawString(opts[i], (int)(x - ts.getWidth() / 2), (int)(y + m.getAscent() - ts.getHeight() / 2));
-			
-			gn.setColor(new Color(i + 1));
-			gn.fillOval(x - os.x / 2, y - os.y / 2, os.x, os.y);
+		super(c, Coord.z, parent);
+		opts = new Petal[options.length];
+		for(int i = 0; i < options.length; i++) {
+			opts[i] = new Petal(options[i]);
+			opts[i].num = i;
 		}
-		pt = new TexI(pos);
-	}
-	
-	public void draw(GOut g) {
-		g.image(pt, Coord.z);
+		organize(opts);
+		ui.grabmouse(this);
+		anim = new Opening();
 	}
 	
 	public boolean mousedown(Coord c, int button) {
-		if(!c.isect(new Coord(0, 0), sz)) {
-			wdgmsg("cl", -1);
+		if(anim != null)
 			return(true);
-		}
-		int v = neg.getRGB(c.x, c.y) & 0x00ffffff;
-		wdgmsg("cl", v - 1);
+		if(!super.mousedown(c, button))
+			wdgmsg("cl", -1);
 		return(true);
+	}
+	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "cancel") {
+			anim = new Cancel();
+			ui.grabmouse(null);
+		} else if(msg == "act") {
+			anim = new Chosen(opts[(Integer)args[0]]);
+			ui.grabmouse(null);
+		}
+	}
+	
+	public void draw(GOut g) {
+		if(anim != null)
+			anim.tick();
+		super.draw(g);
 	}
 }

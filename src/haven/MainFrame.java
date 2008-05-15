@@ -74,6 +74,8 @@ public class MainFrame extends Frame implements Runnable {
 				rui.run(p);
 			}
 		} catch(InterruptedException e) {
+		} catch(Throwable t) {
+			t.printStackTrace();
 		} finally {
 			ui.interrupt();
 			dispose();

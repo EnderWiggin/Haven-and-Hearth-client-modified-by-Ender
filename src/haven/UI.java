@@ -68,18 +68,21 @@ public class UI {
 			removeid(child);
 	}
 	
+	public void destroy(Widget wdg) {
+		if((mousegrab != null) && mousegrab.hasparent(wdg))
+			mousegrab = null;
+		if((keygrab != null) && keygrab.hasparent(wdg))
+			keygrab = null;
+		removeid(wdg);
+		wdg.destroy();
+		wdg.unlink();
+	}
+	
 	public void destroy(int id) {
 		synchronized(this) {
 			if(widgets.containsKey(id)) {
 				Widget wdg = widgets.get(id);
-			
-				if((mousegrab != null) && mousegrab.hasparent(wdg))
-					mousegrab = null;
-				if((keygrab != null) && keygrab.hasparent(wdg))
-					keygrab = null;
-				removeid(wdg);
-				wdg.destroy();
-				wdg.unlink();
+				destroy(wdg);
 			}
 		}
 	}

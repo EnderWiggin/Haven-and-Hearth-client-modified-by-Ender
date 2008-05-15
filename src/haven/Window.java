@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 
-public class Window extends Widget {
+public class Window extends Widget implements DTarget {
 	static Tex bg = Resource.loadtex("gfx/hud/bgtex");
 	static Tex cl = Resource.loadtex("gfx/hud/cleft");
 	static Tex cm = Resource.loadtex("gfx/hud/cmain");
@@ -16,6 +16,7 @@ public class Window extends Widget {
 	static Color cc = Color.YELLOW;
 	static Text.Foundry cf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
 	static IBox wbox;
+	boolean dt = false;
 	Text cap;
 	boolean dm = false;
 	Coord atl, asz, wsz;
@@ -98,6 +99,8 @@ public class Window extends Widget {
 	public void uimsg(String msg, Object... args) {
 		if(msg == "pack") {
 			pack();
+		} else if(msg == "dt") {
+			dt = (Integer)args[0] != 0;
 		} else {
 			super.uimsg(msg, args);
 		}
@@ -158,5 +161,17 @@ public class Window extends Widget {
 			return(true);
 		}
 		return(super.type(key, ev));
+	}
+	
+	public boolean drop(Coord cc, Coord ul) {
+		if(dt) {
+			wdgmsg("drop", cc);
+			return(true);
+		}
+		return(false);
+	}
+	
+	public boolean iteminteract(Coord cc, Coord ul) {
+		return(false);
 	}
 }

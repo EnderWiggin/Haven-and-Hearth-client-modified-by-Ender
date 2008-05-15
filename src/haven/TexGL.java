@@ -40,12 +40,21 @@ public abstract class TexGL extends Tex {
 		return(Color.WHITE);
 	}
 	
+	Color blend(GOut g, Color amb) {
+		Color c = g.getcolor();
+		Color n = new Color((c.getRed() * amb.getRed()) / 255,
+				(c.getGreen() * amb.getGreen()) / 255,
+				(c.getBlue() * amb.getBlue()) / 255,
+				(c.getAlpha() * amb.getAlpha()) / 255);
+		return(n);
+	}
+	
 	public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
 		GL gl = g.gl;
 		if(id < 0)
 			create(g);
 		g.texsel(id);
-		Color amb = setenv(gl);
+		Color amb = blend(g, setenv(gl));
 		checkerr(gl);
 		gl.glBegin(GL.GL_QUADS);
 		float l = ((float)ul.x) / ((float)tdim.x);
