@@ -14,7 +14,7 @@ import javax.media.opengl.GL;
 
 public class ILM extends TexRT {
 	public final static BufferedImage ljusboll;
-	Collection<Gob> ll;
+	Collection<Lumin> ll;
 	TexI lbtex;
 	Color amb;
 	
@@ -63,15 +63,14 @@ public class ILM extends TexRT {
 		GL gl = g.gl;
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		if(ll != null) {
-			for(Gob gob : ll) {
-				Lumin lum = gob.getattr(Lumin.class);
-				Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
+			for(Lumin lum : ll) {
+				Coord sc = lum.gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
 				g.image(lbtex, sc);
 			}
 		}
 	}
 	
-	public void update(Collection<Gob> objs) {
+	public void update(Collection<Lumin> objs) {
 		ll = objs;
 		update();
 		ll = null;
