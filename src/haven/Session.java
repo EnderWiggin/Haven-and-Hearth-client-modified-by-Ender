@@ -5,6 +5,8 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
+	public static final int PVER = 1;
+	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
 	public static final int MSG_ACK = 2;
@@ -29,6 +31,7 @@ public class Session {
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
 	public static final int SESSERR_CONN = 3;
+	public static final int SESSERR_PVER = 4;
 	
 	DatagramSocket sk;
 	InetAddress server;
@@ -41,6 +44,7 @@ public class Session {
 	LinkedList<Message> pending = new LinkedList<Message>();
 	Map<Integer, ObjAck> objacks = new TreeMap<Integer, ObjAck>();
 	String username, password;
+	final Map<Integer, Indir<Resource>> rescache = new TreeMap<Integer, Indir<Resource>>();
 	final Glob glob;
 	
 	@SuppressWarnings("serial")
@@ -53,6 +57,36 @@ public class Session {
 		}
 	}
 	
+	private Indir<Resource> getres(final int id) {
+		synchronized(rescache) {
+			Indir<Resource> ret = rescache.get(id);
+			if(ret != null)
+				return(ret);
+			ret = new Indir<Resource>() {
+				int resid = id;
+				Resource res;
+					
+				public Resource get() {
+					if(res == null)
+						return(null);
+					if(res.loading)
+						return(null);
+					return(res);
+				}
+					
+				public void set(Resource r) {
+					res = r;
+				}
+				
+				public int compareTo(Indir<Resource> x) {
+					return((this.getClass().cast(x)).resid - resid);
+				}
+			};
+			rescache.put(id, ret);
+			return(ret);
+		}
+	}
+
 	private class ObjAck {
 		int id;
 		int frame;
@@ -125,9 +159,8 @@ public class Session {
 							Coord c = msg.coord();
 							oc.move(id, frame, c);
 						} else if(type == OD_RES) {
-							String res = msg.string();
-							int ver = msg.uint16();
-							oc.cres(id, frame, res, ver);
+							int resid = msg.uint16();
+							oc.cres(id, frame, getres(resid));
 						} else if(type == OD_LINBEG) {
 							Coord s = msg.coord();
 							Coord t = msg.coord();
@@ -141,26 +174,20 @@ public class Session {
 							String text = msg.string();
 							oc.speak(id, frame, off, text);
 						} else if((type == OD_LAYERS) || (type == OD_AVATAR)) {
-							String baseres = "";
-							int basever = 0;
-							if(type == OD_LAYERS) {
-								baseres = msg.string();
-								basever = msg.uint16();
-							}
-							List<String> layers = new LinkedList<String>();
-							List<Integer> vers = new LinkedList<Integer>();
+							Indir<Resource> baseres = null;
+							if(type == OD_LAYERS)
+								baseres = getres(msg.uint16());
+							List<Indir<Resource>> layers = new LinkedList<Indir<Resource>>();
 							while(true) {
-								String layer = msg.string();
-								int ver = msg.uint16();
-								if(layer.equals(""))
+								int layer = msg.uint16();
+								if(layer == 65535)
 									break;
-								layers.add(layer);
-								vers.add(ver);
+								layers.add(getres(layer));
 							}
 							if(type == OD_LAYERS)
-								oc.layers(id, frame, baseres, basever, layers, vers);
+								oc.layers(id, frame, baseres, layers);
 							else
-								oc.avatar(id, frame, layers, vers);
+								oc.avatar(id, frame, layers);
 						} else if(type == OD_DRAWOFF) {
 							Coord off = msg.coord();
 							oc.drawoff(id, frame, off);
@@ -218,6 +245,13 @@ public class Session {
 					state = "";
 			} else if(msg.type == Message.RMSG_PAGINAE) {
 				glob.paginae(msg);
+			} else if(msg.type == Message.RMSG_RESID) {
+				int resid = msg.uint16();
+				String resname = msg.string();
+				int resver = msg.uint16();
+				synchronized(rescache) {
+					getres(resid).set(Resource.load(resname, resver));
+				}
 			} else {
 				throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 			}
@@ -338,6 +372,7 @@ public class Session {
 								}
 							}
 							Message msg = new Message(MSG_SESS);
+							msg.adduint16(PVER);
 							msg.addstring(username);
 							msg.addstring(password);
 							sendmsg(msg);

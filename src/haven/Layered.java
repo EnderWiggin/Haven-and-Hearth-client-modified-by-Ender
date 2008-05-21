@@ -5,10 +5,10 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class Layered extends Drawable {
-	List<Resource> layers;
-	Map<Resource, Sprite> sprites = new TreeMap<Resource, Sprite>();
-	Map<Resource, Integer> delays = new TreeMap<Resource, Integer>();
-	final Resource base;
+	List<Indir<Resource>> layers;
+	Map<Indir<Resource>, Sprite> sprites = new TreeMap<Indir<Resource>, Sprite>();
+	Map<Indir<Resource>, Integer> delays = new TreeMap<Indir<Resource>, Integer>();
+	final Indir<Resource> base;
 	boolean loading;
 	int z = 0;
 	Sprite.Part me;
@@ -56,29 +56,29 @@ public class Layered extends Drawable {
 		}
 	}
 
-	public Layered(Gob gob, Resource base) {
+	public Layered(Gob gob, Indir<Resource> base) {
 		super(gob);
 		this.base = base;
-		layers = new ArrayList<Resource>();
+		layers = new ArrayList<Indir<Resource>>();
 		makepart();
 	}
 
-	public synchronized void setlayers(List<Resource> layers) {
+	public synchronized void setlayers(List<Indir<Resource>> layers) {
 		Collections.sort(layers);
 		if(layers.equals(this.layers))
 			return;
 		loading = true;
 		this.layers = layers;
-		delays = new TreeMap<Resource, Integer>();
-		sprites = new TreeMap<Resource, Sprite>();
-		for(Resource r : layers) {
+		delays = new TreeMap<Indir<Resource>, Integer>();
+		sprites = new TreeMap<Indir<Resource>, Sprite>();
+		for(Indir<Resource> r : layers) {
 			delays.put(r, 0);
 			sprites.put(r, null);
 		}
 	}
 	
 	public boolean checkhit(Coord c) {
-		if(base.loading)
+		if(base.get() == null)
 			return(false);
 		for(Sprite spr : sprites.values()) {
 			if(spr == null)
@@ -90,16 +90,16 @@ public class Layered extends Drawable {
 	}
 
 	public synchronized void setup(Sprite.Drawer drw, final Coord cc, final Coord off) {
-		if(base.loading)
+		if(base.get() == null)
 			return;
 		if(loading) {
 			loading = false;
-			for(Resource r : layers) {
+			for(Indir<Resource> r : layers) {
 				if(sprites.get(r) == null) {
-					if(r.loading)
+					if(r.get() == null)
 						loading = true;
 					else
-						sprites.put(r, Sprite.create(gob, r, base));
+						sprites.put(r, Sprite.create(gob, r.get(), base.get()));
 				}
 			}
 		}
@@ -164,20 +164,20 @@ public class Layered extends Drawable {
 			};
 	}
 	public Coord getoffset() {
-		if(base.loading)
+		if(base.get() == null)
 			return(Coord.z);
-		return(base.layer(Resource.negc).cc);
+		return(base.get().layer(Resource.negc).cc);
 	}
 
 	public Coord getsize() {
-		if(base.loading)
+		if(base.get() == null)
 			return(Coord.z);
-		return(base.layer(Resource.negc).sz);
+		return(base.get().layer(Resource.negc).sz);
 	}
 
-	public void ctick(int dt) {
-		for(Map.Entry<Resource, Sprite> e : sprites.entrySet()) {
-			Resource r = e.getKey();
+	public synchronized void ctick(int dt) {
+		for(Map.Entry<Indir<Resource>, Sprite> e : sprites.entrySet()) {
+			Indir<Resource> r = e.getKey();
 			Sprite spr = e.getValue();
 			if(spr != null) {
 				int ldt = dt;

@@ -1,11 +1,11 @@
 package haven;
 
 public class ResDrawable extends Drawable {
-	final Resource res;
+	final Indir<Resource> res;
 	Sprite spr = null;
 	int delay = 0;
 	
-	public ResDrawable(Gob gob, Resource res) {
+	public ResDrawable(Gob gob, Indir<Resource> res) {
 		super(gob);
 		this.res = res;
 		init();
@@ -14,9 +14,9 @@ public class ResDrawable extends Drawable {
 	public void init() {
 		if(spr != null)
 			return;
-		if(res.loading)
+		if(res.get() == null)
 			return;
-		spr = Sprite.create(gob, res);
+		spr = Sprite.create(gob, res.get());
 	}
 	
 	public Coord getsize() {

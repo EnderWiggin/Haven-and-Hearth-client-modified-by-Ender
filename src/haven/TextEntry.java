@@ -49,18 +49,20 @@ public class TextEntry extends SSWidget {
 		} else {
 			dtext = text;
 		}
-		Graphics g = graphics();
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, sz.x, sz.y);
-		g.setColor(Color.BLACK);
-		FontMetrics m = g.getFontMetrics();
-		sm = m;
-		g.drawString(dtext, 0, m.getAscent());
-		if(hasfocus && prompt) {
-			Rectangle2D tm = m.getStringBounds(dtext.substring(0, pos), g);
-			g.drawLine((int)tm.getWidth(), 1, (int)tm.getWidth(), m.getHeight() - 1);
+		synchronized(ui) {
+			Graphics g = graphics();
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, sz.x, sz.y);
+			g.setColor(Color.BLACK);
+			FontMetrics m = g.getFontMetrics();
+			sm = m;
+			g.drawString(dtext, 0, m.getAscent());
+			if(hasfocus && prompt) {
+				Rectangle2D tm = m.getStringBounds(dtext.substring(0, pos), g);
+				g.drawLine((int)tm.getWidth(), 1, (int)tm.getWidth(), m.getHeight() - 1);
+			}
+			update();
 		}
-		update();
 	}
 	
 	private int textwidth(String text) {
