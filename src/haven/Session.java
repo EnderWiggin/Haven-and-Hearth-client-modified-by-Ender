@@ -5,6 +5,8 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
+	public static final int PVER = 1;
+	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
 	public static final int MSG_ACK = 2;
@@ -29,6 +31,7 @@ public class Session {
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
 	public static final int SESSERR_CONN = 3;
+	public static final int SESSERR_PVER = 4;
 	
 	DatagramSocket sk;
 	InetAddress server;
@@ -60,6 +63,7 @@ public class Session {
 			if(ret != null)
 				return(ret);
 			ret = new Indir<Resource>() {
+				int resid = id;
 				Resource res;
 					
 				public Resource get() {
@@ -72,6 +76,10 @@ public class Session {
 					
 				public void set(Resource r) {
 					res = r;
+				}
+				
+				public int compareTo(Indir<Resource> x) {
+					return((this.getClass().cast(x)).resid - resid);
 				}
 			};
 			rescache.put(id, ret);
@@ -364,6 +372,7 @@ public class Session {
 								}
 							}
 							Message msg = new Message(MSG_SESS);
+							msg.adduint16(PVER);
 							msg.addstring(username);
 							msg.addstring(password);
 							sendmsg(msg);
