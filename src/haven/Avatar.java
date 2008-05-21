@@ -5,18 +5,29 @@ import java.awt.Graphics;
 import java.util.*;
 
 public class Avatar extends GAttrib {
-	List<Resource> layers;
+	List<Indir<Resource>> layers;
 	List<Resource.Image> images;
 	boolean loading;
 	TexIM image = null;
 	public static final Coord sz = new Coord(212, 249);
+	private static Comparator<Indir<Resource>> rescomp = new Comparator<Indir<Resource>>() {
+		public int compare(Indir<Resource> a, Indir<Resource> b) {
+			if((a.get() == null) && (b.get() == null))
+				return(0);
+			if((a.get() != null) && (b.get() == null))
+				return(-1);
+			if((a.get() == null) && (b.get() != null))
+				return(1);
+			return(a.get().compareTo(b.get()));
+		}
+	};
 	
 	public Avatar(Gob gob) {
 		super(gob);
 	}
 	
-	void setlayers(List<Resource> layers) {
-		Collections.sort(layers);
+	void setlayers(List<Indir<Resource>> layers) {
+		Collections.sort(layers, rescomp);
 		if(!layers.equals(this.layers)) {
 			this.layers = layers;
 			loading = true;
@@ -28,11 +39,11 @@ public class Avatar extends GAttrib {
 		if(loading) {
 			List<Resource.Image> images = new ArrayList<Resource.Image>();
 			loading = false;
-			for(Resource r : layers) {
-				if(r.loading)
+			for(Indir<Resource> r : layers) {
+				if(r.get() == null)
 					loading = true;
 				else
-					images.addAll(r.layers(imgc));
+					images.addAll(r.get().layers(imgc));
 			}
 			Collections.sort(images);
 			if(!images.equals(this.images)) {

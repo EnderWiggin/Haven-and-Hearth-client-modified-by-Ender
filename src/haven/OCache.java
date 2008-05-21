@@ -91,14 +91,13 @@ public class OCache implements Iterable<Gob> {
 		g.move(c);
 	}
 	
-	public synchronized void cres(int id, int frame, String res, int ver) {
+	public synchronized void cres(int id, int frame, Indir<Resource> res) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
-		Resource rres = Resource.load(res, ver);
 		ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
-		if((d == null) || (d.res != rres)) {
-			g.setattr(new ResDrawable(g, rres));
+		if((d == null) || (d.res != res)) {
+			g.setattr(new ResDrawable(g, res));
 		}
 	}
 	
@@ -141,8 +140,7 @@ public class OCache implements Iterable<Gob> {
 		}
 	}
 	
-	public synchronized void layers(int id, int frame, String baseres, int basever, List<String> layers, List<Integer> vers) {
-		Resource base = Resource.load(baseres, basever);
+	public synchronized void layers(int id, int frame, Indir<Resource> base, List<Indir<Resource>> layers) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
@@ -151,13 +149,10 @@ public class OCache implements Iterable<Gob> {
 			 lay = new Layered(g, base);
 			 g.setattr(lay);
 		 }
-		 List<Resource> ll = new ArrayList<Resource>();
-		 for(int i = 0; i < layers.size(); i++)
-			 ll.add(Resource.load(layers.get(i), vers.get(i)));
-		 lay.setlayers(ll);
+		 lay.setlayers(layers);
 	}
 	
-	public synchronized void avatar(int id, int frame, List<String> layers, List<Integer> vers) {
+	public synchronized void avatar(int id, int frame, List<Indir<Resource>> layers) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
@@ -166,10 +161,7 @@ public class OCache implements Iterable<Gob> {
 			 ava = new Avatar(g);
 			 g.setattr(ava);
 		 }
-		 List<Resource> ll = new ArrayList<Resource>();
-		 for(int i = 0; i < layers.size(); i++)
-			 ll.add(Resource.load(layers.get(i), vers.get(i)));
-		 ava.setlayers(ll);
+		 ava.setlayers(layers);
 	}
 	
 	public synchronized void drawoff(int id, int frame, Coord off) {

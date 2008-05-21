@@ -631,4 +631,8 @@ public class Resource implements Comparable<Resource>, Serializable {
 		res.loadwait();
 		return(res.layer(imgc).tex());
 	}
+	
+	public String toString() {
+		return(name + "(v" + ver + ")");
+	}
 }
