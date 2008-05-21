@@ -13,17 +13,6 @@ public class Layered extends Drawable {
 	int z = 0;
 	Sprite.Part me;
 	static LayerCache cache = new LayerCache(1000);
-	private static Comparator<Indir<Resource>> rescomp = new Comparator<Indir<Resource>>() {
-		public int compare(Indir<Resource> a, Indir<Resource> b) {
-			if((a.get() == null) && (b.get() == null))
-				return(0);
-			if((a.get() != null) && (b.get() == null))
-				return(-1);
-			if((a.get() == null) && (b.get() != null))
-				return(1);
-			return(a.get().compareTo(b.get()));
-		}
-	};
 	
 	public static class LayerCache {
 		private int cachesz;
@@ -75,13 +64,13 @@ public class Layered extends Drawable {
 	}
 
 	public synchronized void setlayers(List<Indir<Resource>> layers) {
-		Collections.sort(layers, rescomp);
+		Collections.sort(layers);
 		if(layers.equals(this.layers))
 			return;
 		loading = true;
 		this.layers = layers;
-		delays = new TreeMap<Indir<Resource>, Integer>(rescomp);
-		sprites = new TreeMap<Indir<Resource>, Sprite>(rescomp);
+		delays = new TreeMap<Indir<Resource>, Integer>();
+		sprites = new TreeMap<Indir<Resource>, Sprite>();
 		for(Indir<Resource> r : layers) {
 			delays.put(r, 0);
 			sprites.put(r, null);

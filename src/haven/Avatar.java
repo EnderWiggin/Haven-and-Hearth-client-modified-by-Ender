@@ -10,24 +10,13 @@ public class Avatar extends GAttrib {
 	boolean loading;
 	TexIM image = null;
 	public static final Coord sz = new Coord(212, 249);
-	private static Comparator<Indir<Resource>> rescomp = new Comparator<Indir<Resource>>() {
-		public int compare(Indir<Resource> a, Indir<Resource> b) {
-			if((a.get() == null) && (b.get() == null))
-				return(0);
-			if((a.get() != null) && (b.get() == null))
-				return(-1);
-			if((a.get() == null) && (b.get() != null))
-				return(1);
-			return(a.get().compareTo(b.get()));
-		}
-	};
 	
 	public Avatar(Gob gob) {
 		super(gob);
 	}
 	
 	void setlayers(List<Indir<Resource>> layers) {
-		Collections.sort(layers, rescomp);
+		Collections.sort(layers);
 		if(!layers.equals(this.layers)) {
 			this.layers = layers;
 			loading = true;
