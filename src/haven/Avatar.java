@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.util.*;
 
 public class Avatar extends GAttrib {
-	List<Resource> layers;
+	List<Indir<Resource>> layers;
 	List<Resource.Image> images;
 	boolean loading;
 	TexIM image = null;
@@ -15,7 +15,7 @@ public class Avatar extends GAttrib {
 		super(gob);
 	}
 	
-	void setlayers(List<Resource> layers) {
+	void setlayers(List<Indir<Resource>> layers) {
 		Collections.sort(layers);
 		if(!layers.equals(this.layers)) {
 			this.layers = layers;
@@ -28,11 +28,11 @@ public class Avatar extends GAttrib {
 		if(loading) {
 			List<Resource.Image> images = new ArrayList<Resource.Image>();
 			loading = false;
-			for(Resource r : layers) {
-				if(r.loading)
+			for(Indir<Resource> r : layers) {
+				if(r.get() == null)
 					loading = true;
 				else
-					images.addAll(r.layers(imgc));
+					images.addAll(r.get().layers(imgc));
 			}
 			Collections.sort(images);
 			if(!images.equals(this.images)) {
