@@ -11,6 +11,10 @@ public class ResDrawable extends Drawable {
 		init();
 	}
 	
+	public ResDrawable(Gob gob, Resource res) {
+		this(gob, res.indir());
+	}
+	
 	public void init() {
 		if(spr != null)
 			return;

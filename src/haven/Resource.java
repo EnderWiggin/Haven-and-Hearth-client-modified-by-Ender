@@ -26,6 +26,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public final String name;
 	public int ver;
 	public boolean loading;
+	private Indir<Resource> indir = null;
 
 	private Resource(String name, int ver) {
 		this.name = name;
@@ -595,6 +596,29 @@ public class Resource implements Comparable<Resource>, Serializable {
 		this.layers = layers;
 		for(Layer l : layers)
 			l.init();
+	}
+	
+	public Indir<Resource> indir() {
+		if(indir != null)
+			return(indir);
+		indir = new Indir<Resource>() {
+			Resource res = Resource.this;
+			
+			public Resource get() {
+				if(loading)
+					return(null);
+				return(Resource.this);
+			}
+			
+			public void set(Resource r) {
+				throw(new RuntimeException());
+			}
+			
+			public int compareTo(Indir<Resource> x) {
+				return(Resource.this.compareTo(this.getClass().cast(x).res));
+			}
+		};
+		return(indir);
 	}
 	
 	private void checkerr() {
