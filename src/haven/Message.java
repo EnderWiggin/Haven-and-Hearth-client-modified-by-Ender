@@ -11,6 +11,7 @@ public class Message implements java.io.Serializable {
 	public static final int RMSG_GLOBLOB = 4;
 	public static final int RMSG_PAGINAE = 5;
 	public static final int RMSG_RESID = 6;
+	public static final int RMSG_PARTY = 7;
 	
 	public static final int T_END = 0;
 	public static final int T_INT = 1;

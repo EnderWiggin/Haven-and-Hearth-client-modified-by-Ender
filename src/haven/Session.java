@@ -63,7 +63,7 @@ public class Session {
 			if(ret != null)
 				return(ret);
 			ret = new Indir<Resource>() {
-				int resid = id;
+				public int resid = id;
 				Resource res;
 					
 				public Resource get() {
@@ -252,6 +252,8 @@ public class Session {
 				synchronized(rescache) {
 					getres(resid).set(Resource.load(resname, resver));
 				}
+			} else if(msg.type == Message.RMSG_PARTY) {
+				glob.party.msg(msg);
 			} else {
 				throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 			}

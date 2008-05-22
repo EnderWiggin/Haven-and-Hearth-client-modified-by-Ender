@@ -19,7 +19,7 @@ public class Widget implements Graphical {
 		Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
 		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class, IButton.class,
 		Landwindow.class, Skillwindow.class, Archwindow.class, Cal.class, Avaview.class,
-		Label.class, Tome.class, Progress.class, VMeter.class};
+		Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class};
 	
 	static {
 		try {

@@ -602,7 +602,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		if(indir != null)
 			return(indir);
 		indir = new Indir<Resource>() {
-			Resource res = Resource.this;
+			public Resource res = Resource.this;
 			
 			public Resource get() {
 				if(loading)

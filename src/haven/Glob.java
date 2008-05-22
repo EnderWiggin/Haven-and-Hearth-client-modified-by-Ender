@@ -8,12 +8,14 @@ public class Glob {
 	OCache oc = new OCache(this);
 	MCache map;
 	Session sess;
+	Party party;
 	int glut, fcap, stamina, stamcap;
 	Collection<Resource> paginae = new TreeSet<Resource>();
 	
 	public Glob(Session sess) {
 		this.sess = sess;
 		map = new MCache(sess);
+		party = new Party();
 	}
 	
 	private static double defix(int i) {

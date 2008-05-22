@@ -35,22 +35,24 @@ public abstract class Tex {
 		Coord brd = new Coord(dim);
 		Coord szd = new Coord(tsz);
 		if(c.x < ul.x) {
+			int pd = ul.x - c.x;
 			t.x = ul.x;
-			uld.x = ul.x - c.x;
-			szd.x -= uld.x;
+			uld.x = (pd * dim.x) / tsz.x;
+			szd.x -= pd;
 		}
 		if(c.y < ul.y) {
+			int pd = ul.y - c.y;
 			t.y = ul.y;
-			uld.y = ul.y - c.y;
-			szd.y -= uld.y;
+			uld.y = (pd * dim.y) / tsz.y;
+			szd.y -= pd;
 		}
 		if(c.x + tsz.x > ul.x + sz.x) {
-			int pd = c.x + tsz.x - ul.x - sz.x;
+			int pd = (c.x + tsz.x) - (ul.x + sz.x);
 			szd.x -= pd;
 			brd.x -= (pd * dim.x) / tsz.x;
 		}
 		if(c.y + tsz.y > ul.y + sz.y) {
-			int pd = c.y + dim.y - ul.y - sz.y;
+			int pd = (c.y + tsz.y) - (ul.y + sz.y);
 			szd.y -= pd;
 			brd.y -= (pd * dim.y) / tsz.y;
 		}
