@@ -22,26 +22,30 @@ public class Partyview extends Widget {
 	}
 	
 	Partyview(Coord c, Widget parent, int ign) {
-		super(c, new Coord(70, 140), parent);
+		super(c, new Coord(84, 140), parent);
 		this.ign = ign;
 		update();
 	}
 	
 	private void update() {
 		if(party.memb != om) {
-			Collection<Widget> old = new HashSet<Widget>(avs.values());
+			Collection<Party.Member> old = new HashSet<Party.Member>(avs.keySet());
 			for(Party.Member m : (om = party.memb).values()) {
+				if(m.gobid == ign)
+					continue;
 				Avaview w = avs.get(m);
 				if(w == null) {
-					w = new Avaview(Coord.z, this, m.gobid, new Coord(30, 30));
+					w = new Avaview(Coord.z, this, m.gobid, new Coord(27, 27));
 					avs.put(m, w);
 				} else {
 					old.remove(w);
 					w.marked = false;
 				}
 			}
-			for(Widget w : old)
-				ui.destroy(w);
+			for(Party.Member m : old) {
+				ui.destroy(avs.get(m));
+				avs.remove(m);
+			}
 			Map.Entry<Party.Member, Widget>[] wl = (Map.Entry<Party.Member, Widget>[])avs.entrySet().toArray(cp);
 			Arrays.sort(wl, new Comparator<Map.Entry<Party.Member, Widget>>() {
 				public int compare(Entry<Member, Widget> a, Entry<Member, Widget> b) {
@@ -50,7 +54,7 @@ public class Partyview extends Widget {
 			});
 			int i = 0;
 			for(Map.Entry<Party.Member, Widget> e : wl) {
-				e.getValue().c = new Coord((i % 2) * 70, (i / 2) * 70);
+				e.getValue().c = new Coord((i % 2) * 43, (i / 2) * 43);
 				i++;
 			}
 		}

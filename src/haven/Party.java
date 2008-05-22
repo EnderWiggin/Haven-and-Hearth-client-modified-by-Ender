@@ -31,7 +31,9 @@ public class Party {
 					m.gobid = id;
 					memb.put(id, m);
 				}
+				int lid = (leader == null)?-1:leader.gobid;
 				this.memb = memb;
+				leader = memb.get(lid);
 			} else if(type == PD_LEADER) {
 				leader = memb.get(msg.int32());
 			} else if(type == PD_MEMBER) {
