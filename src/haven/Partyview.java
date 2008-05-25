@@ -11,6 +11,7 @@ public class Partyview extends Widget {
 	Map<Integer, Party.Member> om = null;
 	Party.Member ol = null;
 	Map<Party.Member, Avaview> avs = new HashMap<Party.Member, Avaview>();
+	Button leave = null;
 	private static final Map.Entry<?, ?>[] cp = new Map.Entry[0];
 	
 	static {
@@ -39,7 +40,6 @@ public class Partyview extends Widget {
 					avs.put(m, w);
 				} else {
 					old.remove(w);
-					w.marked = false;
 				}
 			}
 			for(Party.Member m : old) {
@@ -54,17 +54,34 @@ public class Partyview extends Widget {
 			});
 			int i = 0;
 			for(Map.Entry<Party.Member, Widget> e : wl) {
-				e.getValue().c = new Coord((i % 2) * 43, (i / 2) * 43);
+				e.getValue().c = new Coord((i % 2) * 43, (i / 2) * 43 + 24);
 				i++;
 			}
 		}
-		if(party.leader != ol) {
-			for(Avaview w : avs.values())
-				w.marked = false;
-			Avaview w = avs.get(party.leader);
-			if(w != null)
-				w.marked = true;
+		for(Map.Entry<Party.Member, Avaview> e : avs.entrySet()) {
+			e.getValue().color = e.getKey().col;
 		}
+		if((avs.size() > 0) && (leave == null)) {
+			leave = new Button(Coord.z, 84, this, "Leave party");
+		}
+		if((avs.size() == 0) && (leave != null)) {
+			ui.destroy(leave);
+			leave = null;
+		}
+	}
+	
+	public void wdgmsg(Widget sender, String msg, Object... args) {
+		if(sender == leave) {
+			wdgmsg("leave");
+			return;
+		}
+		for(Party.Member m : avs.keySet()) {
+			if(sender == avs.get(m)) {
+				wdgmsg("click", m.gobid, args[0]);
+				return;
+			}
+		}
+		super.wdgmsg(sender, msg, args);
 	}
 	
 	public void draw(GOut g) {

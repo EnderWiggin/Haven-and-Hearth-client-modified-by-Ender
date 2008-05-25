@@ -68,6 +68,13 @@ public class Window extends Widget implements DTarget {
 	public void draw(GOut og) {
 		GOut g = og.reclip(tlo, wsz);
 		g.image(bg, new Coord(3, 3), new Coord(3, 3), wsz.add(new Coord(-6, -6)));
+		cdraw(og.reclip(xlate(Coord.z, true), sz));
+		super.draw(og);
+		if(!hasfocus) {
+			g.chcolor(0, 0, 0, 128);
+			g.frect(Coord.z, sz);
+			g.chcolor();
+		}
 		wbox.draw(g, Coord.z, wsz);
 		if(cap != null) {
 			GOut cg = og.reclip(new Coord(0, -7), sz.add(0, 7));
@@ -77,8 +84,6 @@ public class Window extends Widget implements DTarget {
 			cg.image(cr, new Coord((sz.x / 2) + (w / 2), 0));
 			cg.image(cap.tex(), new Coord((sz.x / 2) - (w / 2), 0));
 		}
-		cdraw(og.reclip(xlate(Coord.z, true), sz));
-		super.draw(og);
 	}
 	
 	public void pack() {

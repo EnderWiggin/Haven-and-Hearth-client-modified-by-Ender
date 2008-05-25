@@ -233,7 +233,10 @@ public class Widget implements Graphical {
 	}
 	
 	public void draw(GOut g) {
-		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+		Widget next;
+		
+		for(Widget wdg = child; wdg != null; wdg = next) {
+			next = wdg.next;
 			Coord cc = xlate(wdg.c, true);
 			wdg.draw(g.reclip(cc, wdg.sz));
 		}

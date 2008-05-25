@@ -33,6 +33,7 @@ public class Speaking extends GAttrib {
 		sb.draw(g, tl, sz.add(sb.bsz()));
 		g.chcolor(Color.BLACK);
 		g.image(text.tex(), ftl);
+		g.chcolor(Color.WHITE);
 		g.image(svans, c.add(0, -svans.sz().y));
 	}
 }
