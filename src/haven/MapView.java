@@ -253,6 +253,7 @@ public class MapView extends Widget implements DTarget {
 				g.line(sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))), w);
 			}
 		}
+		g.chcolor(Color.WHITE);
 	}
 	
 	private void profrst() {
@@ -396,6 +397,37 @@ public class MapView extends Widget implements DTarget {
 		mask.amb = mkc(hs * 0.4, hs * 0.2, nl * 0.25 * ll, 1 - ll);
 	}
 	
+	public void drawarrows(GOut g) {
+		Coord oc = viewoffset(sz, mc);
+		Coord hsz = sz.div(2);
+		double ca = -Coord.z.angle(hsz);
+		for(Party.Member m : glob.party.memb.values()) {
+			//Gob gob = glob.oc.getgob(id);
+			if(m.c == null)
+				continue;
+			Coord sc = m2s(m.c).add(oc);
+			if(!sc.isect(Coord.z, sz)) {
+				double a = -hsz.angle(sc);
+				Coord ac;
+				if((a > ca) && (a < -ca)) {
+					ac = new Coord(sz.x, hsz.y - (int)(Math.tan(a) * hsz.x));
+				} else if((a > -ca) && (a < Math.PI + ca)) {
+					ac = new Coord(hsz.x - (int)(Math.tan(a - Math.PI / 2) * hsz.y), 0);
+				} else if((a > -Math.PI - ca) && (a < ca)) {
+					ac = new Coord(hsz.x + (int)(Math.tan(a + Math.PI / 2) * hsz.y), sz.y);
+				} else {
+					ac = new Coord(0, hsz.y + (int)(Math.tan(a) * hsz.x));
+				}
+				g.chcolor(m.col);
+				Coord bc = ac.add(Coord.sc(a, -10));
+				g.line(bc, bc.add(Coord.sc(a, -40)), 2);
+				g.line(bc, bc.add(Coord.sc(a + Math.PI / 4, -10)), 2);
+				g.line(bc, bc.add(Coord.sc(a - Math.PI / 4, -10)), 2);
+				g.chcolor(Color.WHITE);
+			}
+		}
+	}
+	
 	public void draw(GOut g) {
 		Coord gc = mc.div(tilesz).div(cmaps);
 		for(int y = -1; y <= 1; y++) {
@@ -409,6 +441,7 @@ public class MapView extends Widget implements DTarget {
 		try {
 			fixlight();
 			drawmap(g);
+			drawarrows(g);
 			g.chcolor(Color.WHITE);
 			g.atext(mc.toString(), new Coord(10, 590), 0, 1);
 			g.atext("Hunger meter: " + glob.glut / (glob.fcap / 100) + "%", new Coord(10, 560), 0, 1);

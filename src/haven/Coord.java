@@ -1,5 +1,7 @@
 package haven;
 
+import static java.lang.Math.PI;
+
 @SuppressWarnings("serial")
 public class Coord implements Comparable<Coord>, java.io.Serializable {
 	public int x, y;
@@ -95,5 +97,24 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	
 	public String toString() {
 		return("(" + x + ", " + y + ")");
+	}
+	
+	public double angle(Coord o) {
+		Coord c = o.add(this.inv());
+		if(c.x == 0) {
+			if(c.y < 0)
+				return(-PI / 2);
+			else
+				return(PI / 2);
+		} else {
+			if(c.x < 0) {
+				 if(c.y < 0)
+					return(-PI + Math.atan((double)c.y / (double)c.x));
+				 else
+					return(PI + Math.atan((double)c.y / (double)c.x));
+			} else {
+				return(Math.atan((double)c.y / (double)c.x));
+			}
+		}
 	}
 }

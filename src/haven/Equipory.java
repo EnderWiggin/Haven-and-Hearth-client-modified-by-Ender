@@ -42,7 +42,7 @@ public class Equipory extends Window implements DTarget {
 		super(c, new Coord(0, 0), parent, "Equipment");
 		epoints = new ArrayList<Inventory>();
 		equed = new ArrayList<Item>(ecoords.length);
-		new Img(new Coord(32, 0), bg, this);
+		//new Img(new Coord(32, 0), bg, this);
 		for(int i = 0; i < ecoords.length; i++) {
 			epoints.add(new Inventory(ecoords[i], new Coord(1, 1), this));
 			equed.add(null);
@@ -94,9 +94,8 @@ public class Equipory extends Window implements DTarget {
 		return(false);
 	}
 	
-	public void draw(GOut g) {
-		super.draw(g);
-		Coord avac = xlate(new Coord(32, 0), true);
+	public void cdraw(GOut g) {
+		Coord avac = new Coord(32, 0);
 		g.image(bg, avac);
 		if(avagob != -1) {
 			Gob gob = ui.sess.glob.oc.getgob(avagob);

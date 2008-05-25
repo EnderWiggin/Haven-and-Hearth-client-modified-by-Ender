@@ -144,6 +144,14 @@ public class GOut {
 		this.color = c;
 	}
     
+	public void chcolor(int r, int g, int b, int a) {
+		this.color = new Color(r, g, b, a);
+	}
+	
+	public void chcolor() {
+		this.color = Color.WHITE;
+	}
+    
 	Color getcolor() {
 		return(color);
 	}

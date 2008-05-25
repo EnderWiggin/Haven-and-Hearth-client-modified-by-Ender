@@ -6,7 +6,7 @@ public class Avaview extends Widget {
 	public static final Coord dasz = new Coord(70, 70);
 	private Coord asz;
 	int avagob;
-	public boolean marked = false;
+	public Color color = Color.WHITE;
 	
 	static {
 		Widget.addtype("av", new WidgetFactory() {
@@ -27,8 +27,7 @@ public class Avaview extends Widget {
 	}
 	
 	public void draw(GOut g) {
-		if(marked)
-			g.chcolor(Color.RED);
+		g.chcolor(color);
 		Window.wbox.draw(g, Coord.z, asz.add(Window.wbox.bisz()));
 		g.chcolor(Color.WHITE);
 		Gob gob = ui.sess.glob.oc.getgob(avagob);
@@ -43,5 +42,10 @@ public class Avaview extends Widget {
 		Coord tsz = new Coord((at.sz().x * asz.x) / dasz.x, (at.sz().y * asz.y) / dasz.y);
 		int yo = (20 * asz.y) / dasz.y;
 		g2.image(at, new Coord(tsz.x / 2 - asz.x / 2, yo).inv(), tsz);
+	}
+	
+	public boolean mousedown(Coord c, int button) {
+		wdgmsg("click", button);
+		return(true);
 	}
 }
