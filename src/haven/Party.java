@@ -17,11 +17,23 @@ public class Party {
 		new Color(255, 0, 128)
 	};
 	public static final Color dc = Color.BLACK;
+	private Glob glob;
+	
+	public Party(Glob glob) {
+		this.glob = glob;
+	}
 	
 	public class Member {
 		int gobid;
-		Coord c;
+		private Coord c;
 		Color col;
+		
+		public Coord getc() {
+			Gob gob;
+			if((gob = glob.oc.getgob(gobid)) != null)
+				return(gob.getc());
+			return(c);
+		}
 	}
 	
 	public static Color getcolor(int i) {

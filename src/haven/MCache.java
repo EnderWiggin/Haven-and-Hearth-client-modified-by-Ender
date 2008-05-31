@@ -217,6 +217,15 @@ public class MCache {
 				g.remove();
 			}
 		}
+		for(Iterator<Map.Entry<Coord, Grid>> i = req.entrySet().iterator(); i.hasNext();) {
+			Map.Entry<Coord, Grid> e = i.next();
+			Coord gc = e.getKey();
+			Grid g = e.getValue();
+			if((Math.abs(gc.x - cc.x) > 1) || (Math.abs(gc.y - cc.y) > 1)) {
+				i.remove();
+				g.remove();
+			}
+		}
 	}
 	
 	public void request(Coord gc) {

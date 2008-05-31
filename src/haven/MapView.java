@@ -10,8 +10,8 @@ import java.util.*;
 public class MapView extends Widget implements DTarget {
 	Coord mc;
 	List<Drawable> clickable = null;
-	int visol = 0;
-	Color[] olc = {new Color(255, 0, 128), new Color(0, 255, 0)};
+	int visol = 6;
+	static Color[] olc = new Color[31];
 	Grabber grab = null;
 	ILM mask;
 	final MCache map;
@@ -27,6 +27,10 @@ public class MapView extends Widget implements DTarget {
 				return(new MapView(c, (Coord)args[0], parent, (Coord)args[1]));
 			}
 		});
+		olc[0] = new Color(255, 0, 128);
+		olc[1] = new Color(255, 0, 0);
+		olc[2] = new Color(128, 0, 255);
+		olc[16] = new Color(0, 255, 0);
 	}
 	
 	public interface Grabber {
@@ -110,13 +114,16 @@ public class MapView extends Widget implements DTarget {
 	
 	public void mousemove(Coord c) {
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
+		Collection<Gob> plob = this.plob;
 		if(grab != null) {
 			grab.mmousemove(mc);
 		} else if(plob != null) {
-			Gob gob = null;
-			for(Gob g : plob)
-				gob = g;
-			gob.move(plontile?tilify(mc):mc);
+			synchronized(plob) {
+				Gob gob = null;
+				for(Gob g : plob)
+					gob = g;
+				gob.move(plontile?tilify(mc):mc);
+			}
 		}
 	}
 	
@@ -140,12 +147,14 @@ public class MapView extends Widget implements DTarget {
 			if(plob != null)
 				glob.oc.lrem(plob);
 			plob = new LinkedList<Gob>();
-			plontile = (Integer)args[2] != 0;
-			Gob gob = new Gob(glob, plontile?tilify(mc):mc);
-			Resource res = Resource.load((String)args[0], (Integer)args[1]);
-			gob.setattr(new ResDrawable(gob, res));
-			plob.add(gob);
-			glob.oc.ladd(plob);
+			synchronized(plob) {
+				plontile = (Integer)args[2] != 0;
+				Gob gob = new Gob(glob, plontile?tilify(mc):mc);
+				Resource res = Resource.load((String)args[0], (Integer)args[1]);
+				gob.setattr(new ResDrawable(gob, res));
+				plob.add(gob);
+				glob.oc.ladd(plob);
+			}
 		} else if(msg == "unplace") {
 			if(plob != null)
 				glob.oc.lrem(plob);
@@ -236,6 +245,8 @@ public class MapView extends Widget implements DTarget {
 		if(ol == 0)
 			return;
 		for(i = 0; i < olc.length; i++) {
+			if(olc[i] == null)
+				continue;
 			if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
 				g.line(sc.add(m2s(new Coord(0, tilesz.y))), sc, w);
@@ -403,9 +414,9 @@ public class MapView extends Widget implements DTarget {
 		double ca = -Coord.z.angle(hsz);
 		for(Party.Member m : glob.party.memb.values()) {
 			//Gob gob = glob.oc.getgob(id);
-			if(m.c == null)
+			if(m.getc() == null)
 				continue;
-			Coord sc = m2s(m.c).add(oc);
+			Coord sc = m2s(m.getc()).add(oc);
 			if(!sc.isect(Coord.z, sz)) {
 				double a = -hsz.angle(sc);
 				Coord ac;

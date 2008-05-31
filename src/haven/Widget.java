@@ -19,7 +19,8 @@ public class Widget implements Graphical {
 		Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
 		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class, IButton.class,
 		Landwindow.class, Skillwindow.class, Archwindow.class, Cal.class, Avaview.class,
-		Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class};
+		Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
+		MenuGrid.class};
 	
 	static {
 		try {
@@ -283,6 +284,14 @@ public class Widget implements Graphical {
 			Coord cc = xlate(wdg.c, true);
 			wdg.mousemove(c.add(cc.inv()));
 		}
+	}
+	
+	public boolean globtype(char key, KeyEvent ev) {
+		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+			if(wdg.globtype(key, ev))
+				return(true);
+		}
+		return(false);
 	}
 	
 	public boolean type(char key, KeyEvent ev) {

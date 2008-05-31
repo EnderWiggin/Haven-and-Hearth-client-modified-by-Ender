@@ -15,7 +15,7 @@ public class Glob {
 	public Glob(Session sess) {
 		this.sess = sess;
 		map = new MCache(sess);
-		party = new Party();
+		party = new Party(this);
 	}
 	
 	private static double defix(int i) {

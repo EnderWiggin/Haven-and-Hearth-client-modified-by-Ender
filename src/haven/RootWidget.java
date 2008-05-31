@@ -13,8 +13,8 @@ public class RootWidget extends Widget {
 		setfocusctl(true);
 	}
 	
-	public boolean type(char key, KeyEvent ev) {
-		if(!super.type(key, ev)) {
+	public boolean globtype(char key, KeyEvent ev) {
+		if(!super.globtype(key, ev)) {
 			if(key == 27) {
 				if(logout == null) {
 					if(ui.sess != null)

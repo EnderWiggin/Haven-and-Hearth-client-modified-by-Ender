@@ -13,6 +13,7 @@ public class UI {
 	Session sess;
 	MapView mainview;
 	public Widget mouseon;
+	public Object tooltip = null;
 	
 	public interface Receiver {
 		public void rcvmsg(int widget, String msg, Object... args);
@@ -114,10 +115,12 @@ public class UI {
 	}
 	
 	public void type(KeyEvent ev) {
-		if(keygrab == null)
-			root.type(ev.getKeyChar(), ev);
-		else
+		if(keygrab == null) {
+			if(!root.type(ev.getKeyChar(), ev))
+				root.globtype(ev.getKeyChar(), ev);
+		} else {
 			keygrab.type(ev.getKeyChar(), ev);
+		}
 	}
 	
 	public void keydown(KeyEvent ev) {
