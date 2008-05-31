@@ -40,7 +40,7 @@ public class Landwindow extends Window implements MapView.Grabber {
 		Coord tc = mc.div(MCache.tilesz);
 		if(ol != null)
 			ol.destroy();
-		ol = map.new Overlay(tc, tc, 2);
+		ol = map.new Overlay(tc, tc, 65536);
 		sc = tc;
 		dm = true;
 		ui.grabmouse(ui.mainview);

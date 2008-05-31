@@ -15,6 +15,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	int dth = 0, dtm = 0;
 	public static int texhit = 0, texmiss = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
+	public Coord mousepos = new Coord(0, 0);
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
@@ -122,16 +123,35 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	}
 	
 	void redraw(GL gl) {
+		ui.tooltip = null;
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 		synchronized(ui) {
 			ui.root.draw(g);
 		}
 		if(Resource.qdepth() > 0)
-			g.atext("RQ depth: " + Resource.qdepth(), new Coord(790, 575), 1, 1);
+			g.atext("RQ depth: " + Resource.qdepth(), new Coord(790, 545), 1, 1);
 		g.atext("FPS: " + fps, new Coord(790, 590), 1, 1);
 		g.atext("Texhit: " + dth, new Coord(790, 575), 1, 1);
 		g.atext("Texmiss: " + dtm, new Coord(790, 560), 1, 1);
+		if(ui.tooltip != null) {
+			Tex tt = null;
+			if(ui.tooltip instanceof Text) {
+				tt = ((Text)ui.tooltip).tex();
+			} else if(ui.tooltip instanceof Tex) {
+				tt = (Tex)ui.tooltip;
+			} else if(ui.tooltip instanceof String) {
+				tt = (Text.render((String)ui.tooltip)).tex();
+			}
+			Coord sz = tt.sz();
+			Coord pos = mousepos.add(sz.inv());
+			g.chcolor(244, 247, 21, 192);
+			g.rect(pos.add(-3, -3), sz.add(6, 6));
+			g.chcolor(35, 35, 35, 192);
+			g.frect(pos.add(-2, -2), sz.add(4, 4));
+			g.chcolor();
+			g.image(tt, pos);
+		}
 	}
 	
 /*
@@ -162,7 +182,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 					} else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
 						ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
 					} else if(me.getID() == MouseEvent.MOUSE_MOVED || me.getID() == MouseEvent.MOUSE_DRAGGED) {
-						ui.mousemove(new Coord(me.getX(), me.getY()));
+						mousepos = new Coord(me.getX(), me.getY());
+						ui.mousemove(mousepos);
 					} else if(me instanceof MouseWheelEvent) {
 						ui.mousewheel(new Coord(me.getX(), me.getY()), ((MouseWheelEvent)me).getWheelRotation());
 					}

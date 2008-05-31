@@ -95,24 +95,26 @@ public class TextEntry extends SSWidget {
 					text = text.substring(0, pos - 1);
 				pos--;
 			}
+			return(true);
 		} else if(c == 10) {
 			if(!canactivate)
 				return(false);
 			wdgmsg("activate", text);
+			return(true);
 		} else if(c == 127) {
 			if(pos < text.length())
 				text = text.substring(0, pos) + text.substring(pos + 1);
-		} else if(c < 32) {
-			super.type(c, ev);
-		} else {
+			return(true);
+		} else if(c >= 32) {
 			String nt = text.substring(0, pos) + c + text.substring(pos);
 			if((limit == 0) || ((limit > 0) && (nt.length() <= limit)) || ((limit == -1) && (textwidth(nt) < sz.x))) {
 				text = nt;
 				pos++;
 			}
+			return(true);
 		}
 		render();
-		return(true);
+		return(false);
 	}
 	
 	public boolean keydown(KeyEvent e) {

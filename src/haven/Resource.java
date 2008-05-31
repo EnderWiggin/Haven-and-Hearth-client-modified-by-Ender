@@ -20,6 +20,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public static Class<Anim> animc = Anim.class;
 	public static Class<Tileset> tileset = Tileset.class;
 	public static Class<Pagina> pagina = Pagina.class;
+	public static Class<AButton> action = AButton.class;
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -434,6 +435,27 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public void init() {}
 	}
 	static {ltypes.put("pagina", Pagina.class);}
+	
+	public class AButton extends Layer {
+		public final String name;
+		public final Resource parent;
+		public final char hk;
+		
+		public AButton(byte[] buf) {
+			int[] off = new int[1];
+			off[0] = 0;
+			String pr = Utils.strd(buf, off);
+			if(pr.length() == 0)
+				parent = null;
+			else
+				parent = load(pr);
+			name = Utils.strd(buf, off);
+			hk = (char)Utils.uint16d(buf, off[0]);
+		}
+		
+		public void init() {}
+	}
+	static {ltypes.put("action", AButton.class);}
 	
 	public class Code extends Layer {
 		public final String name;
