@@ -50,7 +50,7 @@ public class MainFrame extends Frame implements Runnable {
 		    setfs(tm);
 		add(p);
 		pack();
-		setResizable(false);
+		//setResizable(false);
 		p.requestFocus();
 		setVisible(true);
 		p.init();

@@ -7,6 +7,7 @@ import java.util.*;
 
 public class MenuGrid extends Widget {
 	public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
+	public final static Coord bgsz = bg.sz().add(-1, -1);
 	public final static Resource bk = Resource.load("gfx/hud/sc-back");
 	private static Coord gsz = new Coord(4, 4);
 	private Resource cur, pressed, layout[][] = new Resource[gsz.x][gsz.y];
@@ -49,7 +50,7 @@ public class MenuGrid extends Widget {
 	}
 	
 	public MenuGrid(Coord c, Widget parent) {
-		super(c, bg.sz().mul(gsz), parent);
+		super(c, bgsz.mul(gsz).add(1, 1), parent);
 		cons(null);
 	}
 	
@@ -77,7 +78,7 @@ public class MenuGrid extends Widget {
 		updlayout();
 		for(int y = 0; y < gsz.y; y++) {
 			for(int x = 0; x < gsz.x; x++) {
-				Coord p = bg.sz().mul(new Coord(x, y));
+				Coord p = bgsz.mul(new Coord(x, y));
 				g.image(bg, p);
 				Resource btn = layout[x][y];
 				if(btn != null) {
@@ -91,12 +92,17 @@ public class MenuGrid extends Widget {
 				}
 			}
 		}
-		if(pressed == null && hover != null)
-			ui.tooltip = hover.layer(Resource.action).name;
+		if(pressed == null && hover != null) {
+			Resource.AButton ad = hover.layer(Resource.action);
+			String tt = ad.name;
+			if(ad.hk != 0)
+				tt += " [" + ad.hk + "]";
+			ui.tooltip = tt;
+		}
 	}
 	
 	private Resource bhit(Coord c) {
-		Coord bc = c.div(bg.sz());
+		Coord bc = c.div(bgsz);
 		if((bc.x >= 0) && (bc.y >= 0) && (bc.x < gsz.x) && (bc.y < gsz.y))
 			return(layout[bc.x][bc.y]);
 		else

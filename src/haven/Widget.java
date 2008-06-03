@@ -10,7 +10,7 @@ public class Widget implements Graphical {
 	UI ui;
 	Coord c, sz;
 	Widget next, prev, child, lchild, parent;
-	boolean focustab = false, focusctl = false, hasfocus = false;
+	boolean focustab = false, focusctl = false, hasfocus = false, visible = true;
 	private boolean canfocus = false, autofocus = false;
 	boolean canactivate = false, cancancel = false;
 	Widget focused;
@@ -20,7 +20,7 @@ public class Widget implements Graphical {
 		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class, IButton.class,
 		Landwindow.class, Skillwindow.class, Archwindow.class, Cal.class, Avaview.class,
 		Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
-		MenuGrid.class};
+		MenuGrid.class, SlenHud.class, HWindow.class};
 	
 	static {
 		try {
@@ -230,14 +230,13 @@ public class Widget implements Graphical {
 			parent.wdgmsg(sender, msg, args);
 	}
 	
-	public final void draw(java.awt.Graphics g) {
-	}
-	
 	public void draw(GOut g) {
 		Widget next;
 		
 		for(Widget wdg = child; wdg != null; wdg = next) {
 			next = wdg.next;
+			if(!wdg.visible)
+				continue;
 			Coord cc = xlate(wdg.c, true);
 			wdg.draw(g.reclip(cc, wdg.sz));
 		}
@@ -245,6 +244,8 @@ public class Widget implements Graphical {
 	
 	public boolean mousedown(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			if(!wdg.visible)
+				continue;
 			Coord cc = xlate(wdg.c, true);
 			if(c.isect(cc, wdg.sz)) {
 				if(wdg.mousedown(c.add(cc.inv()), button)) {
@@ -257,6 +258,8 @@ public class Widget implements Graphical {
 	
 	public boolean mouseup(Coord c, int button) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			if(!wdg.visible)
+				continue;
 			Coord cc = xlate(wdg.c, true);
 			if(c.isect(cc, wdg.sz)) {
 				if(wdg.mouseup(c.add(cc.inv()), button)) {
@@ -269,6 +272,8 @@ public class Widget implements Graphical {
 	
 	public boolean mousewheel(Coord c, int amount) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			if(!wdg.visible)
+				continue;
 			Coord cc = xlate(wdg.c, true);
 			if(c.isect(cc, wdg.sz)) {
 				if(wdg.mousewheel(c.add(cc.inv()), amount)) {
@@ -281,6 +286,8 @@ public class Widget implements Graphical {
 	
 	public void mousemove(Coord c) {
 		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			if(!wdg.visible)
+				continue;
 			Coord cc = xlate(wdg.c, true);
 			wdg.mousemove(c.add(cc.inv()));
 		}

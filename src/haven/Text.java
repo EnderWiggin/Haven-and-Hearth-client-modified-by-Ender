@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class Text {
-	private static Foundry std;
+	public static final Foundry std;
 	public BufferedImage img;
 	public final String text;
 	private FontMetrics m;
