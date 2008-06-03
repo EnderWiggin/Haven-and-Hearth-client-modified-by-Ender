@@ -3,9 +3,10 @@ package haven;
 import java.awt.Color;
 
 public class Label extends Widget {
+	Text.Foundry f;
 	Text text;
 	String texts;
-	Color c = Color.BLACK;
+	Color col = Color.BLACK;
 	
 	static {
 		Widget.addtype("lbl", new WidgetFactory() {
@@ -19,20 +20,25 @@ public class Label extends Widget {
 		g.image(text.tex(), Coord.z);
 	}
 	
-	public Label(Coord c, Widget parent, String text) {
+	public Label(Coord c, Widget parent, String text, Text.Foundry f) {
 		super(c, Coord.z, parent);
-		this.text = Text.render(texts = text, this.c);
+		this.f = f;
+		this.text = f.render(texts = text, this.col);
 		sz = this.text.sz();
+	}
+
+	public Label(Coord c, Widget parent, String text) {
+		this(c, parent, text, Text.std);
 	}
 	
 	public void settext(String text) {
-		this.text = Text.render(texts = text, c);
+		this.text = f.render(texts = text, col);
 		sz = this.text.sz();
 	}
 	
 	public void setcolor(Color color) {
-		c = color;
-		this.text = Text.render(texts, c);
+		col = color;
+		this.text = f.render(texts, col);
 		sz = this.text.sz();
 	}
 	

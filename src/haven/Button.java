@@ -12,7 +12,7 @@ public class Button extends SSWidget {
 	static BufferedImage bb = Resource.loadimg("gfx/hud/buttons/tbtn/bottom");
 	static BufferedImage dt = Resource.loadimg("gfx/hud/buttons/tbtn/dtex");
 	static BufferedImage ut = Resource.loadimg("gfx/hud/buttons/tbtn/utex");
-	Text text;
+	BufferedImage text;
 	Text.Foundry tf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
 	boolean a = false;
 	
@@ -26,7 +26,13 @@ public class Button extends SSWidget {
 	
 	public Button(Coord c, Integer w, Widget parent, String text) {
 		super(c, new Coord(w, 19), parent);
-		this.text = tf.render(text, Color.YELLOW);
+		this.text = tf.render(text, Color.YELLOW).img;
+		render();
+	}
+	
+	public Button(Coord c, Integer w, Widget parent, BufferedImage cont) {
+		super(c, new Coord(w, 19), parent);
+		this.text = cont;
 		render();
 	}
 	
@@ -37,11 +43,15 @@ public class Button extends SSWidget {
 		g.drawImage(br, sz.x - br.getWidth(), 0, null);
 		g.drawImage(bt, 3, 0, sz.x - 6, bt.getHeight(), null);
 		g.drawImage(bb, 3, sz.y - bb.getHeight(), sz.x - 6, bb.getHeight(), null);
-		Coord tc = sz.div(2).add(text.sz().div(2).inv());
+		Coord tc = sz.div(2).add(Utils.imgsz(text).div(2).inv());
 		if(a)
 			tc = tc.add(1, 1);
-		g.drawImage(text.img, tc.x, tc.y, null);
+		g.drawImage(text, tc.x, tc.y, null);
 		update();
+	}
+	
+	public void click() {
+		wdgmsg("activate");
 	}
 	
 	public boolean mousedown(Coord c, int button) {
@@ -59,7 +69,7 @@ public class Button extends SSWidget {
 			render();
 			ui.grabmouse(null);
 			if(c.isect(new Coord(0, 0), sz))
-				wdgmsg("activate");
+				click();
 			return(true);
 		}
 		return(false);

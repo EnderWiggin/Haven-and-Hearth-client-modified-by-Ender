@@ -43,6 +43,10 @@ public class IButton extends SSWidget {
 		return(Utils.rgbm.getAlpha(cl) >= 128);
 	}
 	
+	public void click() {
+		wdgmsg("activate");
+	}
+	
 	public boolean mousedown(Coord c, int button) {
 		if(button != 1)
 			return(false);
@@ -59,7 +63,7 @@ public class IButton extends SSWidget {
 			a = false;
 			ui.grabmouse(null);
 			if(c.isect(new Coord(0, 0), sz) && checkhit(c))
-				wdgmsg("activate");
+				click();
 			render();
 			return(true);
 		}
