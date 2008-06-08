@@ -365,7 +365,7 @@ public class Session {
 					
 					long now = System.currentTimeMillis();
 					if(state == "conn") {
-						if(now - last > 500) {
+						if(now - last > 2000) {
 							if(++retries > 5) {
 								synchronized(Session.this) {
 									connfailed = SESSERR_CONN;
