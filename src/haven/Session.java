@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 1;
+	public static final int PVER = 2;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -365,7 +365,7 @@ public class Session {
 					
 					long now = System.currentTimeMillis();
 					if(state == "conn") {
-						if(now - last > 500) {
+						if(now - last > 2000) {
 							if(++retries > 5) {
 								synchronized(Session.this) {
 									connfailed = SESSERR_CONN;

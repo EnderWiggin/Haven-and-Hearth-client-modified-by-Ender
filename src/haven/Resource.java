@@ -440,6 +440,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public final String name;
 		public final Resource parent;
 		public final char hk;
+		public final String[] ad;
 		
 		public AButton(byte[] buf) {
 			int[] off = new int[1];
@@ -450,7 +451,13 @@ public class Resource implements Comparable<Resource>, Serializable {
 			else
 				parent = load(pr);
 			name = Utils.strd(buf, off);
+			Utils.strd(buf, off); /* Prerequisite skill */
 			hk = (char)Utils.uint16d(buf, off[0]);
+			off[0] += 2;
+			ad = new String[Utils.uint16d(buf, off[0])];
+			off[0] += 2;
+			for(int i = 0; i < ad.length; i++)
+				ad[i] = Utils.strd(buf, off);
 		}
 		
 		public void init() {}
