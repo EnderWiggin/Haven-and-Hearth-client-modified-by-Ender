@@ -179,13 +179,20 @@ public class MapView extends Widget implements DTarget {
 		return(r);
 	}
 	
-	private Tileset gettile(Coord tc) {
-		Tileset r = map.gettile(tc);
+	private Tile getground(Coord tc) {
+		Tile r = map.getground(tc);
 		if(r == null)
 			throw(new Loading());
 		return(r);
 	}
 	
+	private Tile[] gettrans(Coord tc) {
+		Tile[] r = map.gettrans(tc);
+		if(r == null)
+			throw(new Loading());
+		return(r);
+	}
+
 	private int getol(Coord tc) {
 		int ol = map.getol(tc);
 		if(ol == -1)
@@ -196,44 +203,13 @@ public class MapView extends Widget implements DTarget {
 	private void drawtile(GOut g, Coord tc, Coord sc) {
 		Tile t;
 		
-		t = gettile(tc).ground.pick(map.randoom(tc));
+		t = getground(tc);
 		//t = gettile(tc).ground.pick(0);
 		g.image(t.tex(), sc);
 		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
-		int tr[][] = new int[3][3];
-		for(int y = -1; y <= 1; y++) {
-			for(int x = -1; x <= 1; x++) {
-				if((x == 0) && (y == 0))
-					continue;
-				tr[x + 1][y + 1] = gettilen(tc.add(new Coord(x, y)));
-			}
-		}
-		if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
-		if(tr[0][0] >= tr[0][1]) tr[0][0] = -1;
-		if(tr[2][0] >= tr[1][0]) tr[2][0] = -1;
-		if(tr[2][0] >= tr[2][1]) tr[2][0] = -1;
-		if(tr[0][2] >= tr[0][1]) tr[0][2] = -1;
-		if(tr[0][2] >= tr[1][2]) tr[0][2] = -1;
-		if(tr[2][2] >= tr[2][1]) tr[2][2] = -1;
-		if(tr[2][2] >= tr[1][2]) tr[2][2] = -1;
-		int bx[] = {0, 1, 2, 1};
-		int by[] = {1, 0, 1, 2};
-		int cx[] = {0, 2, 2, 0};
-		int cy[] = {0, 0, 2, 2};
-		for(int i = gettilen(tc) - 1; i >= 0; i--) {
-			int bm = 0, cm = 0;
-			for(int o = 0; o < 4; o++) {
-				if(tr[bx[o]][by[o]] == i)
-					bm |= 1 << o;
-				if(tr[cx[o]][cy[o]] == i)
-					cm |= 1 << o;
-			}
-			if(bm != 0)
-				g.image(map.sets.get(i).btrans[bm - 1].pick(map.randoom(tc)).tex(), sc);
-			if(cm != 0)
-				g.image(map.sets.get(i).ctrans[cm - 1].pick(map.randoom(tc)).tex(), sc);
-		}
+		for(Tile tt : gettrans(tc))
+			g.image(tt.tex(), sc);
 	}
 	
 	private void drawol(GOut g, Coord tc, Coord sc) {
