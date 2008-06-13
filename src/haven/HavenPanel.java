@@ -16,6 +16,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	public static int texhit = 0, texmiss = 0;
 	List<InputEvent> events = new LinkedList<InputEvent>();
 	public Coord mousepos = new Coord(0, 0);
+	public Profile prof = new Profile(300);
+	private Profile.Frame curf;
 	
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
@@ -119,16 +121,19 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
     
 	UI newui(Session sess) {
 		ui = new UI(new Coord(w, h), this, sess);
+		ui.root.gprof = prof;
 		return(ui);
 	}
 	
 	void redraw(GL gl) {
 		ui.tooltip = null;
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		curf.tick("cls");
 		GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 		synchronized(ui) {
 			ui.root.draw(g);
 		}
+		curf.tick("draw");
 		if(System.getProperty("haven.dbtext", "off").equals("on")) {
 			if(Resource.qdepth() > 0)
 				g.atext("RQ depth: " + Resource.qdepth(), new Coord(10, 500), 0, 1);
@@ -223,12 +228,15 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 			fthen = System.currentTimeMillis();
 			while(true) {
 				then = System.currentTimeMillis();
+				curf = prof.new Frame();
 				synchronized(ui) {
 					if(ui.sess != null)
 						ui.sess.glob.oc.ctick();
 					dispatch();
 				}
+				curf.tick("dsp");
 				uglyjoglhack();
+				curf.tick("aux");
 				frames++;
 				now = System.currentTimeMillis();
 				if(now - then < fd) {
@@ -236,6 +244,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 						events.wait(fd - (now - then));
 					}
 				}
+				curf.tick("wait");
 				if(now - fthen > 1000) {
 					fps = frames;
 					frames = 0;
@@ -244,6 +253,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 					texhit = texmiss = 0;
 					fthen = now;
 				}
+				curf.fin();
 				if(Thread.interrupted())
 					throw(new InterruptedException());
 			}

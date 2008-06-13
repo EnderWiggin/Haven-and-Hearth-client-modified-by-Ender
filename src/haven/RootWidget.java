@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 public class RootWidget extends Widget {
 	Graphical backer;
 	Logout logout = null;
+	Profile gprof;
 	
 	public RootWidget(UI ui, Coord sz, Graphical backer) {
 		super(ui, new Coord(0, 0), sz);
@@ -28,6 +29,10 @@ public class RootWidget extends Widget {
 					ui.destroy(logout);
 					logout = null;
 				}
+			} else if(key == '`') {
+			    new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
+			} else if(key == '~') {
+			    new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
 			} else {
 				wdgmsg("gk", (int)key);
 			}

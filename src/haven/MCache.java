@@ -6,6 +6,7 @@ import haven.Resource.Tile;
 
 public class MCache {
 	List<Tileset> sets = new LinkedList<Tileset>();
+	Grid last = null;
 	java.util.Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	java.util.Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
 	Session sess;
@@ -37,6 +38,8 @@ public class MCache {
 	
 	public class Grid {
 		public int tiles[][];
+		public Tile gcache[][];
+		public Tile tcache[][][];
 		public int ol[][];
 		Collection<Gob> fo = new LinkedList<Gob>();
 		public long lastreq = 0;
@@ -47,6 +50,8 @@ public class MCache {
 			this.gc = gc;
 			tiles = new int[cmaps.x][cmaps.y];
 			ol = new int[cmaps.x][cmaps.y];
+			gcache = new Tile[cmaps.x][cmaps.y];
+		        tcache = new Tile[cmaps.x][cmaps.y][];
 		}
 		
 		public int gettile(Coord tc) {
@@ -132,6 +137,11 @@ public class MCache {
 		return(ret);
 	}
 
+	private void replace(Grid g) {
+		if(g == last)
+			last = null;
+	}
+
 	public void invalidate(Coord cc) {
 		synchronized(req) {
 			if(req.get(cc) == null)
@@ -139,10 +149,88 @@ public class MCache {
 		}
 	}
 	
+	public Tile[] gettrans(Coord tc) {
+		Grid g;
+		synchronized(grids) {
+			Coord gc = tc.div(cmaps);
+			if((last != null) && last.gc.equals(gc))
+				g = last;
+			else
+				last = g = grids.get(gc);
+		}
+		if(g == null)
+			return(null);
+		Coord gtc = tc.mod(cmaps);
+		if(g.tcache[gtc.x][gtc.y] == null) {
+			int tr[][] = new int[3][3];
+			for(int y = -1; y <= 1; y++) {
+				for(int x = -1; x <= 1; x++) {
+					if((x == 0) && (y == 0))
+						continue;
+					int tn = gettilen(tc.add(new Coord(x, y)));
+					if(tn < 0)
+						return(null);
+					tr[x + 1][y + 1] = tn;
+				}
+			}
+			if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
+			if(tr[0][0] >= tr[0][1]) tr[0][0] = -1;
+			if(tr[2][0] >= tr[1][0]) tr[2][0] = -1;
+			if(tr[2][0] >= tr[2][1]) tr[2][0] = -1;
+			if(tr[0][2] >= tr[0][1]) tr[0][2] = -1;
+			if(tr[0][2] >= tr[1][2]) tr[0][2] = -1;
+			if(tr[2][2] >= tr[2][1]) tr[2][2] = -1;
+			if(tr[2][2] >= tr[1][2]) tr[2][2] = -1;
+			int bx[] = {0, 1, 2, 1};
+			int by[] = {1, 0, 1, 2};
+			int cx[] = {0, 2, 2, 0};
+			int cy[] = {0, 0, 2, 2};
+			ArrayList<Tile> buf = new ArrayList<Tile>();
+			for(int i = gettilen(tc) - 1; i >= 0; i--) {
+				int bm = 0, cm = 0;
+				for(int o = 0; o < 4; o++) {
+					if(tr[bx[o]][by[o]] == i)
+						bm |= 1 << o;
+					if(tr[cx[o]][cy[o]] == i)
+						cm |= 1 << o;
+				}
+				if(bm != 0)
+					buf.add(sets.get(i).btrans[bm - 1].pick(randoom(tc)));
+				if(cm != 0)
+					buf.add(sets.get(i).ctrans[cm - 1].pick(randoom(tc)));
+			}
+			g.tcache[gtc.x][gtc.y] = buf.toArray(new Tile[0]);
+		}
+		return(g.tcache[gtc.x][gtc.y]);
+	}
+
+	public Tile getground(Coord tc) {
+		Grid g;
+		synchronized(grids) {
+			Coord gc = tc.div(cmaps);
+			if((last != null) && last.gc.equals(gc))
+				g = last;
+			else
+				last = g = grids.get(gc);
+		}
+		if(g == null)
+			return(null);
+		Coord gtc = tc.mod(cmaps);
+		if(g.gcache[gtc.x][gtc.y] == null) {
+			Tileset ts = sets.get(g.gettile(gtc));
+			g.gcache[gtc.x][gtc.y] = ts.ground.pick(randoom(tc));
+		}
+		return(g.gcache[gtc.x][gtc.y]);
+	}
+
 	public int gettilen(Coord tc) {
 		Grid g;
 		synchronized(grids) {
-			g = grids.get(tc.div(cmaps));
+			Coord gc = tc.div(cmaps);
+			if((last != null) && last.gc.equals(gc))
+				g = last;
+			else
+				last = g = grids.get(gc);
 		}
 		if(g == null)
 			return(-1);
@@ -159,7 +247,11 @@ public class MCache {
 	public int getol(Coord tc) {
 		Grid g;
 		synchronized(grids) {
-			g = grids.get(tc.div(cmaps));
+			Coord gc = tc.div(cmaps);
+			if((last != null) && last.gc.equals(gc))
+				g = last;
+			else
+				last = g = grids.get(gc);
 		}
 		if(g == null)
 			return(-1);
@@ -201,7 +293,7 @@ public class MCache {
 					}
 					req.remove(c);
 					g.makeflavor();
-					grids.put(c, g);
+					replace(grids.put(c, g));
 				}
 			}
 		}

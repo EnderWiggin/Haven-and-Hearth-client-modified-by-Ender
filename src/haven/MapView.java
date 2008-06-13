@@ -18,8 +18,8 @@ public class MapView extends Widget implements DTarget {
 	final Glob glob;
 	Collection<Gob> plob = null;
 	boolean plontile;
-	private List<Long> pdata = new LinkedList<Long>();
-	private List<String> pname = new LinkedList<String>();
+	public Profile prof = new Profile(300);
+	private Profile.Frame curf;
 	
 	static {
 		Widget.addtype("mapview", new WidgetFactory() {
@@ -179,13 +179,20 @@ public class MapView extends Widget implements DTarget {
 		return(r);
 	}
 	
-	private Tileset gettile(Coord tc) {
-		Tileset r = map.gettile(tc);
+	private Tile getground(Coord tc) {
+		Tile r = map.getground(tc);
 		if(r == null)
 			throw(new Loading());
 		return(r);
 	}
 	
+	private Tile[] gettrans(Coord tc) {
+		Tile[] r = map.gettrans(tc);
+		if(r == null)
+			throw(new Loading());
+		return(r);
+	}
+
 	private int getol(Coord tc) {
 		int ol = map.getol(tc);
 		if(ol == -1)
@@ -196,44 +203,13 @@ public class MapView extends Widget implements DTarget {
 	private void drawtile(GOut g, Coord tc, Coord sc) {
 		Tile t;
 		
-		t = gettile(tc).ground.pick(map.randoom(tc));
+		t = getground(tc);
 		//t = gettile(tc).ground.pick(0);
 		g.image(t.tex(), sc);
 		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
-		int tr[][] = new int[3][3];
-		for(int y = -1; y <= 1; y++) {
-			for(int x = -1; x <= 1; x++) {
-				if((x == 0) && (y == 0))
-					continue;
-				tr[x + 1][y + 1] = gettilen(tc.add(new Coord(x, y)));
-			}
-		}
-		if(tr[0][0] >= tr[1][0]) tr[0][0] = -1;
-		if(tr[0][0] >= tr[0][1]) tr[0][0] = -1;
-		if(tr[2][0] >= tr[1][0]) tr[2][0] = -1;
-		if(tr[2][0] >= tr[2][1]) tr[2][0] = -1;
-		if(tr[0][2] >= tr[0][1]) tr[0][2] = -1;
-		if(tr[0][2] >= tr[1][2]) tr[0][2] = -1;
-		if(tr[2][2] >= tr[2][1]) tr[2][2] = -1;
-		if(tr[2][2] >= tr[1][2]) tr[2][2] = -1;
-		int bx[] = {0, 1, 2, 1};
-		int by[] = {1, 0, 1, 2};
-		int cx[] = {0, 2, 2, 0};
-		int cy[] = {0, 0, 2, 2};
-		for(int i = gettilen(tc) - 1; i >= 0; i--) {
-			int bm = 0, cm = 0;
-			for(int o = 0; o < 4; o++) {
-				if(tr[bx[o]][by[o]] == i)
-					bm |= 1 << o;
-				if(tr[cx[o]][cy[o]] == i)
-					cm |= 1 << o;
-			}
-			if(bm != 0)
-				g.image(map.sets.get(i).btrans[bm - 1].pick(map.randoom(tc)).tex(), sc);
-			if(cm != 0)
-				g.image(map.sets.get(i).ctrans[cm - 1].pick(map.randoom(tc)).tex(), sc);
-		}
+		for(Tile tt : gettrans(tc))
+			g.image(tt.tex(), sc);
 	}
 	
 	private void drawol(GOut g, Coord tc, Coord sc) {
@@ -267,32 +243,12 @@ public class MapView extends Widget implements DTarget {
 		g.chcolor(Color.WHITE);
 	}
 	
-	private void profrst() {
-		pdata = new LinkedList<Long>();
-		pname = new LinkedList<String>();
-		profpnt("start");
-	}
-	
-	private void profpnt(String nm) {
-		pdata.add(System.nanoTime());
-		pname.add(nm);
-	}
-	
-	private void profprint() {
-		for(int i = 1; i < pdata.size(); i++) {
-			if(i > 1)
-				System.out.print(", ");
-			System.out.print(pname.get(i) + ": " + (pdata.get(i) - pdata.get(i - 1)));
-		}
-		System.out.println();
-	}
-	
 	public void drawmap(GOut g) {
 		int x, y, i;
 		int stw, sth;
 		Coord oc, tc, ctc, sc;
 		
-		profrst();
+		curf = prof.new Frame();
 		stw = (tilesz.x * 4) - 2;
 		sth = tilesz.y * 2;
 		oc = viewoffset(sz, mc);
@@ -318,7 +274,7 @@ public class MapView extends Widget implements DTarget {
 				}
 			}
 		}
-		profpnt("map");
+		curf.tick("map");
 		
 		final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 		ArrayList<Drawable> clickable = new ArrayList<Drawable>();
@@ -364,17 +320,18 @@ public class MapView extends Widget implements DTarget {
 				});
 			this.clickable = clickable;
 			Collections.sort(sprites);
-			profpnt("sort");
+			curf.tick("sort");
 			for(Sprite.Part part : sprites)
 				part.draw(g);
-			profpnt("draw");
+			curf.tick("draw");
 			mask.redraw(lumin);
 			g.image(mask, Coord.z);
 			for(Speaking s : speaking) {
 				s.draw(g, s.gob.sc.add(s.off));
 			}
-			profpnt("aux");
-			//profprint();
+			curf.tick("aux");
+			curf.fin();
+			//System.out.println(curf);
 		}
 	}
 	
