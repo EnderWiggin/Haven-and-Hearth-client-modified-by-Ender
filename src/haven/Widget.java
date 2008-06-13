@@ -395,4 +395,15 @@ public class Widget implements Graphical {
 	public GraphicsConfiguration getconf() {
 		return(parent.getconf());
 	}
+	
+	public <T extends Widget> T findchild(Class<T> cl) {
+		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+			if(cl.isInstance(wdg))
+				return(cl.cast(wdg));
+			T ret = wdg.findchild(cl);
+			if(ret != null)
+				return(ret);
+		}
+		return(null);
+	}
 }

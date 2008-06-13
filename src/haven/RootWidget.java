@@ -28,6 +28,8 @@ public class RootWidget extends Widget {
 					ui.destroy(logout);
 					logout = null;
 				}
+			} else if(key == '`') {
+			    new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
 			} else {
 				wdgmsg("gk", (int)key);
 			}
