@@ -5,5 +5,7 @@ public abstract class Moving extends GAttrib {
 		super(gob);
 	}
 	
+	public void move(Coord c) {}
+	
 	public abstract Coord getc();
 }

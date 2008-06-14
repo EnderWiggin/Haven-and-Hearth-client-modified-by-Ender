@@ -208,8 +208,9 @@ public class MapView extends Widget implements DTarget {
 		g.image(t.tex(), sc);
 		//g.setColor(FlowerMenu.pink);
 		//Utils.drawtext(g, Integer.toString(t.i), sc);
-		for(Tile tt : gettrans(tc))
+		for(Tile tt : gettrans(tc)) {
 			g.image(tt.tex(), sc);
+		}
 	}
 	
 	private void drawol(GOut g, Coord tc, Coord sc) {

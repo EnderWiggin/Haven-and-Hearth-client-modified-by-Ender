@@ -204,4 +204,18 @@ public class OCache implements Iterable<Gob> {
 			}
 		}
 	}
+
+	public synchronized void homostop(int id, int frame) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		g.delattr(Homing.class);
+	}
+
+	public synchronized void homing(int id, int frame, int oid, Coord tc, int v) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		g.setattr(new Homing(g, oid, tc, v));
+	}
 }
