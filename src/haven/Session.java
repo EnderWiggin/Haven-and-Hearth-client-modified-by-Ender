@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 2;
+	public static final int PVER = 3;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -27,6 +27,7 @@ public class Session {
 	public static final int OD_LUMIN = 8;
 	public static final int OD_AVATAR = 9;
 	public static final int OD_FOLLOW = 10;
+	public static final int OD_HOMING = 11;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
@@ -199,6 +200,15 @@ public class Session {
 							if(oid != -1)
 								off = msg.coord();
 							oc.follow(id, frame, oid, off);
+						} else if(type == OD_HOMING) {
+							int oid = msg.int32();
+							if(oid < 0) {
+								oc.homostop(id, frame);
+							} else {
+								Coord tgtc = msg.coord();
+								int v = msg.uint16();
+								oc.homing(id, frame, oid, tgtc, v);
+							}
 						} else if(type == OD_END) {
 							break;
 						} else {

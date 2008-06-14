@@ -117,4 +117,10 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 			}
 		}
 	}
+	
+	public double dist(Coord o) {
+		int dx = o.x - x;
+		int dy = o.y - y;
+		return(Math.sqrt((dx * dx) + (dy * dy)));
+	}
 }

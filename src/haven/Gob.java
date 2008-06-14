@@ -31,6 +31,9 @@ public class Gob {
 	}
 	
 	public void move(Coord c) {
+		Moving m = getattr(Moving.class);
+		if(m != null)
+			m.move(c);
 		this.rc = c;
 	}
 	
