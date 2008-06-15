@@ -1,6 +1,8 @@
 package haven;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.Cursor;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.*;
 import javax.media.opengl.*;
@@ -22,6 +24,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	public HavenPanel(int w, int h) {
 		setSize(this.w = w, this.h = h);
 		initgl();
+		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(TexI.mkbuf(new Coord(1, 1)), new java.awt.Point(), ""));
 	}
 	
 	private void initgl() {
@@ -158,6 +161,11 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 			g.frect(pos.add(-2, -2), sz.add(4, 4));
 			g.chcolor();
 			g.image(tt, pos);
+		}
+		Resource curs = ui.root.getcurs(mousepos);
+		if(!curs.loading) {
+			Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
+			g.image(curs.layer(Resource.imgc).tex(), dc);
 		}
 	}
 	
