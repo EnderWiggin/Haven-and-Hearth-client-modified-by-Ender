@@ -12,6 +12,7 @@ public class RootWidget extends Widget {
 		super(ui, new Coord(0, 0), sz);
 		this.backer = backer;
 		setfocusctl(true);
+		cursor = Resource.load("gfx/hud/curs/arw");
 	}
 	
 	public boolean globtype(char key, KeyEvent ev) {

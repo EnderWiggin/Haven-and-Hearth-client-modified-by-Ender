@@ -14,6 +14,7 @@ public class Widget implements Graphical {
 	private boolean canfocus = false, autofocus = false;
 	boolean canactivate = false, cancancel = false;
 	Widget focused;
+	Resource cursor = null;
 	static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
 	static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 		Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
@@ -214,6 +215,11 @@ public class Widget implements Graphical {
 				if(w.canfocus)
 					setfocus(w);
 			}
+		} else if(msg == "curs") {
+			if(args.length == 0)
+				cursor = null;
+			else
+				cursor = Resource.load((String)args[0], (Integer)args[1]);
 		} else {
 			System.err.println("Unhandled widget message: " + msg);
 		}
@@ -405,5 +411,20 @@ public class Widget implements Graphical {
 				return(ret);
 		}
 		return(null);
+	}
+	
+	public Resource getcurs(Coord c) {
+		Resource ret;
+		
+		for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+			if(!wdg.visible)
+				continue;
+			Coord cc = xlate(wdg.c, true);
+			if(c.isect(cc, wdg.sz)) {
+				if((ret = wdg.getcurs(c.add(cc.inv()))) != null)
+					return(ret);
+			}
+		}
+		return(cursor);
 	}
 }
