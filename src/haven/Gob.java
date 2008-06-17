@@ -8,6 +8,7 @@ public class Gob {
 	public int id, frame;
 	public final Glob glob;
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
+	Map<Integer, Indir<Resource>> olprep = new TreeMap<Integer, Indir<Resource>>();
 	Collection<Sprite> ols = new LinkedList<Sprite>();
 	
 	public Gob(Glob glob, Coord c, int id, int frame) {
@@ -24,6 +25,14 @@ public class Gob {
 	public void ctick(int dt) {
 		for(GAttrib a : attr.values())
 			a.ctick(dt);
+		for(Map.Entry<Integer, Indir<Resource>> e : olprep.entrySet()) {
+			if(e.getValue() == null)
+				continue;
+			if(e.getValue().get() != null) {
+				ols.add(Sprite.create(this, e.getValue().get()));
+				e.setValue(null);
+			}
+		}
 		for(Iterator<Sprite> i = ols.iterator(); i.hasNext();) {
 			Sprite spr = i.next();
 			spr.tick(dt);
