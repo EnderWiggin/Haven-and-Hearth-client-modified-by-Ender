@@ -10,12 +10,18 @@ public class FreeSprite extends Sprite {
 	}
 
 	public abstract class SPart extends Part {
+		public Coord doff = Coord.z;
+		
 		public SPart(int z) {
 			super(z);
 		}
 		
+		protected Coord doff() {
+			return(doff);
+		}
+		
 		protected Coord sc() {
-			return(cc.add(FreeSprite.this.cc.inv()).add(off));
+			return(cc.add(FreeSprite.this.cc.inv()).add(off).add(poff));
 		}
 		
 		public void draw(java.awt.image.BufferedImage img, java.awt.Graphics g) {}
@@ -32,6 +38,8 @@ public class FreeSprite extends Sprite {
 	public synchronized void setup(Drawer d, Coord cc, Coord off) {
 		for(Part p : parts) {
 			p.cc = cc;
+			if(p instanceof SPart)
+				p.cc = p.cc.add(((SPart)p).doff());
 			p.off = off;
 			d.addpart(p);
 		}
