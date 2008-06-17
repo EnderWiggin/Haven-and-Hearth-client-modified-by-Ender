@@ -21,12 +21,12 @@ public class Sprite {
 	}
 	
 	public static abstract class Part implements Comparable<Part> {
-		Coord cc, off, poff;
+		public Coord poff = Coord.z;
+		Coord cc, off;
 		int z;
 		
 		public Part(int z) {
 			this.z = z;
-			this.poff = Coord.z;
 		}
 		
 		public int compareTo(Part other) {
@@ -147,16 +147,22 @@ public class Sprite {
 		
 		public Frame() {}
 		
-		public void add(Resource.Image img) {
-			parts.add(new ImagePart(img));
+		public Part add(Resource.Image img) {
+			SpritePart r = new ImagePart(img);
+			parts.add(r);
+			return(r);
 		}
 		
-		public void add(BufferedImage img, int z) {
-			parts.add(new J2dPart(img, z));
+		public Part add(BufferedImage img, int z) {
+			SpritePart r = new J2dPart(img, z);
+			parts.add(r);
+			return(r);
 		}
 		
-		public void add(Tex img, int z, Coord off, Coord mcc) {
-			parts.add(new TexPart(img, z, off, mcc));
+		public Part add(Tex img, int z, Coord off, Coord mcc) {
+			SpritePart r = new TexPart(img, z, off, mcc);
+			parts.add(r);
+			return(r);
 		}
 	}
 	
