@@ -8,6 +8,7 @@ public class Gob {
 	public int id, frame;
 	public final Glob glob;
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
+	Collection<Sprite> ols = new LinkedList<Sprite>();
 	
 	public Gob(Glob glob, Coord c, int id, int frame) {
 		this.glob = glob;
@@ -23,6 +24,12 @@ public class Gob {
 	public void ctick(int dt) {
 		for(GAttrib a : attr.values())
 			a.ctick(dt);
+		for(Iterator<Sprite> i = ols.iterator(); i.hasNext();) {
+			Sprite spr = i.next();
+			spr.tick(dt);
+			if(spr.loops > 0)
+				i.remove();
+		}
 	}
 	
 	public void tick() {
@@ -79,5 +86,24 @@ public class Gob {
 		if(flw != null)
 			ret = ret.add(flw.doff);
 		return(ret);
+	}
+	
+	public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
+		Drawable d = getattr(Drawable.class);
+		Coord dro = drawoff();
+		Coord off = Coord.z;
+		if(d != null) {
+			Coord ulc = dc.add(d.getoffset().inv());
+			if(dro != null) {
+				ulc = ulc.add(dro);
+				off = off.add(dro);
+			}
+			Coord lrc = ulc.add(d.getsize());
+			if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
+				for(Sprite spr : ols)
+					spr.setup(drawer, dc, off);
+				d.setup(drawer, dc, off);
+			}
+		}
 	}
 }
