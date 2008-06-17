@@ -229,4 +229,12 @@ public class OCache implements Iterable<Gob> {
 			homo.v = v;
 		}
 	}
+	
+	public synchronized void overlay(int id, int frame, Indir<Resource> resid, int olid) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		if(!g.olprep.containsKey(olid))
+			g.olprep.put(olid, resid);
+	}
 }

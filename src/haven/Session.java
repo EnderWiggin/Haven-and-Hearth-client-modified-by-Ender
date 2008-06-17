@@ -28,6 +28,7 @@ public class Session {
 	public static final int OD_AVATAR = 9;
 	public static final int OD_FOLLOW = 10;
 	public static final int OD_HOMING = 11;
+	public static final int OD_OVERLAY = 12;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
@@ -213,6 +214,10 @@ public class Session {
 								int v = msg.uint16();
 								oc.homing(id, frame, oid, tgtc, v);
 							}
+						} else if(type == OD_OVERLAY) {
+							int resid = msg.uint16();
+							int olid = msg.int32();
+							oc.overlay(id, frame, getres(resid), olid);
 						} else if(type == OD_END) {
 							break;
 						} else {
