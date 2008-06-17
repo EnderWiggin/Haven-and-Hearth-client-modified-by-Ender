@@ -14,17 +14,19 @@ public class Sprite {
 	public final Gob gob;
 	int fno = 0, de = 0;
 	public Coord cc, sz;
+	public int loops = 0;
 	
 	public interface Drawer {
 		public void addpart(Part p);
 	}
 	
 	public static abstract class Part implements Comparable<Part> {
-		Coord cc, off;
+		Coord cc, off, poff;
 		int z;
 		
 		public Part(int z) {
 			this.z = z;
+			this.poff = Coord.z;
 		}
 		
 		public int compareTo(Part other) {
@@ -41,7 +43,7 @@ public class Sprite {
 		public abstract boolean checkhit(Coord c);
 		
 		protected Coord sc() {
-			return(cc.add(Sprite.this.cc.inv()).add(off));
+			return(cc.add(Sprite.this.cc.inv()).add(off).add(poff));
 		}
 		
 		public SpritePart(int z) {
@@ -287,7 +289,10 @@ public class Sprite {
 		de += dt;
 		while(de > frames[fno].dur) {
 			de -= frames[fno].dur;
-			fno = (fno + 1) % frames.length;
+			if(++fno >= frames.length) {
+				fno = 0;
+				loops++;
+			}
 		}
 	}
 	

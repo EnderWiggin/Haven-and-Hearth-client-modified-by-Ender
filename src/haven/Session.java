@@ -202,8 +202,12 @@ public class Session {
 							oc.follow(id, frame, oid, off);
 						} else if(type == OD_HOMING) {
 							int oid = msg.int32();
-							if(oid < 0) {
+							if(oid == -1) {
 								oc.homostop(id, frame);
+							} else if(oid == -2) {
+								Coord tgtc = msg.coord();
+								int v = msg.uint16();
+								oc.homocoord(id, frame, tgtc, v);
 							} else {
 								Coord tgtc = msg.coord();
 								int v = msg.uint16();

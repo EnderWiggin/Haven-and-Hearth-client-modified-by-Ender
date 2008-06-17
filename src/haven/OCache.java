@@ -218,4 +218,15 @@ public class OCache implements Iterable<Gob> {
 			return;
 		g.setattr(new Homing(g, oid, tc, v));
 	}
+	
+	public synchronized void homocoord(int id, int frame, Coord tc, int v) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		Homing homo = g.getattr(Homing.class);
+		if(homo != null) {
+			homo.tc = tc;
+			homo.v = v;
+		}
+	}
 }
