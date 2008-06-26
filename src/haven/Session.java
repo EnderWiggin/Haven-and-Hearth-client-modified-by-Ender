@@ -273,6 +273,8 @@ public class Session {
 				}
 			} else if(msg.type == Message.RMSG_PARTY) {
 				glob.party.msg(msg);
+			} else if(msg.type == Message.RMSG_SFX) {
+				Audio.play(getres(msg.uint16()));
 			} else {
 				throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 			}

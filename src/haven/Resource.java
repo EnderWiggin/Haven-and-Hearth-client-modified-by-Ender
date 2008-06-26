@@ -21,6 +21,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public static Class<Tileset> tileset = Tileset.class;
 	public static Class<Pagina> pagina = Pagina.class;
 	public static Class<AButton> action = AButton.class;
+	public static Class<Audio> audio = Audio.class;
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -513,6 +514,17 @@ public class Resource implements Comparable<Resource>, Serializable {
 		}
 	}
 	static {ltypes.put("sprcode", SpriteCode.class);}
+	
+	public class Audio extends Layer {
+	    transient public byte[] clip;
+	    
+	    public Audio(byte[] buf) {
+		clip = buf;
+	    }
+	    
+	    public void init() {}
+	}
+	static {ltypes.put("audio", Audio.class);}
 	
 	private void readall(InputStream in, byte[] buf) throws IOException {
 		int ret, off = 0;
