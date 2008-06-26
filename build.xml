@@ -4,7 +4,6 @@
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
-    <mkdir dir="build/res" />
   </target>
   
   <target name="haven-client" depends="build-env">
@@ -18,20 +17,14 @@
     <copy todir="build/classes/haven" file="etc/ressrv.crt" />
   </target>
   
-  <target name="resources" depends="build-env">
-    <copy todir="build/res">
-      <fileset dir="res" />
-    </copy>
-  </target>
-
   <target name="appletview" depends="build-env">
     <copy file="etc/test.html" todir="build" />
   </target>
 
-  <target name="jar" depends="haven-client, resources, appletview">
+  <target name="jar" depends="haven-client, appletview">
     <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" />
-      <fileset dir="build" includes="res/**" />
+      <fileset dir="." includes="res/**" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
 	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar" />
