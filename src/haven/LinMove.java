@@ -31,6 +31,8 @@ public class LinMove extends Moving {
 	public void ctick(int dt) {
 		double da = ((double)dt / 1000) / (((double)c) * 0.06);
 		a += da * 0.9;
+		if(a > 1)
+			a = 1;
 	}
 	
 	public void setl(int l) {
