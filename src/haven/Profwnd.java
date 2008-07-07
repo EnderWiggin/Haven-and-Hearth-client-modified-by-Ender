@@ -46,7 +46,7 @@ public class Profwnd extends HWindow {
 	    if(f != null) {
 		for(int i = 0; i < f.prt.length; i++) {
 		    if((t -= f.prt[i]) < 0) {
-			hover = String.format("%s: %.2f ms", f.nm[i], (((double)f.prt[i]) / 1000000));
+			hover = String.format("%.2f ms, %s: %.2f ms", (((double)f.total) / 1000000), f.nm[i], (((double)f.prt[i]) / 1000000));
 			break;
 		    }
 		}
