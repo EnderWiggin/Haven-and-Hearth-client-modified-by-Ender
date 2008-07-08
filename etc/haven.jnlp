@@ -11,7 +11,7 @@
     <all-permissions />
   </security>
   <resources>
-    <j2se version="1.6+" />
+    <j2se version="1.6+" max-heap-size="128M" />
     <jar href="haven.jar" />
     <property name="haven.errorhandler" value="on" />
     <property name="haven.defserv" value="sh.seatribe.se" />
