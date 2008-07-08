@@ -139,10 +139,13 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		curf.tick("draw");
 		if(System.getProperty("haven.dbtext", "off").equals("on")) {
 			if(Resource.qdepth() > 0)
-				g.atext("RQ depth: " + Resource.qdepth(), new Coord(10, 500), 0, 1);
+				g.atext("RQ depth: " + Resource.qdepth(), new Coord(10, 485), 0, 1);
 			g.atext("FPS: " + fps, new Coord(10, 545), 0, 1);
 			g.atext("Texhit: " + dth, new Coord(10, 530), 0, 1);
 			g.atext("Texmiss: " + dtm, new Coord(10, 515), 0, 1);
+			Runtime rt = Runtime.getRuntime();
+			long free = rt.freeMemory(), total = rt.totalMemory();
+			g.atext(String.format("Mem: %010d/%010d/%010d/%010d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
 		}
 		if(ui.tooltip != null) {
 			Tex tt = null;
