@@ -11,10 +11,11 @@
     <all-permissions />
   </security>
   <resources>
-    <j2se version="1.6+" />
+    <j2se version="1.6+" max-heap-size="128M" />
     <jar href="haven.jar" />
     <property name="haven.errorhandler" value="on" />
     <property name="haven.defserv" value="sh.seatribe.se" />
+    <property name="haven.fullscreen" value="off" />
     <extension name="jogl" href="http://download.java.net/media/jogl/builds/archive/jsr-231-webstart-current/jogl.jnlp" />
   </resources>
   <application-desc />
