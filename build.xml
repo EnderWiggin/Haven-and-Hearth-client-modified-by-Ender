@@ -46,4 +46,11 @@
   <target name="clean">
     <delete dir="build" />
   </target>
+  <target depends="jars" name="profile">
+    <nbprofiledirect>
+    </nbprofiledirect>
+      <java fork="true" jar="build/haven.jar">
+        <jvmarg value="${profiler.info.jvmargs.agent}"/>
+      </java>
+  </target>
 </project>
