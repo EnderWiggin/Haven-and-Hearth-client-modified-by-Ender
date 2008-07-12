@@ -42,6 +42,7 @@ public class MCache {
 		public Tile tcache[][][];
 		public int ol[][];
 		Collection<Gob> fo = new LinkedList<Gob>();
+		boolean regged = false;
 		public long lastreq = 0;
 		Coord gc;
 		OCache oc = sess.glob.oc;
@@ -63,10 +64,14 @@ public class MCache {
 		}
 		
 		public void remove() {
-			oc.lrem(fo);
+			if(regged) {
+				oc.lrem(fo);
+				regged = false;
+			}
 		}
 		
 		public void makeflavor() {
+			fo.clear();
 			Coord c = new Coord(0, 0);
 			Coord tc = gc.mul(cmaps);
 			for(c.y = 0; c.y < cmaps.x; c.y++) {
@@ -83,7 +88,10 @@ public class MCache {
 					}
 				}
 			}
-			oc.ladd(fo);
+			if(!regged) {
+				oc.ladd(fo);
+				regged = true;
+			}
 		}
 		
 		public int randoom(Coord c, int r) {
@@ -294,6 +302,10 @@ public class MCache {
 					}
 					req.remove(c);
 					g.makeflavor();
+					if(grids.containsKey(c)) {
+						grids.get(c).remove();
+						grids.remove(c);
+					}
 					replace(grids.put(c, g));
 				}
 			}
