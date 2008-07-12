@@ -109,6 +109,7 @@ public class MCache {
 		sets.add(loadset("gfx/tiles/dirt/dirt"));
 		sets.add(loadset("gfx/tiles/playa/playa"));
 		sets.add(loadset("gfx/tiles/water/water"));
+		sets.add(loadset("gfx/tiles/plowed/plowed"));
 		gen = new Random();
 	}
 
