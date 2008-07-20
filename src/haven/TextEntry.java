@@ -87,33 +87,36 @@ public class TextEntry extends SSWidget {
 	}
 	
 	public boolean type(char c, KeyEvent ev) {
-		if(c == 8) {
-			if(pos > 0) {
+		try {
+			if(c == 8) {
+				if(pos > 0) {
+					if(pos < text.length())
+						text = text.substring(0, pos - 1) + text.substring(pos);
+					else
+						text = text.substring(0, pos - 1);
+					pos--;
+				}
+				return(true);
+			} else if(c == 10) {
+				if(!canactivate)
+					return(false);
+				wdgmsg("activate", text);
+				return(true);
+			} else if(c == 127) {
 				if(pos < text.length())
-					text = text.substring(0, pos - 1) + text.substring(pos);
-				else
-					text = text.substring(0, pos - 1);
-				pos--;
+					text = text.substring(0, pos) + text.substring(pos + 1);
+				return(true);
+			} else if(c >= 32) {
+				String nt = text.substring(0, pos) + c + text.substring(pos);
+				if((limit == 0) || ((limit > 0) && (nt.length() <= limit)) || ((limit == -1) && (textwidth(nt) < sz.x))) {
+					text = nt;
+					pos++;
+				}
+				return(true);
 			}
-			return(true);
-		} else if(c == 10) {
-			if(!canactivate)
-				return(false);
-			wdgmsg("activate", text);
-			return(true);
-		} else if(c == 127) {
-			if(pos < text.length())
-				text = text.substring(0, pos) + text.substring(pos + 1);
-			return(true);
-		} else if(c >= 32) {
-			String nt = text.substring(0, pos) + c + text.substring(pos);
-			if((limit == 0) || ((limit > 0) && (nt.length() <= limit)) || ((limit == -1) && (textwidth(nt) < sz.x))) {
-				text = nt;
-				pos++;
-			}
-			return(true);
+		} finally {
+			render();
 		}
-		render();
 		return(false);
 	}
 	
