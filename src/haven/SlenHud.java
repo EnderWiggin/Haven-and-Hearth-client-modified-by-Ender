@@ -56,6 +56,7 @@ public class SlenHud extends Widget {
 		void toggle() {
 			st = System.currentTimeMillis();
 			w = !w;
+			c = !w;
 		}
 		
 		void tick() {
