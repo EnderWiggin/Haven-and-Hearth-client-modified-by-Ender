@@ -1,6 +1,7 @@
 package haven;
 
 import java.util.*;
+import java.awt.event.KeyEvent;
 
 public class SlenHud extends Widget {
 	public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
@@ -50,6 +51,11 @@ public class SlenHud extends Widget {
 		void show() {
 			st = System.currentTimeMillis();
 			w = true;
+		}
+		
+		void toggle() {
+			st = System.currentTimeMillis();
+			w = !w;
 		}
 		
 		void tick() {
@@ -220,5 +226,13 @@ public class SlenHud extends Widget {
 			return(true);
 		}
 		return(false);
+	}
+	
+	public boolean globtype(char ch, KeyEvent ev) {
+		if(ev.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+			vc.toggle();
+			return(true);
+		}
+		return(super.globtype(ch, ev));
 	}
 }
