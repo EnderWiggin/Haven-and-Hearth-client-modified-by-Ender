@@ -34,13 +34,13 @@ public class RootWidget extends Widget {
 			    new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
 			} else if(key == '~') {
 			    new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
-			} else {
+			} else if(key != 0) {
 				wdgmsg("gk", (int)key);
 			}
 		}
 		return(true);
 	}
-	
+
 	public GraphicsConfiguration getconf() {
 		return(backer.getconf());
 	}
