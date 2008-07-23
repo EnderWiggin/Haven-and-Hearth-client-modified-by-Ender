@@ -120,10 +120,12 @@ public class UI {
 	}
 	
 	public void keydown(KeyEvent ev) {
-		if(keygrab == null)
-			root.keydown(ev);
-		else
+		if(keygrab == null) {
+			if(!root.keydown(ev))
+				root.globtype((char)0, ev);
+		} else {
 			keygrab.keydown(ev);
+		}
 	}
 	
 	public void keyup(KeyEvent ev) {
