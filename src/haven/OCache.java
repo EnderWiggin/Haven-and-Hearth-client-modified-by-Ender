@@ -237,4 +237,11 @@ public class OCache implements Iterable<Gob> {
 		if(!g.olprep.containsKey(olid))
 			g.olprep.put(olid, resid);
 	}
+	
+	public synchronized void sprdata(int id, int frame, Message data) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		g.setattr(new SprData(g, data));
+	}
 }

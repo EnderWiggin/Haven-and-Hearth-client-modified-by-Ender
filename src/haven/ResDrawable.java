@@ -8,6 +8,11 @@ public class ResDrawable extends Drawable {
 	public ResDrawable(Gob gob, Indir<Resource> res) {
 		super(gob);
 		this.res = res;
+		gob.notify(SprData.class, new Gob.ANotif<SprData>() {
+			public void ch(SprData d) {
+				spr = null;
+			}
+		});
 		init();
 	}
 	

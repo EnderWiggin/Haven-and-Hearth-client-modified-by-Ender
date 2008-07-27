@@ -41,6 +41,16 @@ public class Message implements java.io.Serializable {
 		blob = new byte[0];
 	}
 	
+	public Message clone() {
+		return(new Message(type, blob));
+	}
+	
+	public Message derive(int type, int len) {
+		int ooff = off;
+		off += len;
+		return(new Message(type, blob, ooff, len));
+	}
+	
 	public void addbytes(byte[] src) {
 		byte[] n = new byte[blob.length + src.length];
 		System.arraycopy(blob, 0, n, 0, blob.length);
