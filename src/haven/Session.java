@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 3;
+	public static final int PVER = 4;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -29,6 +29,7 @@ public class Session {
 	public static final int OD_FOLLOW = 10;
 	public static final int OD_HOMING = 11;
 	public static final int OD_OVERLAY = 12;
+	public static final int OD_SPRDATA= 13;
 	public static final int OD_END = 255;
 	public static final int SESSERR_AUTH = 1;
 	public static final int SESSERR_BUSY = 2;
@@ -218,6 +219,10 @@ public class Session {
 							int resid = msg.uint16();
 							int olid = msg.int32();
 							oc.overlay(id, frame, getres(resid), olid);
+						} else if(type == OD_SPRDATA) {
+							int datlen = msg.uint8();
+							Message data = msg.derive(0, datlen);
+							oc.sprdata(id, frame, data);
 						} else if(type == OD_END) {
 							break;
 						} else {

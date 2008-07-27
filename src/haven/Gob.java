@@ -1,6 +1,7 @@
 package haven;
 
 import java.util.*;
+import java.lang.reflect.*;
 
 public class Gob {
 	public Coord rc, sc;
@@ -10,6 +11,7 @@ public class Gob {
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
 	Map<Integer, Indir<Resource>> olprep = new TreeMap<Integer, Indir<Resource>>();
 	Collection<Sprite> ols = new LinkedList<Sprite>();
+	private Map<Class<? extends GAttrib>, Set<ANotif<?>>> notifs = new HashMap<Class<? extends GAttrib>, Set<ANotif<?>>>();
 	
 	public Gob(Glob glob, Coord c, int id, int frame) {
 		this.glob = glob;
@@ -20,6 +22,10 @@ public class Gob {
 	
 	public Gob(Glob glob, Coord c) {
 		this(glob, c, 0, 0);
+	}
+	
+	public static interface ANotif<T extends GAttrib> {
+		public void ch(T n);
 	}
 	
 	public void ctick(int dt) {
@@ -73,6 +79,22 @@ public class Gob {
 	public void setattr(GAttrib a) {
 		Class<? extends GAttrib> ac = attrclass(a.getClass());
 		attr.put(ac, a);
+		Set<ANotif<?>> ns;
+		synchronized(notifs) {
+			ns = notifs.get(ac);
+		}
+		if(ns != null) {
+			synchronized(ns) {
+				for(ANotif<?> n : ns) {
+					try {
+						Method cpbardslen = n.getClass().getMethod("ch", GAttrib.class);
+						cpbardslen.invoke(n, a);
+					} catch(Exception e) {
+						throw(new RuntimeException(e));
+					}
+				}
+			}
+		}
 	}
 	
 	public <C extends GAttrib> C getattr(Class<C> c) {
@@ -113,6 +135,20 @@ public class Gob {
 					spr.setup(drawer, dc, off);
 				d.setup(drawer, dc, off);
 			}
+		}
+	}
+	
+	public <T extends GAttrib> void notify(Class<T> c, ANotif<T> n) {
+		Set<ANotif<?>> ns;
+		synchronized(notifs) {
+			ns = notifs.get(c);
+			if(ns == null) {
+				ns = new HashSet<ANotif<?>>();
+				notifs.put(c, ns);
+			}
+		}
+		synchronized(ns) {
+			ns.add(n);
 		}
 	}
 }
