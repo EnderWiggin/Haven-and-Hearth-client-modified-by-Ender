@@ -5,7 +5,7 @@ import haven.Resource.Tileset;
 import haven.Resource.Tile;
 
 public class MCache {
-	List<Tileset> sets = new LinkedList<Tileset>();
+	Tileset[] sets = null;
 	Grid last = null;
 	java.util.Map<Coord, Grid> req = new TreeMap<Coord, Grid>();
 	java.util.Map<Coord, Grid> grids = new TreeMap<Coord, Grid>();
@@ -76,7 +76,7 @@ public class MCache {
 			Coord tc = gc.mul(cmaps);
 			for(c.y = 0; c.y < cmaps.x; c.y++) {
 				for(c.x = 0; c.x < cmaps.y; c.x++) {
-					Tileset set = sets.get(tiles[c.x][c.y]);
+					Tileset set = sets[tiles[c.x][c.y]];
 					if(set.flavobjs.size() > 0) {
 						Random rnd = mkrandoom(c);
 						if(rnd.nextInt(set.flavprob) == 0) {
@@ -111,13 +111,16 @@ public class MCache {
 	
 	public MCache(Session sess) {
 		this.sess = sess;
-		sets.add(loadset("gfx/tiles/wald/wald"));
-		sets.add(loadset("gfx/tiles/grass/grass"));
-		sets.add(loadset("gfx/tiles/swamp/swamp"));
-		sets.add(loadset("gfx/tiles/dirt/dirt"));
-		sets.add(loadset("gfx/tiles/playa/playa"));
-		sets.add(loadset("gfx/tiles/water/water"));
-		sets.add(loadset("gfx/tiles/plowed/plowed"));
+		sets = new Tileset[256];
+		sets[0] = loadset("gfx/tiles/wald/wald");
+		sets[1] = loadset("gfx/tiles/grass/grass");
+		sets[2] = loadset("gfx/tiles/swamp/swamp");
+		sets[3] = loadset("gfx/tiles/dirt/dirt");
+		sets[4] = loadset("gfx/tiles/playa/playa");
+		sets[5] = loadset("gfx/tiles/water/water");
+		sets[6] = loadset("gfx/tiles/plowed/plowed");
+		sets[7] = loadset("gfx/tiles/floor-wood/floor-wood");
+		sets[255] = loadset("gfx/tiles/nil/nil");
 		gen = new Random();
 	}
 
@@ -196,6 +199,8 @@ public class MCache {
 			int cy[] = {0, 0, 2, 2};
 			ArrayList<Tile> buf = new ArrayList<Tile>();
 			for(int i = gettilen(tc) - 1; i >= 0; i--) {
+				if((sets[i] == null) || (sets[i].btrans == null) || (sets[i].ctrans == null))
+					continue;
 				int bm = 0, cm = 0;
 				for(int o = 0; o < 4; o++) {
 					if(tr[bx[o]][by[o]] == i)
@@ -204,9 +209,9 @@ public class MCache {
 						cm |= 1 << o;
 				}
 				if(bm != 0)
-					buf.add(sets.get(i).btrans[bm - 1].pick(randoom(tc)));
+					buf.add(sets[i].btrans[bm - 1].pick(randoom(tc)));
 				if(cm != 0)
-					buf.add(sets.get(i).ctrans[cm - 1].pick(randoom(tc)));
+					buf.add(sets[i].ctrans[cm - 1].pick(randoom(tc)));
 			}
 			g.tcache[gtc.x][gtc.y] = buf.toArray(new Tile[0]);
 		}
@@ -226,7 +231,7 @@ public class MCache {
 			return(null);
 		Coord gtc = tc.mod(cmaps);
 		if(g.gcache[gtc.x][gtc.y] == null) {
-			Tileset ts = sets.get(g.gettile(gtc));
+			Tileset ts = sets[g.gettile(gtc)];
 			g.gcache[gtc.x][gtc.y] = ts.ground.pick(randoom(tc));
 		}
 		return(g.gcache[gtc.x][gtc.y]);
@@ -250,7 +255,7 @@ public class MCache {
 		int tn = gettilen(tc);
 		if(tn == -1)
 			return(null);
-		return(sets.get(tn));
+		return(sets[tn]);
 	}
 	
 	public int getol(Coord tc) {
@@ -310,6 +315,11 @@ public class MCache {
 				}
 			}
 		}
+	}
+	
+	public void trimall() {
+		grids.clear();
+		req.clear();
 	}
 	
 	public void trim(Coord cc) {

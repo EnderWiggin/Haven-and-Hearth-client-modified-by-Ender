@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 4;
+	public static final int PVER = 5;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -151,8 +151,12 @@ public class Session {
 		private void getobjdata(Message msg) {
 			OCache oc = glob.oc;
 			while(msg.off < msg.blob.length) {
+				int fl = msg.uint8();
 				int id = msg.int32();
 				int frame = msg.int32();
+				if((fl & 1) != 0) {
+					oc.remove(id, frame - 1);
+				}
 				synchronized(oc) {
 					while(true) {
 						int type = msg.uint8();
