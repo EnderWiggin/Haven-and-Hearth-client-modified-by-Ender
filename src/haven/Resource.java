@@ -156,7 +156,9 @@ public class Resource implements Comparable<Resource>, Serializable {
 				try {
 					res.load(getres(res.name));
 					return;
-				} catch(LoadException e) {}
+				} catch(LoadException e) {
+					e.printStackTrace();
+				}
 				res.load(getreshttp(res));
 			} finally {
 				if(in != null)
@@ -290,14 +292,30 @@ public class Resource implements Comparable<Resource>, Serializable {
 		public Coord cc;
 		public Coord bc, bs;
 		public Coord sz;
+		public Coord[][] ep;
 		
 		public Neg(byte[] buf) {
+			int off;
+			
 			cc = cdec(buf, 0);
 			bc = cdec(buf, 4);
 			bs = cdec(buf, 8);
 			sz = cdec(buf, 12);
-			bc = MapView.s2m(bc.add(cc.inv()));
-			bs = MapView.s2m(bs.add(cc.inv())).add(bc.inv());
+			bc = MapView.s2m(bc);
+			bs = MapView.s2m(bs).add(bc.inv());
+			ep = new Coord[8][0];
+			int en = buf[16];
+			off = 17;
+			for(int i = 0; i < en; i++) {
+				int epid = buf[off];
+				int cn = Utils.uint16d(buf, off + 1);
+				off += 3;
+				ep[epid] = new Coord[cn];
+				for(int o = 0; o < cn; o++) {
+					ep[epid][o] = cdec(buf, off);
+					off += 4;
+				}
+			}
 		}
 		
 		public void init() {}
