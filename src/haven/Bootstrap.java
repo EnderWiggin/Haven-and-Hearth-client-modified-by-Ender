@@ -33,47 +33,45 @@ public class Bootstrap implements UI.Receiver {
 		ui = hp.newui(null);
 		ui.setreceiver(this);
 		ui.bind(new LoginScreen(ui.root), 1);
-		String username, password;
+		String username;
 		boolean savepw = false;
+		Utils.setpref("password", "");
 		username = Utils.getpref("username", "");
-		password = Utils.getpref("password", "");
-		if(!password.equals(""))
-			savepw = true;
 		retry: do {
-			ui.uimsg(1, "state", 0);
-			ui.uimsg(1, "ld", username, password, savepw);
-			while(true) {
-				Message msg;
-				synchronized(msgs) {
-					while((msg = msgs.poll()) == null)
-						msgs.wait();
-				}
-				if(msg.id == 1) {
-					if(msg.name == "login") {
-						username = (String)msg.args[0];
-						password = (String)msg.args[1];
-						break;
-					} else if(msg.name == "savepw") {
-						savepw = (Boolean)msg.args[0];
+			byte[] cookie;
+			if(true) {
+				String password;
+				ui.uimsg(1, "passwd", username, savepw);
+				while(true) {
+					Message msg;
+					synchronized(msgs) {
+						while((msg = msgs.poll()) == null)
+							msgs.wait();
+					}
+					if(msg.id == 1) {
+						if(msg.name == "login") {
+							username = (String)msg.args[0];
+							password = (String)msg.args[1];
+							savepw = (Boolean)msg.args[2];
+							break;
+						}
 					}
 				}
-			}
-			ui.uimsg(1, "state", 1);
-			ui.uimsg(1, "prg", "Authenticating...");
-			byte[] cookie;
-			try {
-			    AuthClient auth = new AuthClient(address, username);
-			    if(!auth.trypasswd(password)) {
-				auth.close();
-				password = "";
-				ui.uimsg(1, "error", "Username or password incorrect");
-				continue retry;
-			    }
-			    cookie = auth.cookie;
-			    auth.close();
-			} catch(java.io.IOException e) {
-			    ui.uimsg(1, "error", e.getMessage());
-			    continue retry;
+				ui.uimsg(1, "prg", "Authenticating...");
+				try {
+					AuthClient auth = new AuthClient(address, username);
+					if(!auth.trypasswd(password)) {
+						auth.close();
+						password = "";
+						ui.uimsg(1, "error", "Username or password incorrect");
+						continue retry;
+					}
+					cookie = auth.cookie;
+					auth.close();
+				} catch(java.io.IOException e) {
+					ui.uimsg(1, "error", e.getMessage());
+					continue retry;
+				}
 			}
 			ui.uimsg(1, "prg", "Connecting...");
 			try {
@@ -86,10 +84,6 @@ public class Bootstrap implements UI.Receiver {
 			while(true) {
 				if(sess.state == "") {
 					Utils.setpref("username", username);
-					if(savepw)
-						Utils.setpref("password", password);
-					else
-						Utils.setpref("password", "");
 					ui.destroy(1);
 					break retry;
 				} else if(sess.connfailed != 0) {
@@ -97,7 +91,6 @@ public class Bootstrap implements UI.Receiver {
 					switch(sess.connfailed) {
 					case 1:
 						error = "Invalid authentication token";
-						password = "";
 						break;
 					case 2:
 						error = "Already logged in";

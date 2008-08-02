@@ -6,7 +6,7 @@ public class Label extends Widget {
 	Text.Foundry f;
 	Text text;
 	String texts;
-	Color col = Color.BLACK;
+	Color col = Color.WHITE;
 	
 	static {
 		Widget.addtype("lbl", new WidgetFactory() {

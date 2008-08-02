@@ -1,12 +1,9 @@
 package haven;
 
 public class LoginScreen extends Widget {
-	TextEntry user, pass;
-	CheckBox savepass;
-	Label userl, passl;
+	Login cur;
 	Text error;
 	IButton btn;
-	int state = 0;
 	static Text.Foundry textf;
 	Tex bg = Resource.loadtex("gfx/loginscr");
 	Tex logo = Resource.loadtex("gfx/logo");
@@ -25,92 +22,108 @@ public class LoginScreen extends Widget {
 		mklogin();
 	}
 
-    private void mklogin() {
-    	synchronized(ui) {
-    		userl = new Label(new Coord(345, 310), this, "User name", textf);
-    		userl.setcolor(java.awt.Color.WHITE);
-    		user = new TextEntry(new Coord(345, 330), new Coord(150, 20), this, "");
-    		passl = new Label(new Coord(345, 370), this, "Password", textf);
-    		passl.setcolor(java.awt.Color.WHITE);
-    		pass = new TextEntry(new Coord(345, 390), new Coord(150, 20), this, "");
-    		pass.pw = true;
-    		btn = new IButton(new Coord(373, 460), this, Resource.loadimg("gfx/hud/buttons/loginu"), Resource.loadimg("gfx/hud/buttons/logind"));
-    		savepass = new CheckBox(new Coord(345, 420), this, "Save password");
-    		setfocus(user);
-    		progress(null);
-    	}
-    }
+	private static abstract class Login extends Widget {
+		private Login(Coord c, Coord sz, Widget parent) {
+			super(c, sz, parent);
+		}
+		
+		abstract Object[] data();
+		abstract boolean enter();
+	}
+
+	private class Pwbox extends Login {
+		TextEntry user, pass;
+		CheckBox savepass;
+		
+		private Pwbox(String username, boolean save) {
+			super(new Coord(345, 310), new Coord(150, 100), LoginScreen.this);
+			setfocustab(true);
+			Label lbl;
+			lbl = new Label(new Coord(0, 0), this, "User name", textf);
+			user = new TextEntry(new Coord(0, 20), new Coord(150, 20), this, username);
+			lbl = new Label(new Coord(0, 60), this, "Password", textf);
+			pass = new TextEntry(new Coord(0, 80), new Coord(150, 20), this, "");
+			pass.pw = true;
+			savepass = new CheckBox(new Coord(0, 110), this, "Save identity");
+			if(user.text.equals(""))
+				setfocus(user);
+			else
+				setfocus(pass);
+		}
+		
+		Object[] data() {
+			return(new Object[] {user.text, pass.text, savepass.a});
+		}
+		
+		boolean enter() {
+			if(user.text.equals("")) {
+				setfocus(user);
+				return(false);
+			} else if(pass.text.equals("")) {
+				setfocus(pass);
+				return(false);
+			} else {
+				return(true);
+			}
+		}
+	}
+
+	private void mklogin() {
+		synchronized(ui) {
+			btn = new IButton(new Coord(373, 460), this, Resource.loadimg("gfx/hud/buttons/loginu"), Resource.loadimg("gfx/hud/buttons/logind"));
+			progress(null);
+		}
+	}
 	
-    private void error(String error) {
-    	synchronized(ui) {
-    		if(this.error != null)
-    			this.error = null;
-    		if(error != null)
-    			this.error = textf.render(error, java.awt.Color.RED);
-    	}
-    }
+	private void error(String error) {
+		synchronized(ui) {
+			if(this.error != null)
+				this.error = null;
+			if(error != null)
+				this.error = textf.render(error, java.awt.Color.RED);
+		}
+	}
     
-    private void progress(String p) {
-    	synchronized(ui) {
-    		if(progress != null)
-    			progress = null;
-    		if(p != null)
-    			progress = textf.render(p, java.awt.Color.WHITE);
-    	}
-    }
+	private void progress(String p) {
+		synchronized(ui) {
+			if(progress != null)
+				progress = null;
+			if(p != null)
+				progress = textf.render(p, java.awt.Color.WHITE);
+		}
+	}
     
-    private void nologin() {
-    	ui.destroy(user);
-    	ui.destroy(pass);
-    	ui.destroy(btn);
-    	ui.destroy(userl);
-    	ui.destroy(passl);
-    	ui.destroy(savepass);
-    	user = null;
-    	pass = null;
-    	btn = null;
-    	userl = null;
-    	passl = null;
-    	savepass = null;
-    	error(null);
-    }
+	private void clear() {
+		if(cur != null) {
+			ui.destroy(cur);
+			cur = null;
+			ui.destroy(btn);
+			btn = null;
+		}
+		progress(null);
+	}
     
 	public void wdgmsg(Widget sender, String msg, Object... args) {
 		if(sender == btn) {
-			super.wdgmsg("login", user.text, pass.text);
-			return;
-		} else if(sender == savepass) {
-			super.wdgmsg("savepw", savepass.a);
+			if(cur.enter())
+				super.wdgmsg("login", cur.data());
 			return;
 		}
 		super.wdgmsg(sender, msg, args);
 	}
 	
 	public void uimsg(String msg, Object... args) {
-		if(msg == "state") {
-			int ns = (Integer)args[0];
-			if(ns != state) {
-				if(ns == 0)
-					mklogin();
-				else if(ns == 1)
-					nologin();
-				state = ns;
-			}
-		} else if(msg == "error") {
-			error((String)args[0]);
-		} else if(msg == "prg") {
-			progress((String)args[0]);
-		} else if(msg == "ld") {
-			if(state == 0) {
-				user.settext((String)args[0]);
-				pass.settext((String)args[1]);
-				savepass.a = (Boolean)args[2];
-				if(user.text.equals(""))
-					setfocus(user);
-				else if(pass.text.equals(""))
-					setfocus(pass);
-				else
-					setfocus(user);
+		synchronized(ui) {
+			if(msg == "passwd") {
+				clear();
+				cur = new Pwbox((String)args[0], (Boolean)args[1]);
+				mklogin();
+			} else if(msg == "error") {
+				error((String)args[0]);
+			} else if(msg == "prg") {
+				error(null);
+				clear();
+				progress((String)args[0]);
 			}
 		}
 	}
@@ -124,13 +137,9 @@ public class LoginScreen extends Widget {
 	}
 	
 	public boolean type(char k, java.awt.event.KeyEvent ev) {
-		if((k == 10) && (state == 0)) {
-			if(user.text.equals(""))
-				setfocus(user);
-			else if(pass.text.equals(""))
-				setfocus(pass);
-			else
-				wdgmsg("login", user.text, pass.text);
+		if(k == 10) {
+			if((cur != null) && cur.enter())
+				wdgmsg("login", cur.data());
 			return(true);
 		}
 		return(super.type(k, ev));
