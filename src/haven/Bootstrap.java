@@ -36,10 +36,48 @@ public class Bootstrap implements UI.Receiver {
 		String username;
 		boolean savepw = false;
 		Utils.setpref("password", "");
+		byte[] token = null;
+		if(Utils.getpref("savedtoken", "").length() == 64)
+			token = Utils.hex2byte(Utils.getpref("savedtoken", null));
 		username = Utils.getpref("username", "");
 		retry: do {
 			byte[] cookie;
-			if(true) {
+			if(token != null) {
+				savepw = true;
+				ui.uimsg(1, "token", username);
+				while(true) {
+					Message msg;
+					synchronized(msgs) {
+						while((msg = msgs.poll()) == null)
+							msgs.wait();
+					}
+					if(msg.id == 1) {
+						if(msg.name == "login")
+							break;
+					}
+				}
+				ui.uimsg(1, "prg", "Authenticating...");
+				AuthClient auth = null;
+				try {
+					auth = new AuthClient(address, username);
+					if(!auth.trytoken(token)) {
+						auth.close();
+						token = null;
+						Utils.setpref("savedtoken", "");
+						ui.uimsg(1, "error", "Invalid save");
+						continue retry;
+					}
+					cookie = auth.cookie;
+				} catch(java.io.IOException e) {
+					ui.uimsg(1, "error", e.getMessage());
+					continue retry;
+				} finally {
+					try {
+						if(auth != null)
+							auth.close();
+					} catch(java.io.IOException e) {}
+				}
+			} else {
 				String password;
 				ui.uimsg(1, "passwd", username, savepw);
 				while(true) {
@@ -58,8 +96,9 @@ public class Bootstrap implements UI.Receiver {
 					}
 				}
 				ui.uimsg(1, "prg", "Authenticating...");
+				AuthClient auth = null;
 				try {
-					AuthClient auth = new AuthClient(address, username);
+					auth = new AuthClient(address, username);
 					if(!auth.trypasswd(password)) {
 						auth.close();
 						password = "";
@@ -67,10 +106,18 @@ public class Bootstrap implements UI.Receiver {
 						continue retry;
 					}
 					cookie = auth.cookie;
-					auth.close();
+					if(savepw) {
+						if(auth.gettoken())
+							Utils.setpref("savedtoken", Utils.byte2hex(auth.token));
+					}
 				} catch(java.io.IOException e) {
 					ui.uimsg(1, "error", e.getMessage());
 					continue retry;
+				} finally {
+					try {
+						if(auth != null)
+							auth.close();
+					} catch(java.io.IOException e) {}
 				}
 			}
 			ui.uimsg(1, "prg", "Connecting...");

@@ -4,13 +4,14 @@ public class LoginScreen extends Widget {
 	Login cur;
 	Text error;
 	IButton btn;
-	static Text.Foundry textf;
+	static Text.Foundry textf, textfs;
 	Tex bg = Resource.loadtex("gfx/loginscr");
 	Tex logo = Resource.loadtex("gfx/logo");
 	Text progress = null;
 	
 	static {
 		textf = new Text.Foundry(new java.awt.Font("Sans", java.awt.Font.PLAIN, 16));
+		textfs = new Text.Foundry(new java.awt.Font("Sans", java.awt.Font.PLAIN, 14));
 	}
 	
 	public LoginScreen(Widget parent) {
@@ -36,19 +37,22 @@ public class LoginScreen extends Widget {
 		CheckBox savepass;
 		
 		private Pwbox(String username, boolean save) {
-			super(new Coord(345, 310), new Coord(150, 100), LoginScreen.this);
+			super(new Coord(345, 310), new Coord(150, 150), LoginScreen.this);
 			setfocustab(true);
-			Label lbl;
-			lbl = new Label(new Coord(0, 0), this, "User name", textf);
+			new Label(new Coord(0, 0), this, "User name", textf);
 			user = new TextEntry(new Coord(0, 20), new Coord(150, 20), this, username);
-			lbl = new Label(new Coord(0, 60), this, "Password", textf);
+			new Label(new Coord(0, 60), this, "Password", textf);
 			pass = new TextEntry(new Coord(0, 80), new Coord(150, 20), this, "");
 			pass.pw = true;
-			savepass = new CheckBox(new Coord(0, 110), this, "Save identity");
+			savepass = new CheckBox(new Coord(0, 110), this, "Remember me");
+			savepass.a = save;
 			if(user.text.equals(""))
 				setfocus(user);
 			else
 				setfocus(pass);
+		}
+		
+		public void wdgmsg(Widget sender, String name, Object... args) {
 		}
 		
 		Object[] data() {
@@ -65,6 +69,38 @@ public class LoginScreen extends Widget {
 			} else {
 				return(true);
 			}
+		}
+	}
+	
+	private class Tokenbox extends Login {
+		Text label;
+		Button btn;
+		
+		private Tokenbox(String username) {
+			super(new Coord(295, 310), new Coord(250, 100), LoginScreen.this);
+			label = textfs.render("Identity is saved for " + username, java.awt.Color.WHITE);
+			btn = new Button(new Coord(75, 30), 100, this, "Forget me");
+		}
+		
+		Object[] data() {
+			return(new Object[0]);
+		}
+		
+		boolean enter() {
+			return(true);
+		}
+		
+		public void wdgmsg(Widget sender, String name, Object... args) {
+			if(sender == btn) {
+				LoginScreen.this.wdgmsg("forget");
+				return;
+			}
+			super.wdgmsg(sender, name, args);
+		}
+		
+		public void draw(GOut g) {
+			g.image(label.tex(), new Coord((sz.x / 2) - (label.sz().x / 2), 0));
+			super.draw(g);
 		}
 	}
 
@@ -117,6 +153,10 @@ public class LoginScreen extends Widget {
 			if(msg == "passwd") {
 				clear();
 				cur = new Pwbox((String)args[0], (Boolean)args[1]);
+				mklogin();
+			} else if(msg == "token") {
+				clear();
+				cur = new Tokenbox((String)args[0]);
 				mklogin();
 			} else if(msg == "error") {
 				error((String)args[0]);

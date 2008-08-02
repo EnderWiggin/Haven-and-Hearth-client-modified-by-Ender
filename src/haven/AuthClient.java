@@ -9,10 +9,12 @@ public class AuthClient {
     private static final SslHelper ssl;
     private static final int CMD_USR = 1;
     private static final int CMD_PASSWD = 2;
+    private static final int CMD_GETTOKEN = 3;
+    private static final int CMD_USETOKEN = 4;
     private Socket sk;
     private InputStream skin;
     private OutputStream skout;
-    public byte[] cookie;
+    public byte[] cookie, token;
     
     static {
 	ssl = new SslHelper();
@@ -62,6 +64,28 @@ public class AuthClient {
 	Message rpl = recvmsg();
 	if(rpl.type == 0) {
 	    cookie = rpl.blob;
+	    return(true);
+	} else {
+	    return(false);
+	}
+    }
+    
+    public boolean trytoken(byte[] token) throws IOException {
+	sendmsg(new Message(CMD_USETOKEN, token));
+	Message rpl = recvmsg();
+	if(rpl.type == 0) {
+	    cookie = rpl.blob;
+	    return(true);
+	} else {
+	    return(false);
+	}
+    }
+    
+    public boolean gettoken() throws IOException {
+	sendmsg(new Message(CMD_GETTOKEN));
+	Message rpl = recvmsg();
+	if(rpl.type == 0) {
+	    token = rpl.blob;
 	    return(true);
 	} else {
 	    return(false);
