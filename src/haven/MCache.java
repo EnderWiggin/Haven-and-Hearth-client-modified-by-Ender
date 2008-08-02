@@ -120,6 +120,7 @@ public class MCache {
 		sets[5] = loadset("gfx/tiles/water/water");
 		sets[6] = loadset("gfx/tiles/plowed/plowed");
 		sets[7] = loadset("gfx/tiles/floor-wood/floor-wood");
+		sets[8] = loadset("gfx/tiles/floor-mine/mine");
 		sets[255] = loadset("gfx/tiles/nil/nil");
 		gen = new Random();
 	}

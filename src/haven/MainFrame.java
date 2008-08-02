@@ -66,7 +66,7 @@ public class MainFrame extends Frame implements Runnable {
 		ui.start();
 		try {
 			while(true) {
-				Bootstrap bill = new Bootstrap(System.getProperty("haven.srvlist", "off").equals("on"));
+				Bootstrap bill = new Bootstrap();
 				String defaddr = System.getProperty("haven.defserv");
 				if(defaddr != null)
 					bill.setaddr(defaddr);

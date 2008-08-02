@@ -1,71 +1,102 @@
 package haven;
 
 import java.net.*;
+import java.util.*;
 
 public class Bootstrap implements UI.Receiver {
 	UI ui;
 	Session sess;
-	String address, defaddr;
-	String username, password;
-	boolean servlist;
-	int cfocus = 0;
+	String address;
+	Queue<Message> msgs = new LinkedList<Message>();
 	
-	public Bootstrap(boolean servlist) {
-		defaddr = "127.0.0.1";
-		this.servlist = servlist;
+	public static class Message {
+		int id;
+		String name;
+		Object[] args;
+		
+		public Message(int id, String name, Object... args) {
+			this.id = id;
+			this.name = name;
+			this.args = args;
+		}
+	}
+	
+	public Bootstrap() {
+		address = "127.0.0.1";
 	}
 	
 	public void setaddr(String addr) {
-		defaddr = addr;
+		address = addr;
 	}
 	
 	public Session run(HavenPanel hp) throws InterruptedException {
 		ui = hp.newui(null);
 		ui.setreceiver(this);
-		ui.newwidget(5, "cnt", new Coord(0, 0), 0, new Coord(800, 600));
-		ui.uimsg(5, "tabfocus", 1);
-		ui.newwidget(4, "img", new Coord(0, 0), 5, "gfx/loginscr");
-		//ui.newwidget(1, "text", new Coord(100, 100), 5, new Coord(100, 20), defaddr);
-		address = defaddr;
-		if(servlist) {
-			ui.newwidget(1, "lb", new Coord(50, 50), 5, new Object[] {new Coord(200, 300),
-				"127.0.0.1", "localhost",
-				"192.168.0.116", "dolda",
-				"192.168.0.144", "server",
-				"sh.seatribe.se", "Seatribe"
-				});
-			ui.uimsg(1, "act", 1);
-		}
-		ui.newwidget(2, "text", new Coord(345, 330), 5, new Coord(150, 20), Utils.getpref("username", ""));
-		ui.newwidget(3, "text", new Coord(345, 390), 5, new Coord(150, 20), Utils.getpref("password", ""));
-		ui.uimsg(3, "pw", 1);
-		ui.newwidget(4, "ibtn", new Coord(373, 430), 5, "gfx/hud/buttons/loginu", "gfx/hud/buttons/logind");
-		ui.uimsg(5, "act", 1);
-		ui.uimsg(5, "focus", 1);
+		ui.bind(new LoginScreen(ui.root), 1);
+		String username, password;
+		boolean savepw = false;
+		username = Utils.getpref("username", "");
+		password = Utils.getpref("password", "");
+		if(!password.equals(""))
+			savepw = true;
 		retry: do {
-			username = null;
-			password = null;
-			synchronized(this) {
-				while((address == null) || (username == null) || (password == null))
-					this.wait();
+			ui.uimsg(1, "state", 0);
+			ui.uimsg(1, "ld", username, password, savepw);
+			while(true) {
+				Message msg;
+				synchronized(msgs) {
+					while((msg = msgs.poll()) == null)
+						msgs.wait();
+				}
+				if(msg.id == 1) {
+					if(msg.name == "login") {
+						username = (String)msg.args[0];
+						password = (String)msg.args[1];
+						break;
+					} else if(msg.name == "savepw") {
+						savepw = (Boolean)msg.args[0];
+					}
+				}
 			}
+			ui.uimsg(1, "state", 1);
+			ui.uimsg(1, "prg", "Connecting...");
 			try {
 				sess = new Session(InetAddress.getByName(address), username, password);
 			} catch(UnknownHostException e) {
-				/* XXX */
-				throw(new RuntimeException(e));
+				ui.uimsg(1, "error", "Could not locate server");
+				continue retry;
 			}
 			Thread.sleep(100);
 			while(true) {
 				if(sess.state == "") {
-					System.out.println("Connected!");
-					Utils.setpref("server", address);
 					Utils.setpref("username", username);
-					Utils.setpref("password", password);
-					ui.destroy(5);
+					if(savepw)
+						Utils.setpref("password", password);
+					else
+						Utils.setpref("password", "");
+					ui.destroy(1);
 					break retry;
 				} else if(sess.connfailed != 0) {
-					System.out.println("Failed: " + sess.connfailed);
+					String error;
+					switch(sess.connfailed) {
+					case 1:
+						error = "Username or password incorrect";
+						password = "";
+						break;
+					case 2:
+						error = "Already logged in";
+						break;
+					case 3:
+						error = "Could not connect to server";
+						break;
+					case 4:
+						error = "This client is too old";
+						break;
+					default:
+						error = "Connection failed";
+						break;
+					}
+					ui.uimsg(1, "error", error);
 					sess = null;
 					continue retry;
 				}
@@ -79,47 +110,9 @@ public class Bootstrap implements UI.Receiver {
 	}
 	
 	public void rcvmsg(int widget, String msg, Object... args) {
-		synchronized(this) {
-			if((widget == 5) && (msg == "activate")) {
-				if(cfocus == 2) {
-					ui.uimsg(3, "settext", "");
-					ui.uimsg(5, "focus", 3);
-				} else {
-					username = password = null;
-					ui.uimsg(2, "get");
-					ui.uimsg(3, "get");
-				}
-			} if((widget == 4) && (msg == "activate")) {
-				ui.uimsg(2, "get");
-				ui.uimsg(3, "get");
-			} else if((widget == 5) && (msg == "focus")) {
-				cfocus = (Integer)args[0];
-			} else if(widget == 7) {
-				ui.destroy(6);
-			}
-			if(msg == "chose") {
-				if(widget == 1)
-					address = (String)args[0];
-			}
-			if(msg == "text") {
-				if(widget == 1) {
-					address = (String)args[0];
-				} else if(widget == 2) {
-					username = (String)args[0];
-				} else if(widget == 3) {
-					password = (String)args[0];
-				}
-			}
-			if((address != null) && (username != null) && (password != null)) {
-				if(username.equals("")) {
-					ui.uimsg(5, "focus", 2);
-					username = null;
-				} else if(password.equals("")) {
-					ui.uimsg(5, "focus", 3);
-					password = null;
-				}
-				notifyAll();
-			}
+		synchronized(msgs) {
+			msgs.add(new Message(widget, msg, args));
+			msgs.notifyAll();
 		}
 	}
 }
