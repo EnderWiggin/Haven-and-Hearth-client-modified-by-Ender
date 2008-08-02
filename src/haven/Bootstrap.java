@@ -52,8 +52,13 @@ public class Bootstrap implements UI.Receiver {
 							msgs.wait();
 					}
 					if(msg.id == 1) {
-						if(msg.name == "login")
+						if(msg.name == "login") {
 							break;
+						} else if(msg.name == "forget") {
+							token = null;
+							Utils.setpref("savedtoken", "");
+							continue retry;
+						}
 					}
 				}
 				ui.uimsg(1, "prg", "Authenticating...");
