@@ -42,6 +42,11 @@ public class UI {
 		this.rcvr = rcvr;
 	}
 	
+	public void bind(Widget w, int id) {
+		widgets.put(id, w);
+		rwidgets.put(w, id);
+	}
+	
 	public void newwidget(int id, String type, Coord c, int parent, Object... args) {
 		try {
 			synchronized(this) {
@@ -49,8 +54,7 @@ public class UI {
 				if(pwdg == null)
 					throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
 				Widget wdg = Widget.create(type, c, pwdg, args);
-				widgets.put(id, wdg);
-				rwidgets.put(wdg, id);
+				bind(wdg, id);
 				if(wdg instanceof MapView)
 					mainview = (MapView)wdg;
 			}

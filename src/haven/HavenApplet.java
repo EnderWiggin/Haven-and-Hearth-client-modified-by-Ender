@@ -89,7 +89,7 @@ public class HavenApplet extends Applet {
 		    ui.start();
 		    try {
 			while(true) {
-			    Bootstrap bill = new Bootstrap(false);
+			    Bootstrap bill = new Bootstrap();
 			    bill.setaddr(getCodeBase().getHost());
 			    try {
 				Resource.baseurl = new URL("https", getCodeBase().getHost(), 443, "/res/");
