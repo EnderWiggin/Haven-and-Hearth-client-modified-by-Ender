@@ -59,9 +59,25 @@ public class Bootstrap implements UI.Receiver {
 				}
 			}
 			ui.uimsg(1, "state", 1);
+			ui.uimsg(1, "prg", "Authenticating...");
+			byte[] cookie;
+			try {
+			    AuthClient auth = new AuthClient(address, username);
+			    if(!auth.trypasswd(password)) {
+				auth.close();
+				password = "";
+				ui.uimsg(1, "error", "Username or password incorrect");
+				continue retry;
+			    }
+			    cookie = auth.cookie;
+			    auth.close();
+			} catch(java.io.IOException e) {
+			    ui.uimsg(1, "error", e.getMessage());
+			    continue retry;
+			}
 			ui.uimsg(1, "prg", "Connecting...");
 			try {
-				sess = new Session(InetAddress.getByName(address), username, password);
+				sess = new Session(InetAddress.getByName(address), username, cookie);
 			} catch(UnknownHostException e) {
 				ui.uimsg(1, "error", "Could not locate server");
 				continue retry;

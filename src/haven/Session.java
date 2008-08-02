@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 5;
+	public static final int PVER = 6;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -46,7 +46,8 @@ public class Session {
 	Map<Integer, Message> waiting = new TreeMap<Integer, Message>();
 	LinkedList<Message> pending = new LinkedList<Message>();
 	Map<Integer, ObjAck> objacks = new TreeMap<Integer, ObjAck>();
-	String username, password;
+	String username;
+	byte[] cookie;
 	final Map<Integer, Indir<Resource>> rescache = new TreeMap<Integer, Indir<Resource>>();
 	final Glob glob;
 	
@@ -406,7 +407,7 @@ public class Session {
 							Message msg = new Message(MSG_SESS);
 							msg.adduint16(PVER);
 							msg.addstring(username);
-							msg.addstring(password);
+							msg.addbytes(cookie);
 							sendmsg(msg);
 							last = now;
 						}
@@ -500,10 +501,10 @@ public class Session {
 		}
 	}
 	
-	public Session(InetAddress server, String username, String password) {
+	public Session(InetAddress server, String username, byte[] cookie) {
 		this.server = server;
 		this.username = username;
-		this.password = password;
+		this.cookie = cookie;
 		glob = new Glob(this);
 		try {
 			sk = new DatagramSocket();
