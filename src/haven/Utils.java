@@ -190,4 +190,40 @@ public class Utils {
 		off[0] = i + 1;
 		return(ret);
 	}
+	
+	static char num2hex(int num) {
+		if(num < 10)
+			return((char)('0' + num));
+		else
+			return((char)('A' + num - 10));
+	}
+	
+	static int hex2num(char hex) {
+		if((hex >= '0') && (hex <= '9'))
+			return(hex - '0');
+		else if((hex >= 'a') && (hex <= 'f'))
+			return(hex - 'a' + 10);
+		else if((hex >= 'A') && (hex <= 'F'))
+			return(hex - 'A' + 10);
+		else
+			throw(new RuntimeException());
+	}
+
+	static String byte2hex(byte[] in) {
+		StringBuilder buf = new StringBuilder();
+		for(byte b : in) {
+			buf.append(num2hex((b & 0xf0) >> 4));
+			buf.append(num2hex(b & 0x0f));
+		}
+		return(buf.toString());
+	}
+
+	static byte[] hex2byte(String hex) {
+		if(hex.length() % 2 != 0)
+			throw(new RuntimeException("Invalid hex-encoded string"));
+		byte[] ret = new byte[hex.length() / 2];
+		for(int i = 0, o = 0; i < hex.length(); i += 2, o++)
+			ret[o] = (byte)((hex2num(hex.charAt(i)) << 4) | hex2num(hex.charAt(i + 1)));
+		return(ret);
+	}
 }

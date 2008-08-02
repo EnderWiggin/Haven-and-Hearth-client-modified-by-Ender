@@ -33,35 +33,96 @@ public class Bootstrap implements UI.Receiver {
 		ui = hp.newui(null);
 		ui.setreceiver(this);
 		ui.bind(new LoginScreen(ui.root), 1);
-		String username, password;
+		String username;
 		boolean savepw = false;
+		Utils.setpref("password", "");
+		byte[] token = null;
+		if(Utils.getpref("savedtoken", "").length() == 64)
+			token = Utils.hex2byte(Utils.getpref("savedtoken", null));
 		username = Utils.getpref("username", "");
-		password = Utils.getpref("password", "");
-		if(!password.equals(""))
-			savepw = true;
 		retry: do {
-			ui.uimsg(1, "state", 0);
-			ui.uimsg(1, "ld", username, password, savepw);
-			while(true) {
-				Message msg;
-				synchronized(msgs) {
-					while((msg = msgs.poll()) == null)
-						msgs.wait();
-				}
-				if(msg.id == 1) {
-					if(msg.name == "login") {
-						username = (String)msg.args[0];
-						password = (String)msg.args[1];
-						break;
-					} else if(msg.name == "savepw") {
-						savepw = (Boolean)msg.args[0];
+			byte[] cookie;
+			if(token != null) {
+				savepw = true;
+				ui.uimsg(1, "token", username);
+				while(true) {
+					Message msg;
+					synchronized(msgs) {
+						while((msg = msgs.poll()) == null)
+							msgs.wait();
+					}
+					if(msg.id == 1) {
+						if(msg.name == "login")
+							break;
 					}
 				}
+				ui.uimsg(1, "prg", "Authenticating...");
+				AuthClient auth = null;
+				try {
+					auth = new AuthClient(address, username);
+					if(!auth.trytoken(token)) {
+						auth.close();
+						token = null;
+						Utils.setpref("savedtoken", "");
+						ui.uimsg(1, "error", "Invalid save");
+						continue retry;
+					}
+					cookie = auth.cookie;
+				} catch(java.io.IOException e) {
+					ui.uimsg(1, "error", e.getMessage());
+					continue retry;
+				} finally {
+					try {
+						if(auth != null)
+							auth.close();
+					} catch(java.io.IOException e) {}
+				}
+			} else {
+				String password;
+				ui.uimsg(1, "passwd", username, savepw);
+				while(true) {
+					Message msg;
+					synchronized(msgs) {
+						while((msg = msgs.poll()) == null)
+							msgs.wait();
+					}
+					if(msg.id == 1) {
+						if(msg.name == "login") {
+							username = (String)msg.args[0];
+							password = (String)msg.args[1];
+							savepw = (Boolean)msg.args[2];
+							break;
+						}
+					}
+				}
+				ui.uimsg(1, "prg", "Authenticating...");
+				AuthClient auth = null;
+				try {
+					auth = new AuthClient(address, username);
+					if(!auth.trypasswd(password)) {
+						auth.close();
+						password = "";
+						ui.uimsg(1, "error", "Username or password incorrect");
+						continue retry;
+					}
+					cookie = auth.cookie;
+					if(savepw) {
+						if(auth.gettoken())
+							Utils.setpref("savedtoken", Utils.byte2hex(auth.token));
+					}
+				} catch(java.io.IOException e) {
+					ui.uimsg(1, "error", e.getMessage());
+					continue retry;
+				} finally {
+					try {
+						if(auth != null)
+							auth.close();
+					} catch(java.io.IOException e) {}
+				}
 			}
-			ui.uimsg(1, "state", 1);
 			ui.uimsg(1, "prg", "Connecting...");
 			try {
-				sess = new Session(InetAddress.getByName(address), username, password);
+				sess = new Session(InetAddress.getByName(address), username, cookie);
 			} catch(UnknownHostException e) {
 				ui.uimsg(1, "error", "Could not locate server");
 				continue retry;
@@ -70,18 +131,13 @@ public class Bootstrap implements UI.Receiver {
 			while(true) {
 				if(sess.state == "") {
 					Utils.setpref("username", username);
-					if(savepw)
-						Utils.setpref("password", password);
-					else
-						Utils.setpref("password", "");
 					ui.destroy(1);
 					break retry;
 				} else if(sess.connfailed != 0) {
 					String error;
 					switch(sess.connfailed) {
 					case 1:
-						error = "Username or password incorrect";
-						password = "";
+						error = "Invalid authentication token";
 						break;
 					case 2:
 						error = "Already logged in";
@@ -91,6 +147,9 @@ public class Bootstrap implements UI.Receiver {
 						break;
 					case 4:
 						error = "This client is too old";
+						break;
+					case 5:
+						error = "Authentication token expired";
 						break;
 					default:
 						error = "Connection failed";
