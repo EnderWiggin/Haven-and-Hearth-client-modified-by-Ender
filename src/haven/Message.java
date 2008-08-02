@@ -74,7 +74,7 @@ public class Message implements java.io.Serializable {
 		addbytes(buf);
 	}
 	
-	public void addstring(String str) {
+	public void addstring2(String str) {
 		byte[] buf;
 		try {
 			buf = str.getBytes("utf-8");
@@ -82,6 +82,10 @@ public class Message implements java.io.Serializable {
 			throw(new RuntimeException(e));
 		}
 		addbytes(buf);
+	}
+	
+	public void addstring(String str) {
+		addstring2(str);
 		addbytes(new byte[] {0});
 	}
 	
