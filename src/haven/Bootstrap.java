@@ -96,7 +96,7 @@ public class Bootstrap implements UI.Receiver {
 					String error;
 					switch(sess.connfailed) {
 					case 1:
-						error = "Username or password incorrect";
+						error = "Invalid authentication token";
 						password = "";
 						break;
 					case 2:
@@ -107,6 +107,9 @@ public class Bootstrap implements UI.Receiver {
 						break;
 					case 4:
 						error = "This client is too old";
+						break;
+					case 5:
+						error = "Authentication token expired";
 						break;
 					default:
 						error = "Connection failed";

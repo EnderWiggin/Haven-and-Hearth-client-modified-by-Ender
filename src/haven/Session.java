@@ -35,6 +35,7 @@ public class Session {
 	public static final int SESSERR_BUSY = 2;
 	public static final int SESSERR_CONN = 3;
 	public static final int SESSERR_PVER = 4;
+	public static final int SESSERR_EXPR = 5;
 	
 	DatagramSocket sk;
 	InetAddress server;
