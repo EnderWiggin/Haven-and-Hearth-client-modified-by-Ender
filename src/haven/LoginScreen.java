@@ -20,7 +20,6 @@ public class LoginScreen extends Widget {
 		parent.setfocus(this);
 		new Img(Coord.z, bg, this);
 		new Img(new Coord(420, 215).add(logo.sz().div(2).inv()), logo, this);
-		mklogin();
 	}
 
 	private static abstract class Login extends Widget {
