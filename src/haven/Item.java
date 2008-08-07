@@ -4,18 +4,19 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.awt.Color;
 
-public class Item extends SSWidget implements DTarget {
+public class Item extends Widget implements DTarget {
 	static Coord shoff = new Coord(1, 3);
+	static Resource missing = Resource.load("gfx/invobjs/missing");
 	boolean dm = false;
 	Coord doff;
 	int num = -1;
-	BufferedImage img, sh;
+	Resource res;
+	Tex sh;
 	
 	static {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				String res = (String)args[0];
-				BufferedImage img = Resource.loadimg(res);
 				int num = -1;
 				int ca = 2;
 				Coord drag = null;
@@ -23,42 +24,50 @@ public class Item extends SSWidget implements DTarget {
 					drag = (Coord)args[ca++];
 				if(args.length > ca)
 					num = (Integer)args[ca++];
-				return(new Item(c, img, parent, drag, num));
+				return(new Item(c, res, parent, drag, num));
 			}
 		});
+		missing.loadwait();
 	}
 	
-	void render() {
-		clear();
-		Graphics g = graphics();
-		if(dm)
-			g.drawImage(sh, shoff.x, shoff.y, null);
-		g.drawImage(img, 0, 0, null);
-		if(num >= 0) {
-			g.setColor(Color.BLACK);
-			Utils.aligntext(g, Integer.toString(num), Utils.imgsz(img), 1, 1);
+	public void draw(GOut g) {
+		if(res.loading) {
+			sh = null;
+			sz = new Coord(30, 30);
+			g.image(missing.layer(Resource.imgc).tex(), Coord.z, sz);
+		} else {
+			Tex tex = res.layer(Resource.imgc).tex();
+			sz = tex.sz().add(shoff);
+			if(dm) {
+				if(sh == null)
+					sh = makesh(res);
+				g.image(sh, shoff);
+			}
+			g.image(tex, Coord.z);
+			if(num >= 0) {
+				g.chcolor(Color.BLACK);
+				g.atext(Integer.toString(num), tex.sz(), 1, 1);
+			}
 		}
-		update();
 	}
-	
-	static BufferedImage makesh(BufferedImage img) {
+
+	static Tex makesh(Resource res) {
+		BufferedImage img = res.layer(Resource.imgc).img;
 		Coord sz = Utils.imgsz(img);
 		BufferedImage sh = new BufferedImage(sz.x, sz.y, BufferedImage.TYPE_INT_ARGB);
 		for(int y = 0; y < sz.y; y++) {
 			for(int x = 0; x < sz.x; x++) {
 				int c = img.getRGB(x, y);
-				if((c & 0xff000000) != 0)
-					sh.setRGB(x, y, 0x80000000);
-				else
-					sh.setRGB(x, y, 0);
+				int a = (c & 0xff000000) >> 24;
+				sh.setRGB(x, y, (a / 2) << 24);
 			}
 		}
-		return(sh);
+		return(new TexI(sh));
 	}
 	
-	public Item(Coord c, BufferedImage img, Widget parent, Coord drag, int num) {
-		super(c, Utils.imgsz(img).add(shoff), parent);
-		this.img = img;
+	public Item(Coord c, Resource res, Widget parent, Coord drag, int num) {
+		super(c, Coord.z, parent);
+		this.res = res;
 		this.num = num;
 		if(drag == null) {
 			dm = false;
@@ -68,20 +77,18 @@ public class Item extends SSWidget implements DTarget {
 			ui.grabmouse(this);
 			this.c = ui.mc.add(doff.inv());
 		}
-		sh = makesh(img);
-		render();
 	}
 
 	public Item(Coord c, String res, Widget parent, Coord drag, int num) {
-		this(c, Resource.loadimg(res), parent, drag, num);
+		this(c, Resource.load(res), parent, drag, num);
 	}
 
-	public Item(Coord c, BufferedImage img, Widget parent, Coord drag) {
-		this(c, img, parent, drag, -1);
+	public Item(Coord c, Resource res, Widget parent, Coord drag) {
+		this(c, res, parent, drag, -1);
 	}
 	
 	public Item(Coord c, String res, Widget parent, Coord drag) {
-		this(c, Resource.loadimg(res), parent, drag);
+		this(c, Resource.load(res), parent, drag);
 	}
 
 	public boolean dropon(Widget w, Coord c) {
@@ -121,11 +128,9 @@ public class Item extends SSWidget implements DTarget {
 	public void uimsg(String name, Object... args)  {
 		if(name == "num") {
 			num = (Integer)args[0];
-			render();
 		} else if(name == "chres") {
-			img = Resource.loadimg((String)args[0]);
-			sh = makesh(img);
-			render();
+			res = Resource.load((String)args[0]);
+			sh = null;
 		}
 	}
 	
