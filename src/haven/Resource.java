@@ -720,4 +720,18 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public String toString() {
 		return(name + "(v" + ver + ")");
 	}
+	
+	static {
+		try {
+			InputStream pls = Resource.class.getResourceAsStream("res-preload");
+			if(pls != null) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
+				String nm;
+				while((nm = in.readLine()) != null)
+					load(nm);
+			}
+		} catch(IOException e) {
+			throw(new Error(e));
+		}
+	}
 }
