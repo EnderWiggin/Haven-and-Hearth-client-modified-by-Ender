@@ -6,6 +6,7 @@ public class RemoteUI implements UI.Receiver {
 	
 	public RemoteUI(Session sess) {
 		this.sess = sess;
+		Widget.initbardas();
 	}
 	
 	public void rcvmsg(int id, String name, Object... args) {
