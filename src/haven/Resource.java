@@ -15,6 +15,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	private static Map<String, Resource> cache = new TreeMap<String, Resource>();
 	private static Loader loader;
 	private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
+	static Set<String> loadwaited = new HashSet<String>();
 	public static Class<Image> imgc = Image.class;
 	public static Class<Tile> tile = Tile.class;
 	public static Class<Neg> negc = Neg.class;
@@ -81,6 +82,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	public void loadwait() {
 		boolean i = false;
+		loadwaited.add(name);
 		synchronized(this) {
 			while(loading) {
 				try {

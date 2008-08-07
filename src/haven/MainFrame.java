@@ -111,6 +111,17 @@ public class MainFrame extends Frame implements Runnable {
 		} catch(InterruptedException e) {
 		    return;
 		}
+		String outfile = System.getProperty("haven.loadwaited");
+		if(outfile != null) {
+		    try {
+			java.io.PrintWriter out = new java.io.PrintWriter(outfile);
+			for(String res : Resource.loadwaited)
+			    out.println(res);
+			out.close();
+		    } catch(Exception e) {
+			throw(new RuntimeException(e));
+		    }
+		}
 		System.exit(0);
 	}
 }
