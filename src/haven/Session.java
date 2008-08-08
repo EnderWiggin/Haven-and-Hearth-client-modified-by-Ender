@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 6;
+	public static final int PVER = 7;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -62,7 +62,7 @@ public class Session {
 		}
 	}
 	
-	private Indir<Resource> getres(final int id) {
+	public Indir<Resource> getres(final int id) {
 		synchronized(rescache) {
 			Indir<Resource> ret = rescache.get(id);
 			if(ret != null)

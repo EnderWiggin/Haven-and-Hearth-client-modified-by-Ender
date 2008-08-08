@@ -56,8 +56,8 @@ public class Equipory extends Window implements DTarget {
 				for(int i = 0; i < equed.size(); i++) {
 					if(equed.get(i) != null)
 						equed.get(i).unlink();
-					String res = (String)args[i];
-					if(!res.equals(""))
+					int res = (Integer)args[i];
+					if(res >= 0)
 						equed.set(i, new Item(Coord.z, res, epoints.get(i), null));
 					else
 						equed.set(i, null);
