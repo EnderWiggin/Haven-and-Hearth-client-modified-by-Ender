@@ -9,12 +9,15 @@ import javax.imageio.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-public class Resource implements Comparable<Resource>, Serializable {
+public class Resource implements Comparable<Resource>, Prioritized, Serializable {
 	private static File basedir = new File("Y:\\res");
 	public static URL baseurl = null;
 	private static Map<String, Resource> cache = new TreeMap<String, Resource>();
 	private static Loader loader;
 	private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
+	private static Queue<Resource> queue = new PrioQueue<Resource>();
+	static Set<String> loadwaited = new HashSet<String>();
+	static Set<String> allused = new HashSet<String>();
 	public static Class<Image> imgc = Image.class;
 	public static Class<Tile> tile = Tile.class;
 	public static Class<Neg> negc = Neg.class;
@@ -30,15 +33,19 @@ public class Resource implements Comparable<Resource>, Serializable {
 	public int ver;
 	public boolean loading;
 	private Indir<Resource> indir = null;
+	private int prio = 0;
 
 	private Resource(String name, int ver) {
 		this.name = name;
 		this.ver = ver;
 		error = null;
 		loading = true;
+		synchronized(allused) {
+			allused.add(name);
+		}
 	}
 	
-	public static Resource load(String name, int ver) {
+	public static Resource load(String name, int ver, int prio) {
 		Resource res;
 		synchronized(cache) {
 			res = cache.get(name);
@@ -53,18 +60,28 @@ public class Resource implements Comparable<Resource>, Serializable {
 			if(res != null)
 				return res;
 			res = new Resource(name, ver);
+			res.prio = prio;
 			cache.put(name, res);
 		}
 		synchronized(Resource.class) {
 			if(loader == null)
 				loader = new Loader();
-			loader.load(res);
+			synchronized(queue) {
+				queue.add(res);
+				queue.notifyAll();
+			}
 		}
 		return(res);
 	}
 	
+	public static Resource load(String name, int ver) {
+		return(load(name, ver, 0));
+	}
+
 	public static int qdepth() {
-		return(loader.queue.size());
+		synchronized(queue) {
+			return(queue.size());
+		}
 	}
 	
 	public static Resource load(String name) {
@@ -73,6 +90,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	public void loadwaitint() throws InterruptedException {
 		synchronized(this) {
+			prio = 10;
 			while(loading) {
 				wait();
 			}
@@ -81,7 +99,11 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	public void loadwait() {
 		boolean i = false;
+		synchronized(loadwaited) {
+			loadwaited.add(name);
+		}
 		synchronized(this) {
+			prio = 10;
 			while(loading) {
 				try {
 					wait();
@@ -95,7 +117,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 	}
 	
 	private static class Loader extends Thread {
-		private Queue<Resource> queue = new LinkedList<Resource>();
 		private SslHelper ssl;
 		
 		public Loader() {
@@ -164,13 +185,6 @@ public class Resource implements Comparable<Resource>, Serializable {
 			} finally {
 				if(in != null)
 					in.close();
-			}
-		}
-		
-		public void load(Resource res) { 
-			synchronized(queue) {
-				queue.add(res);
-				queue.notifyAll();
 			}
 		}
 	}
@@ -656,6 +670,7 @@ public class Resource implements Comparable<Resource>, Serializable {
 		this.layers = layers;
 		for(Layer l : layers)
 			l.init();
+		System.out.println(name + " p" + prio);
 	}
 	
 	public Indir<Resource> indir() {
@@ -686,6 +701,10 @@ public class Resource implements Comparable<Resource>, Serializable {
 			throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + ")", error));
 	}
 	
+	public int priority() {
+		return(prio);
+	}
+
 	private static InputStream getres(String name) {
 		String fn = "";
 		for(int i = 0; i < name.length(); i++) {
@@ -717,5 +736,29 @@ public class Resource implements Comparable<Resource>, Serializable {
 	
 	public String toString() {
 		return(name + "(v" + ver + ")");
+	}
+	
+	static {
+		try {
+			InputStream pls;
+			pls = Resource.class.getResourceAsStream("res-preload");
+			if(pls != null) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
+				String nm;
+				while((nm = in.readLine()) != null)
+					load(nm);
+				in.close();
+			}
+			pls = Resource.class.getResourceAsStream("res-bgload");
+			if(pls != null) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
+				String nm;
+				while((nm = in.readLine()) != null)
+					load(nm, -1, -10);
+				in.close();
+			}
+		} catch(IOException e) {
+			throw(new Error(e));
+		}
 	}
 }

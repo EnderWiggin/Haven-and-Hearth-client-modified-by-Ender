@@ -24,17 +24,20 @@ public class Widget implements Graphical {
 		MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class};
 	
 	static {
+		addtype("cnt", new WidgetFactory() {
+			public Widget create(Coord c, Widget parent, Object[] args) {
+				return(new Widget(c, (Coord)args[0], parent));
+			}
+		});
+	}
+	
+	public static void initbardas() {
 		try {
 			for(Class<?> c : barda)
 				Class.forName(c.getName(), true, c.getClassLoader());
 		} catch(ClassNotFoundException e) {
 			throw(new Error(e));
 		}
-		addtype("cnt", new WidgetFactory() {
-			public Widget create(Coord c, Widget parent, Object[] args) {
-				return(new Widget(c, (Coord)args[0], parent));
-			}
-		});
 	}
 	
 	public static void addtype(String name, WidgetFactory fct) {
