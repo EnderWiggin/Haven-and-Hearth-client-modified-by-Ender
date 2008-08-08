@@ -107,10 +107,25 @@ public class MainFrame extends Frame implements Runnable {
 		Thread main = new Thread(g, f);
 		main.start();
 		try {
-		    main.join();
+			main.join();
 		} catch(InterruptedException e) {
-		    return;
+			return;
 		}
+		dumplist(Resource.loadwaited, System.getProperty("haven.loadwaited"));
+		dumplist(Resource.allused, System.getProperty("haven.allused"));
 		System.exit(0);
+	}
+	
+	private static void dumplist(java.util.Collection<String> list, String fn) {
+		if(fn != null) {
+			try {
+				java.io.PrintWriter out = new java.io.PrintWriter(fn);
+				for(String res : list)
+					out.println(res);
+				out.close();
+			} catch(Exception e) {
+				throw(new RuntimeException(e));
+			}
+		}
 	}
 }
