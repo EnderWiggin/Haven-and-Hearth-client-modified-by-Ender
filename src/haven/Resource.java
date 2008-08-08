@@ -45,7 +45,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	}
 	
-	public static Resource load(String name, int ver) {
+	public static Resource load(String name, int ver, int prio) {
 		Resource res;
 		synchronized(cache) {
 			res = cache.get(name);
@@ -60,6 +60,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 			if(res != null)
 				return res;
 			res = new Resource(name, ver);
+			res.prio = prio;
 			cache.put(name, res);
 		}
 		synchronized(Resource.class) {
@@ -73,6 +74,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		return(res);
 	}
 	
+	public static Resource load(String name, int ver) {
+		return(load(name, ver, 0));
+	}
+
 	public static int qdepth() {
 		synchronized(queue) {
 			return(queue.size());
@@ -735,12 +740,22 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
 	static {
 		try {
-			InputStream pls = Resource.class.getResourceAsStream("res-preload");
+			InputStream pls;
+			pls = Resource.class.getResourceAsStream("res-preload");
 			if(pls != null) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
 				String nm;
 				while((nm = in.readLine()) != null)
 					load(nm);
+				in.close();
+			}
+			pls = Resource.class.getResourceAsStream("res-bgload");
+			if(pls != null) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
+				String nm;
+				while((nm = in.readLine()) != null)
+					load(nm, -1, -10);
+				in.close();
 			}
 		} catch(IOException e) {
 			throw(new Error(e));
