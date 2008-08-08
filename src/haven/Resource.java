@@ -17,6 +17,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
 	private static Queue<Resource> queue = new PrioQueue<Resource>();
 	static Set<String> loadwaited = new HashSet<String>();
+	static Set<String> allused = new HashSet<String>();
 	public static Class<Image> imgc = Image.class;
 	public static Class<Tile> tile = Tile.class;
 	public static Class<Neg> negc = Neg.class;
@@ -39,6 +40,9 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		this.ver = ver;
 		error = null;
 		loading = true;
+		synchronized(allused) {
+			allused.add(name);
+		}
 	}
 	
 	public static Resource load(String name, int ver) {
