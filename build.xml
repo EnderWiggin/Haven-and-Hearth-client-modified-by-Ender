@@ -17,6 +17,7 @@
     <copy todir="build/classes/haven" file="etc/ressrv.crt" />
     <copy todir="build/classes/haven" file="etc/authsrv.crt" />
     <copy todir="build/classes/haven" file="etc/res-preload" />
+    <copy todir="build/classes/haven" file="etc/res-bgload" />
   </target>
   
   <target name="appletview" depends="build-env">
