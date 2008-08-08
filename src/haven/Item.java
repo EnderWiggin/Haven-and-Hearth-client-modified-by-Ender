@@ -10,13 +10,13 @@ public class Item extends Widget implements DTarget {
 	boolean dm = false;
 	Coord doff;
 	int num = -1;
-	Resource res;
+	Indir<Resource> res;
 	Tex sh;
 	
 	static {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
-				String res = (String)args[0];
+				int res = (Integer)args[0];
 				int num = -1;
 				int ca = 2;
 				Coord drag = null;
@@ -30,17 +30,26 @@ public class Item extends Widget implements DTarget {
 		missing.loadwait();
 	}
 	
+	private void fixsize() {
+		if(res.get() != null) {
+			Tex tex = res.get().layer(Resource.imgc).tex();
+			sz = tex.sz().add(shoff);
+		} else {
+			sz = new Coord(30, 30);
+		}
+	}
+
 	public void draw(GOut g) {
-		if(res.loading) {
+		if(res.get() == null) {
 			sh = null;
 			sz = new Coord(30, 30);
 			g.image(missing.layer(Resource.imgc).tex(), Coord.z, sz);
 		} else {
-			Tex tex = res.layer(Resource.imgc).tex();
-			sz = tex.sz().add(shoff);
+			Tex tex = res.get().layer(Resource.imgc).tex();
+			fixsize();
 			if(dm) {
 				if(sh == null)
-					sh = makesh(res);
+					sh = makesh(res.get());
 				g.image(sh, shoff);
 			}
 			g.image(tex, Coord.z);
@@ -65,9 +74,10 @@ public class Item extends Widget implements DTarget {
 		return(new TexI(sh));
 	}
 	
-	public Item(Coord c, Resource res, Widget parent, Coord drag, int num) {
+	public Item(Coord c, Indir<Resource> res, Widget parent, Coord drag, int num) {
 		super(c, Coord.z, parent);
 		this.res = res;
+		fixsize();
 		this.num = num;
 		if(drag == null) {
 			dm = false;
@@ -79,16 +89,16 @@ public class Item extends Widget implements DTarget {
 		}
 	}
 
-	public Item(Coord c, String res, Widget parent, Coord drag, int num) {
-		this(c, Resource.load(res), parent, drag, num);
+	public Item(Coord c, int res, Widget parent, Coord drag, int num) {
+		this(c, parent.ui.sess.getres(res), parent, drag, num);
 	}
 
-	public Item(Coord c, Resource res, Widget parent, Coord drag) {
+	public Item(Coord c, Indir<Resource> res, Widget parent, Coord drag) {
 		this(c, res, parent, drag, -1);
 	}
 	
-	public Item(Coord c, String res, Widget parent, Coord drag) {
-		this(c, Resource.load(res), parent, drag);
+	public Item(Coord c, int res, Widget parent, Coord drag) {
+		this(c, parent.ui.sess.getres(res), parent, drag);
 	}
 
 	public boolean dropon(Widget w, Coord c) {
@@ -129,7 +139,7 @@ public class Item extends Widget implements DTarget {
 		if(name == "num") {
 			num = (Integer)args[0];
 		} else if(name == "chres") {
-			res = Resource.load((String)args[0]);
+			res = ui.sess.getres((Integer)args[0]);
 			sh = null;
 		}
 	}
