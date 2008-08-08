@@ -40,18 +40,18 @@ public class Makewindow extends HWindow {
 			outputs = new LinkedList<Widget>();
 			int i;
 			Coord c = new Coord(xoff, 10);
-			for(i = 0; args[i] instanceof String; i += 2) {
+			for(i = 0; (Integer)args[i] >= 0; i += 2) {
 				Widget box = new Inventory(c, new Coord(1, 1), this);
 				inputs.add(box);
 				c = c.add(new Coord(31, 0));
-				new Item(Coord.z, (String)args[i], box, null, (Integer)args[i + 1]);
+				new Item(Coord.z, (Integer)args[i], box, null, (Integer)args[i + 1]);
 			}
 			c = new Coord(xoff, 65);
-			for(i++; (i < args.length) && (args[i] instanceof String); i += 2) {
+			for(i++; (i < args.length) && ((Integer)args[i] >= 0); i += 2) {
 				Widget box = new Inventory(c, new Coord(1, 1), this);
 				outputs.add(box);
 				c = c.add(new Coord(31, 0));
-				new Item(Coord.z, (String)args[i], box, null, (Integer)args[i + 1]);
+				new Item(Coord.z, (Integer)args[i], box, null, (Integer)args[i + 1]);
 			}
 		}
 	}
