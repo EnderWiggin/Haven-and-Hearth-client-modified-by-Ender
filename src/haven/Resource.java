@@ -669,7 +669,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		this.layers = layers;
 		for(Layer l : layers)
 			l.init();
-		System.out.println(name + " p" + prio);
 	}
 	
 	public Indir<Resource> indir() {
