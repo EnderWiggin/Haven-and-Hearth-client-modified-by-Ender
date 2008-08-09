@@ -6,6 +6,7 @@ import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
 import javax.net.ssl.*;
+import java.nio.channels.SocketChannel;
 
 public class SslHelper {
     private KeyStore creds, trusted;
@@ -110,8 +111,13 @@ public class SslHelper {
 	return((SSLSocket)ctx().getSocketFactory().createSocket(sk, host, port, autoclose));
     }
     
+    private static Socket j2seIsStupid(String host, int port) throws IOException {
+	SocketChannel chn = SocketChannel.open(new InetSocketAddress(host, port));
+	return(chn.socket());
+    }
+
     public SSLSocket connect(String host, int port) throws IOException {
-	Socket sk = new Socket(host, port);
+	Socket sk = j2seIsStupid(host, port);
 	return(connect(sk, host, port, true));
     }
     
