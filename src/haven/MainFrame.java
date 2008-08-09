@@ -21,8 +21,8 @@ public class MainFrame extends Frame implements Runnable {
 		DisplayMode b = null;
 		for(DisplayMode m : dev.getDisplayModes()) {
 			int d = m.getBitDepth();
-			if((m.getWidth() == w) && (m.getHeight() == h) && ((d == 24) || (d == 32))) {
-				if((b == null) || (d > b.getBitDepth()))
+			if((m.getWidth() == w) && (m.getHeight() == h) && ((d == 24) || (d == 32) || (d == DisplayMode.BIT_DEPTH_MULTI))) {
+				if((b == null) || (d > b.getBitDepth()) || ((d == b.getBitDepth()) && (m.getRefreshRate() > b.getRefreshRate())))
 					b = m;
 			}
 		}
@@ -47,7 +47,7 @@ public class MainFrame extends Frame implements Runnable {
 		if(tm == null)
 			fs = false;
 		if(fs)
-		    setfs(tm);
+			setfs(tm);
 		add(p);
 		pack();
 		//setResizable(false);
