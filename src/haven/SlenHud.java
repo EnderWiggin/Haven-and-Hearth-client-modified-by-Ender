@@ -1,6 +1,7 @@
 package haven;
 
 import java.util.*;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 public class SlenHud extends Widget {
@@ -17,6 +18,9 @@ public class SlenHud extends Widget {
 	IButton hb, invb, equb;
 	Button sub, sdb;
 	VC vc;
+	static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14));
+	Text lasterr;
+	long errtime;
 	
 	static {
 		Widget.addtype("slen", new WidgetFactory() {
@@ -127,6 +131,14 @@ public class SlenHud extends Widget {
 		Coord bgc = sz.add(bg.sz().inv());
 		g.image(bg, bgc);
 		super.draw(g);
+		if(lasterr != null) {
+			if((System.currentTimeMillis() - errtime) > 3000) {
+				lasterr = null;
+			} else {
+				GOut eg = g.reclip(new Coord(0, -20), new Coord(sz.x, 20));
+				eg.image(lasterr.tex(), new Coord(15, 0));
+			}
+		}
 	}
 	
 	public void wdgmsg(Widget sender, String msg, Object... args) {
@@ -141,6 +153,15 @@ public class SlenHud extends Widget {
 			return;
 		}
 		super.wdgmsg(sender, msg, args);
+	}
+	
+	public void uimsg(String msg, Object... args) {
+		if(msg == "err") {
+			lasterr = errfoundry.render((String)args[0], Color.RED);
+			errtime = System.currentTimeMillis();
+		} else {
+			super.uimsg(msg, args);
+		}
 	}
 	
 	private void updbtns() {
