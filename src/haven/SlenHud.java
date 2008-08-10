@@ -18,8 +18,10 @@ public class SlenHud extends Widget {
 	IButton hb, invb, equb;
 	Button sub, sdb;
 	VC vc;
+	String cmdline = null;
 	static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14));
-	Text lasterr;
+	static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+	Text cmdtext, lasterr;
 	long errtime;
 	
 	static {
@@ -126,12 +128,20 @@ public class SlenHud extends Widget {
 			return(c.add(bgc.inv()));
 	}
 	
+	public void runcmd(String cmdline) {
+	}
+
 	public void draw(GOut g) {
 		vc.tick();
 		Coord bgc = sz.add(bg.sz().inv());
 		g.image(bg, bgc);
 		super.draw(g);
-		if(lasterr != null) {
+		if(cmdline != null) {
+			GOut eg = g.reclip(new Coord(0, -20), new Coord(sz.x, 20));
+			if((cmdtext == null) || !cmdtext.text.equals(cmdline))
+				cmdtext = cmdfoundry.render(":" + cmdline, Color.WHITE);
+			eg.image(cmdtext.tex(), new Coord(15, 0));
+		} else if(lasterr != null) {
 			if((System.currentTimeMillis() - errtime) > 3000) {
 				lasterr = null;
 			} else {
@@ -254,7 +264,32 @@ public class SlenHud extends Widget {
 		if(ev.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
 			vc.toggle();
 			return(true);
+		} else if(ch == ':') {
+			ui.grabkeys(this);
+			cmdline = "";
 		}
 		return(super.globtype(ch, ev));
+	}
+	
+	public boolean type(char ch, KeyEvent ev) {
+		if(cmdline == null) {
+			return(super.type(ch, ev));
+		} else {
+			if(ch >= 32) {
+				cmdline += ch;
+			} else if(ch == 8) {
+				if(cmdline.length() > 0) {
+					cmdline = cmdline.substring(0, cmdline.length() - 1);
+				} else {
+					cmdline = null;
+					ui.grabkeys(null);
+				}
+			} else if(ch == 10) {
+				runcmd(cmdline);
+				cmdline = null;
+				ui.grabkeys(null);
+			}
+			return(true);
+		}
 	}
 }
