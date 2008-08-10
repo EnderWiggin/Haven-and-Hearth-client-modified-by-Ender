@@ -63,6 +63,10 @@ public class UI {
 		mousegrab = wdg;
 	}
 	
+	public void grabkeys(Widget wdg) {
+		keygrab = wdg;
+	}
+	
 	private void removeid(Widget wdg) {
 		if(rwidgets.containsKey(wdg)) {
 			int id = rwidgets.get(wdg);

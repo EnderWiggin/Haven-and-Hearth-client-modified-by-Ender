@@ -17,6 +17,7 @@ public class RootWidget extends Widget {
 	
 	public boolean globtype(char key, KeyEvent ev) {
 		if(!super.globtype(key, ev)) {
+			/*
 			if(key == 27) {
 				if(logout == null) {
 					if(ui.sess != null)
@@ -30,7 +31,8 @@ public class RootWidget extends Widget {
 					ui.destroy(logout);
 					logout = null;
 				}
-			} else if(key == '`') {
+			} else */
+			if(key == '`') {
 			    new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
 			} else if(key == '~') {
 			    new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");

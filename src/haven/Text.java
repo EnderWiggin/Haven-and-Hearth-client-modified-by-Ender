@@ -20,13 +20,19 @@ public class Text {
 	public static class Foundry {
 		private FontMetrics m;
 		Font font;
+		Color defcol;
 		
-		public Foundry(Font f) {
+		public Foundry(Font f, Color defcol) {
 			font = f;
+			this.defcol = defcol;
 			BufferedImage junk = TexI.mkbuf(new Coord(10, 10));
 			Graphics g = junk.getGraphics();
 			g.setFont(f);
 			m = g.getFontMetrics();
+		}
+		
+		public Foundry(Font f) {
+			this(f, Color.WHITE);
 		}
 		
 		public Text render(String text, Color c) {
@@ -40,6 +46,10 @@ public class Text {
 			g.drawString(text, 0, t.m.getAscent());
 			g.dispose();
 			return(t);
+		}
+		
+		public Text render(String text) {
+			return(render(text, defcol));
 		}
 	}
 	
