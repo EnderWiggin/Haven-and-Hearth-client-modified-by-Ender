@@ -132,6 +132,8 @@ public class SlenHud extends Widget {
 		String cmd = argv[0].intern();
 		if(cmd == "q") {
 			Utils.tg().interrupt();
+		} else if(cmd == "lo") {
+			ui.sess.close();
 		} else {
 			error(cmd + ": no such command");
 		}
