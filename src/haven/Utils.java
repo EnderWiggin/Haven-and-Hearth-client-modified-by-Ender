@@ -3,6 +3,7 @@ package haven;
 import java.awt.RenderingHints;
 import java.io.*;
 import java.util.prefs.*;
+import java.util.ArrayList;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.awt.Graphics;
@@ -225,5 +226,60 @@ public class Utils {
 		for(int i = 0, o = 0; i < hex.length(); i += 2, o++)
 			ret[o] = (byte)((hex2num(hex.charAt(i)) << 4) | hex2num(hex.charAt(i + 1)));
 		return(ret);
+	}
+	
+	static String[] splitwords(String text) {
+		ArrayList<String> words = new ArrayList<String>();
+		StringBuilder buf = new StringBuilder();
+		String st = "ws";
+		int i = 0;
+		while(i < text.length()) {
+			char c = text.charAt(i);
+			if(st == "ws") {
+				if(!Character.isWhitespace(c))
+					st = "word";
+				else
+					i++;
+			} else if(st == "word") {
+				if(c == '"') {
+					st = "quote";
+					i++;
+				} else if(c == '\\') {
+					st = "squote";
+					i++;
+				} else if(Character.isWhitespace(c)) {
+					words.add(buf.toString());
+					buf = new StringBuilder();
+					st = "ws";
+				} else {
+					buf.append(c);
+					i++;
+				}
+			} else if(st == "quote") {
+				if(c == '"') {
+					st = "word";
+					i++;
+				} else if(c == '\\') {
+					st = "sqquote";
+					i++;
+				} else {
+					buf.append(c);
+					i++;
+				}
+			} else if(st == "squote") {
+				buf.append(c);
+				i++;
+				st = "word";
+			} else if(st == "sqquote") {
+				buf.append(c);
+				i++;
+				st = "quote";
+			}
+		}
+		if(st == "word")
+			words.add(buf.toString());
+		if((st != "ws") && (st != "word"))
+			return(null);
+		return(words.toArray(new String[0]));
 	}
 }
