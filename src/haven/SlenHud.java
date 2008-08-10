@@ -19,8 +19,8 @@ public class SlenHud extends Widget {
 	Button sub, sdb;
 	VC vc;
 	String cmdline = null;
-	static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14));
-	static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+	static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14), new Color(192, 0, 0));
+	static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12), new Color(245, 222, 179));
 	Text cmdtext, lasterr;
 	long errtime;
 	
@@ -128,9 +128,20 @@ public class SlenHud extends Widget {
 			return(c.add(bgc.inv()));
 	}
 	
-	public void runcmd(String cmdline) {
+	public void runcmd(String[] argv) {
+		String cmd = argv[0].intern();
+		if(cmd == "q") {
+			Utils.tg().interrupt();
+		} else {
+			error(cmd + ": no such command");
+		}
 	}
-
+	
+	public void error(String err) {
+		lasterr = errfoundry.render(err);
+		errtime = System.currentTimeMillis();
+	}
+	
 	public void draw(GOut g) {
 		vc.tick();
 		Coord bgc = sz.add(bg.sz().inv());
@@ -139,8 +150,9 @@ public class SlenHud extends Widget {
 		if(cmdline != null) {
 			GOut eg = g.reclip(new Coord(0, -20), new Coord(sz.x, 20));
 			if((cmdtext == null) || !cmdtext.text.equals(cmdline))
-				cmdtext = cmdfoundry.render(":" + cmdline, Color.WHITE);
+				cmdtext = cmdfoundry.render(":" + cmdline);
 			eg.image(cmdtext.tex(), new Coord(15, 0));
+			eg.line(new Coord(cmdtext.sz().x + 16, 2), new Coord(cmdtext.sz().x + 16, 14), 1);
 		} else if(lasterr != null) {
 			if((System.currentTimeMillis() - errtime) > 3000) {
 				lasterr = null;
@@ -167,8 +179,7 @@ public class SlenHud extends Widget {
 	
 	public void uimsg(String msg, Object... args) {
 		if(msg == "err") {
-			lasterr = errfoundry.render((String)args[0], Color.RED);
-			errtime = System.currentTimeMillis();
+			error((String)args[0]);
 		} else {
 			super.uimsg(msg, args);
 		}
@@ -284,10 +295,17 @@ public class SlenHud extends Widget {
 					cmdline = null;
 					ui.grabkeys(null);
 				}
-			} else if(ch == 10) {
-				runcmd(cmdline);
+			} else if(ch == 27) {
 				cmdline = null;
 				ui.grabkeys(null);
+			} else if(ch == 10) {
+				String[] argv = Utils.splitwords(cmdline);
+				if(argv != null) {
+					if(argv.length > 0)
+						runcmd(argv);
+					cmdline = null;
+					ui.grabkeys(null);
+				}
 			}
 			return(true);
 		}
