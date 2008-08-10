@@ -197,10 +197,10 @@ public class OCache implements Iterable<Gob> {
 		} else {
 			Following flw = g.getattr(Following.class);
 			if(flw == null) {
-				flw = new Following(g, getgob(oid), off);
+				flw = new Following(g, oid, off);
 				g.setattr(flw);
 			} else {
-				flw.tgt = getgob(oid);
+				flw.tgt = oid;
 			}
 		}
 	}
