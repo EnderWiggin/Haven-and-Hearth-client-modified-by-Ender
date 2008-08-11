@@ -134,6 +134,8 @@ public class SlenHud extends Widget {
 			Utils.tg().interrupt();
 		} else if(cmd == "lo") {
 			ui.sess.close();
+		} else if(cmd == "afk") {
+			wdgmsg("afk");
 		} else {
 			error(cmd + ": no such command");
 		}
