@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 7;
+	public static final int PVER = 8;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -271,8 +271,6 @@ public class Session {
 				glob.map.invalidate(msg.coord());
 			} else if(msg.type == Message.RMSG_GLOBLOB) {
 				glob.blob(msg);
-				if(state == "syn")
-					state = "";
 			} else if(msg.type == Message.RMSG_PAGINAE) {
 				glob.paginae(msg);
 			} else if(msg.type == Message.RMSG_RESID) {
@@ -342,7 +340,7 @@ public class Session {
 							int error = msg.uint8();
 							synchronized(Session.this) {
 								if(error == 0)
-									state = "syn";
+									state = "";
 								else
 									connfailed = error;
 								Session.this.notifyAll();
