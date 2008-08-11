@@ -147,7 +147,10 @@ public class Item extends Widget implements DTarget {
 	public boolean mousedown(Coord c, int button) {
 		if(!dm) {
 			if(button == 1) {
-				wdgmsg("take", c);
+				if(ui.modshift)
+					wdgmsg("transfer", c);
+				else
+					wdgmsg("take", c);
 				return(true);
 			} else if(button == 3) {
 				wdgmsg("iact", c);
