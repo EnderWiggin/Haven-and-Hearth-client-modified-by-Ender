@@ -12,6 +12,7 @@ public class UI {
 	Coord mc, lcc = Coord.z;
 	Session sess;
 	MapView mainview;
+	boolean modshift, modctrl, modmeta, modsuper;
 	public Widget mouseon;
 	public Object tooltip = null;
 	
@@ -132,6 +133,14 @@ public class UI {
 	}
 	
 	public void keydown(KeyEvent ev) {
+		if(ev.getKeyCode() == KeyEvent.VK_SHIFT)
+			modshift = true;
+		else if(ev.getKeyCode() == KeyEvent.VK_CONTROL)
+			modctrl = true;
+		if(ev.getKeyCode() == KeyEvent.VK_ALT)
+			modmeta = true;
+		if(ev.getKeyCode() == KeyEvent.VK_WINDOWS)
+			modsuper = true;
 		if(keygrab == null) {
 			if(!root.keydown(ev))
 				root.globtype((char)0, ev);
@@ -141,6 +150,14 @@ public class UI {
 	}
 	
 	public void keyup(KeyEvent ev) {
+		if(ev.getKeyCode() == KeyEvent.VK_SHIFT)
+			modshift = false;
+		else if(ev.getKeyCode() == KeyEvent.VK_CONTROL)
+			modctrl = false;
+		if(ev.getKeyCode() == KeyEvent.VK_ALT)
+			modmeta = false;
+		if(ev.getKeyCode() == KeyEvent.VK_WINDOWS)
+			modsuper = false;
 		if(keygrab == null)
 			root.keyup(ev);
 		else
