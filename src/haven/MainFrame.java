@@ -33,7 +33,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	public void setfs() {
 		GraphicsDevice dev = getGraphicsConfiguration().getDevice();
 		if(prefs != null)
-			throw(new RuntimeException("Already in fullscreen mode"));
+			return;
 		prefs = dev.getDisplayMode();
 		try {
 			setVisible(false);
@@ -51,7 +51,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	public void setwnd() {
 		GraphicsDevice dev = getGraphicsConfiguration().getDevice();
 		if(prefs == null)
-			throw(new RuntimeException("Not in fullscreen mode"));
+			return;
 		try {
 			dev.setDisplayMode(prefs);
 			dev.setFullScreenWindow(null);
