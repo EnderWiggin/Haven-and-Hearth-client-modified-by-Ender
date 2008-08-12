@@ -4,9 +4,10 @@ import java.awt.*;
 import java.net.URL;
 import java.awt.event.*;
 
-public class MainFrame extends Frame implements Runnable {
+public class MainFrame extends Frame implements Runnable, FSMan {
 	HavenPanel p;
 	ThreadGroup g;
+	DisplayMode fsmode = null, prefs = null;
 	
 	static {
 		try {
@@ -29,25 +30,56 @@ public class MainFrame extends Frame implements Runnable {
 		return(b);
 	}
 	
-	void setfs(DisplayMode m) {
+	public void setfs() {
 		GraphicsDevice dev = getGraphicsConfiguration().getDevice();
+		if(prefs != null)
+			return;
+		prefs = dev.getDisplayMode();
 		try {
+			setVisible(false);
+			dispose();
 			setUndecorated(true);
+			setVisible(true);
 			dev.setFullScreenWindow(this);
-			dev.setDisplayMode(m);
+			dev.setDisplayMode(fsmode);
+			
 		} catch(Exception e) {
 			throw(new RuntimeException(e));
 		}
 	}
 	
-	public MainFrame(int w, int h, boolean fs) {
+	public void setwnd() {
+		GraphicsDevice dev = getGraphicsConfiguration().getDevice();
+		if(prefs == null)
+			return;
+		try {
+			dev.setDisplayMode(prefs);
+			dev.setFullScreenWindow(null);
+			setVisible(false);
+			dispose();
+			setUndecorated(false);
+			setVisible(true);
+		} catch(Exception e) {
+			throw(new RuntimeException(e));
+		}
+		prefs = null;
+	}
+
+	public boolean hasfs() {
+		return(prefs != null);
+	}
+
+	public void togglefs() {
+		if(prefs == null)
+			setfs();
+		else
+			setwnd();
+	}
+
+	public MainFrame(int w, int h) {
 		super("Haven and Hearth");
 		p = new HavenPanel(w, h);
-		DisplayMode tm = findmode(w, h);
-		if(tm == null)
-			fs = false;
-		if(fs)
-			setfs(tm);
+		fsmode = findmode(w, h);
 		add(p);
 		pack();
 		//setResizable(false);
@@ -63,6 +95,7 @@ public class MainFrame extends Frame implements Runnable {
 			}
 		});
 		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
+		p.setfsm(this);
 		ui.start();
 		try {
 			while(true) {
@@ -84,10 +117,9 @@ public class MainFrame extends Frame implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		boolean fs = false;
+		final MainFrame f = new MainFrame(800, 600);
 		if(System.getProperty("haven.fullscreen", "off").equals("on"))
-			fs = true;
-		final MainFrame f = new MainFrame(800, 600, fs);
+			f.setfs();
 		try {
 			Resource.baseurl = new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/"));
 		} catch(java.net.MalformedURLException e) {

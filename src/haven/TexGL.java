@@ -7,8 +7,10 @@ import javax.media.opengl.*;
 
 public abstract class TexGL extends Tex {
 	protected int id = -1;
+	private GL mygl = null;
+	private Object idmon = new Object();
 	protected Coord tdim;
-	protected static Collection<Integer> disposed = new LinkedList<Integer>();
+	protected static Map<GL, Collection<Integer>> disposed = new HashMap<GL, Collection<Integer>>();
     
 	public TexGL(Coord sz) {
 		super(sz);
@@ -28,6 +30,7 @@ public abstract class TexGL extends Tex {
 		int[] buf = new int[1];
 		gl.glGenTextures(1, buf, 0);
 		id = buf[0];
+		mygl = gl;
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
@@ -51,9 +54,15 @@ public abstract class TexGL extends Tex {
 	
 	public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
 		GL gl = g.gl;
-		if(id < 0)
-			create(g);
-		g.texsel(id);
+		synchronized(idmon) {
+			if(mygl != gl) {
+				dispose(mygl, id);
+				id = -1;
+			}
+			if(id < 0)
+				create(g);
+			g.texsel(id);
+		}
 		Color amb = blend(g, setenv(gl));
 		checkerr(gl);
 		gl.glBegin(GL.GL_QUADS);
@@ -72,14 +81,28 @@ public abstract class TexGL extends Tex {
 		gl.glEnd();
 		checkerr(gl);
 	}
-
-	public void dispose() {
-		if(id == -1)
-			return;
+	
+	private static void dispose(GL gl, int id) {
+		Collection<Integer> dc;
 		synchronized(disposed) {
-			disposed.add(id);
+			dc = disposed.get(gl);
+			if(dc == null) {
+				dc = new LinkedList<Integer>();
+				disposed.put(gl, dc);
+			}
 		}
-		id = -1;
+		synchronized(dc) {
+			dc.add(id);
+		}
+	}
+	
+	public void dispose() {
+		synchronized(idmon) {
+			if(id == -1)
+				return;
+			dispose(mygl, id);
+			id = -1;
+		}
 	}
 	
 	protected void finalize() {
@@ -87,14 +110,20 @@ public abstract class TexGL extends Tex {
 	}
 	
 	public static void disposeall(GL gl) {
+		Collection<Integer> dc;
 		synchronized(disposed) {
-			if(disposed.isEmpty())
+			dc = disposed.get(gl);
+			if(dc == null)
 				return;
-			int[] da = new int[disposed.size()];
+		}
+		synchronized(dc) {
+			if(dc.isEmpty())
+				return;
+			int[] da = new int[dc.size()];
 			int i = 0;
-			for(int id : disposed)
+			for(int id : dc)
 				da[i++] = id;
-			disposed.clear();
+			dc.clear();
 			gl.glDeleteTextures(da.length, da, 0);
 		}
 	}

@@ -15,6 +15,7 @@ public class UI {
 	boolean modshift, modctrl, modmeta, modsuper;
 	public Widget mouseon;
 	public Object tooltip = null;
+	public FSMan fsm;
 	
 	public interface Receiver {
 		public void rcvmsg(int widget, String msg, Object... args);

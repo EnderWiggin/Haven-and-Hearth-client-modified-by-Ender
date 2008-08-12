@@ -282,4 +282,12 @@ public class Utils {
 			return(null);
 		return(words.toArray(new String[0]));
 	}
+	
+	static int atoi(String a) {
+		try {
+			return(Integer.parseInt(a));
+		} catch(NumberFormatException e) {
+			return(0);
+		}
+	}
 }
