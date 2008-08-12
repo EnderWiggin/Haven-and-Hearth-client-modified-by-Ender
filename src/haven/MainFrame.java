@@ -95,6 +95,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 			}
 		});
 		Thread ui = new Thread(Utils.tg(), p, "Haven UI thread");
+		p.setfsm(this);
 		ui.start();
 		try {
 			while(true) {
