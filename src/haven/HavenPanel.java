@@ -11,7 +11,7 @@ import javax.media.opengl.glu.GLU;
 @SuppressWarnings("serial")
 public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	UI ui;
-	boolean inited = false;
+	boolean inited = false, rdr = false;
 	int w, h;
 	long fd = 20, fps = 0;
 	int dth = 0, dtm = 0;
@@ -32,7 +32,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 		addGLEventListener(new GLEventListener() {
 			public void display(GLAutoDrawable d) {
 				GL gl = d.getGL();
-				if(inited)
+				if(inited && rdr)
 					redraw(gl);
 				TexGL.disposeall(gl);
 			}
@@ -273,6 +273,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	public void uglyjoglhack() throws InterruptedException {
 		try {
+			rdr = true;
 			display();
 		} catch(GLException e) {
 			if(e.getCause() instanceof InterruptedException) {
@@ -281,6 +282,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 				e.printStackTrace();
 				throw(e);
 			}
+		} finally {
+			rdr = false;
 		}
 	}
 	
