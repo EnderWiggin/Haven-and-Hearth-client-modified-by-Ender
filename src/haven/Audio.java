@@ -10,6 +10,7 @@ public class Audio {
     private static Collection<CS> ncl = new LinkedList<CS>();
     private static Object queuemon = new Object();
     private static Collection<Runnable> queue = new LinkedList<Runnable>();
+    private static int bufsize = 32768;
     
     public interface CS {
 	public boolean get(double[] sample);
@@ -20,6 +21,7 @@ public class Audio {
 	private double vol, sp;
 	private int ack = 0;
 	private double[] ov = new double[2];
+	public boolean eof;
 
 	public DataClip(InputStream clip, double vol, double sp) {
 	    this.clip = clip;
@@ -30,7 +32,15 @@ public class Audio {
 	public DataClip(InputStream clip) {
 	    this(clip, 1.0, 1.0);
 	}
-		    
+	
+	public void finwait() throws InterruptedException {
+	    synchronized(this) {
+		if(eof)
+		    return;
+		wait();
+	    }
+	}
+	
 	public boolean get(double[] sm) {
 	    try {
 		ack += 44100.0 * sp;
@@ -38,8 +48,13 @@ public class Audio {
 		    for(int i = 0; i < 2; i++) {
 			int b1 = clip.read();
 			int b2 = clip.read();
-			if((b1 < 0) || (b2 < 0))
+			if((b1 < 0) || (b2 < 0)) {
+			    synchronized(this) {
+				eof = true;
+				notifyAll();
+			    }
 			    return(false);
+			}
 			int v = b1 + (b2 << 8);
 			if(v >= 32768)
 			    v -= 65536;
@@ -48,6 +63,10 @@ public class Audio {
 		    ack -= 44100;
 		}
 	    } catch(java.io.IOException e) {
+		synchronized(this) {
+		    eof = true;
+		    notifyAll();
+		}
 		return(false);
 	    }
 	    for(int i = 0; i < 2; i++)
@@ -103,7 +122,7 @@ public class Audio {
 	    try {
 		try {
 		    line = (SourceDataLine)AudioSystem.getLine(new DataLine.Info(SourceDataLine.class, fmt));
-		    line.open(fmt, 2048);
+		    line.open(fmt, bufsize);
 		    line.start();
 		} catch(Exception e) {
 		    e.printStackTrace();
@@ -220,5 +239,21 @@ public class Audio {
 	    buf.write(bbuf, 0, rv);
 	}
 	return(buf.toByteArray());
+    }
+    
+    public static void main(String[] args) throws Exception {
+	Collection<DataClip> clips = new LinkedList<DataClip>();
+	for(int i = 0; i < args.length; i++) {
+	    if(args[i].equals("-b")) {
+		bufsize = Integer.parseInt(args[++i]);
+	    } else {
+		DataClip c = new DataClip(new java.io.FileInputStream(args[i]));
+		clips.add(c);
+	    }
+	}
+	for(DataClip c : clips)
+	    play(c);
+	for(DataClip c : clips)
+	    c.finwait();
     }
 }
