@@ -9,7 +9,7 @@ import java.util.*;
 
 public class MapView extends Widget implements DTarget {
 	Coord mc;
-	List<Drawable> clickable = null;
+	List<Drawable> clickable = new ArrayList<Drawable>();
 	int visol = 6;
 	static Color[] olc = new Color[31];
 	Grabber grab = null;
