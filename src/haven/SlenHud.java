@@ -143,6 +143,8 @@ public class SlenHud extends Widget {
 				else
 					ui.fsm.setwnd();
 			}
+		} else if(cmd == "sfx") {
+			Audio.play(Resource.load(argv[1]));
 		} else {
 			error(cmd + ": no such command");
 		}
