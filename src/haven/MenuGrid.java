@@ -54,9 +54,20 @@ public class MenuGrid extends Widget {
 		cons(null);
 	}
 	
+	private static Comparator<Resource> sorter = new Comparator<Resource>() {
+		public int compare(Resource a, Resource b) {
+			AButton aa = a.layer(Resource.action), ab = b.layer(Resource.action);
+			if((aa.ad.length == 0) && (ab.ad.length > 0))
+				return(-1);
+			if((aa.ad.length > 0) && (ab.ad.length == 0))
+				return(1);
+			return(aa.name.compareTo(ab.name));
+		}
+	};
+
 	private void updlayout() {
 		Resource[] cur = cons(this.cur);
-		Arrays.sort(cur);
+		Arrays.sort(cur, sorter);
 		int i = 0;
 		hotmap.clear();
 		for(int y = 0; y < gsz.y; y++) {
