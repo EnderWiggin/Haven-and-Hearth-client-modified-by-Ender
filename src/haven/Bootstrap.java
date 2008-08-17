@@ -40,6 +40,9 @@ public class Bootstrap implements UI.Receiver {
 		if(Utils.getpref("savedtoken", "").length() == 64)
 			token = Utils.hex2byte(Utils.getpref("savedtoken", null));
 		username = Utils.getpref("username", "");
+		String authserver = System.getProperty("haven.authserv");
+		if(authserver == null)
+		    authserver = address;
 		retry: do {
 			byte[] cookie;
 			if(token != null) {
@@ -64,7 +67,7 @@ public class Bootstrap implements UI.Receiver {
 				ui.uimsg(1, "prg", "Authenticating...");
 				AuthClient auth = null;
 				try {
-					auth = new AuthClient(address, username);
+					auth = new AuthClient(authserver, username);
 					if(!auth.trytoken(token)) {
 						auth.close();
 						token = null;
@@ -103,7 +106,7 @@ public class Bootstrap implements UI.Receiver {
 				ui.uimsg(1, "prg", "Authenticating...");
 				AuthClient auth = null;
 				try {
-					auth = new AuthClient(address, username);
+					auth = new AuthClient(authserver, username);
 					if(!auth.trypasswd(password)) {
 						auth.close();
 						password = "";
