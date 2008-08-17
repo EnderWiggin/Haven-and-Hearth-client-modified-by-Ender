@@ -219,7 +219,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public class Image extends Layer implements Comparable<Image> {
 		public transient BufferedImage img;
 		transient private Tex tex;
-		public final int z;
+		public final int z, subz;
 		public final boolean l;
 		public final int id;
 		private int gay = -1;
@@ -228,11 +228,12 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		
 		public Image(byte[] buf) {
 			z = Utils.int16d(buf, 0);
-			l = (buf[2] & 1) != 0;
-			id = Utils.int16d(buf, 3);
-			o = cdec(buf, 5);
+			subz = Utils.int16d(buf, 2);
+			l = (buf[4] & 1) != 0;
+			id = Utils.int16d(buf, 5);
+			o = cdec(buf, 7);
 			try {
-				img = ImageIO.read(new ByteArrayInputStream(buf, 9, buf.length - 9));
+				img = ImageIO.read(new ByteArrayInputStream(buf, 11, buf.length - 11));
 			} catch(IOException e) {
 				throw(new RuntimeException(e));
 			}
@@ -356,7 +357,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 			for(int i = 0; i < ids.length; i++) {
 				LinkedList<Image> buf = new LinkedList<Image>();
 				for(Image img : layers(Image.class)) {
-					if(img.id == ids[i])
+					if((img.id == ids[i]) || (img.id == -1))
 						buf.add(img);
 				}
 				f[i] = buf.toArray(typeinfo);
