@@ -23,16 +23,24 @@ public class Sprite {
 	public static abstract class Part implements Comparable<Part> {
 		public Coord poff = Coord.z;
 		Coord cc, off;
-		int z;
+		int z, subz;
 		
 		public Part(int z) {
 			this.z = z;
+			this.subz = 0;
+		}
+		
+		public Part(int z, int subz) {
+			this.z = z;
+			this.subz = subz;
 		}
 		
 		public int compareTo(Part other) {
 			if(z != other.z)
 				return(z - other.z);
-			return(cc.y - other.cc.y);
+			if(cc.y != other.cc.y)
+				return(cc.y - other.cc.y);
+			return(other.subz - subz);
 		}
 		
 		public abstract void draw(BufferedImage buf, Graphics g);
@@ -49,13 +57,17 @@ public class Sprite {
 		public SpritePart(int z) {
 			super(z);
 		}
-	}
+
+		public SpritePart(int z, int subz) {
+			super(z, subz);
+		}
+}
 	
 	private class ImagePart extends SpritePart {
 		Resource.Image img;
 		
 		public ImagePart(Resource.Image img) {
-			super(img.z);
+			super(img.z, img.subz);
 			this.img = img;
 		}
 		
