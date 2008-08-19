@@ -346,6 +346,10 @@ public class MapView extends Widget implements DTarget {
 	
 	private void fixlight() {
 		Astronomy a = glob.ast;
+		if(a == null) {
+		    mask.amb = new Color(0, 0, 0, 0);
+		    return;
+		}
 		double p2 = Math.PI * 2;
 		double sa = -Math.cos(a.dt * p2);
 		double la = anorm(-Math.cos(a.mp * p2));
@@ -404,8 +408,10 @@ public class MapView extends Widget implements DTarget {
 			drawmap(g);
 			drawarrows(g);
 			g.chcolor(Color.WHITE);
-			g.atext("Hunger meter: " + glob.glut / (glob.fcap / 100) + "%", new Coord(10, 575), 0, 1);
-			g.atext("Stamina meter: " + glob.stamina / (glob.stamcap / 100) + "%", new Coord(10, 590), 0, 1);
+			if((glob.fcap != 0) &&  (glob.stamcap != 0)) {
+			    g.atext("Hunger meter: " + glob.glut / (glob.fcap / 100) + "%", new Coord(10, 575), 0, 1);
+			    g.atext("Stamina meter: " + glob.stamina / (glob.stamcap / 100) + "%", new Coord(10, 590), 0, 1);
+			}
 			if(System.getProperty("haven.dbtext", "off").equals("on"))
 				g.atext(mc.toString(), new Coord(10, 560), 0, 1);
 		} catch(Loading l) {
