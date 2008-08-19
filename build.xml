@@ -21,7 +21,7 @@
   </target>
   
   <target name="appletview" depends="build-env">
-    <copy file="etc/test.html" todir="build" />
+    <copy file="etc/applet.html" todir="build" />
   </target>
 
   <target name="jar" depends="haven-client, appletview">
