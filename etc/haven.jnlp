@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<jnlp spec="1.0+" codebase="http://www.seatribe.se/~fredrik/">
+<jnlp spec="1.0+" codebase="http://www.havenandhearth.com/java/">
   <information>
-    <title>Haven</title>
+    <title>Haven and Hearth</title>
     <vendor>Seatribe</vendor>
     <homepage href="http://www.havenandhearth.com/" />
     <description>The Haven game</description>
