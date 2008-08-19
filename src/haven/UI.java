@@ -23,8 +23,8 @@ public class UI {
 	
 	@SuppressWarnings("serial")
 	public static class UIException extends RuntimeException {
-		String mname;
-		Object[] args;
+		public String mname;
+		public Object[] args;
 		
 		public UIException(String message, String mname, Object... args) {
 			super(message);
