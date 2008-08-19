@@ -66,9 +66,10 @@ public class Item extends Widget implements DTarget {
 		BufferedImage sh = new BufferedImage(sz.x, sz.y, BufferedImage.TYPE_INT_ARGB);
 		for(int y = 0; y < sz.y; y++) {
 			for(int x = 0; x < sz.x; x++) {
-				int c = img.getRGB(x, y);
-				int a = (c & 0xff000000) >> 24;
+				long c = img.getRGB(x, y) & 0x00000000ffffffffL;
+				int a = (int)((c & 0xff000000) >> 24);
 				sh.setRGB(x, y, (a / 2) << 24);
+				System.out.println(String.format("%08x %x %08x", c, a, (a / 2) << 24));
 			}
 		}
 		return(new TexI(sh));
