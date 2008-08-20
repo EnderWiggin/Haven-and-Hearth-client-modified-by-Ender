@@ -5,8 +5,8 @@
     <vendor>Seatribe</vendor>
     <homepage href="http://www.havenandhearth.com/" />
     <description>The Haven game</description>
+    <offline-allowed />
   </information>
-  <offline-allowed />
   <security>
     <all-permissions />
   </security>
