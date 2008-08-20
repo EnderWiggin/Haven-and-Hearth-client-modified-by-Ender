@@ -310,9 +310,9 @@ public class MCache {
 					g.makeflavor();
 					if(grids.containsKey(c)) {
 						grids.get(c).remove();
-						grids.remove(c);
+						replace(grids.remove(c));
 					}
-					replace(grids.put(c, g));
+					grids.put(c, g);
 				}
 			}
 		}
