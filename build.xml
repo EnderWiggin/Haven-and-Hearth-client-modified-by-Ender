@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="haven" default="jars">
+<project name="haven" default="deftgt">
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
@@ -24,7 +24,7 @@
     <copy file="etc/applet.html" todir="build" />
   </target>
 
-  <target name="jar" depends="haven-client, appletview">
+  <target name="jar" depends="haven-client">
     <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" />
       <fileset dir="." includes="res/**" />
@@ -33,7 +33,6 @@
 	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar" />
       </manifest>
     </jar>
-    <signjar jar="build/haven.jar" alias="haven" storepass="autosign" keystore="etc/keys" />
   </target>
   
   <target name="jars" depends="build-env, jar">
@@ -42,6 +41,8 @@
     </copy>
   </target>
   
+  <target name="deftgt" depends="jars, appletview" />
+
   <target name="run" depends="jars">
     <java jar="build/haven.jar" fork="true" />
   </target>
