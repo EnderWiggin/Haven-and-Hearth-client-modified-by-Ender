@@ -6,7 +6,7 @@ import java.lang.reflect.*;
 public class Gob {
 	public Coord rc, sc;
 	int clprio = 0;
-	public int id, frame;
+	public int id, frame, initdelay = (int)(Math.random() * 3000);
 	public final Glob glob;
 	Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
 	Map<Integer, Indir<Resource>> olprep = new TreeMap<Integer, Indir<Resource>>();
@@ -29,6 +29,8 @@ public class Gob {
 	}
 	
 	public void ctick(int dt) {
+		dt += initdelay;
+		initdelay = 0;
 		for(GAttrib a : attr.values())
 			a.ctick(dt);
 		for(Map.Entry<Integer, Indir<Resource>> e : olprep.entrySet()) {
