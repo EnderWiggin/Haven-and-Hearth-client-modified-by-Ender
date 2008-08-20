@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+    echo "usage: buildclient COMMIT" >&2
+    exit 1
+fi
+set -e
+
+tempdir="$(mktemp -d /tmp/haven.build.XXXXXX)"
+cd "$tempdir"
+git-archive --format=tar --remote=/srv/git/client "$1" | tar x
+ant
+cp build/haven.jar /tmp
+rm -rf "$tempdir"
+
+jarsigner -storepass autosign -keystore /srv/haven/lib/jarkeys /tmp/haven.jar haven
+
+mv -f /tmp/haven.jar /srv/haven/lib/haven.jar
