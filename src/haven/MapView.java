@@ -122,6 +122,7 @@ public class MapView extends Widget implements DTarget {
 				Gob gob = null;
 				for(Gob g : plob)
 					gob = g;
+				boolean plontile = this.plontile ^ ui.modshift;
 				gob.move(plontile?tilify(mc):mc);
 			}
 		}
