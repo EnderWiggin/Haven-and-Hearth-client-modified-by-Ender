@@ -22,9 +22,9 @@ public class UI {
 	}
 	
 	@SuppressWarnings("serial")
-	private static class UIException extends RuntimeException {
-		String mname;
-		Object[] args;
+	public static class UIException extends RuntimeException {
+		public String mname;
+		public Object[] args;
 		
 		public UIException(String message, String mname, Object... args) {
 			super(message);
