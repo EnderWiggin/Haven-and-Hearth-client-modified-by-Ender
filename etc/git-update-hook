@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "$1" = refs/tags/build ]; then
+    if [ "$2" = "$3" ]; then exit 0; fi
+    echo "haven-update: tag 'build' updated, scheduling rebuild" >&2
+    exec 0<>/dev/null 1>&0 2>&0 
+    (serialize -e /tmp/hb.lock buildclient "$3") &
+fi
