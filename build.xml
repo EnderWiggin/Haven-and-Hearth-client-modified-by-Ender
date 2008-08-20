@@ -27,10 +27,9 @@
   <target name="jar" depends="haven-client">
     <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" />
-      <fileset dir="." includes="res/**" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar" />
+	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
       </manifest>
     </jar>
   </target>
