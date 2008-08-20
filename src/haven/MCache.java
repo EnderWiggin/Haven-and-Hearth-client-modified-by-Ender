@@ -319,8 +319,16 @@ public class MCache {
 	}
 	
 	public void trimall() {
-		grids.clear();
-		req.clear();
+		synchronized(req) {
+			synchronized(grids) {
+				for(Grid g : req.values())
+					g.remove();
+				for(Grid g : grids.values())
+					g.remove();
+				grids.clear();
+				req.clear();
+			}
+		}
 	}
 	
 	public void trim(Coord cc) {
