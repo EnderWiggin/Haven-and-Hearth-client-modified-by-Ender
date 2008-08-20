@@ -11,6 +11,7 @@ cd "$tempdir"
 git-archive --format=tar --remote=/srv/git/client "$1" | tar x
 ant
 cp build/haven.jar /tmp
+cd /tmp
 rm -rf "$tempdir"
 
 jarsigner -storepass autosign -keystore /srv/haven/lib/jarkeys /tmp/haven.jar haven
