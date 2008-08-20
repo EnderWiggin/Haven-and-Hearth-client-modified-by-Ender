@@ -13,6 +13,7 @@
   <resources>
     <j2se version="1.6+" max-heap-size="128M" />
     <jar href="haven.jar" />
+    <jar href="haven-res.jar" />
     <property name="haven.errorhandler" value="on" />
     <property name="haven.defserv" value="sh.seatribe.se" />
     <property name="haven.fullscreen" value="off" />
