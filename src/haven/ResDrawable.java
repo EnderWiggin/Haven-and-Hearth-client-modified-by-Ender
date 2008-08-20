@@ -3,7 +3,7 @@ package haven;
 public class ResDrawable extends Drawable {
 	final Indir<Resource> res;
 	Sprite spr = null;
-	int delay = (int)(Math.random() * 3000);
+	int delay = 0;
 	
 	public ResDrawable(Gob gob, Indir<Resource> res) {
 		super(gob);
