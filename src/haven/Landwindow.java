@@ -22,14 +22,14 @@ public class Landwindow extends Window implements MapView.Grabber {
 	public Landwindow(Coord c, Widget parent) {
 		super(c, new Coord(200, 100), parent, "Land management");
 		map = ui.sess.glob.map;
-		ui.mainview.enol(3);
+		ui.mainview.enol(65537);
 		ui.mainview.grab(this);
 		btn = new Button(asz.add(-50, -30), 40, this, "Claim");
 		text = new Label(Coord.z, this, "Selected tiles: 0");
 	}
 	
 	public void destroy() {
-		ui.mainview.disol(3);
+		ui.mainview.disol(65537);
 		ui.mainview.release(this);
 		if(ol != null)
 			ol.destroy();
