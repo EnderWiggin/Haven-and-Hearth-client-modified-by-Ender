@@ -10,7 +10,7 @@ import java.util.*;
 public class MapView extends Widget implements DTarget {
 	Coord mc;
 	List<Drawable> clickable = new ArrayList<Drawable>();
-	int visol = 6;
+	int visol = 0xC;
 	static Color[] olc = new Color[31];
 	Grabber grab = null;
 	ILM mask;
@@ -28,8 +28,9 @@ public class MapView extends Widget implements DTarget {
 			}
 		});
 		olc[0] = new Color(255, 0, 128);
-		olc[1] = new Color(255, 0, 0);
-		olc[2] = new Color(128, 0, 255);
+		olc[1] = new Color(0, 0, 255);
+		olc[2] = new Color(255, 0, 0);
+		olc[3] = new Color(128, 0, 255);
 		olc[16] = new Color(0, 255, 0);
 	}
 	
