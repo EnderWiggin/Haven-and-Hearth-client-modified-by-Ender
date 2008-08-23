@@ -129,6 +129,18 @@ public class GOut {
 		checkerr();
 	}
 	
+	public void frect(Coord c1, Coord c2, Coord c3, Coord c4) {
+		glcolor();
+		texsel(-1);
+		gl.glBegin(GL.GL_QUADS);
+		vertex(c1);
+		vertex(c2);
+		vertex(c3);
+		vertex(c4);
+		gl.glEnd();
+		checkerr();
+	}
+	
 	public void rect(Coord ul, Coord sz) {
 		Coord ur, bl, br;
 		ur = new Coord(ul.x + sz.x - 1, ul.y);
