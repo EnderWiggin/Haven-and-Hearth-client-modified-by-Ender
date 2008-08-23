@@ -225,24 +225,33 @@ public class MapView extends Widget implements DTarget {
 		ol = getol(tc) & visol;
 		if(ol == 0)
 			return;
+		Coord c1 = sc;
+		Coord c2 = sc.add(m2s(new Coord(0, tilesz.y)));
+		Coord c3 = sc.add(m2s(new Coord(tilesz.x, tilesz.y)));
+		Coord c4 = sc.add(m2s(new Coord(tilesz.x, 0)));
 		for(i = 0; i < olc.length; i++) {
 			if(olc[i] == null)
 				continue;
+			if((ol & (1 << i)) == 0)
+				continue;
+			Color fc = new Color(olc[i].getRed(), olc[i].getGreen(), olc[i].getBlue(), 32);
+			g.chcolor(fc);
+			g.frect(c1, c2, c3, c4);
 			if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(m2s(new Coord(0, tilesz.y))), sc, w);
+				g.line(c2, c1, w);
 			}
 			if(((ol & ~getol(tc.add(new Coord(0, -1)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), w);
+				g.line(c1.add(1, 0), c4.add(1, 0), w);
 			}
 			if(((ol & ~getol(tc.add(new Coord(1, 0)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(m2s(new Coord(tilesz.x, 0))).add(new Coord(1, 0)), sc.add(m2s(new Coord(tilesz.x, tilesz.y))).add(new Coord(1, 0)), w);
+				g.line(c4.add(1, 0), c3.add(1, 0), w);
 			}
 			if(((ol & ~getol(tc.add(new Coord(0, 1)))) & (1 << i)) != 0) {
 				g.chcolor(olc[i]);
-				g.line(sc.add(m2s(new Coord(tilesz.x, tilesz.y))), sc.add(m2s(new Coord(0, tilesz.y))), w);
+				g.line(c3, c2, w);
 			}
 		}
 		g.chcolor(Color.WHITE);
