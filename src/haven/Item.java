@@ -9,22 +9,31 @@ public class Item extends Widget implements DTarget {
 	static Resource missing = Resource.load("gfx/invobjs/missing");
 	boolean dm = false;
 	Coord doff;
+	String tooltip;
 	int num = -1;
 	Indir<Resource> res;
 	Tex sh;
+	boolean h;
 	
 	static {
 		Widget.addtype("item", new WidgetFactory() {
 			public Widget create(Coord c, Widget parent, Object[] args) {
 				int res = (Integer)args[0];
 				int num = -1;
+				String tooltip = null;
 				int ca = 2;
 				Coord drag = null;
 				if((Integer)args[1] != 0)
 					drag = (Coord)args[ca++];
 				if(args.length > ca)
+					tooltip = (String)args[ca++];
+				if((tooltip != null) && tooltip.equals(""))
+					tooltip = null;
+				if(args.length > ca)
 					num = (Integer)args[ca++];
-				return(new Item(c, res, parent, drag, num));
+				Item item = new Item(c, res, parent, drag, num);
+				item.tooltip = tooltip;
+				return(item);
 			}
 		});
 		missing.loadwait();
@@ -58,6 +67,8 @@ public class Item extends Widget implements DTarget {
 				g.atext(Integer.toString(num), tex.sz(), 1, 1);
 			}
 		}
+		if((tooltip != null) && h)
+			ui.tooltip = tooltip;
 	}
 
 	static Tex makesh(Resource res) {
@@ -168,6 +179,7 @@ public class Item extends Widget implements DTarget {
 	}
 	
 	public void mousemove(Coord c) {
+		h = c.isect(Coord.z, sz);
 		if(dm)
 			this.c = this.c.add(c.add(doff.inv()));
 	}
