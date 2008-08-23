@@ -177,9 +177,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 				try {
 					res.load(getres(res.name));
 					return;
-				} catch(LoadException e) {
-					e.printStackTrace();
-				}
+				} catch(LoadException e) {}
 				res.load(getreshttp(res));
 			} finally {
 				if(in != null)
