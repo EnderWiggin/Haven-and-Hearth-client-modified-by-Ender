@@ -10,7 +10,9 @@ import java.util.*;
 public class MapView extends Widget implements DTarget {
 	Coord mc;
 	List<Drawable> clickable = new ArrayList<Drawable>();
-	int[] visol = new int[31];
+	private int[] visol = new int[31];
+	private long olftimer = 0;
+	private int olflash = 0;
 	static Color[] olc = new Color[31];
 	Grabber grab = null;
 	ILM mask;
@@ -145,9 +147,26 @@ public class MapView extends Widget implements DTarget {
 		return(c);
 	}
 	
+	private void unflashol() {
+		for(int i = 0; i < visol.length; i++) {
+			if((olflash & (1 << i)) != 0)
+				visol[i]--;
+		}
+		olflash = 0;
+		olftimer = 0;
+	}
+
 	public void uimsg(String msg, Object... args) {
 		if(msg == "move") {
 			move((Coord)args[0], (Integer)args[1] != 0);
+		} else if(msg == "flashol") {
+			unflashol();
+			olflash = (Integer)args[0];
+			for(int i = 0; i < visol.length; i++) {
+				if((olflash & (1 << i)) != 0)
+					visol[i]++;
+			}
+			olftimer = System.currentTimeMillis() + (Integer)args[1];
 		} else if(msg == "place") {
 			if(plob != null)
 				glob.oc.lrem(plob);
@@ -415,6 +434,8 @@ public class MapView extends Widget implements DTarget {
 					map.request(cgc);
 			}
 		}
+		if((olftimer != 0) && (olftimer < System.currentTimeMillis()))
+			unflashol();
 		map.sendreqs();
 		try {
 			fixlight();
