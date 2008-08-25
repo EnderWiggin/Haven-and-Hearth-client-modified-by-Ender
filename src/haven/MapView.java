@@ -10,7 +10,7 @@ import java.util.*;
 public class MapView extends Widget implements DTarget {
 	Coord mc;
 	List<Drawable> clickable = new ArrayList<Drawable>();
-	int visol = 0xC;
+	int[] visol = new int[31];
 	static Color[] olc = new Color[31];
 	Grabber grab = null;
 	ILM mask;
@@ -169,12 +169,14 @@ public class MapView extends Widget implements DTarget {
 		}
 	}
 	
-	public void enol(int mask) {
-		visol |= mask;
+	public void enol(int... overlays) {
+		for(int ol : overlays)
+			visol[ol]++;
 	}
 	
-	public void disol(int mask) {
-		visol &= ~mask;
+	public void disol(int... overlays) {
+		for(int ol : overlays)
+			visol[ol]--;
 	}
 	
 	private int gettilen(Coord tc) {
@@ -223,7 +225,7 @@ public class MapView extends Widget implements DTarget {
 		int i;
 		double w = 2;
 		
-		ol = getol(tc) & visol;
+		ol = getol(tc);
 		if(ol == 0)
 			return;
 		Coord c1 = sc;
@@ -233,7 +235,7 @@ public class MapView extends Widget implements DTarget {
 		for(i = 0; i < olc.length; i++) {
 			if(olc[i] == null)
 				continue;
-			if((ol & (1 << i)) == 0)
+			if(((ol & (1 << i)) == 0) || (visol[i] < 1))
 				continue;
 			Color fc = new Color(olc[i].getRed(), olc[i].getGreen(), olc[i].getBlue(), 32);
 			g.chcolor(fc);
