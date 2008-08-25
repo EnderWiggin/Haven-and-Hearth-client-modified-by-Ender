@@ -10,3 +10,5 @@ git checkout eclipse
 git merge "$@"
 git checkout master
 git merge eclipse
+
+git branch -d "$@"
