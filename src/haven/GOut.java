@@ -141,6 +141,19 @@ public class GOut {
 		checkerr();
 	}
 	
+	public void fellipse(Coord c, Coord r) {
+		glcolor();
+		texsel(-1);
+		gl.glBegin(GL.GL_TRIANGLE_FAN);
+		vertex(c);
+		for(int i = 0; i <= 360; i += 5) {
+			double a = (i * Math.PI * 2) / 360.0;
+			vertex(c.add((int)(Math.cos(a) * r.x), -(int)(Math.sin(a) * r.y)));
+		}
+		gl.glEnd();
+		checkerr();
+	}
+	
 	public void rect(Coord ul, Coord sz) {
 		Coord ur, bl, br;
 		ur = new Coord(ul.x + sz.x - 1, ul.y);

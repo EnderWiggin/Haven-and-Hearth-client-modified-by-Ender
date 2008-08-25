@@ -8,7 +8,7 @@ import java.awt.Color;
 import java.util.*;
 
 public class MapView extends Widget implements DTarget {
-	Coord mc;
+	Coord mc, mousepos;
 	List<Drawable> clickable = new ArrayList<Drawable>();
 	private int[] visol = new int[31];
 	private long olftimer = 0;
@@ -20,6 +20,7 @@ public class MapView extends Widget implements DTarget {
 	final Glob glob;
 	Collection<Gob> plob = null;
 	boolean plontile;
+	int plrad = 0;
 	public Profile prof = new Profile(300);
 	private Profile.Frame curf;
 	
@@ -117,6 +118,7 @@ public class MapView extends Widget implements DTarget {
 	
 	public void mousemove(Coord c) {
 		Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
+		this.mousepos = mc;
 		Collection<Gob> plob = this.plob;
 		if(grab != null) {
 			grab.mmousemove(mc);
@@ -173,16 +175,19 @@ public class MapView extends Widget implements DTarget {
 			plob = new LinkedList<Gob>();
 			synchronized(plob) {
 				plontile = (Integer)args[2] != 0;
-				Gob gob = new Gob(glob, plontile?tilify(mc):mc);
+				Gob gob = new Gob(glob, plontile?tilify(mousepos):mousepos);
 				Resource res = Resource.load((String)args[0], (Integer)args[1]);
 				gob.setattr(new ResDrawable(gob, res));
 				plob.add(gob);
 				glob.oc.ladd(plob);
+				if(args.length > 3)
+					plrad = (Integer)args[3];
 			}
 		} else if(msg == "unplace") {
 			if(plob != null)
 				glob.oc.lrem(plob);
 			plob = null;
+			plrad = 0;
 		} else {
 			super.uimsg(msg, args);
 		}
@@ -279,6 +284,19 @@ public class MapView extends Widget implements DTarget {
 		g.chcolor(Color.WHITE);
 	}
 	
+	private void drawplobeffect(GOut g) {
+		if(plob == null)
+			return;
+		Gob gob = null;
+		for(Gob tg : plob)
+			gob = tg;
+		if(plrad > 0) {
+			g.chcolor(0, 255, 0, 32);
+			g.fellipse(gob.sc, new Coord(plrad * 2, plrad));
+			g.chcolor();
+		}
+	}
+
 	public void drawmap(GOut g) {
 		int x, y, i;
 		int stw, sth;
@@ -440,6 +458,7 @@ public class MapView extends Widget implements DTarget {
 		try {
 			fixlight();
 			drawmap(g);
+			drawplobeffect(g);
 			drawarrows(g);
 			g.chcolor(Color.WHITE);
 			if((glob.fcap != 0) &&  (glob.stamcap != 0)) {
