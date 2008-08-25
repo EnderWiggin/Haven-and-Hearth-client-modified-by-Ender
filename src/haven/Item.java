@@ -152,6 +152,11 @@ public class Item extends Widget implements DTarget {
 		} else if(name == "chres") {
 			res = ui.sess.getres((Integer)args[0]);
 			sh = null;
+		} else if(name == "tt") {
+			if(args.length > 0)
+				tooltip = (String)args[0];
+			else
+				tooltip = null;
 		}
 	}
 	
