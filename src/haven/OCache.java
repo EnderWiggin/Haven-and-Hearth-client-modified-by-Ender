@@ -91,13 +91,13 @@ public class OCache implements Iterable<Gob> {
 		g.move(c);
 	}
 	
-	public synchronized void cres(int id, int frame, Indir<Resource> res) {
+	public synchronized void cres(int id, int frame, Indir<Resource> res, Message sdt) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
 		ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
-		if((d == null) || (d.res != res)) {
-			g.setattr(new ResDrawable(g, res));
+		if((d == null) || (d.res != res) || (d.sdt.blob.length > 0) || (sdt.blob.length > 0)) {
+			g.setattr(new ResDrawable(g, res, sdt));
 		}
 	}
 	
@@ -236,12 +236,5 @@ public class OCache implements Iterable<Gob> {
 			return;
 		if(!g.olprep.containsKey(olid))
 			g.olprep.put(olid, resid);
-	}
-	
-	public synchronized void sprdata(int id, int frame, Message data) {
-		Gob g = getgob(id, frame);
-		if(g == null)
-			return;
-		g.setattr(new SprData(g, data));
 	}
 }

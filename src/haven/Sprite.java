@@ -4,6 +4,7 @@ import static haven.Resource.imgc;
 import static haven.Resource.negc;
 import static haven.Resource.animc;
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.util.*;
@@ -230,43 +231,55 @@ public class Sprite {
 		return(spr);
 	}
 
-	private static Sprite mkdyn(Gob gob, Resource res, Resource neg, Resource.SpriteCode sc) {
-		Method m;
+	private static Sprite mkdyn(Gob gob, Resource res, Resource neg, Resource.SpriteCode sc, Message sdt) {
 		try {
-			m = sc.cl.getMethod("create", Gob.class, Resource.class);
-		} catch(NoSuchMethodException e) {
+			try {
+				Method m = sc.cl.getDeclaredMethod("create", Gob.class, Resource.class);
+				return((Sprite)m.invoke(null, gob, res));
+			} catch(NoSuchMethodException e) {}
+			try {
+				Method m = sc.cl.getDeclaredMethod("create", Gob.class, Resource.class, Message.class);
+				return((Sprite)m.invoke(null, gob, res, sdt));
+			} catch(NoSuchMethodException e) {}
+			try {
+				Constructor<? extends Sprite> m = sc.cl.getConstructor(Gob.class, Resource.class);
+				return(m.newInstance(null, gob, res));
+			} catch(NoSuchMethodException e) {}
+			try {
+				Constructor<? extends Sprite> m = sc.cl.getConstructor(Gob.class, Resource.class, Message.class);
+				return(m.newInstance(gob, res, sdt));
+			} catch(NoSuchMethodException e) {}
 			throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
-		}
-		try {
-			return((Sprite)m.invoke(null, gob, res));
 		} catch(IllegalAccessException e) {
 			throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
 		} catch(java.lang.reflect.InvocationTargetException e) {
 			throw(new ResourceException("Sprite code of dynamic resource threw an exception", e.getCause(), res));
+		} catch(InstantiationException e) {
+			throw(new ResourceException("Cannot call sprite code of dynamic resource", e.getCause(), res));
 		}
 	}
 
-	private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered) {
+	private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered, Message sdt) {
 		Resource.Anim ad = res.layer(animc);
 		Resource.SpriteCode sc = res.layer(Resource.SpriteCode.class);
 		if(sc != null)
-			return(mkdyn(gob, res, neg, sc));
+			return(mkdyn(gob, res, neg, sc, sdt));
 		else if(ad != null)
 			return(mkanim(gob, res, neg, layered, ad));
 		else
 			return(mksprite(gob, res, neg, layered));
 	}
 
-	public static Sprite create(Gob gob, Resource res, Resource neg) {
+	public static Sprite create(Gob gob, Resource res, Resource neg, Message sdt) {
 		if(res.loading || neg.loading)
 			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
-		return(create(gob, res, neg, true));
+		return(create(gob, res, neg, true, sdt));
 	}
 	
-	public static Sprite create(Gob gob, Resource res) {
+	public static Sprite create(Gob gob, Resource res, Message sdt) {
 		if(res.loading)
 			throw(new RuntimeException("Attempted to create sprite on still loading resource"));
-		return(create(gob, res, res, false));
+		return(create(gob, res, res, false, sdt));
 	}
 
 	private void initneg(Resource negres) {
