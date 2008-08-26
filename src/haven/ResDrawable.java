@@ -2,22 +2,19 @@ package haven;
 
 public class ResDrawable extends Drawable {
 	final Indir<Resource> res;
+	final Message sdt;
 	Sprite spr = null;
 	int delay = 0;
 	
-	public ResDrawable(Gob gob, Indir<Resource> res) {
+	public ResDrawable(Gob gob, Indir<Resource> res, Message sdt) {
 		super(gob);
 		this.res = res;
-		gob.notify(SprData.class, new Gob.ANotif<SprData>() {
-			public void ch(SprData d) {
-				spr = null;
-			}
-		});
+		this.sdt = sdt;
 		init();
 	}
 	
 	public ResDrawable(Gob gob, Resource res) {
-		this(gob, res.indir());
+		this(gob, res.indir(), new Message(0));
 	}
 	
 	public void init() {
@@ -25,7 +22,7 @@ public class ResDrawable extends Drawable {
 			return;
 		if(res.get() == null)
 			return;
-		spr = Sprite.create(gob, res.get());
+		spr = Sprite.create(gob, res.get(), sdt.clone());
 	}
 	
 	public Coord getsize() {

@@ -512,6 +512,16 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	static {ltypes.put("code", Code.class);}
 	
+	public class ResClassLoader extends ClassLoader {
+		public ResClassLoader(ClassLoader parent) {
+			super(parent);
+		}
+		
+		public Resource getres() {
+			return(Resource.this);
+		}
+	};
+
 	public class SpriteCode extends Layer {
 		private String clnm;
 		private Map<String, Code> clmap = new TreeMap<String, Code>();
@@ -527,7 +537,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		public void init() {
 			for(Code c : layers(Code.class))
 				clmap.put(c.name, c);
-			loader = new ClassLoader(Resource.class.getClassLoader()) {
+			loader = new ResClassLoader(Resource.class.getClassLoader()) {
 					public Class<?> findClass(String name) throws ClassNotFoundException {
 						Code c = clmap.get(name);
 						if(c == null)
