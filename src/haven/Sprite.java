@@ -243,7 +243,7 @@ public class Sprite {
 			} catch(NoSuchMethodException e) {}
 			try {
 				Constructor<? extends Sprite> m = sc.cl.getConstructor(Gob.class, Resource.class);
-				return(m.newInstance(null, gob, res));
+				return(m.newInstance(gob, res));
 			} catch(NoSuchMethodException e) {}
 			try {
 				Constructor<? extends Sprite> m = sc.cl.getConstructor(Gob.class, Resource.class, Message.class);
