@@ -49,10 +49,12 @@ public class Item extends Widget implements DTarget {
 	}
 
 	public void draw(GOut g) {
+                Resource ttres = null;
 		if(res.get() == null) {
 			sh = null;
 			sz = new Coord(30, 30);
 			g.image(missing.layer(Resource.imgc).tex(), Coord.z, sz);
+                        ttres = missing;
 		} else {
 			Tex tex = res.get().layer(Resource.imgc).tex();
 			fixsize();
@@ -66,9 +68,14 @@ public class Item extends Widget implements DTarget {
 				g.chcolor(Color.BLACK);
 				g.atext(Integer.toString(num), tex.sz(), 1, 1);
 			}
+                        ttres = res.get();
 		}
-		if((tooltip != null) && h)
-			ui.tooltip = tooltip;
+                if(h) {
+                        if(tooltip != null)
+                                ui.tooltip = tooltip;
+                        else if((ttres != null) && (ttres.layer(Resource.tooltip) != null))
+                                ui.tooltip = ttres.layer(Resource.tooltip).t;
+                }
 	}
 
 	static Tex makesh(Resource res) {

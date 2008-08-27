@@ -25,6 +25,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public static Class<Pagina> pagina = Pagina.class;
 	public static Class<AButton> action = AButton.class;
 	public static Class<Audio> audio = Audio.class;
+        public static Class<Tooltip> tooltip = Tooltip.class;
 	
 	private LoadException error;
 	private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -270,6 +271,21 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		public void init() {}
 	}
 	static {ltypes.put("image", Image.class);}
+        
+        public class Tooltip extends Layer {
+                public final String t;
+                
+                public Tooltip(byte[] buf) {
+                        try {
+                                t = new String(buf, "UTF-8");
+                        } catch(UnsupportedEncodingException e) {
+                                throw(new RuntimeException(e));
+                        }
+                }
+                
+                public void init() {}
+        }
+        static {ltypes.put("tooltip", Tooltip.class);}
 	
 	public class Tile extends Layer {
 		transient BufferedImage img;
