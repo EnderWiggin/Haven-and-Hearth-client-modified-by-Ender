@@ -12,6 +12,7 @@
       <classpath>
 	<pathelement path="lib/jogl.jar" />
 	<pathelement path="lib/gluegen-rt.jar" />
+	<pathelement path="lib/jnlp.jar" />
       </classpath>
       <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
