@@ -11,7 +11,8 @@ import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Prioritized, Serializable {
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
-    private static Loader loader;
+    private static Loader loader = new Loader(new JarSource());
+    private static CacheSource prscache;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
     static Set<String> loadwaited = new HashSet<String>();
     static Set<String> allused = new HashSet<String>();
@@ -44,32 +45,27 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 	
-    private static void checkloader() {
-	synchronized(Resource.class) {
-	    if(loader == null) {
-		ResSource src = new JarSource();
-		loader = new Loader(src) {
-			public void run() {
-			    try {
-				super.run();
-			    } finally {
-				synchronized(Resource.class) {
-				    Resource.loader = null;
-				}
-			    }
-			}
-		    };
-	    }
-	}
+    public static void addcache(ResCache cache) {
+	CacheSource src = new CacheSource(cache);
+	prscache = src;
+	chainloader(new Loader(src));
     }
 
     public static void addurl(URL url) {
-	chainloader(new Loader(new HttpSource(url)));
+	ResSource src = new HttpSource(url);
+	final CacheSource mc = prscache;
+	if(mc != null) {
+	    src = new TeeSource(src) {
+		    public OutputStream fork(String name) throws IOException {
+			return(mc.cache.store("res/" + name));
+		    }
+		};
+	}
+	chainloader(new Loader(src));
     }
     
     private static void chainloader(Loader nl) {
 	synchronized(Resource.class) {
-	    checkloader();
 	    Loader l;
 	    for(l = loader; l.next != null; l = l.next);
 	    l.chain(nl);
@@ -94,10 +90,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    res.prio = prio;
 	    cache.put(name, res);
 	}
-	synchronized(Resource.class) {
-	    checkloader();
-	    loader.load(res);
-	}
+	loader.load(res);
 	return(res);
     }
 	
@@ -161,7 +154,19 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    return(tee);
 	}
 	
-	public abstract OutputStream fork(String name);
+	public abstract OutputStream fork(String name) throws IOException;
+    }
+    
+    public static class CacheSource implements ResSource {
+	public ResCache cache;
+	
+	public CacheSource(ResCache cache) {
+	    this.cache = cache;
+	}
+	
+	public InputStream get(String name) throws IOException {
+	    return(cache.fetch("res/" + name));
+	}
     }
 
     public static class JarSource implements ResSource {
@@ -205,16 +210,14 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 
-    private static class Loader extends Thread {
+    private static class Loader implements Runnable {
 	private ResSource src;
 	private Loader next = null;
 	private Queue<Resource> queue = new PrioQueue<Resource>();
+	private transient Thread th = null;
 	
 	public Loader(ResSource src) {
-	    super(Utils.tg(), "Haven resource loader");
-	    setDaemon(true);
 	    this.src = src;
-	    start();
 	}
 	
 	public void chain(Loader next) {
@@ -225,6 +228,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    synchronized(queue) {
 		queue.add(res);
 		queue.notifyAll();
+	    }
+	    synchronized(Loader.this) {
+		if(th == null) {
+		    th = new Thread(Utils.tg(), Loader.this, "Haven resource loader");
+		    th.setDaemon(true);
+		    th.start();
+		}
 	    }
 	}
 		
@@ -241,7 +251,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    }
 		    cur = null;
 		}
-	    } catch(InterruptedException e) {}
+	    } catch(InterruptedException e) {
+	    } finally {
+		synchronized(Loader.this) {
+		    /* Yes, I know there's a race condition. */
+		    th = null;
+		}
+	    }
 	}
 		
 	private void handle(Resource res) {
