@@ -47,7 +47,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     private static void checkloader() {
 	synchronized(Resource.class) {
 	    if(loader == null) {
-		loader = new Loader(new JarSource()) {
+		ResSource src = new JarSource();
+		loader = new Loader(src) {
 			public void run() {
 			    try {
 				super.run();
@@ -145,6 +146,22 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
     public static interface ResSource {
 	public InputStream get(String name) throws IOException;
+    }
+    
+    public static abstract class TeeSource implements ResSource {
+	public ResSource back;
+	
+	public TeeSource(ResSource back) {
+	    this.back = back;
+	}
+	
+	public InputStream get(String name) throws IOException {
+	    StreamTee tee = new StreamTee(back.get(name));
+	    tee.attach(fork(name));
+	    return(tee);
+	}
+	
+	public abstract OutputStream fork(String name);
     }
 
     public static class JarSource implements ResSource {
