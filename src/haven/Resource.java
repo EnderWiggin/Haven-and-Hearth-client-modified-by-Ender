@@ -13,6 +13,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
     private static Loader loader = new Loader(new JarSource());
     private static CacheSource prscache;
+    static ThreadGroup loadergroup = null;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
     static Set<String> loadwaited = new HashSet<String>();
     static Set<String> allused = new HashSet<String>();
@@ -239,7 +240,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	    synchronized(Loader.this) {
 		if(th == null) {
-		    th = new Thread(Utils.tg(), Loader.this, "Haven resource loader");
+		    ThreadGroup tg = loadergroup;
+		    if(tg == null)
+			tg = Utils.tg();
+		    th = new Thread(tg, Loader.this, "Haven resource loader");
 		    th.setDaemon(true);
 		    th.start();
 		}
@@ -814,7 +818,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	this.layers = layers;
 	for(Layer l : layers)
 	    l.init();
-	System.out.println(Resource.this + " loaded from " + source);
     }
 	
     public Indir<Resource> indir() {

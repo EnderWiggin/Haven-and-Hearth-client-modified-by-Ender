@@ -12,8 +12,6 @@ public class JnlpCache implements ResCache {
     private JnlpCache(PersistenceService back, URL base) {
 	this.back = back;
 	this.base = base;
-	System.out.println(this.back);
-	System.out.println(this.base);
     }
     
     public static JnlpCache create() {
@@ -28,8 +26,19 @@ public class JnlpCache implements ResCache {
 	}
     }
     
+    private static String mangle(String nm) {
+	StringBuilder buf = new StringBuilder();
+	for(int i = 0; i < nm.length(); i++) {
+	    char c = nm.charAt(i);
+	    if(c == '/')
+		buf.append("_");
+	    else
+		buf.append(c);
+	}
+	return(buf.toString());
+    }
+
     private void put(URL loc, byte[] data) {
-	System.out.println("Trying to cache " + data.length + " bytes in " + loc);
 	FileContents file;
 	try {
 	    try {
@@ -47,11 +56,13 @@ public class JnlpCache implements ResCache {
 	    OutputStream s = file.getOutputStream(true);
 	    try {
 		s.write(data);
-		System.out.println(loc + " cached successfully");
 	    } finally {
 		s.close();
 	    }
 	} catch(IOException e) {
+	    return;
+	} catch(Exception e) {
+	    /* There seems to be a strange bug in NetX. */
 	    return;
 	}
     }
@@ -61,7 +72,7 @@ public class JnlpCache implements ResCache {
 		public void close() {
 		    byte[] res = toByteArray();
 		    try {
-			put(new URL(base, name), res);
+			put(new URL(base, mangle(name)), res);
 		    } catch(java.net.MalformedURLException e) {
 			throw(new RuntimeException(e));
 		    }
@@ -71,11 +82,16 @@ public class JnlpCache implements ResCache {
     }
     
     public InputStream fetch(String name) throws IOException {
-	URL loc = new URL(base, name);
-	System.out.println("Fetching " + name + " from JNLP cache at " + loc);
-	FileContents file = back.get(loc);
-	InputStream in = file.getInputStream();
-	System.out.println("JNLP Success");
-	return(in);
+	try {
+	    URL loc = new URL(base, mangle(name));
+	    FileContents file = back.get(loc);
+	    InputStream in = file.getInputStream();
+	    return(in);
+	} catch(IOException e) {
+	    throw(e);
+	} catch(Exception e) {
+	    /* There seems to be a weird bug in NetX */
+	    throw(new IOException(e));
+	}
     }
 }

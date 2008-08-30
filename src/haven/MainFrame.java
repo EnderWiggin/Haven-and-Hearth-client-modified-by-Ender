@@ -140,6 +140,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	} else {
 	    g = new ThreadGroup("Haven client");
 	}
+	Resource.loadergroup = g;
 	f.g = g;
 	Thread main = new Thread(g, f);
 	main.start();
