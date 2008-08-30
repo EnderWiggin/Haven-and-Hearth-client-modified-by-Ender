@@ -30,6 +30,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public final String name;
     public int ver;
     public boolean loading;
+    public ResSource source;
     private Indir<Resource> indir = null;
     private int prio = 0;
 
@@ -150,8 +151,12 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public InputStream get(String name) {
 	    InputStream s = Resource.class.getResourceAsStream("/res/" + name + ".res");
 	    if(s == null)
-		throw(new LoadException("Could not find resource locally: " + name, null));
+		throw(new LoadException("Could not find resource locally: " + name, JarSource.this));
 	    return(s);
+	}
+	
+	public String toString() {
+	    return("Local res source");
 	}
     }
     
@@ -176,6 +181,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    URL resurl = new URL(baseurl, name + ".res");
 	    URLConnection c = ssl.connect(resurl);
 	    return(c.getInputStream());
+	}
+
+	public String toString() {
+	    return("HTTP res source (" + baseurl + ")");
 	}
     }
 
@@ -222,6 +231,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    InputStream in = null;
 	    try {
 		res.error = null;
+		res.source = src;
 		try {
 		    try {
 			in = src.get(res.name);
@@ -253,7 +263,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     @SuppressWarnings("serial")
 	public static class LoadException extends RuntimeException {
 	    public Resource res;
-		
+	    public ResSource src;
+	    
+	    public LoadException(String msg, ResSource src) {
+		super(msg);
+		this.src = src;
+	    }
+	    
 	    public LoadException(String msg, Resource res) {
 		super(msg);
 		this.res = res;
@@ -263,7 +279,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		super(msg, cause);
 		this.res = res;
 	    }
-		
+	    
 	    public LoadException(Throwable cause, Resource res) {
 		super(cause);
 		this.res = res;
