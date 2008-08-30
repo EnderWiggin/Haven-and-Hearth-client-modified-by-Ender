@@ -3,11 +3,13 @@ package haven;
 import java.awt.*;
 import java.net.URL;
 import java.awt.event.*;
+import java.io.PrintWriter;
 
 public class MainFrame extends Frame implements Runnable, FSMan {
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
+    static JnlpCache jnlpcache;
 	
     static {
 	try {
@@ -115,13 +117,18 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     }
     
     public static void setupres() {
-	JnlpCache c = JnlpCache.create();
-	if(c != null)
-	    Resource.addcache(c);
+	jnlpcache = JnlpCache.create();
+	if(jnlpcache != null)
+	    Resource.addcache(jnlpcache);
 	try {
 	    Resource.addurl(new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/")));
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
+	}
+	if(jnlpcache != null) {
+	    try {
+		Resource.loadlist(jnlpcache.fetch("tmp/allused"), -10);
+	    } catch(java.io.IOException e) {}
 	}
     }
     
@@ -151,19 +158,30 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
 	dumplist(Resource.loadwaited, System.getProperty("haven.loadwaited"));
 	dumplist(Resource.allused, System.getProperty("haven.allused"));
+	if(jnlpcache != null) {
+	    try {
+		dumplist(Resource.allused, new PrintWriter(jnlpcache.store("tmp/allused")));
+	    } catch(java.io.IOException e) {}
+	}
 	System.exit(0);
     }
 	
     private static void dumplist(java.util.Collection<String> list, String fn) {
-	if(fn != null) {
-	    try {
-		java.io.PrintWriter out = new java.io.PrintWriter(fn);
-		for(String res : list)
-		    out.println(res);
-		out.close();
-	    } catch(Exception e) {
-		throw(new RuntimeException(e));
-	    }
+	try {
+	    if(fn != null)
+		dumplist(list, new PrintWriter(fn));
+	} catch(Exception e) {
+	    throw(new RuntimeException(e));
+	}
+    }
+    
+    private static void dumplist(java.util.Collection<String> list, PrintWriter out) {
+	try {
+	    for(String res : list)
+		out.println(res);
+	    out.close();
+	} catch(Exception e) {
+	    throw(new RuntimeException(e));
 	}
     }
 }

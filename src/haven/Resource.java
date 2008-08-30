@@ -868,25 +868,23 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	return(name + "(v" + ver + ")");
     }
 	
+    public static void loadlist(InputStream list, int prio) throws IOException {
+	BufferedReader in = new BufferedReader(new InputStreamReader(list, "us-ascii"));
+	String nm;
+	while((nm = in.readLine()) != null)
+	    load(nm, -1, prio);
+	in.close();
+    }
+
     static {
 	try {
 	    InputStream pls;
 	    pls = Resource.class.getResourceAsStream("res-preload");
-	    if(pls != null) {
-		BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
-		String nm;
-		while((nm = in.readLine()) != null)
-		    load(nm);
-		in.close();
-	    }
+	    if(pls != null)
+		loadlist(pls, 0);
 	    pls = Resource.class.getResourceAsStream("res-bgload");
-	    if(pls != null) {
-		BufferedReader in = new BufferedReader(new InputStreamReader(pls, "us-ascii"));
-		String nm;
-		while((nm = in.readLine()) != null)
-		    load(nm, -1, -10);
-		in.close();
-	    }
+	    if(pls != null)
+		loadlist(pls, -10);
 	} catch(IOException e) {
 	    throw(new Error(e));
 	}
