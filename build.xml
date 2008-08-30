@@ -38,6 +38,8 @@
     <copy todir="build">
       <fileset dir="lib" />
     </copy>
+    <get src="http://www.havenandhearth.com/java/haven-res.jar" dest="build/haven-res.jar"
+	 usetimestamp="true" />
   </target>
   
   <target name="deftgt" depends="jars, appletview" />
