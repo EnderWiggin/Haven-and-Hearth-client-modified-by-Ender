@@ -155,6 +155,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	
 	public abstract OutputStream fork(String name) throws IOException;
+	
+	public String toString() {
+	    return("forking source backed by " + back);
+	}
     }
     
     public static class CacheSource implements ResSource {
@@ -167,6 +171,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public InputStream get(String name) throws IOException {
 	    return(cache.fetch("res/" + name));
 	}
+	
+	public String toString() {
+	    return("cache source backed by " + cache);
+	}
     }
 
     public static class JarSource implements ResSource {
@@ -178,7 +186,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	
 	public String toString() {
-	    return("Local res source");
+	    return("local res source");
 	}
     }
     
@@ -806,6 +814,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	this.layers = layers;
 	for(Layer l : layers)
 	    l.init();
+	System.out.println(Resource.this + " loaded from " + source);
     }
 	
     public Indir<Resource> indir() {

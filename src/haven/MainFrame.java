@@ -113,16 +113,23 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	    dispose();
 	}
     }
-	
-    public static void main(String[] args) {
-	final MainFrame f = new MainFrame(800, 600);
-	if(System.getProperty("haven.fullscreen", "off").equals("on"))
-	    f.setfs();
+    
+    public static void setupres() {
+	JnlpCache c = JnlpCache.create();
+	if(c != null)
+	    Resource.addcache(c);
 	try {
 	    Resource.addurl(new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/")));
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
+    }
+    
+    public static void main(String[] args) {
+	final MainFrame f = new MainFrame(800, 600);
+	if(System.getProperty("haven.fullscreen", "off").equals("on"))
+	    f.setfs();
+	setupres();
 	ThreadGroup g;
 	if(System.getProperty("haven.errorhandler", "off").equals("on")) {
 	    g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
