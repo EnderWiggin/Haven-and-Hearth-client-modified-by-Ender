@@ -119,7 +119,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		if(System.getProperty("haven.fullscreen", "off").equals("on"))
 			f.setfs();
 		try {
-			Resource.baseurl = new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/"));
+			Resource.addurl(new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/")));
 		} catch(java.net.MalformedURLException e) {
 			throw(new RuntimeException(e));
 		}

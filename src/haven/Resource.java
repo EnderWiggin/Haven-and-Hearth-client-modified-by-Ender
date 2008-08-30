@@ -10,11 +10,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Prioritized, Serializable {
-    public static URL baseurl = null;
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
     private static Loader loader;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
-    private static Queue<Resource> queue = new PrioQueue<Resource>();
     static Set<String> loadwaited = new HashSet<String>();
     static Set<String> allused = new HashSet<String>();
     public static Class<Image> imgc = Image.class;
@@ -45,6 +43,37 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 	
+    private static void checkloader() {
+	synchronized(Resource.class) {
+	    if(loader == null) {
+		loader = new Loader(new JarSource()) {
+			public void run() {
+			    try {
+				super.run();
+			    } finally {
+				synchronized(Resource.class) {
+				    Resource.loader = null;
+				}
+			    }
+			}
+		    };
+	    }
+	}
+    }
+
+    public static void addurl(URL url) {
+	chainloader(new Loader(new HttpSource(url)));
+    }
+    
+    private static void chainloader(Loader nl) {
+	synchronized(Resource.class) {
+	    checkloader();
+	    Loader l;
+	    for(l = loader; l.next != null; l = l.next);
+	    l.chain(nl);
+	}
+    }
+    
     public static Resource load(String name, int ver, int prio) {
 	Resource res;
 	synchronized(cache) {
@@ -64,12 +93,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    cache.put(name, res);
 	}
 	synchronized(Resource.class) {
-	    if(loader == null)
-		loader = new Loader();
-	    synchronized(queue) {
-		queue.add(res);
-		queue.notifyAll();
-	    }
+	    checkloader();
+	    loader.load(res);
 	}
 	return(res);
     }
@@ -79,9 +104,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     }
 
     public static int qdepth() {
-	synchronized(queue) {
-	    return(queue.size());
-	}
+	int ret = 0;
+	for(Loader l = loader; l != null; l = l.next)
+	    ret += l.queue.size();
+	return(ret);
     }
 	
     public static Resource load(String name) {
@@ -116,13 +142,64 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    Thread.currentThread().interrupt();
     }
 	
-    private static class Loader extends Thread {
-	private SslHelper ssl;
+    public static interface ResSource {
+	public InputStream get(String name) throws IOException;
+    }
+
+    public static class JarSource implements ResSource {
+	public InputStream get(String name) {
+	    InputStream s = Resource.class.getResourceAsStream("/res/" + name + ".res");
+	    if(s == null)
+		throw(new LoadException("Could not find resource locally: " + name, null));
+	    return(s);
+	}
+    }
+    
+    public static class HttpSource implements ResSource {
+	private transient SslHelper ssl;
+	public URL baseurl;
+	
+	public HttpSource(URL baseurl) {
+	    this.baseurl = baseurl;
+	}
 		
-	public Loader() {
+	public InputStream get(String name) throws IOException {
+	    if(ssl == null) {
+		ssl = new SslHelper();
+		try {
+		    ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
+		} catch(java.security.cert.CertificateException e) {
+		    throw(new LoadException("Invalid built-in certificate", e, null));
+		}
+		ssl.ignoreName();
+	    }
+	    URL resurl = new URL(baseurl, name + ".res");
+	    URLConnection c = ssl.connect(resurl);
+	    return(c.getInputStream());
+	}
+    }
+
+    private static class Loader extends Thread {
+	private ResSource src;
+	private Loader next = null;
+	private Queue<Resource> queue = new PrioQueue<Resource>();
+	
+	public Loader(ResSource src) {
 	    super(Utils.tg(), "Haven resource loader");
 	    setDaemon(true);
+	    this.src = src;
 	    start();
+	}
+	
+	public void chain(Loader next) {
+	    this.next = next;
+	}
+	
+	public void load(Resource res) {
+	    synchronized(queue) {
+		queue.add(res);
+		queue.notifyAll();
+	    }
 	}
 		
 	public void run() {
@@ -134,55 +211,41 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 			    queue.wait();
 		    }
 		    synchronized(cur) {
-			try {
-			    try {
-				handle(cur);
-			    } catch(IOException e) {
-				cur.error = new LoadException(e, cur);
-			    } catch(LoadException e) {
-				cur.error = e;
-			    }
-			} finally {
-			    cur.loading = false;
-			    cur.notifyAll();
-			}
+			handle(cur);
 		    }
 		    cur = null;
 		}
-	    } catch(InterruptedException e) {
-	    } finally {
-		synchronized(Resource.class) {
-		    Resource.loader = null;
-		}
-	    }
+	    } catch(InterruptedException e) {}
 	}
 		
-	private InputStream getreshttp(Resource res) throws IOException {
-	    if(ssl == null) {
-		ssl = new SslHelper();
-		try {
-		    ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
-		} catch(java.security.cert.CertificateException e) {
-		    throw(new LoadException("Invalid built-in certificate", e, res));
-		}
-		ssl.ignoreName();
-	    }
-	    URL resurl = new URL(baseurl, res.name + ".res");
-	    URLConnection c = ssl.connect(resurl);
-	    return(c.getInputStream());
-	}
-
-	private void handle(Resource res) throws IOException {
+	private void handle(Resource res) {
 	    InputStream in = null;
 	    try {
+		res.error = null;
 		try {
-		    res.load(getres(res.name));
-		    return;
-		} catch(LoadException e) {}
-		res.load(getreshttp(res));
+		    try {
+			in = src.get(res.name);
+			res.load(in);
+			res.loading = false;
+			res.notifyAll();
+			return;
+		    } catch(IOException e) {
+			throw(new LoadException(e, res));
+		    }
+		} catch(LoadException e) {
+		    if(next == null) {
+			res.error = e;
+			res.loading = false;
+			res.notifyAll();
+		    } else {
+			next.load(res);
+		    }
+		}
 	    } finally {
-		if(in != null)
-		    in.close();
+		try {
+		    if(in != null)
+			in.close();
+		} catch(IOException e) {}
 	    }
 	}
     }
@@ -728,13 +791,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	return(prio);
     }
 
-    private static InputStream getres(String name) {
-	InputStream s = Resource.class.getResourceAsStream("/res/" + name + ".res");
-	if(s == null)
-	    throw(new LoadException("Could not find resource locally: " + name, null));
-	return(s);
-    }
-	
     public static BufferedImage loadimg(String name) {
 	Resource res = load(name);
 	res.loadwait();

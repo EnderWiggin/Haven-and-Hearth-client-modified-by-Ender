@@ -92,7 +92,7 @@ public class HavenApplet extends Applet {
 			    Bootstrap bill = new Bootstrap();
 			    bill.setaddr(getCodeBase().getHost());
 			    try {
-				Resource.baseurl = new URL("https", getCodeBase().getHost(), 443, "/res/");
+				Resource.addurl(new URL("https", getCodeBase().getHost(), 443, "/res/"));
 			    } catch(java.net.MalformedURLException e) {
 				throw(new RuntimeException(e));
 			    }
