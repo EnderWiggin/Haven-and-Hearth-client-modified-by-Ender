@@ -4,6 +4,7 @@
   <target name="build-env">
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
+    <available property="has-res-jar" file="build/haven-res.jar" />
   </target>
   
   <target name="haven-client" depends="build-env">
@@ -34,12 +35,15 @@
     </jar>
   </target>
   
-  <target name="jars" depends="build-env, jar">
+  <target name="res-jar" depends="build-env" unless="has-res-jar">
+    <get src="http://www.havenandhearth.com/java/haven-res.jar" dest="build/haven-res.jar"
+	 usetimestamp="true" />
+  </target>
+  
+  <target name="jars" depends="build-env, jar, res-jar">
     <copy todir="build">
       <fileset dir="lib" />
     </copy>
-    <get src="http://www.havenandhearth.com/java/haven-res.jar" dest="build/haven-res.jar"
-	 usetimestamp="true" />
   </target>
   
   <target name="deftgt" depends="jars, appletview" />
