@@ -102,7 +102,7 @@ public class Equipory extends Window implements DTarget {
 			if(gob != null) {
 				Avatar ava = gob.getattr(Avatar.class);
 				if(ava != null)
-					g.image(ava.tex(), avac);
+					g.image(ava.rend.tex(), avac);
 			}
 		}
 	}
