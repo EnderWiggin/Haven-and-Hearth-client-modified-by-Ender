@@ -36,7 +36,7 @@
   </target>
   
   <target name="res-jar" depends="build-env" unless="has-res-jar">
-    <get src="http://www.havenandhearth.com/java/haven-res.jar" dest="build/haven-res.jar"
+    <get src="http://www.havenandhearth.com/java/haven-res.jar" dest="lib/haven-res.jar"
 	 usetimestamp="true" />
   </target>
   
