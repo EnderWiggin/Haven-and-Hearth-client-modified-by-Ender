@@ -41,9 +41,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	this.ver = ver;
 	error = null;
 	loading = true;
-	synchronized(allused) {
-	    allused.add(name);
-	}
     }
 	
     public static void addcache(ResCache cache) {
@@ -818,6 +815,9 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	this.layers = layers;
 	for(Layer l : layers)
 	    l.init();
+	synchronized(allused) {
+	    allused.add(name);
+	}
     }
 	
     public Indir<Resource> indir() {
