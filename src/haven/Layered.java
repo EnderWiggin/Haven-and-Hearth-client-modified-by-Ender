@@ -18,6 +18,7 @@ public class Layered extends Drawable {
 		private int cachesz;
 		private Map<Object[], Tex> cache = new IdentityHashMap<Object[], Tex>();
 		private LinkedList<Object[]> recency = new LinkedList<Object[]>();
+		private int cached;
 		
 		public LayerCache(int cachesz) {
 			this.cachesz = cachesz;
@@ -34,7 +35,15 @@ public class Layered extends Drawable {
 			}
 			throw(new RuntimeException("Used layered cache is not in recency list"));
 		}
-	
+		
+		public synchronized int size() {
+			return(recency.size());
+		}
+		
+		public synchronized int cached() {
+			return(cached);
+		}
+		
 		public synchronized Tex get(Object[] id) {
 			Tex t = cache.get(id);
 			if(t != null)
@@ -53,6 +62,7 @@ public class Layered extends Drawable {
 			cache.put(id, t);
 			recency.addFirst(id);
 			cleancache();
+			cached++;
 		}
 	}
 
