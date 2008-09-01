@@ -16,7 +16,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	long fd = 20, fps = 0;
 	int dth = 0, dtm = 0;
 	public static int texhit = 0, texmiss = 0;
-	List<InputEvent> events = new LinkedList<InputEvent>();
+	Queue<InputEvent> events = new LinkedList<InputEvent>();
 	public Coord mousepos = new Coord(0, 0);
 	public Profile prof = new Profile(300);
 	private Profile.Frame curf;
@@ -242,8 +242,8 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
 	void dispatch() {
 		synchronized(events) {
-			while(events.size() > 0) {
-				InputEvent e = events.remove(0);
+			InputEvent e = null;
+			while((e = events.poll()) != null) {
 				if(e instanceof MouseEvent) {
 					MouseEvent me = (MouseEvent)e;
 					if(me.getID() == MouseEvent.MOUSE_PRESSED) {
@@ -268,6 +268,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 						ui.type(ke);
 					}
 				}
+				ui.lastevent = System.currentTimeMillis();
 			}
 		}
 	}

@@ -13,6 +13,7 @@ public class UI {
 	Session sess;
 	MapView mainview;
 	boolean modshift, modctrl, modmeta, modsuper;
+	long lastevent = System.currentTimeMillis();
 	public Widget mouseon;
 	public Object tooltip = null;
 	public FSMan fsm;
