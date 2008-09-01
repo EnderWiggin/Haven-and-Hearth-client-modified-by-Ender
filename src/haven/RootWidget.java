@@ -7,6 +7,7 @@ public class RootWidget extends Widget {
 	Graphical backer;
 	Logout logout = null;
 	Profile gprof;
+	boolean afk = false;
 	
 	public RootWidget(UI ui, Coord sz, Graphical backer) {
 		super(ui, new Coord(0, 0), sz);
@@ -45,5 +46,17 @@ public class RootWidget extends Widget {
 
 	public GraphicsConfiguration getconf() {
 		return(backer.getconf());
+	}
+	
+	public void draw(GOut g) {
+		super.draw(g);
+		if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
+			afk = true;
+			Widget slen = findchild(SlenHud.class);
+			if(slen != null)
+				slen.wdgmsg("afk");
+		} else if(afk && (System.currentTimeMillis() - ui.lastevent < 300000)) {
+			afk = false;
+		}
 	}
 }
