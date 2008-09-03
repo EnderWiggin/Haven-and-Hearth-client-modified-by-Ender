@@ -77,10 +77,13 @@ public class Equipory extends Window implements DTarget {
 			}
 		}
 		if((ep = equed.indexOf(sender)) != -1) {
-			if(msg == "take") {
+			if(msg == "take")
 				wdgmsg("take", ep, args[0]);
-				return;
-			}
+			else if(msg == "itemact")
+				wdgmsg("itemact", ep);
+			else if(msg == "transfer")
+				wdgmsg("itemact", ep, args[0]);
+			return;
 		}
 		super.wdgmsg(sender, msg, args);
 	}
