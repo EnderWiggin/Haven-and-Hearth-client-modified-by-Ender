@@ -82,7 +82,9 @@ public class Equipory extends Window implements DTarget {
 	    else if(msg == "itemact")
 		wdgmsg("itemact", ep);
 	    else if(msg == "transfer")
-		wdgmsg("itemact", ep, args[0]);
+		wdgmsg("transfer", ep, args[0]);
+	    else if(msg == "iact")
+		wdgmsg("iact", ep, args[0]);
 	    return;
 	}
 	super.wdgmsg(sender, msg, args);
