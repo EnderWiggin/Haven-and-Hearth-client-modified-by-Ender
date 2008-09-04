@@ -21,7 +21,8 @@ public class Widget implements Graphical {
 		Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class, IButton.class,
 		Landwindow.class, Skillwindow.class, Archwindow.class, Cal.class, Avaview.class,
 		Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
-		MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class};
+		MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
+                MapMod.class};
 	
 	static {
 		addtype("cnt", new WidgetFactory() {

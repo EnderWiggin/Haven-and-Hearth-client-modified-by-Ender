@@ -35,6 +35,7 @@ public class MapView extends Widget implements DTarget {
 		olc[2] = new Color(255, 0, 0);
 		olc[3] = new Color(128, 0, 255);
 		olc[16] = new Color(0, 255, 0);
+		olc[17] = new Color(255, 255, 0);
 	}
 	
 	public interface Grabber {
