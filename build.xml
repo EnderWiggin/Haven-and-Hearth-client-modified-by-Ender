@@ -5,6 +5,7 @@
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
     <available property="has-res-jar" file="build/haven-res.jar" />
+    <available property="unpacked-lib" file="build/classes-lib" />
   </target>
   
   <target name="haven-client" depends="build-env">
@@ -28,12 +29,23 @@
     <copy file="etc/applet.html" todir="build" />
   </target>
 
-  <target name="jar" depends="haven-client">
+  <target name="lib-classes" depends="build-env" unless="unpacked-lib">
+    <mkdir dir="build/classes-lib" />
+    <unjar src="lib/jogg.jar" dest="build/classes-lib">
+      <patternset excludes="META-INF/**" />
+    </unjar>
+    <unjar src="lib/jorbis.jar" dest="build/classes-lib">
+      <patternset excludes="META-INF/**" />
+    </unjar>
+  </target>
+
+  <target name="jar" depends="haven-client,lib-classes">
     <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" />
+      <fileset dir="build/classes-lib" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar jogg.jar jorbis.jar" />
+	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
       </manifest>
     </jar>
   </target>
@@ -45,7 +57,11 @@
   
   <target name="jars" depends="build-env, jar, res-jar">
     <copy todir="build">
-      <fileset dir="lib" />
+      <fileset dir="lib">
+	<include name="jogl.jar" />
+	<include name="gluegen-rt.jar" />
+	<include name="haven-res.jar" />
+      </fileset>
     </copy>
   </target>
   
