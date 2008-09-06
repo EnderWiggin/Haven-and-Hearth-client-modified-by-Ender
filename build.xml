@@ -13,6 +13,7 @@
 	<pathelement path="lib/jogl.jar" />
 	<pathelement path="lib/gluegen-rt.jar" />
 	<pathelement path="lib/jnlp.jar" />
+	<pathelement path="lib/jorbis.jar" />
       </classpath>
       <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
