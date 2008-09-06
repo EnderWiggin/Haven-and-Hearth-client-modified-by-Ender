@@ -344,10 +344,12 @@ public class Session {
 						if(state == "conn") {
 							int error = msg.uint8();
 							synchronized(Session.this) {
-								if(error == 0)
+								if(error == 0) {
 									state = "";
-								else
+								} else {
 									connfailed = error;
+									Session.this.close();
+								}
 								Session.this.notifyAll();
 							}
 						}
