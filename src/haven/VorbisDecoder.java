@@ -9,7 +9,7 @@ import dolda.xiphutil.VorbisStream;
  * learn some rational API design.
  */
 public class VorbisDecoder extends InputStream {
-    private VorbisStream in;
+    public VorbisStream in;
     private byte[] buf;
     private int bufp;
     public final int chn, rate;
