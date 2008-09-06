@@ -119,6 +119,7 @@ public class HtmlReporter {
 	out.println("</tr>");
 	
 	List<Map.Entry<File, Report>> reps = new ArrayList<Map.Entry<File, Report>>();
+	reps.addAll(reports.entrySet());
 	Collections.sort(reps, new Comparator<Map.Entry<File, Report>>() {
 		public int compare(Map.Entry<File, Report> a, Map.Entry<File, Report> b) {
 		    long at = a.getValue().time, bt = b.getValue().time;
