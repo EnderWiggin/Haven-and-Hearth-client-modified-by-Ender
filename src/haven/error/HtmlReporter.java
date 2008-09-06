@@ -72,7 +72,8 @@ public class HtmlReporter {
 	out.println("<h2>Properties</h2>");
 	out.println("<table>");
 	out.println("<tr><th>Name</th><th>Value</th>");
-	for(String key : rep.props.keySet()) {
+	SortedSet<String> keys = new TreeSet<String>(rep.props.keySet());
+	for(String key : keys) {
 	    Object val = rep.props.get(key);
 	    String vals;
 	    if(val instanceof Number) {
@@ -117,8 +118,21 @@ public class HtmlReporter {
 	    out.println("    <th>" + htmlq(pn) + "</th>");
 	out.println("</tr>");
 	
-	for(File file : reports.keySet()) {
-	    Report rep = reports.get(file);
+	List<Map.Entry<File, Report>> reps = new ArrayList<Map.Entry<File, Report>>();
+	Collections.sort(reps, new Comparator<Map.Entry<File, Report>>() {
+		public int compare(Map.Entry<File, Report> a, Map.Entry<File, Report> b) {
+		    long at = a.getValue().time, bt = b.getValue().time;
+		    if(at > bt)
+			return(-1);
+		    else if(at < bt)
+			return(1);
+		    else
+			return(0);
+		}
+	    });
+	for(Map.Entry<File, Report> rent : reps) {
+	    File file = rent.getKey();
+	    Report rep = rent.getValue();
 	    out.println("    <tr>");
 	    out.print("        <td>");
 	    out.println("<a href=\"" + htmlq(file.getName()) + ".html\">");
