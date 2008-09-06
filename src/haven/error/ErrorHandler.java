@@ -79,9 +79,11 @@ public class ErrorHandler extends ThreadGroup {
 	    status.done();
 	}
     
-	public void report(Throwable t) {
+	public void report(Thread th, Throwable t) {
 	    Report r = new Report(t);
 	    r.props.putAll(props);
+	    r.props.put("thnm", th.getName());
+	    r.props.put("thcl", th.getClass().getName());
 	    synchronized(errors) {
 		errors.add(r);
 		errors.notifyAll();
@@ -112,6 +114,6 @@ public class ErrorHandler extends ThreadGroup {
     }
     
     public void uncaughtException(Thread t, Throwable e) {
-	reporter.report(e);
+	reporter.report(t, e);
     }
 }
