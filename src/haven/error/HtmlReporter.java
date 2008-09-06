@@ -7,6 +7,11 @@ import java.text.*;
 public class HtmlReporter {
     public static final DateFormat dfmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final NumberFormat ifmt = NumberFormat.getInstance();
+    public static final String[] idxprops = {
+	"java.vendor", "java.version",
+	"os.arch", "os.name", "os.version",
+	"thnm", "usr",
+    };
     
     public static String htmlhead(String title) {
 	StringBuilder buf = new StringBuilder();
@@ -106,14 +111,13 @@ public class HtmlReporter {
 	out.println("<h1>Error Index</h1>");
 	
 	Set<String> props = new TreeSet<String>();
-	for(Report r : reports.values()) {
-	    for(String pn : r.props.keySet())
-		props.add(pn);
-	}
+	for(String pn : idxprops)
+	    props.add(pn);
 	
 	out.println("<table><tr>");
 	out.println("    <th>File</th>");
 	out.println("    <th>Time</th>");
+	out.println("    <th>Exception</th>");
 	for(String pn : props)
 	    out.println("    <th>" + htmlq(pn) + "</th>");
 	out.println("</tr>");
@@ -140,6 +144,7 @@ public class HtmlReporter {
 	    out.print(htmlq(file.getName()));
 	    out.println("</a></td>");
 	    out.println("        <td>" + htmlq(dfmt.format(new Date(rep.time))) + "</td>");
+	    out.println("        <td>" + htmlq(rep.t.getClass().getSimpleName()) + "</td>");
 	    for(String pn : props) {
 		out.print("        <td>");
 		if(rep.props.containsKey(pn)) {
