@@ -172,6 +172,7 @@ public class Bootstrap implements UI.Receiver {
 				}
 			}
 		} while(true);
+		haven.error.ErrorHandler.setprop("usr", sess.username);
 		return(sess);
 		//(new RemoteUI(sess, ui)).start();
 	}

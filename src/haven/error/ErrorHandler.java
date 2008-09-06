@@ -2,12 +2,19 @@ package haven.error;
 
 import java.io.*;
 import java.net.*;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.*;
 
 public class ErrorHandler extends ThreadGroup {
     private static final URL errordest;
+    private static final String[] sysprops = {
+	"java.version",
+	"java.vendor",
+	"os.name",
+	"os.arch",
+	"os.version",
+    };
     private final ThreadGroup initial;
+    private Map<String, Object> props = new HashMap<String, Object>();
     private Reporter reporter;
 	
     static {
@@ -16,6 +23,12 @@ public class ErrorHandler extends ThreadGroup {
 	} catch(MalformedURLException e) {
 	    throw(new Error(e));
 	}
+    }
+
+    public static void setprop(String key, Object val) {
+	ThreadGroup tg = Thread.currentThread().getThreadGroup();
+	if(tg instanceof ErrorHandler)
+	    ((ErrorHandler)tg).props.put(key, val);
     }
 
     private class Reporter extends Thread {
@@ -68,6 +81,7 @@ public class ErrorHandler extends ThreadGroup {
     
 	public void report(Throwable t) {
 	    Report r = new Report(t);
+	    r.props.putAll(props);
 	    synchronized(errors) {
 		errors.add(r);
 		errors.notifyAll();
@@ -78,11 +92,19 @@ public class ErrorHandler extends ThreadGroup {
 	}
     }
 
+    private void defprops() {
+	for(String p : sysprops)
+	    props.put(p, System.getProperty(p));
+	Runtime rt = Runtime.getRuntime();
+	props.put("cpus", rt.availableProcessors());
+    }
+
     public ErrorHandler(ErrorStatus ui) {
 	super("Haven client");
 	initial = Thread.currentThread().getThreadGroup();
 	reporter = new Reporter(ui);
 	reporter.start();
+	defprops();
     }
     
     public ErrorHandler() {
