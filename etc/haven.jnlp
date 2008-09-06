@@ -14,8 +14,6 @@
     <j2se version="1.6+" max-heap-size="256M" />
     <jar href="haven.jar" />
     <jar href="haven-res.jar" />
-    <jar href="jogg.jar" />
-    <jar href="jorbis.jar" />
     <property name="haven.errorhandler" value="on" />
     <property name="haven.defserv" value="sh.seatribe.se" />
     <property name="haven.fullscreen" value="off" />
