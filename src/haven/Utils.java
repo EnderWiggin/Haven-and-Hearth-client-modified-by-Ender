@@ -4,6 +4,7 @@ import java.awt.RenderingHints;
 import java.io.*;
 import java.util.prefs.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.awt.Graphics;
@@ -288,6 +289,19 @@ public class Utils {
 			return(Integer.parseInt(a));
 		} catch(NumberFormatException e) {
 			return(0);
+		}
+	}
+    
+	static byte[] readall(InputStream in) throws IOException {
+		byte[] buf = new byte[4096];
+		int off = 0;
+		while(true) {
+			if(off == buf.length)
+				buf = Arrays.copyOf(buf, buf.length * 2);
+			int ret = in.read(buf, off, buf.length - off);
+			if(ret < 0)
+				return(Arrays.copyOf(buf, off));
+			off += ret;
 		}
 	}
 }

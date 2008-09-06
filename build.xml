@@ -13,6 +13,8 @@
 	<pathelement path="lib/jogl.jar" />
 	<pathelement path="lib/gluegen-rt.jar" />
 	<pathelement path="lib/jnlp.jar" />
+	<pathelement path="lib/jorbis.jar" />
+	<pathelement path="lib/jogg.jar" />
       </classpath>
       <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
@@ -31,7 +33,7 @@
       <fileset dir="build/classes" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
+	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar jogg.jar jorbis.jar" />
       </manifest>
     </jar>
   </target>

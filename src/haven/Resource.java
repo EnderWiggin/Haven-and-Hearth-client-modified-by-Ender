@@ -697,7 +697,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	transient public byte[] clip;
 	    
 	public Audio(byte[] buf) {
-	    clip = buf;
+	    try {
+		clip = Utils.readall(new VorbisDecoder(new ByteArrayInputStream(buf)));
+	    } catch(IOException e) {
+		throw(new LoadException(e, Resource.this));
+	    }
 	}
 	    
 	public void init() {}
