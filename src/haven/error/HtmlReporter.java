@@ -136,16 +136,18 @@ public class HtmlReporter {
 	}
 	out.println("</table>");
 
-	out.println("<h2>Unreadable reports</h2>");
-	out.println("<table>");
-	out.println("<tr><th>File</th><th>Exception</th>");
-	for(File file : failed.keySet()) {
-	    Exception exc = failed.get(file);
-	    out.print("    <tr>");
-	    out.print("<td>" + htmlq(file.getName()) + "</td><td>" + htmlq(exc.getClass().getName()) + ": " + htmlq(exc.getMessage()) + "</td>");
-	    out.println("    </tr>");
+	if(failed.size() > 0) {
+	    out.println("<h2>Unreadable reports</h2>");
+	    out.println("<table>");
+	    out.println("<tr><th>File</th><th>Exception</th>");
+	    for(File file : failed.keySet()) {
+		Exception exc = failed.get(file);
+		out.print("    <tr>");
+		out.print("<td>" + htmlq(file.getName()) + "</td><td>" + htmlq(exc.getClass().getName()) + ": " + htmlq(exc.getMessage()) + "</td>");
+		out.println("    </tr>");
+	    }
+	    out.println("</table>");
 	}
-	out.println("</table>");
 	
 	out.print(htmltail());
 	out.flush();
