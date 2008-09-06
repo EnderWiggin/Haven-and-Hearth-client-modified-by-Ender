@@ -33,7 +33,7 @@
       <fileset dir="build/classes" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
+	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar jogg.jar jorbis.jar" />
       </manifest>
     </jar>
   </target>
