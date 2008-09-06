@@ -288,7 +288,7 @@ public class Session {
 				Indir<Resource> res = getres(msg.uint16());
 				double vol = ((double)msg.uint16()) / 256.0;
 				double spd = ((double)msg.uint16()) / 256.0;
-				Audio.play(getres(msg.uint16()));
+				Audio.play(res);
 			} else {
 				throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 			}
