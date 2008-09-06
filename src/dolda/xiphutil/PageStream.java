@@ -3,16 +3,38 @@ package dolda.xiphutil;
 import java.io.*;
 import com.jcraft.jogg.*;
 
+/**
+ * The <code>PageStream</code> class decodes Ogg pages from a byte
+ * stream.
+ *
+ * @author Fredrik Tolf <code>&lt;fredrik@dolda2000.com&gt;</code>
+ */
 public class PageStream {
     private SyncState sync = new SyncState();
     private final InputStream in;
     private boolean eos = false;
-	
+    
+    /**
+     * Constructs a new <code>PageStream</code> object.
+     *
+     * @param in the Java IO <code>InputStream</code> to fetch pages
+     * from.
+     */
     public PageStream(InputStream in) {
 	this.in = in;
 	sync.init();
     }
-	
+    
+    /**
+     * Fetches one page from the byte stream.
+     *
+     * @return the page fetched, or <code>null</code> if at the end of
+     * the stream.
+     * @exception java.io.IOException if the <code>InputStream</code>
+     * itself throws an <code>IOException</code>.
+     * @exception FormatException if a format error is found in the
+     * stream.
+     */
     public Page page() throws IOException {
 	if(eos)
 	    return(null);
@@ -33,7 +55,13 @@ public class PageStream {
 	    sync.wrote(len);
 	}
     }
-	
+    
+    /**
+     * Closes the stream backing this object.
+     *
+     * @exception java.io.IOException if the backing input stream
+     * itself throws an <code>IOException</code>.
+     */
     public void close() throws IOException {
 	in.close();
     }
