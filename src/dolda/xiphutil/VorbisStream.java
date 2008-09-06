@@ -69,25 +69,69 @@ public class VorbisStream {
 	}
     }
     
+    public InputStream pcmstream() {
+	return(new InputStream() {
+		private byte[] buf;
+		private int bufp;
+		
+		private boolean convert() throws IOException {
+		    float[][] inb = decode();
+		    if(inb == null) {
+			buf = new byte[0];
+			return(false);
+		    }
+		    buf = new byte[2 * chn * inb[0].length];
+		    int p = 0;
+		    for(int i = 0; i < inb[0].length; i++) {
+			for(int c = 0; c < chn; c++) {
+			    int s = (int)(inb[c][i] * 32767);
+			    buf[p++] = (byte)s;
+			    buf[p++] = (byte)(s >> 8);
+			}
+		    }
+		    bufp = 0;
+		    return(true);
+		}
+
+		public int read() throws IOException {
+		    byte[] rb = new byte[1];
+		    int ret;
+		    do {
+			ret = read(rb);
+			if(ret < 0)
+			    return(-1);
+		    } while(ret == 0);
+		    return(rb[0]);
+		}
+    
+		public int read(byte[] dst, int off, int len) throws IOException {
+		    if((buf == null) && !convert())
+			return(-1);
+		    if(buf.length - bufp < len)
+			len = buf.length - bufp;
+		    System.arraycopy(buf, bufp, dst, off, len);
+		    if((bufp += len) == buf.length)
+			buf = null;
+		    return(len);
+		}
+    
+		public void close() throws IOException {
+		    VorbisStream.this.close();
+		}
+	    });
+    }
+    
     public String toString() {
 	return(String.format("Vorbis Stream (encoded by `%s', %d comments, %d channels, sampled at %d Hz)", vnd, uc.size(), chn, rate));
     }
     
     public static void main(String[] args) throws Exception {
 	VorbisStream vs = new VorbisStream(new FileInputStream(args[0]));
-	float[][] buf;
-	while((buf = vs.decode()) != null) {
-	    byte[] dst = new byte[2 * vs.chn * buf[0].length];
-	    int p = 0;
-	    for(int i = 0; i < buf[0].length; i++) {
-		for(int c = 0; c < vs.chn; c++) {
-		    int s = (int)(buf[c][i] * 32767);
-		    dst[p++] = (byte)s;
-		    dst[p++] = (byte)(s >> 8);
-		}
-	    }
-	    System.out.write(dst);
-	}
+	InputStream pcm = vs.pcmstream();
+	byte[] buf = new byte[4096];
+	int ret;
+	while((ret = pcm.read(buf)) >= 0)
+	    System.out.write(buf);
     }
     
     public void close() throws IOException {
