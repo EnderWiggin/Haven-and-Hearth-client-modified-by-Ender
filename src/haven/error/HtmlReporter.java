@@ -34,6 +34,8 @@ public class HtmlReporter {
     }
     
     public static String htmlq(String html) {
+	if(html == null)
+	    return("(null)");
 	StringBuilder buf = new StringBuilder();
 	for(int i = 0; i < html.length(); i++) {
 	    char c = html.charAt(i);
