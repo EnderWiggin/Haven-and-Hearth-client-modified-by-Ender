@@ -59,15 +59,11 @@ public class HtmlReporter {
 	    List<String> classes = new LinkedList<String>();
 	    String pkg = e.getClassName();
 	    if(pkg != null) {
-		int d = pkg.indexOf('.');
-		if(d > 0) {
-		    pkg = pkg.substring(0, d).intern();
-		} else {
-		    pkg = null;
-		}
-		if((pkg == "java") || (pkg == "javax")) {
+		if(pkg.startsWith("javax.media.opengl.") || pkg.startsWith("com.sun.opengl.")) {
+		    classes.add("pkg-jogl");
+		} else if(pkg.startsWith("java.") || pkg.startsWith("javax.")) {
 		    classes.add("pkg-java");
-		} else if((pkg == "haven") || (pkg == "dolda")) {
+		} else if(pkg.startsWith("haven.") || pkg.startsWith("dolda.")) {
 		    classes.add("own");
 		}
 	    }
