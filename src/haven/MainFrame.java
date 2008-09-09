@@ -102,7 +102,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	try {
 	    while(true) {
 		Bootstrap bill = new Bootstrap();
-		String defaddr = System.getProperty("haven.defserv");
+		String defaddr = Utils.getprop("haven.defserv", null);
 		if(defaddr != null)
 		    bill.setaddr(defaddr);
 		if(System.getProperty("haven.authck") != null)
@@ -123,7 +123,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	if(jnlpcache != null)
 	    Resource.addcache(jnlpcache);
 	try {
-	    Resource.addurl(new URL(System.getProperty("haven.resurl", "https://www.havenandhearth.com/res/")));
+	    Resource.addurl(new URL(Utils.getprop("haven.resurl", "https://www.havenandhearth.com/res/")));
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -136,11 +136,11 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     
     public static void main(String[] args) {
 	final MainFrame f = new MainFrame(800, 600);
-	if(System.getProperty("haven.fullscreen", "off").equals("on"))
+	if(Utils.getprop("haven.fullscreen", "off").equals("on"))
 	    f.setfs();
 	setupres();
 	ThreadGroup g;
-	if(System.getProperty("haven.errorhandler", "off").equals("on")) {
+	if(Utils.getprop("haven.errorhandler", "off").equals("on")) {
 	    g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
 		    public void errorsent() {
 			f.g.interrupt();
@@ -158,8 +158,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	} catch(InterruptedException e) {
 	    return;
 	}
-	dumplist(Resource.loadwaited, System.getProperty("haven.loadwaited"));
-	dumplist(Resource.allused, System.getProperty("haven.allused"));
+	dumplist(Resource.loadwaited, Utils.getprop("haven.loadwaited", null));
+	dumplist(Resource.allused, Utils.getprop("haven.allused", null));
 	if(jnlpcache != null) {
 	    try {
 		dumplist(Resource.allused, new PrintWriter(jnlpcache.store("tmp/allused")));

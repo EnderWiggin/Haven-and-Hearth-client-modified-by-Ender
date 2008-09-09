@@ -466,7 +466,7 @@ public class MapView extends Widget implements DTarget {
 		g.atext("Hunger meter: " + glob.glut / (glob.fcap / 100) + "%", new Coord(10, 575), 0, 1);
 		g.atext("Stamina meter: " + glob.stamina / (glob.stamcap / 100) + "%", new Coord(10, 590), 0, 1);
 	    }
-	    if(System.getProperty("haven.dbtext", "off").equals("on"))
+	    if(Utils.getprop("haven.dbtext", "off").equals("on"))
 		g.atext(mc.toString(), new Coord(10, 560), 0, 1);
 	} catch(Loading l) {
 	    String text = "Loading...";

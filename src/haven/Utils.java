@@ -122,6 +122,14 @@ public class Utils {
 	} catch(SecurityException e) {
 	}
     }
+    
+    static String getprop(String propname, String def) {
+	try {
+	    return(System.getProperty(propname, def));
+	} catch(SecurityException e) {
+	    return(def);
+	}
+    }
 	
     static int ub(byte b) {
 	if(b < 0)

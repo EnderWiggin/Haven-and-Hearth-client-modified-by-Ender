@@ -189,7 +189,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	    ui.root.draw(g);
 	}
 	curf.tick("draw");
-	if(System.getProperty("haven.dbtext", "off").equals("on")) {
+	if(Utils.getprop("haven.dbtext", "off").equals("on")) {
 	    if(Resource.qdepth() > 0)
 		g.atext("RQ depth: " + Resource.qdepth(), new Coord(10, 470), 0, 1);
 	    g.atext("FPS: " + fps, new Coord(10, 545), 0, 1);
