@@ -56,10 +56,36 @@ public class HtmlReporter {
 	buf.append("<table class=\"bt\">\n");
 	buf.append("<tr><th>Class</th><th>Function</th><th>File</th><th>Line</th></tr>\n");
 	for(StackTraceElement e : bt) {
+	    List<String> classes = new LinkedList<String>();
+	    String pkg = e.getClassName();
+	    if(pkg != null) {
+		int d = pkg.indexOf('.');
+		if(d > 0) {
+		    pkg = pkg.substring(0, d).intern();
+		} else {
+		    pkg = null;
+		}
+		if((pkg == "java") || (pkg == "javax")) {
+		    classes.add("pkg-java");
+		} else if((pkg == "haven") || (pkg == "dolda")) {
+		    classes.add("own");
+		}
+	    }
 	    if(e.isNativeMethod())
-		buf.append("<tr class=\"native\">");
-	    else
-		buf.append("<tr>");
+		classes.add("native");
+	    buf.append("<tr");
+	    if(classes.size() > 0) {
+		buf.append(" class=\"");
+		boolean f = true;
+		for(String cls : classes) {
+		    if(!f)
+			buf.append(" ");
+		    f = false;
+		    buf.append(cls);
+		}
+		buf.append("\"");
+	    }
+	    buf.append(">");
 	    buf.append("<td>" + htmlq(e.getClassName()) + "</td>");
 	    buf.append("<td>" + htmlq(e.getMethodName()) + "</td>");
 	    buf.append("<td>" + htmlq(e.getFileName()) + "</td>");
