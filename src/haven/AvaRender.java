@@ -13,10 +13,8 @@ public class AvaRender {
     
     public AvaRender(List<Indir<Resource>> layers) {
         Collections.sort(layers);
-        if(!layers.equals(this.layers)) {
-            this.layers = layers;
-            loading = true;
-        }
+        this.layers = layers;
+        loading = true;
     }
     
     public Tex tex() {
@@ -41,7 +39,6 @@ public class AvaRender {
         if(image == null) {
             image = new TexIM(sz);
             Graphics g = image.graphics();
-            loading = false;
             for(Resource.Image i : images)
                 g.drawImage(i.img, i.o.x, i.o.y, null);
             image.update();
