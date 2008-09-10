@@ -15,7 +15,7 @@ public class SlenHud extends Widget {
     List<HWindow> wnds = new ArrayList<HWindow>();
     HWindow awnd;
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
-    IButton hb, invb, equb;
+    IButton hb, invb, equb, chrb;
     Button sub, sdb;
     VC vc;
     String cmdline = null;
@@ -102,6 +102,7 @@ public class SlenHud extends Widget {
 	hb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/hbu"), Resource.loadimg("gfx/hud/slen/hbd"));
 	invb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/invu"), Resource.loadimg("gfx/hud/slen/invd"));
 	equb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/equu"), Resource.loadimg("gfx/hud/slen/equd"));
+	chrb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/chru"), Resource.loadimg("gfx/hud/slen/chrd"));
 	vc = new VC(this, new IButton(new Coord(380, 600), parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd")) {
 		public void click() {
 		    vc.show();
@@ -185,6 +186,9 @@ public class SlenHud extends Widget {
 	    return;
 	} else if(sender == equb) {
 	    wdgmsg("equ");
+	    return;
+	} else if(sender == chrb) {
+	    wdgmsg("chr");
 	    return;
 	}
 	super.wdgmsg(sender, msg, args);
