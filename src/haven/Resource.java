@@ -885,7 +885,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    InputStream pls;
 	    pls = Resource.class.getResourceAsStream("res-preload");
 	    if(pls != null)
-		loadlist(pls, 0);
+		loadlist(pls, -5);
 	    pls = Resource.class.getResourceAsStream("res-bgload");
 	    if(pls != null)
 		loadlist(pls, -10);
