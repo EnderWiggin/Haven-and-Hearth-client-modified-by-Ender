@@ -82,8 +82,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    throw(new RuntimeException("Weird version number on " + name));
 		}
 	    }
-	    if(res != null)
+	    if(res != null) {
+		if(res.prio < prio)
+		    res.prio = prio;
 		return res;
+	    }
 	    res = new Resource(name, ver);
 	    res.prio = prio;
 	    cache.put(name, res);
