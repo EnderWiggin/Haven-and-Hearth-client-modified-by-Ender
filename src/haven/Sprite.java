@@ -231,22 +231,22 @@ public class Sprite {
 	return(spr);
     }
 
-    private static Sprite mkdyn(Gob gob, Resource res, Resource neg, Resource.SpriteCode sc, Message sdt) {
+    private static Sprite mkdyn(Gob gob, Resource res, Resource neg, Resource.CodeEntry sc, Message sdt) {
 	try {
 	    try {
-		Method m = sc.cl.getDeclaredMethod("create", Gob.class, Resource.class);
+		Method m = sc.spr.getDeclaredMethod("create", Gob.class, Resource.class);
 		return((Sprite)m.invoke(null, gob, res));
 	    } catch(NoSuchMethodException e) {}
 	    try {
-		Method m = sc.cl.getDeclaredMethod("create", Gob.class, Resource.class, Message.class);
+		Method m = sc.spr.getDeclaredMethod("create", Gob.class, Resource.class, Message.class);
 		return((Sprite)m.invoke(null, gob, res, sdt));
 	    } catch(NoSuchMethodException e) {}
 	    try {
-		Constructor<? extends Sprite> m = sc.cl.getConstructor(Gob.class, Resource.class);
+		Constructor<? extends Sprite> m = sc.spr.getConstructor(Gob.class, Resource.class);
 		return(m.newInstance(gob, res));
 	    } catch(NoSuchMethodException e) {}
 	    try {
-		Constructor<? extends Sprite> m = sc.cl.getConstructor(Gob.class, Resource.class, Message.class);
+		Constructor<? extends Sprite> m = sc.spr.getConstructor(Gob.class, Resource.class, Message.class);
 		return(m.newInstance(gob, res, sdt));
 	    } catch(NoSuchMethodException e) {}
 	    throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
@@ -261,8 +261,8 @@ public class Sprite {
 
     private static Sprite create(Gob gob,Resource res, Resource neg, boolean layered, Message sdt) {
 	Resource.Anim ad = res.layer(animc);
-	Resource.SpriteCode sc = res.layer(Resource.SpriteCode.class);
-	if(sc != null)
+	Resource.CodeEntry sc = res.layer(Resource.CodeEntry.class);
+	if((sc != null) && (sc.spr != null))
 	    return(mkdyn(gob, res, neg, sc, sdt));
 	else if(ad != null)
 	    return(mkanim(gob, res, neg, layered, ad));

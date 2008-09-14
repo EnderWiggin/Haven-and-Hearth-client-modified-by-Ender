@@ -659,16 +659,19 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     };
 
-    public class SpriteCode extends Layer {
+    public class CodeEntry extends Layer {
 	private String clnm;
 	private Map<String, Code> clmap = new TreeMap<String, Code>();
+	private Map<String, String> pe = new TreeMap<String, String>();
 	transient private ClassLoader loader;
-	transient public Class<? extends Sprite> cl;
+	transient public Class<? extends Sprite> spr;
 		
-	public SpriteCode(byte[] buf) {
+	public CodeEntry(byte[] buf) {
 	    int[] off = new int[1];
 	    off[0] = 0;
-	    clnm = Utils.strd(buf, off);
+	    while(off[0] < buf.length) {
+		pe.put(Utils.strd(buf, off), Utils.strd(buf, off));
+	    }
 	}
 		
 	public void init() {
@@ -682,16 +685,16 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 			return(defineClass(name, c.data, 0, c.data.length));
 		    }
 		};
-	    Class<?> cl;
 	    try {
-		cl = loader.loadClass(clnm);
+		String clnm;
+		if((clnm = pe.get("spr")) != null)
+		    spr = loader.loadClass(clnm).asSubclass(Sprite.class);
 	    } catch(ClassNotFoundException e) {
 		throw(new LoadException(e, Resource.this));
 	    }
-	    this.cl = cl.asSubclass(Sprite.class);
 	}
     }
-    static {ltypes.put("sprcode", SpriteCode.class);}
+    static {ltypes.put("codeentry", CodeEntry.class);}
 	
     public class Audio extends Layer {
 	transient public byte[] clip;
