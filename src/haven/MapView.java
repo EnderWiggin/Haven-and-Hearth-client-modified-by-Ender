@@ -291,6 +291,8 @@ public class MapView extends Widget implements DTarget {
 	Gob gob = null;
 	for(Gob tg : plob)
 	    gob = tg;
+	if(gob.sc == null)
+	    return;
 	if(plrad > 0) {
 	    g.chcolor(0, 255, 0, 32);
 	    g.fellipse(gob.sc, new Coord(plrad * 2, plrad));
