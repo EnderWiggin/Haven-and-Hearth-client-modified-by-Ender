@@ -19,11 +19,11 @@ public class Window extends Widget implements DTarget {
 	boolean dt = false;
 	Text cap;
 	boolean dm = false;
-	Coord atl, asz, wsz;
-	Coord tlo, rbo;
-	Coord mrgn = new Coord(13, 13);
-	Coord doff;
-	IButton cbtn;
+	public Coord atl, asz, wsz;
+	public Coord tlo, rbo;
+	public Coord mrgn = new Coord(13, 13);
+	public Coord doff;
+	public IButton cbtn;
 	
 	static {
 		Widget.addtype("wnd", new WidgetFactory() {
