@@ -305,31 +305,30 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 	
-    @SuppressWarnings("serial")
-	public static class LoadException extends RuntimeException {
-	    public Resource res;
-	    public ResSource src;
+    public static class LoadException extends RuntimeException {
+	public Resource res;
+	public ResSource src;
 	    
-	    public LoadException(String msg, ResSource src) {
-		super(msg);
-		this.src = src;
-	    }
-	    
-	    public LoadException(String msg, Resource res) {
-		super(msg);
-		this.res = res;
-	    }
-
-	    public LoadException(String msg, Throwable cause, Resource res) {
-		super(msg, cause);
-		this.res = res;
-	    }
-	    
-	    public LoadException(Throwable cause, Resource res) {
-		super(cause);
-		this.res = res;
-	    }
+	public LoadException(String msg, ResSource src) {
+	    super(msg);
+	    this.src = src;
 	}
+	    
+	public LoadException(String msg, Resource res) {
+	    super(msg);
+	    this.res = res;
+	}
+
+	public LoadException(String msg, Throwable cause, Resource res) {
+	    super(msg, cause);
+	    this.res = res;
+	}
+	    
+	public LoadException(Throwable cause, Resource res) {
+	    super(cause);
+	    this.res = res;
+	}
+    }
 	
     public static Coord cdec(byte[] buf, int off) {
 	return(new Coord(Utils.int16d(buf, off), Utils.int16d(buf, off + 2)));
