@@ -666,6 +666,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	private Map<String, Code> clmap = new TreeMap<String, Code>();
 	private Map<String, String> pe = new TreeMap<String, String>();
 	transient private ClassLoader loader;
+	transient private Class<? extends WidgetFactory> wdg;
+	transient private WidgetFactory wdgf;
 	transient public Class<? extends Sprite> spr;
 		
 	public CodeEntry(byte[] buf) {
@@ -691,8 +693,25 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		String clnm;
 		if((clnm = pe.get("spr")) != null)
 		    spr = loader.loadClass(clnm).asSubclass(Sprite.class);
+		if((clnm = pe.get("wdg")) != null)
+		    wdg = loader.loadClass(clnm).asSubclass(WidgetFactory.class);
 	    } catch(ClassNotFoundException e) {
 		throw(new LoadException(e, Resource.this));
+	    }
+	}
+	
+	public WidgetFactory wdg() {
+	    synchronized(this) {
+		if(wdgf == null) {
+		    try {
+			wdgf = wdg.newInstance();
+		    } catch(InstantiationException e) {
+			throw(new RuntimeException(e));
+		    } catch(IllegalAccessException e) {
+			throw(new RuntimeException(e));
+		    }
+		}
+		return(wdgf);
 	    }
 	}
     }

@@ -50,12 +50,20 @@ public class UI {
 	rwidgets.put(w, id);
     }
 	
-    public void newwidget(int id, String type, Coord c, int parent, Object... args) {
+    public void newwidget(int id, String type, Coord c, int parent, Object... args) throws InterruptedException {
+	WidgetFactory f;
+	if(type.indexOf('/') >= 0) {
+	    Resource res = Resource.load(type);
+	    res.loadwaitint();
+	    f = res.layer(Resource.CodeEntry.class).wdg();
+	} else {
+	    f = Widget.gettype(type);
+	}
 	synchronized(this) {
 	    Widget pwdg = widgets.get(parent);
 	    if(pwdg == null)
 		throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
-	    Widget wdg = Widget.create(type, c, pwdg, args);
+	    Widget wdg = f.create(c, pwdg, args);
 	    bind(wdg, id);
 	    if(wdg instanceof MapView)
 		mainview = (MapView)wdg;

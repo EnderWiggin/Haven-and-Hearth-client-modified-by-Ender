@@ -7,14 +7,14 @@ import java.awt.event.KeyEvent;
 import java.awt.GraphicsConfiguration;
 
 public class Widget implements Graphical {
-    UI ui;
-    Coord c, sz;
-    Widget next, prev, child, lchild, parent;
+    public UI ui;
+    public Coord c, sz;
+    public Widget next, prev, child, lchild, parent;
     boolean focustab = false, focusctl = false, hasfocus = false, visible = true;
     private boolean canfocus = false, autofocus = false;
     boolean canactivate = false, cancancel = false;
     Widget focused;
-    Resource cursor = null;
+    public Resource cursor = null;
     static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
     static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 			       Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
@@ -42,11 +42,15 @@ public class Widget implements Graphical {
     }
 	
     public static void addtype(String name, WidgetFactory fct) {
-	types.put(name, fct);
+	synchronized(types) {
+	    types.put(name, fct);
+	}
     }
 	
-    public static Widget create(String name, Coord c, Widget parent, Object[] args) {
-	return(types.get(name).create(c, parent, args));
+    public static WidgetFactory gettype(String name) {
+	synchronized(types) {
+	    return(types.get(name));
+	}
     }
 	
     public Widget(UI ui, Coord c, Coord sz) {
