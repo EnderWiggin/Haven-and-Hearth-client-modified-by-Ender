@@ -49,7 +49,7 @@ public class Session {
 	String username;
 	byte[] cookie;
 	final Map<Integer, Indir<Resource>> rescache = new TreeMap<Integer, Indir<Resource>>();
-	final Glob glob;
+	public final Glob glob;
 	
 	@SuppressWarnings("serial")
 	public class MessageException extends RuntimeException {

@@ -3,14 +3,14 @@ package haven;
 import java.util.*;
 
 public class Glob {
-	long time;
-	Astronomy ast;
-	OCache oc = new OCache(this);
-	MCache map;
-	Session sess;
-	Party party;
-	int glut, fcap, stamina, stamcap;
-	Collection<Resource> paginae = new TreeSet<Resource>();
+	public long time;
+	public Astronomy ast;
+	public OCache oc = new OCache(this);
+	public MCache map;
+	public Session sess;
+	public Party party;
+	public int glut, fcap, stamina, stamcap;
+	public Collection<Resource> paginae = new TreeSet<Resource>();
 	
 	public Glob(Session sess) {
 		this.sess = sess;

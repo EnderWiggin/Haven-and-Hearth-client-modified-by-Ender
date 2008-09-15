@@ -9,10 +9,10 @@ public class UI {
     Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
     Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
     Receiver rcvr;
-    Coord mc, lcc = Coord.z;
-    Session sess;
-    MapView mainview;
-    boolean modshift, modctrl, modmeta, modsuper;
+    public Coord mc, lcc = Coord.z;
+    public Session sess;
+    public MapView mainview;
+    public boolean modshift, modctrl, modmeta, modsuper;
     long lastevent = System.currentTimeMillis();
     public Widget mouseon;
     public Object tooltip = null;
