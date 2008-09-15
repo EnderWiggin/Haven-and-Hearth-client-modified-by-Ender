@@ -330,6 +330,9 @@ public class MapView extends Widget implements DTarget {
 	    }
 	}
 	curf.tick("map");
+
+	drawplobeffect(g);
+	curf.tick("plobeff");
 		
 	final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 	ArrayList<Drawable> clickable = new ArrayList<Drawable>();
@@ -459,7 +462,6 @@ public class MapView extends Widget implements DTarget {
 	try {
 	    fixlight();
 	    drawmap(g);
-	    drawplobeffect(g);
 	    drawarrows(g);
 	    g.chcolor(Color.WHITE);
 	    if((glob.fcap != 0) &&  (glob.stamcap != 0)) {
