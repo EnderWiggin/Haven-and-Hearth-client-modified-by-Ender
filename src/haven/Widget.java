@@ -19,7 +19,7 @@ public class Widget implements Graphical {
     static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 			       Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
 			       Makewindow.class, Chatwindow.class, Textlog.class, Equipory.class, IButton.class,
-			       Landwindow.class, Skillwindow.class, Archwindow.class, Cal.class, Avaview.class,
+			       Skillwindow.class, Archwindow.class, Cal.class, Avaview.class,
 			       Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
 			       MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
 			       MapMod.class};
