@@ -55,7 +55,7 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 	    });
     }
 
-    public void goterror(Throwable t) {
+    public boolean goterror(Throwable t) {
 	done = false;
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
@@ -74,8 +74,11 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 		throw(new Error(e));
 	    }
 	}
+	remove(vp);
+	pack();
 	if(!verified)
 	    errorsent();
+	return(verified);
     }
 	
     public void connecting() {
@@ -100,7 +103,6 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 	done = false;
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    remove(vp);
 		    add(dp, BorderLayout.SOUTH);
 		    status.setText("Done");
 		    pack();
@@ -122,7 +124,6 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 	done = false;
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    remove(vp);
 		    add(dp, BorderLayout.SOUTH);
 		    status.setText("An error occurred while sending!");
 		    pack();

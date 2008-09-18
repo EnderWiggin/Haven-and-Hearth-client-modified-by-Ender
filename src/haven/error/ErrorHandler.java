@@ -33,7 +33,7 @@ public class ErrorHandler extends ThreadGroup {
 
     private class Reporter extends Thread {
 	private Queue<Report> errors = new LinkedList<Report>();
-	private final ErrorStatus status;
+	private ErrorStatus status;
 	
 	public Reporter(ErrorStatus status) {
 	    super(initial, "Error reporter");
@@ -62,7 +62,8 @@ public class ErrorHandler extends ThreadGroup {
 	}
 	
 	private void doreport(Report r) throws IOException {
-	    status.goterror(r.t);
+	    if(!status.goterror(r.t))
+		return;
 	    URLConnection c = errordest.openConnection();
 	    status.connecting();
 	    c.setDoOutput(true);
@@ -111,6 +112,10 @@ public class ErrorHandler extends ThreadGroup {
     
     public ErrorHandler() {
 	this(new ErrorStatus.Simple());
+    }
+    
+    public void sethandler(ErrorStatus handler) {
+	reporter.status = handler;
     }
     
     public void uncaughtException(Thread t, Throwable e) {

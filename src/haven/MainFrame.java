@@ -134,36 +134,57 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
     }
     
-    public static void main(String[] args) {
-	final MainFrame f = new MainFrame(800, 600);
+    private static void main2() {
+	ThreadGroup g = Utils.tg();
+	Resource.loadergroup = g;
+	setupres();
+	MainFrame f = new MainFrame(800, 600);
 	if(Utils.getprop("haven.fullscreen", "off").equals("on"))
 	    f.setfs();
-	setupres();
-	ThreadGroup g;
-	if(Utils.getprop("haven.errorhandler", "off").equals("on")) {
-	    g = new haven.error.ErrorHandler(new haven.error.ErrorGui(f) {
+	f.g = g;
+	if(g instanceof haven.error.ErrorHandler) {
+	    final haven.error.ErrorHandler hg = (haven.error.ErrorHandler)g;
+	    hg.sethandler(new haven.error.ErrorGui(null) {
 		    public void errorsent() {
-			f.g.interrupt();
+			hg.interrupt();
 		    }
 		});
-	} else {
-	    g = new ThreadGroup("Haven client");
 	}
-	Resource.loadergroup = g;
-	f.g = g;
-	Thread main = new Thread(g, f);
-	main.start();
-	try {
-	    main.join();
-	} catch(InterruptedException e) {
-	    return;
-	}
+	f.run();
 	dumplist(Resource.loadwaited, Utils.getprop("haven.loadwaited", null));
 	dumplist(Resource.allused, Utils.getprop("haven.allused", null));
 	if(jnlpcache != null) {
 	    try {
 		dumplist(Resource.allused, new PrintWriter(jnlpcache.store("tmp/allused")));
 	    } catch(java.io.IOException e) {}
+	}
+    }
+    
+    public static void main(String[] args) {
+	/* Set up the error handler as early as humanly possible. */
+	ThreadGroup g;
+	if(Utils.getprop("haven.errorhandler", "off").equals("on")) {
+	    final haven.error.ErrorHandler hg = new haven.error.ErrorHandler();
+	    hg.sethandler(new haven.error.ErrorGui(null) {
+		    public void errorsent() {
+			hg.interrupt();
+		    }
+		});
+	    g = hg;
+	} else {
+	    g = new ThreadGroup("Haven client");
+	}
+	Thread main = new Thread(g, new Runnable() {
+		public void run() {
+		    main2();
+		}
+	    }, "Haven main thread");
+	main.start();
+	try {
+	    main.join();
+	} catch(InterruptedException e) {
+	    g.interrupt();
+	    return;
 	}
 	System.exit(0);
     }

@@ -26,11 +26,12 @@ public class HavenApplet extends Applet {
 		});
 	}
 	
-	public void goterror(Throwable t) {
+	public boolean goterror(Throwable t) {
 	    stopgame();
 	    setSize(HavenApplet.this.getSize());
 	    HavenApplet.this.add(this);
 	    repaint();
+	    return(true);
 	}
 	
 	public void connecting() {
