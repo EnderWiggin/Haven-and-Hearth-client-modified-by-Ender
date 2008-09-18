@@ -146,6 +146,16 @@ public class SlenHud extends Widget {
 	    }
 	} else if(cmd == "sfx") {
 	    Audio.play(Resource.load(argv[1]));
+	} else if(cmd == "browse") {
+	    if(WebBrowser.self != null) {
+		try {
+		    WebBrowser.self.show(new java.net.URL(argv[1]));
+		} catch(java.net.MalformedURLException e) {
+		    error(e.getMessage());
+		}
+	    } else {
+		error("No web browser available");
+	    }
 	} else {
 	    error(cmd + ": no such command");
 	}

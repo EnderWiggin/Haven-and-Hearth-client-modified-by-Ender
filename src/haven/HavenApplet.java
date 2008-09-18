@@ -2,10 +2,12 @@ package haven;
 
 import java.applet.*;
 import java.net.URL;
+import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class HavenApplet extends Applet {
+    public static Map<ThreadGroup, HavenApplet> applets = new HashMap<ThreadGroup, HavenApplet>();
     ThreadGroup p;
     HavenPanel h;
     boolean running = false;
@@ -84,6 +86,9 @@ public class HavenApplet extends Applet {
 	add(h);
 	h.init();
 	p = new haven.error.ErrorHandler(new ErrorPanel());
+	synchronized(applets) {
+	    applets.put(p, this);
+	}
 	Thread main = new Thread(p, new Runnable() {
 		public void run() {
 		    Thread ui = new Thread(Utils.tg(), h, "Haven UI thread");
@@ -117,6 +122,9 @@ public class HavenApplet extends Applet {
 	if(!running)
 	    return;
 	running = false;
+	synchronized(applets) {
+	    applets.remove(p);
+	}
 	p.interrupt();
 	remove(h);
 	p = null;
@@ -126,5 +134,18 @@ public class HavenApplet extends Applet {
     public void init() {
 	resize(800, 600);
 	startgame();
+    }
+    
+    static {
+	WebBrowser.self = new WebBrowser() {
+		public void show(URL url) {
+		    HavenApplet a;
+		    synchronized(applets) {
+			a = applets.get(Utils.tg());
+		    }
+		    if(a != null)
+			a.getAppletContext().showDocument(url);
+		}
+	    };
     }
 }
