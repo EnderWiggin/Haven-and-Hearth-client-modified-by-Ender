@@ -23,8 +23,8 @@ public class Sprite {
 	
     public static abstract class Part implements Comparable<Part> {
 	public Coord poff = Coord.z;
-	Coord cc, off;
-	int z, subz;
+	public Coord cc, off;
+	public int z, subz;
 		
 	public Part(int z) {
 	    this.z = z;
@@ -251,11 +251,11 @@ public class Sprite {
 	    } catch(NoSuchMethodException e) {}
 	    throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
 	} catch(IllegalAccessException e) {
-	    throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
+	    throw(new ResourceException("Cannot call sprite code of dynamic resource", e, res));
 	} catch(java.lang.reflect.InvocationTargetException e) {
 	    throw(new ResourceException("Sprite code of dynamic resource threw an exception", e.getCause(), res));
 	} catch(InstantiationException e) {
-	    throw(new ResourceException("Cannot call sprite code of dynamic resource", e.getCause(), res));
+	    throw(new ResourceException("Cannot call sprite code of dynamic resource", e, res));
 	}
     }
 
@@ -289,6 +289,8 @@ public class Sprite {
 	    sz = neg.sz;
 	    return;
 	}
+	if(negres.layer(Resource.CodeEntry.class) != null)
+	    return;
 	throw(new ResourceException("Does not know how to draw resource " + negres.name, negres));
     }
 	
