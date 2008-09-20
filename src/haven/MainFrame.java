@@ -134,6 +134,10 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
     }
     
+    static {
+	WebBrowser.self = JnlpBrowser.create();
+    }
+
     private static void main2() {
 	ThreadGroup g = Utils.tg();
 	Resource.loadergroup = g;
