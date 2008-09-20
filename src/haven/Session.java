@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-	public static final int PVER = 10;
+	public static final int PVER = 11;
 	
 	public static final int MSG_SESS = 0;
 	public static final int MSG_REL = 1;
@@ -229,8 +229,15 @@ public class Session {
 							}
 						} else if(type == OD_OVERLAY) {
 							int resid = msg.uint16();
+							Message sdt;
+							if((resid & 0x8000) != 0) {
+								resid &= ~0x8000;
+								sdt = msg.derive(0, msg.uint8());
+							} else {
+								sdt = new Message(0);
+							}
 							int olid = msg.int32();
-							oc.overlay(id, frame, getres(resid), olid);
+							oc.overlay(id, frame, getres(resid), olid, sdt);
 						} else if(type == OD_END) {
 							break;
 						} else {

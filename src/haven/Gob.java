@@ -9,9 +9,19 @@ public class Gob {
     public int id, frame, initdelay = (int)(Math.random() * 3000);
     public final Glob glob;
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
-    Map<Integer, Indir<Resource>> olprep = new TreeMap<Integer, Indir<Resource>>();
+    Map<Integer, Overlay> olprep = new TreeMap<Integer, Overlay>();
     Collection<Sprite> ols = new LinkedList<Sprite>();
 	
+    public static class Overlay {
+	Indir<Resource> res;
+	Message sdt;
+	
+	public Overlay(Indir<Resource> res, Message sdt) {
+	    this.res = res;
+	    this.sdt = sdt;
+	}
+    }
+    
     public Gob(Glob glob, Coord c, int id, int frame) {
 	this.glob = glob;
 	this.rc = c;
@@ -32,11 +42,11 @@ public class Gob {
 	initdelay = 0;
 	for(GAttrib a : attr.values())
 	    a.ctick(dt);
-	for(Map.Entry<Integer, Indir<Resource>> e : olprep.entrySet()) {
+	for(Map.Entry<Integer, Overlay> e : olprep.entrySet()) {
 	    if(e.getValue() == null)
 		continue;
-	    if(e.getValue().get() != null) {
-		ols.add(Sprite.create(this, e.getValue().get(), null));
+	    if(e.getValue().res.get() != null) {
+		ols.add(Sprite.create(this, e.getValue().res.get(), e.getValue().sdt));
 		e.setValue(null);
 	    }
 	}
