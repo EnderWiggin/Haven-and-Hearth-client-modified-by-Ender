@@ -97,7 +97,7 @@ public class UI {
 	wdg.destroy();
 	wdg.unlink();
     }
-	
+    
     public void destroy(int id) {
 	synchronized(this) {
 	    if(widgets.containsKey(id)) {

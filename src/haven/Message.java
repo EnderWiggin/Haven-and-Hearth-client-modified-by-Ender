@@ -1,6 +1,7 @@
 package haven;
 
 import java.util.*;
+import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class Message implements java.io.Serializable {
@@ -18,6 +19,7 @@ public class Message implements java.io.Serializable {
 	public static final int T_INT = 1;
 	public static final int T_STR = 2;
 	public static final int T_COORD = 3;
+        public static final int T_COLOR = 6;
 	
 	public int type;
 	public byte[] blob;
@@ -137,6 +139,10 @@ public class Message implements java.io.Serializable {
 	public Coord coord() {
 		return(new Coord(int32(), int32()));
 	}
+        
+        public Color color() {
+                return(new Color(uint8(), uint8(), uint8(), uint8()));
+        }
 	
 	public Object[] list() {
 		ArrayList<Object> ret = new ArrayList<Object>();
@@ -152,6 +158,8 @@ public class Message implements java.io.Serializable {
 				ret.add(string());
 			else if(t == T_COORD)
 				ret.add(coord());
+                        else if(t == T_COLOR)
+                                ret.add(color());
 		}
 		return(ret.toArray());
 	}

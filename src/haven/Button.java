@@ -13,7 +13,7 @@ public class Button extends SSWidget {
 	static BufferedImage dt = Resource.loadimg("gfx/hud/buttons/tbtn/dtex");
 	static BufferedImage ut = Resource.loadimg("gfx/hud/buttons/tbtn/utex");
 	BufferedImage text;
-	Text.Foundry tf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
+	static Text.Foundry tf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12), Color.YELLOW);
 	boolean a = false;
 	
 	static {
@@ -22,14 +22,24 @@ public class Button extends SSWidget {
 				return(new Button(c, (Integer)args[0], parent, (String)args[1]));
 			}
 		});
+		Widget.addtype("ltbtn", new WidgetFactory() {
+			public Widget create(Coord c, Widget parent, Object[] args) {
+				return(wrapped(c, (Integer)args[0], parent, (String)args[1]));
+			}
+		});
 	}
 	
+        public static Button wrapped(Coord c, int w, Widget parent, String text) {
+                Button ret = new Button(c, w, parent, tf.renderwrap(text, w - 10).img);
+                return(ret);
+        }
+        
 	public Button(Coord c, Integer w, Widget parent, String text) {
 		super(c, new Coord(w, 19), parent);
-		this.text = tf.render(text, Color.YELLOW).img;
+		this.text = tf.render(text).img;
 		render();
 	}
-	
+        
 	public Button(Coord c, Integer w, Widget parent, BufferedImage cont) {
 		super(c, new Coord(w, 19), parent);
 		this.text = cont;

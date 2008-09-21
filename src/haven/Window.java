@@ -84,6 +84,8 @@ public class Window extends Widget implements DTarget {
 	public void pack() {
 		Coord max = new Coord(0, 0);
 		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+                        if(wdg == cbtn)
+                            continue;
 			Coord br = wdg.c.add(wdg.sz);
 			if(br.x > max.x)
 				max.x = br.x;
