@@ -121,6 +121,10 @@ public class Text {
 		public Text render(String text) {
 			return(render(text, defcol));
 		}
+                
+                public Text renderf(String fmt, Object... args) {
+                    return(render(String.format(fmt, args)));
+                }
 	}
 	
 	private Text(String text) {

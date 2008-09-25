@@ -22,7 +22,7 @@ public class Widget implements Graphical {
 			       Skillwindow.class, Archwindow.class, Cal.class, Avaview.class, NpcChat.class,
 			       Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
 			       MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
-			       MapMod.class};
+			       MapMod.class, ISBox.class};
 	
     static {
 	addtype("cnt", new WidgetFactory() {
