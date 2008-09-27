@@ -12,8 +12,8 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
     private JPanel vp, dp;
     private boolean verified, done;
 	
-    public ErrorGui(java.awt.Window parent) {
-	super(parent, "Haven error!", Dialog.ModalityType.APPLICATION_MODAL);
+    public ErrorGui(java.awt.Frame parent) {
+	super(parent, "Haven error!", true);
 	setMinimumSize(new Dimension(300, 100));
 	setResizable(false);
 	setLayout(new BorderLayout());
