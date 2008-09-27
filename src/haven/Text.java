@@ -32,6 +32,7 @@ public class Text {
     }
         
     public static class Foundry {
+	private Graphics tmpl;
 	private FontMetrics m;
 	Font font;
 	Color defcol;
@@ -41,9 +42,9 @@ public class Text {
 	    font = f;
 	    this.defcol = defcol;
 	    BufferedImage junk = TexI.mkbuf(new Coord(10, 10));
-	    Graphics g = junk.getGraphics();
-	    g.setFont(f);
-	    m = g.getFontMetrics();
+	    tmpl = junk.getGraphics();
+	    tmpl.setFont(f);
+	    m = tmpl.getFontMetrics();
 	}
 		
 	public Foundry(Font f) {
@@ -51,7 +52,7 @@ public class Text {
 	}
 		
 	private Coord strsize(String text) {
-	    Rectangle2D b = font.getStringBounds(text, m.getFontRenderContext());
+	    Rectangle2D b = m.getStringBounds(text, tmpl);
 	    return(new Coord((int)b.getWidth(), (int)b.getHeight()));
 	}
                 
@@ -105,8 +106,7 @@ public class Text {
                 
 	public Text render(String text, Color c) {
 	    Text t = new Text(text);
-	    Rectangle2D b = font.getStringBounds(text, m.getFontRenderContext());
-	    t.img = TexI.mkbuf(new Coord((int)b.getWidth(), m.getHeight()));
+	    t.img = TexI.mkbuf(strsize(text));
 	    Graphics g = t.img.createGraphics();
 	    if(aa)
 		Utils.AA(g);
