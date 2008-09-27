@@ -91,7 +91,7 @@ public class JnlpCache implements ResCache {
 	    throw(e);
 	} catch(Exception e) {
 	    /* There seems to be a weird bug in NetX */
-	    throw(new IOException(e));
+	    throw((IOException)(new IOException("Virtual NetX IO exception").initCause(e)));
 	}
     }
 }

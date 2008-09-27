@@ -228,7 +228,7 @@ public class Audio {
 	try {
 	    cs = AudioSystem.getAudioInputStream(fmt, AudioSystem.getAudioInputStream(in));
 	} catch(UnsupportedAudioFileException e) {
-	    throw(new java.io.IOException(e));
+	    throw(new java.io.IOException("Unsupported audio encoding"));
 	}
 	java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
 	byte[] bbuf = new byte[65536];
