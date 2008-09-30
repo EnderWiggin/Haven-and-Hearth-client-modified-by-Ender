@@ -1,6 +1,7 @@
 package haven.test;
 
 import haven.*;
+import java.util.*;
 import java.net.InetAddress;
 
 public class TestClient implements Runnable {
@@ -12,6 +13,7 @@ public class TestClient implements Runnable {
     public Thread me;
     public UI ui;
     public boolean loop = false;
+    public Collection<Robot> robots = new HashSet<Robot>();
     private static Object errsync = new Object();
     
     public TestClient(String user) {
@@ -44,13 +46,62 @@ public class TestClient implements Runnable {
 	}
     }
     
+    public void addbot(Robot bot) {
+	synchronized(robots) {
+	    robots.add(bot);
+	}
+    }
+    
+    public void rembot(Robot bot) {
+	synchronized(robots) {
+	    robots.remove(bot);
+	}
+    }
+    
+    public class TestUI extends UI {
+	public TestUI(Coord sz, Session sess) {
+	    super(sz, sess);
+	}
+	
+	public void newwidget(int id, String type, Coord c, int parent, Object... args) throws InterruptedException {
+	    super.newwidget(id, type, c, parent, args);
+	    Widget w = widgets.get(id);
+	    synchronized(robots) {
+		for(Robot r : robots)
+		    r.newwdg(id, w, args);
+	    }
+	}
+	
+	public void destroy(Widget w) {
+	    int id;
+	    if(!rwidgets.containsKey(w))
+		id = -1;
+	    else
+		id = rwidgets.get(w);
+	    synchronized(robots) {
+		for(Robot r : robots)
+		    r.dstwdg(id, w);
+	    }
+	    super.destroy(w);
+	}
+	
+	public void uimsg(int id, String msg, Object... args) {
+	    Widget w = widgets.get(id);
+	    synchronized(robots) {
+		for(Robot r : robots)
+		    r.uimsg(id, w, msg, args);
+	    }
+	    super.uimsg(id, msg, args);
+	}
+    }
+
     public void run() {
 	try {
 	    try {
 		do {
 		    connect();
 		    RemoteUI rui = new RemoteUI(sess);
-		    ui = new UI(new Coord(800, 600), sess);
+		    ui = new TestUI(new Coord(800, 600), sess);
 		    rui.run(ui);
 		} while(loop);
 	    } catch(InterruptedException e) {
@@ -81,5 +132,9 @@ public class TestClient implements Runnable {
 		tg.interrupt();
 	    }
 	}
+    }
+    
+    public String toString() {
+	return("Client " + user);
     }
 }

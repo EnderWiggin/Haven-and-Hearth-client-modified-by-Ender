@@ -14,6 +14,7 @@ public class MultiClient extends BaseTest {
     public void run() {
 	for(int i = 0; i < num; i++) {
 	    TestClient c = new TestClient("test" + (i + 1));
+	    new DumpBot(c);
 	    synchronized(clients) {
 		clients.add(c);
 	    }

@@ -4,10 +4,10 @@ import java.util.*;
 import java.awt.event.KeyEvent;
 
 public class UI {
-    RootWidget root;
+    public RootWidget root;
     private Widget keygrab, mousegrab;
-    Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
-    Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
+    public Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
+    public Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
     Receiver rcvr;
     public Coord mc, lcc = Coord.z;
     public Session sess;
