@@ -34,8 +34,8 @@ public class UI {
 	}
     }
 	
-    public UI(Coord sz, Graphical backer, Session sess) {
-	root = new RootWidget(this, sz, backer);
+    public UI(Coord sz, Session sess) {
+	root = new RootWidget(this, sz);
 	widgets.put(0, root);
 	rwidgets.put(root, 0);
 	this.sess = sess;
