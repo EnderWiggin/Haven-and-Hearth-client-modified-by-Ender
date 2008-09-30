@@ -106,7 +106,7 @@ public class HavenApplet extends Applet {
 			    }
 			    Session sess = bill.run(h);
 			    RemoteUI rui = new RemoteUI(sess);
-			    rui.run(h);
+			    rui.run(h.newui(sess));
 			}
 		    } catch(InterruptedException e) {
 		    } finally {
