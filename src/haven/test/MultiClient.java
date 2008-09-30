@@ -5,11 +5,15 @@ import haven.*;
 
 public class MultiClient extends BaseTest {
     public Collection<TestClient> clients = new HashSet<TestClient>();
-    public int num = 10;
-
+    public final int num;
+    
+    public MultiClient(int num) {
+	this.num = num;
+    }
+    
     public void run() {
 	for(int i = 0; i < num; i++) {
-	    TestClient c = new TestClient("test" + i);
+	    TestClient c = new TestClient("test" + (i + 1));
 	    synchronized(clients) {
 		clients.add(c);
 	    }
@@ -19,7 +23,7 @@ public class MultiClient extends BaseTest {
 	    try {
 		Thread.sleep(1000);
 	    } catch(InterruptedException e) {
-		stop();
+		stopall();
 	    }
 	    int alive = 0;
 	    for(TestClient c : clients) {
@@ -34,14 +38,22 @@ public class MultiClient extends BaseTest {
 	}
     }
     
-    public void stop() {
+    public void stopall() {
 	synchronized(clients) {
 	    for(TestClient c : clients)
 		c.stop();
 	}
     }
     
+    public static void usage() {
+	System.err.println("usage: MultiClient NUM");
+    }
+
     public static void main(String[] args) {
-	new MultiClient().start();
+	if(args.length < 1) {
+	    usage();
+	    System.exit(1);
+	}
+	new MultiClient(Integer.parseInt(args[0])).start();
     }
 }
