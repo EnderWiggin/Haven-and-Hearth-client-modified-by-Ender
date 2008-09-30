@@ -51,7 +51,7 @@ public class Button extends SSWidget {
 	
 	public Button(Coord c, Integer w, Widget parent, BufferedImage cont) {
 		super(c, new Coord(w, 19), parent);
-		this.cont = text.img;
+		this.cont = cont;
 		render();
 	}
 	
