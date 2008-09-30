@@ -91,7 +91,7 @@ public class Utils {
 	g.drawString(text, (int)(c.x - ts.getWidth() * ax), (int)(c.y + m.getAscent() - ts.getHeight() * ay));
     }
 	
-    static ThreadGroup tg() {
+    public static ThreadGroup tg() {
 	return(Thread.currentThread().getThreadGroup());
     }
 
