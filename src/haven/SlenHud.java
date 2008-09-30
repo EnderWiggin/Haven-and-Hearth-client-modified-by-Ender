@@ -131,33 +131,42 @@ public class SlenHud extends Widget {
 	
     public void runcmd(String[] argv) {
 	String cmd = argv[0].intern();
-	if(cmd == "q") {
-	    Utils.tg().interrupt();
-	} else if(cmd == "lo") {
-	    ui.sess.close();
-	} else if(cmd == "afk") {
-	    wdgmsg("afk");
-	} else if(cmd == "fs") {
-	    if((argv.length >= 2) && (ui.fsm != null)) {
-		if(Utils.atoi(argv[1]) != 0)
-		    ui.fsm.setfs();
-		else
-		    ui.fsm.setwnd();
-	    }
-	} else if(cmd == "sfx") {
-	    Audio.play(Resource.load(argv[1]));
-	} else if(cmd == "browse") {
-	    if(WebBrowser.self != null) {
-		try {
+	try {
+	    if(cmd == "q") {
+		Utils.tg().interrupt();
+	    } else if(cmd == "lo") {
+		ui.sess.close();
+	    } else if(cmd == "afk") {
+		wdgmsg("afk");
+	    } else if(cmd == "fs") {
+		if((argv.length >= 2) && (ui.fsm != null)) {
+		    if(Utils.atoi(argv[1]) != 0)
+			ui.fsm.setfs();
+		    else
+			ui.fsm.setwnd();
+		}
+	    } else if(cmd == "sfx") {
+		Audio.play(Resource.load(argv[1]));
+	    } else if(cmd == "browse") {
+		if(WebBrowser.self != null) {
 		    WebBrowser.self.show(new java.net.URL(argv[1]));
-		} catch(java.net.MalformedURLException e) {
-		    error(e.getMessage());
+		} else {
+		    error("No web browser available");
+		}
+	    } else if(cmd == "threads") {
+		java.io.StringWriter out = new java.io.StringWriter();
+		Utils.dumptg(null, new java.io.PrintWriter(out));
+		for(HWindow w : wnds) {
+		    if(w.title.equals("Messages")) {
+			for(String line : Utils.splitlines(out.toString()))
+			    ((Logwindow)w).log.append(line);
+		    }
 		}
 	    } else {
-		error("No web browser available");
+		error(cmd + ": no such command");
 	    }
-	} else {
-	    error(cmd + ": no such command");
+	} catch(Exception e) {
+	    error(e.getMessage());
 	}
     }
 	
