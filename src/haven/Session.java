@@ -39,8 +39,8 @@ public class Session {
 	DatagramSocket sk;
 	InetAddress server;
 	Thread rworker, sworker, ticker;
-	int connfailed = 0;
-	String state = "conn";
+	public int connfailed = 0;
+	public String state = "conn";
 	int tseq = 0, rseq = 0;
 	LinkedList<Message> uimsgs = new LinkedList<Message>();
 	Map<Integer, Message> waiting = new TreeMap<Integer, Message>();
