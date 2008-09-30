@@ -12,7 +12,8 @@ public class Button extends SSWidget {
 	static BufferedImage bb = Resource.loadimg("gfx/hud/buttons/tbtn/bottom");
 	static BufferedImage dt = Resource.loadimg("gfx/hud/buttons/tbtn/dtex");
 	static BufferedImage ut = Resource.loadimg("gfx/hud/buttons/tbtn/utex");
-	BufferedImage text;
+	public Text text;
+	public BufferedImage cont;
 	static Text.Foundry tf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12), Color.YELLOW);
 	boolean a = false;
 	
@@ -30,19 +31,27 @@ public class Button extends SSWidget {
 	}
 	
         public static Button wrapped(Coord c, int w, Widget parent, String text) {
-                Button ret = new Button(c, w, parent, tf.renderwrap(text, w - 10).img);
+                Button ret = new Button(c, w, parent, tf.renderwrap(text, w - 10));
                 return(ret);
         }
         
 	public Button(Coord c, Integer w, Widget parent, String text) {
 		super(c, new Coord(w, 19), parent);
-		this.text = tf.render(text).img;
+		this.text = tf.render(text);
+		this.cont = this.text.img;
 		render();
 	}
         
+	public Button(Coord c, Integer w, Widget parent, Text text) {
+		super(c, new Coord(w, 19), parent);
+		this.text = text;
+		this.cont = text.img;
+		render();
+	}
+	
 	public Button(Coord c, Integer w, Widget parent, BufferedImage cont) {
 		super(c, new Coord(w, 19), parent);
-		this.text = cont;
+		this.cont = text.img;
 		render();
 	}
 	
@@ -53,10 +62,10 @@ public class Button extends SSWidget {
 		g.drawImage(br, sz.x - br.getWidth(), 0, null);
 		g.drawImage(bt, 3, 0, sz.x - 6, bt.getHeight(), null);
 		g.drawImage(bb, 3, sz.y - bb.getHeight(), sz.x - 6, bb.getHeight(), null);
-		Coord tc = sz.div(2).add(Utils.imgsz(text).div(2).inv());
+		Coord tc = sz.div(2).add(Utils.imgsz(cont).div(2).inv());
 		if(a)
 			tc = tc.add(1, 1);
-		g.drawImage(text, tc.x, tc.y, null);
+		g.drawImage(cont, tc.x, tc.y, null);
 		update();
 	}
 	
