@@ -5,7 +5,7 @@ import haven.*;
 
 public class MultiClient extends BaseTest {
     public Collection<TestClient> clients = new HashSet<TestClient>();
-    public final int num, delay;
+    public int num, delay;
     public int started;
     
     public MultiClient(int num, int delay) {
@@ -42,6 +42,7 @@ public class MultiClient extends BaseTest {
 		try {
 		    Thread.sleep(timeout);
 		} catch(InterruptedException e) {
+		    num = 0;
 		    stopall();
 		}
 		if(now - lastck > 1000) {
