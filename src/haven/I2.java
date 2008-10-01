@@ -20,22 +20,17 @@ public class I2<T> implements Iterator<T> {
 	
     private void f() {
 	while(true) {
-	    if((cur == null) && !is.hasNext()) {
-		co = null;
-		hco = false;
-		return;
-	    }
-	    if(cur == null) {
-		cur = is.next();
-		continue;
-	    }
-	    if(!cur.hasNext()) {
-		cur = null;
-	    } else {
+	    if(cur.hasNext()) {
 		co = cur.next();
 		hco = true;
 		return;
 	    }
+	    if(is.hasNext()) {
+		cur = is.next();
+		continue;
+	    }
+	    hco = false;
+	    return;
 	}
     }
 	
