@@ -84,7 +84,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	fsmode = findmode(w, h);
 	add(p);
 	pack();
-	//setResizable(false);
+	setResizable(false);
 	p.requestFocus();
 	setVisible(true);
 	p.init();
@@ -109,7 +109,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		    bill.setinitcookie(Utils.hex2byte(System.getProperty("haven.authck")));
 		Session sess = bill.run(p);
 		RemoteUI rui = new RemoteUI(sess);
-		rui.run(p);
+		rui.run(p.newui(sess));
 	    }
 	} catch(InterruptedException e) {
 	} finally {

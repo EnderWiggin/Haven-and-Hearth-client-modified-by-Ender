@@ -9,7 +9,7 @@ import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 
 @SuppressWarnings("serial")
-public class HavenPanel extends GLCanvas implements Runnable, Graphical {
+public class HavenPanel extends GLCanvas implements Runnable {
     UI ui;
     boolean inited = false, rdr = false;
     int w, h;
@@ -62,7 +62,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
 	
     public void init() {
 	setFocusTraversalKeysEnabled(false);
-	ui = new UI(new Coord(w, h), this, null);
+	ui = new UI(new Coord(w, h), null);
 	addKeyListener(new KeyAdapter() {
 		public void keyTyped(KeyEvent e) {
 		    checkfs();
@@ -174,7 +174,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Graphical {
     }
     
     UI newui(Session sess) {
-	ui = new UI(new Coord(w, h), this, sess);
+	ui = new UI(new Coord(w, h), sess);
 	ui.root.gprof = prof;
 	ui.fsm = this.fsm;
 	return(ui);

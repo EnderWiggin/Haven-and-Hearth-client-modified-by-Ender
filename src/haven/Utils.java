@@ -3,10 +3,7 @@ package haven;
 import java.awt.RenderingHints;
 import java.io.*;
 import java.util.prefs.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -91,7 +88,7 @@ public class Utils {
 	g.drawString(text, (int)(c.x - ts.getWidth() * ax), (int)(c.y + m.getAscent() - ts.getHeight() * ay));
     }
 	
-    static ThreadGroup tg() {
+    public static ThreadGroup tg() {
 	return(Thread.currentThread().getThreadGroup());
     }
 
@@ -237,7 +234,7 @@ public class Utils {
 	return(ret);
     }
 	
-    static String[] splitwords(String text) {
+    public static String[] splitwords(String text) {
 	ArrayList<String> words = new ArrayList<String>();
 	StringBuilder buf = new StringBuilder();
 	String st = "ws";
@@ -292,6 +289,21 @@ public class Utils {
 	return(words.toArray(new String[0]));
     }
 	
+    public static String[] splitlines(String text) {
+	ArrayList<String> ret = new ArrayList<String>();
+	int p = 0;
+	while(true) {
+	    int p2 = text.indexOf('\n', p);
+	    if(p2 < 0) {
+		ret.add(text.substring(p));
+		break;
+	    }
+	    ret.add(text.substring(p, p2));
+	    p = p2 + 1;
+	}
+	return(ret.toArray(new String[0]));
+    }
+
     static int atoi(String a) {
 	try {
 	    return(Integer.parseInt(a));
@@ -311,5 +323,35 @@ public class Utils {
 		return(Arrays.copyOf(buf, off));
 	    off += ret;
 	}
+    }
+    
+    private static void dumptg(ThreadGroup tg, PrintWriter out, int indent) {
+	for(int o = 0; o < indent; o++)
+	    out.print("\t");
+	out.println("G: \"" + tg.getName() + "\"");
+	Thread[] ths = new Thread[tg.activeCount() * 2];
+	ThreadGroup[] tgs = new ThreadGroup[tg.activeGroupCount() * 2];
+	int nt = tg.enumerate(ths, false);
+	int ng = tg.enumerate(tgs, false);
+	for(int i = 0; i < nt; i++) {
+	    Thread ct = ths[i];
+	    for(int o = 0; o < indent + 1; o++)
+		out.print("\t");
+	    out.println("T: \"" + ct.getName() + "\"");
+	}
+	for(int i = 0; i < ng; i++) {
+	    ThreadGroup cg = tgs[i];
+	    dumptg(cg, out, indent + 1);
+	}
+    }
+
+    public static void dumptg(ThreadGroup tg, PrintWriter out) {
+	if(tg == null) {
+	    tg = tg();
+	    while(tg.getParent() != null)
+		tg = tg.getParent();
+	}
+	dumptg(tg, out, 0);
+	out.flush();
     }
 }

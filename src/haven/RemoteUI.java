@@ -17,8 +17,8 @@ public class RemoteUI implements UI.Receiver {
 		sess.queuemsg(msg);
 	}
 	
-	public void run(HavenPanel hp) throws InterruptedException {
-		ui = hp.newui(sess);
+	public void run(UI ui) throws InterruptedException {
+		this.ui = ui;
 		ui.setreceiver(this);
 		while(sess.alive()) {
 			Message msg;

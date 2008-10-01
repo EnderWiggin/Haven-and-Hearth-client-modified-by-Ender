@@ -5,8 +5,8 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 
 public class Listbox extends Widget {
-	List<Option> opts;
-	int chosen;
+	public List<Option> opts;
+	public int chosen;
 	
 	static {
 		Widget.addtype("lb", new WidgetFactory() {
@@ -19,8 +19,8 @@ public class Listbox extends Widget {
 		});
 	}
 
-	static class Option {
-		String name, disp;
+	public static class Option {
+		public String name, disp;
 		int y1, y2;
 		
 		public Option(String name, String disp) {

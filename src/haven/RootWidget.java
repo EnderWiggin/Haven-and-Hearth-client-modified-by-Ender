@@ -4,14 +4,12 @@ import java.awt.GraphicsConfiguration;
 import java.awt.event.KeyEvent;
 
 public class RootWidget extends Widget {
-    Graphical backer;
     Logout logout = null;
     Profile gprof;
     boolean afk = false;
 	
-    public RootWidget(UI ui, Coord sz, Graphical backer) {
+    public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
-	this.backer = backer;
 	setfocusctl(true);
 	cursor = Resource.load("gfx/hud/curs/arw");
     }
@@ -44,10 +42,6 @@ public class RootWidget extends Widget {
 	return(true);
     }
 
-    public GraphicsConfiguration getconf() {
-	return(backer.getconf());
-    }
-	
     public void draw(GOut g) {
 	super.draw(g);
 	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {

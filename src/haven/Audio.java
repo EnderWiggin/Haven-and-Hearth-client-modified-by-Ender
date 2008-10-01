@@ -5,6 +5,7 @@ import java.io.InputStream;
 import javax.sound.sampled.*;
 
 public class Audio {
+    public static boolean enabled = true;
     private static Thread player;
     public static final AudioFormat fmt = new AudioFormat(44100, 16, 2, true, false);
     private static Collection<CS> ncl = new LinkedList<CS>();
@@ -168,9 +169,13 @@ public class Audio {
     }
 
     private static synchronized void ckpl() {
-	if(player == null) {
-	    player = new Player();
-	    player.start();
+	if(enabled) {
+	    if(player == null) {
+		player = new Player();
+		player.start();
+	    }
+	} else {
+	    ncl.clear();
 	}
     }
     
@@ -228,7 +233,7 @@ public class Audio {
 	try {
 	    cs = AudioSystem.getAudioInputStream(fmt, AudioSystem.getAudioInputStream(in));
 	} catch(UnsupportedAudioFileException e) {
-	    throw(new java.io.IOException(e));
+	    throw(new java.io.IOException("Unsupported audio encoding"));
 	}
 	java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
 	byte[] bbuf = new byte[65536];

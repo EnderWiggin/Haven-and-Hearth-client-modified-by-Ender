@@ -6,7 +6,7 @@ import java.awt.event.KeyEvent;
 
 import java.awt.GraphicsConfiguration;
 
-public class Widget implements Graphical {
+public class Widget {
     public UI ui;
     public Coord c, sz;
     public Widget next, prev, child, lchild, parent;
@@ -404,10 +404,6 @@ public class Widget implements Graphical {
 	    unlink();
 	    link();
 	}
-    }
-	
-    public GraphicsConfiguration getconf() {
-	return(parent.getconf());
     }
 	
     public <T extends Widget> T findchild(Class<T> cl) {

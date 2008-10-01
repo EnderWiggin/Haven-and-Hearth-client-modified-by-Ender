@@ -13,7 +13,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
     private static Loader loader = new Loader(new JarSource());
     private static CacheSource prscache;
-    static ThreadGroup loadergroup = null;
+    public static ThreadGroup loadergroup = null;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
     static Set<String> loadwaited = new HashSet<String>();
     static Set<String> allused = new HashSet<String>();
