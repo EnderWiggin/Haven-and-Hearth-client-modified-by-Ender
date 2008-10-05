@@ -20,7 +20,7 @@ public class I2<T> implements Iterator<T> {
 	
     private void f() {
 	while(true) {
-	    if(cur.hasNext()) {
+	    if((cur != null) && cur.hasNext()) {
 		co = cur.next();
 		hco = true;
 		return;
