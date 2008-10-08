@@ -200,14 +200,17 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	    g.atext(String.format("Mem: %010d/%010d/%010d/%010d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
 	    g.atext(String.format("LCache: %d/%d", Layered.cache.size(), Layered.cache.cached()), new Coord(10, 485), 0, 1);
 	}
-	if(ui.tooltip != null) {
+        Object tooltip = ui.tooltip;
+        if(tooltip == null)
+            tooltip = ui.tooltipat(mousepos);
+	if(tooltip != null) {
 	    Tex tt = null;
-	    if(ui.tooltip instanceof Text) {
-		tt = ((Text)ui.tooltip).tex();
-	    } else if(ui.tooltip instanceof Tex) {
-		tt = (Tex)ui.tooltip;
-	    } else if(ui.tooltip instanceof String) {
-		tt = (Text.render((String)ui.tooltip)).tex();
+	    if(tooltip instanceof Text) {
+		tt = ((Text)tooltip).tex();
+	    } else if(tooltip instanceof Tex) {
+		tt = (Tex)tooltip;
+	    } else if(tooltip instanceof String) {
+		tt = (Text.render((String)tooltip)).tex();
 	    }
 	    Coord sz = tt.sz();
 	    Coord pos = mousepos.add(sz.inv());

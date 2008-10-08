@@ -47,6 +47,14 @@ public class Avaview extends Widget {
                 this.myown = new AvaRender(rl);
         }
 	
+        public void uimsg(String msg, Object... args) {
+                if(msg == "upd") {
+                    this.avagob = (Integer)args[0];
+                    return;
+                }
+                super.uimsg(msg, args);
+        }
+        
 	public void draw(GOut g) {
                 AvaRender ar = null;
                 if(myown != null) {

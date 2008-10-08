@@ -205,4 +205,22 @@ public class UI {
 	else
 	    mousegrab.mousewheel(wdgxlate(c, mousegrab), amount);
     }
+    
+    private Object tooltipat(Widget w, Coord c) {
+        for(Widget ch = w.lchild; ch != null; ch = ch.prev) {
+	    if(!ch.visible)
+		continue;
+	    Coord cc = w.xlate(ch.c, true);
+	    Object tt = tooltipat(ch, c.add(cc.inv()));
+            if(tt != null)
+                return(tt);
+        }
+        if(c.isect(Coord.z, w.sz))
+            return(w.tooltip);
+        return(null);
+    }
+    
+    public Object tooltipat(Coord c) {
+        return(tooltipat(root, c));
+    }
 }

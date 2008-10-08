@@ -40,11 +40,16 @@ public class Skillwindow extends Window {
 			Coord cp = new Coord(5, 16);
 			for(Object resnmcp : args) {
 				String resnm = (String)resnmcp;
-				BufferedImage oski = Resource.loadimg("gfx/hud/skills/" + resnm);
+                                Resource sres = Resource.load("gfx/hud/skills/" + resnm);
+                                sres.loadwait();
+				BufferedImage oski = sres.layer(Resource.imgc).img;
 				BufferedImage ski = TexI.mkbuf(sksz);
 				Graphics g = ski.getGraphics();
 				g.drawImage(oski, 0, 0, sksz.x, sksz.y, null);
-				psk.add(new Img(new Coord(cp), new TexI(ski), this));
+                                Img ni = new Img(new Coord(cp), new TexI(ski), this);
+                                if(sres.layer(Resource.tooltip) != null)
+                                    ni.tooltip = sres.layer(Resource.tooltip).t;
+				psk.add(ni);
 				if((cp.x += sksz.x + 2) > sz.x - sksz.x) {
 					cp.y += sksz.y + 2;
 					cp.x = 5;
@@ -59,7 +64,9 @@ public class Skillwindow extends Window {
 			Coord cp = new Coord(5, 116);
 			for(Object resnmcp : args) {
 				String resnm = (String)resnmcp;
-				BufferedImage oski = Resource.loadimg("gfx/hud/skills/" + resnm);
+                                Resource sres = Resource.load("gfx/hud/skills/" + resnm);
+                                sres.loadwait();
+				BufferedImage oski = sres.layer(Resource.imgc).img;
 				BufferedImage ski = TexI.mkbuf(sksz);
 				Graphics g = ski.getGraphics();
 				g.drawImage(oski, 0, 0, sksz.x, sksz.y, null);
@@ -71,6 +78,8 @@ public class Skillwindow extends Window {
 						return(true);
 					}
 				});
+                                if(sres.layer(Resource.tooltip) != null)
+                                    key.tooltip = sres.layer(Resource.tooltip).t;
 				skillz.put(key, resnm);
 				if((cp.x += sksz.x + 2) > sz.x - sksz.x) {
 					cp.y += sksz.y + 2;

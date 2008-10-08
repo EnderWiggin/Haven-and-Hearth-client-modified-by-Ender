@@ -15,6 +15,7 @@ public class Widget {
     boolean canactivate = false, cancancel = false;
     Widget focused;
     public Resource cursor = null;
+    public Object tooltip = null;
     static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
     static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 			       Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
@@ -22,7 +23,7 @@ public class Widget {
 			       Skillwindow.class, Archwindow.class, Cal.class, Avaview.class, NpcChat.class,
 			       Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
 			       MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
-			       MapMod.class, ISBox.class};
+			       MapMod.class, ISBox.class, ComMeter.class, Fightview.class};
 	
     static {
 	addtype("cnt", new WidgetFactory() {
