@@ -138,6 +138,22 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	WebBrowser.self = JnlpBrowser.create();
     }
 
+    private static void javabughack() throws InterruptedException {
+	/* Work around a stupid deadlock bug in AWT. */
+	try {
+	    javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+		    public void run() {
+			java.io.PrintStream bitbucket = new java.io.PrintStream(new java.io.ByteArrayOutputStream());
+			bitbucket.print(LoginScreen.textf);
+			bitbucket.print(LoginScreen.textfs);
+		    }
+		});
+	} catch(java.lang.reflect.InvocationTargetException e) {
+	    /* Oh, how I love Swing! */
+	    throw(new Error(e));
+	}
+    }
+
     private static void main2() {
 	ThreadGroup g = Utils.tg();
 	Resource.loadergroup = g;
@@ -180,6 +196,11 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
 	Thread main = new Thread(g, new Runnable() {
 		public void run() {
+		    try {
+			javabughack();
+		    } catch(InterruptedException e) {
+			return;
+		    }
 		    main2();
 		}
 	    }, "Haven main thread");
