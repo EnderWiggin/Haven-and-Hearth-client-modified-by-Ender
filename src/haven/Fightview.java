@@ -36,10 +36,13 @@ public class Fightview extends Widget {
     public void draw(GOut g) {
         int y = 0;
         for(Relation rel : lsrel) {
-            if(rel.gobid == curign)
+            if(rel.gobid == curign) {
+		rel.ava.visible = false;
                 continue;
+	    }
             g.image(bg, new Coord(0, y));
             rel.ava.c = new Coord(10, ((bg.sz().y - rel.ava.sz.y) / 2) + y);
+	    rel.ava.visible = true;
             g.text(String.format("%d %d", rel.bal, rel.intns), new Coord(50, y + 10));
             y += bg.sz().y + ymarg;
         }
