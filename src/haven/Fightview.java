@@ -14,11 +14,27 @@ public class Fightview extends Widget {
         int gobid;
         int bal, intns;
         Avaview ava;
+	GiveButton give;
         
         public Relation(int gobid) {
             this.gobid = gobid;
             this.ava = new Avaview(Coord.z, Fightview.this, gobid, avasz);
+	    this.give = new GiveButton(Coord.z, Fightview.this, 0, new Coord(15, 15));
         }
+	
+	public void give(int state) {
+	    this.give.state = state;
+	}
+	
+	public void show(boolean state) {
+	    ava.visible = state;
+	    give.visible = state;
+	}
+	
+	public void remove() {
+	    ui.destroy(ava);
+	    ui.destroy(give);
+	}
     }
     
     static {
@@ -37,13 +53,14 @@ public class Fightview extends Widget {
         int y = 0;
         for(Relation rel : lsrel) {
             if(rel.gobid == curign) {
-		rel.ava.visible = false;
+		rel.show(false);
                 continue;
 	    }
             g.image(bg, new Coord(0, y));
-            rel.ava.c = new Coord(10, ((bg.sz().y - rel.ava.sz.y) / 2) + y);
-	    rel.ava.visible = true;
-            g.text(String.format("%d %d", rel.bal, rel.intns), new Coord(50, y + 10));
+            rel.ava.c = new Coord(25, ((bg.sz().y - rel.ava.sz.y) / 2) + y);
+	    rel.give.c = new Coord(5, 4 + y);
+	    rel.show(true);
+            g.text(String.format("%d %d", rel.bal, rel.intns), new Coord(65, y + 10));
             y += bg.sz().y + ymarg;
         }
         super.draw(g);
@@ -74,6 +91,13 @@ public class Fightview extends Widget {
             }
             return;
         }
+	if(sender instanceof GiveButton) {
+            for(Relation rel : lsrel) {
+                if(rel.give == sender)
+                    wdgmsg("give", rel.gobid, args[0]);
+            }
+            return;
+	}
         super.wdgmsg(sender, msg, args);
     }
     
@@ -82,16 +106,19 @@ public class Fightview extends Widget {
             Relation rel = new Relation((Integer)args[0]);
             rel.bal = (Integer)args[1];
             rel.intns = (Integer)args[2];
+	    rel.give((Integer)args[3]);
             lsrel.addFirst(rel);
             return;
         } else if(msg == "del") {
             Relation rel = getrel((Integer)args[0]);
+	    rel.remove();
             lsrel.remove(rel);
             return;
         } else if(msg == "upd") {
             Relation rel = getrel((Integer)args[0]);
             rel.bal = (Integer)args[1];
             rel.intns = (Integer)args[2];
+	    rel.give((Integer)args[3]);
             return;
         } else if(msg == "bump") {
             try {

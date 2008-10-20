@@ -23,7 +23,8 @@ public class Widget {
 			       Skillwindow.class, Archwindow.class, Cal.class, Avaview.class, NpcChat.class,
 			       Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
 			       MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
-			       MapMod.class, ISBox.class, ComMeter.class, Fightview.class, IMeter.class};
+			       MapMod.class, ISBox.class, ComMeter.class, Fightview.class, IMeter.class,
+			       GiveButton.class};
 	
     static {
 	addtype("cnt", new WidgetFactory() {
