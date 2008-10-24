@@ -8,7 +8,6 @@ import java.util.*;
 import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 
-@SuppressWarnings("serial")
 public class HavenPanel extends GLCanvas implements Runnable {
     UI ui;
     boolean inited = false, rdr = false;
