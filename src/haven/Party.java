@@ -82,11 +82,16 @@ public class Party {
 				leader = memb.get(lid);
 				setlc();
 			} else if(type == PD_LEADER) {
-				leader = memb.get(msg.int32());
-				setlc();
+				Member m = memb.get(msg.int32());
+				if(m != null) {
+					leader = m;
+					setlc();
+				}
 			} else if(type == PD_MEMBER) {
 				Member m = memb.get(msg.int32());
-				m.c = msg.coord();
+				Coord c = msg.coord();
+				if(m != null)
+					m.c = c;
 			}
 		}
 	}
