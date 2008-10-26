@@ -24,7 +24,7 @@ public class Widget {
 			       Label.class, Tome.class, Progress.class, VMeter.class, Partyview.class,
 			       MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
 			       MapMod.class, ISBox.class, ComMeter.class, Fightview.class, IMeter.class,
-			       GiveButton.class};
+			       GiveButton.class, Charlist.class};
 	
     static {
 	addtype("cnt", new WidgetFactory() {
