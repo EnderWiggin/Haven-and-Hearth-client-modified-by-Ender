@@ -21,13 +21,17 @@ public class MapView extends Widget implements DTarget {
     Collection<Gob> plob = null;
     boolean plontile;
     int plrad = 0;
+    int playergob = -1;
+    Coord mousemoveorig = null;
+    Coord mousemoveorigmc = null;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
+    public static final Coord mapborder = new Coord(250, 150);
 	
     static {
 	Widget.addtype("mapview", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new MapView(c, (Coord)args[0], parent, (Coord)args[1]));
+		    return(new MapView(c, (Coord)args[0], parent, (Coord)args[1], (Integer)args[2]));
 		}
 	    });
 	olc[0] = new Color(255, 0, 128);
@@ -47,10 +51,11 @@ public class MapView extends Widget implements DTarget {
     @SuppressWarnings("serial")
 	private class Loading extends RuntimeException {}
 	
-    public MapView(Coord c, Coord sz, Widget parent, Coord mc) {
+    public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
 	super(c, sz, parent);
 	mask = new ILM(sz);
 	this.mc = mc;
+	this.playergob = playergob;
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
@@ -93,6 +98,9 @@ public class MapView extends Widget implements DTarget {
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
 	    grab.mmousedown(mc, button);
+	} else if(button == 2) {
+	    mousemoveorig = c;
+	    mousemoveorigmc = null;
 	} else if(plob != null) {
 	    Gob gob = null;
 	    for(Gob g : plob)
@@ -100,9 +108,9 @@ public class MapView extends Widget implements DTarget {
 	    wdgmsg("place", gob.rc, button);
 	} else {
 	    if(hit == null)
-		wdgmsg("click", c, mc, button);
+		wdgmsg("click", c, mc, button, ui.modflags());
 	    else
-		wdgmsg("click", c, mc, button, hit.gob.id, hit.gob.getc());
+		wdgmsg("click", c, mc, button, ui.modflags(), hit.gob.id, hit.gob.getc());
 	}
 	return(true);
     }
@@ -113,7 +121,13 @@ public class MapView extends Widget implements DTarget {
 	    grab.mmouseup(mc, button);
 	    return(true);
 	} else {
-	    return(false);
+	    if((button == 2) && (mousemoveorig != null)) {
+		Coord off = c.add(mousemoveorig.inv());
+		if(mousemoveorigmc == null)
+		    this.mc = mc;
+		mousemoveorig = null;
+	    }
+	    return(true);
 	}
     }
 	
@@ -123,6 +137,12 @@ public class MapView extends Widget implements DTarget {
 	Collection<Gob> plob = this.plob;
 	if(grab != null) {
 	    grab.mmousemove(mc);
+	} else if(mousemoveorig != null) {
+	    Coord off = c.add(mousemoveorig.inv());
+	    if((mousemoveorigmc == null) && ((Math.abs(off.x) > 5) || (Math.abs(off.y) > 5)))
+		mousemoveorigmc = this.mc;
+	    if(mousemoveorigmc != null)
+		this.mc = mousemoveorigmc.add(s2m(off).inv());
 	} else if(plob != null) {
 	    synchronized(plob) {
 		Gob gob = null;
@@ -449,13 +469,38 @@ public class MapView extends Widget implements DTarget {
 	}
     }
 	
+    private void checkmappos() {
+	Coord oc = m2s(mc).inv();
+	Gob player = glob.oc.getgob(playergob);
+	int bt = -((sz.y / 2) - mapborder.y);
+	int bb = (sz.y / 2) - mapborder.y;
+	int bl = -((sz.x / 2) - mapborder.x);
+	int br = (sz.x / 2) - mapborder.x;
+	SlenHud slen = ui.root.findchild(SlenHud.class);
+	if(slen != null)
+	    bb -= slen.foldheight();
+	if(player != null) {
+	    Coord sc = m2s(player.getc()).add(oc);
+	    if(sc.x < bl)
+		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
+	    if(sc.x > br)
+		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
+	    if(sc.y < bt)
+		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
+	    if(sc.y > bb)
+		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
+	}
+    }
+
     public void draw(GOut g) {
-	Coord gc = mc.div(tilesz).div(cmaps);
-	for(int y = -1; y <= 1; y++) {
-	    for(int x = -1; x <= 1; x++) {
-		Coord cgc = gc.add(new Coord(x, y));
+	checkmappos();
+	Coord requl = mc.add(-500, -500).div(tilesz).div(cmaps);
+	Coord reqbr = mc.add(500, 500).div(tilesz).div(cmaps);
+	Coord cgc = new Coord(0, 0);
+	for(cgc.y = requl.y; cgc.y <= reqbr.y; cgc.y++) {
+	    for(cgc.x = requl.x; cgc.x <= reqbr.x; cgc.x++) {
 		if(map.grids.get(cgc) == null)
-		    map.request(cgc);
+		    map.request(new Coord(cgc));
 	    }
 	}
 	if((olftimer != 0) && (olftimer < System.currentTimeMillis()))

@@ -10,7 +10,7 @@ public class MenuGrid extends Widget {
     public final static Coord bgsz = bg.sz().add(-1, -1);
     public final static Resource bk = Resource.load("gfx/hud/sc-back");
     private static Coord gsz = new Coord(4, 4);
-    private Resource cur, pressed, layout[][] = new Resource[gsz.x][gsz.y];
+    private Resource cur, pressed, dragging, layout[][] = new Resource[gsz.x][gsz.y];
     private Map<Character, Resource> hotmap = new TreeMap<Character, Resource>();
     private Resource hover = null;
 	
@@ -110,6 +110,14 @@ public class MenuGrid extends Widget {
 		tt += " [" + ad.hk + "]";
 	    ui.tooltip = tt;
 	}
+	if(dragging != null) {
+	    final Tex dt = dragging.layer(Resource.imgc).tex();
+	    ui.drawafter(new UI.AfterDraw() {
+		    public void draw(GOut g) {
+			g.image(dt, ui.mc.add(dt.sz().div(2).inv()));
+		    }
+		});
+	}
     }
 	
     private Resource bhit(Coord c) {
@@ -138,6 +146,11 @@ public class MenuGrid extends Widget {
 	
     public void mousemove(Coord c) {
 	updhover(c);
+	if((dragging == null) && (pressed != null)) {
+	    Resource h = bhit(c);
+	    if(h != pressed)
+		dragging = pressed;
+	}
     }
 	
     private void use(Resource r) {
@@ -152,11 +165,16 @@ public class MenuGrid extends Widget {
 	
     public boolean mouseup(Coord c, int button) {
 	Resource h = bhit(c);
-	if((pressed != null) && (button == 1)) {
-	    if(pressed == h)
-		use(h);
+	if(button == 1) {
+	    if(dragging != null) {
+		ui.dropthing(ui.root, ui.mc, dragging);
+		dragging = pressed = null;
+	    } else if(pressed != null) {
+		if(pressed == h)
+		    use(h);
+		pressed = null;
+	    }
 	    ui.grabmouse(null);
-	    pressed = null;
 	}
 	updlayout();
 	updhover(c);

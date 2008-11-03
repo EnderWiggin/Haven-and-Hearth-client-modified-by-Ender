@@ -13,6 +13,7 @@ public class GOut {
 	
     private static class Shared {
 	int curtex = -1;
+	GOut root;
     }
 	
     private GOut(GOut o) {
@@ -30,6 +31,7 @@ public class GOut {
 	this.sz = sz;
 	this.ctx = ctx;
 	this.sh = new Shared();
+	this.sh.root = this;
     }
     
     private void checkerr() {
@@ -43,6 +45,10 @@ public class GOut {
 		     (float)color.getGreen() / 255.0f,
 		     (float)color.getBlue() / 255.0f,
 		     (float)color.getAlpha() / 255.0f);
+    }
+
+    public GOut root() {
+	return(sh.root);
     }
 
     public void image(BufferedImage img, Coord c) {
