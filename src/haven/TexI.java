@@ -15,6 +15,7 @@ public class TexI extends TexGL {
 	public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 	protected byte[] pixels;
 	public BufferedImage back;
+	private int fmt = GL.GL_RGBA;
 
 	public TexI(BufferedImage img) {
 		super(Utils.imgsz(img));
@@ -26,11 +27,11 @@ public class TexI extends TexGL {
 		super(sz);
 		pixels = new byte[tdim.x * tdim.y * 4];
 	}
-
+    
 	protected void fill(GOut g) {
 		GL gl = g.gl;
 		ByteBuffer data = ByteBuffer.wrap(pixels);
-		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+		gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, fmt, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
 	}
 	
 	protected void update(byte[] n) {
@@ -42,6 +43,13 @@ public class TexI extends TexGL {
 	
 	public int getRGB(Coord c) {
 		return(back.getRGB(c.x, c.y));
+	}
+	
+	public TexI mkmask() {
+		TexI n = new TexI(dim);
+		n.pixels = java.util.Arrays.copyOf(pixels, pixels.length);
+		n.fmt = GL.GL_ALPHA;
+		return(n);
 	}
 	
 	public static BufferedImage mkbuf(Coord sz) {

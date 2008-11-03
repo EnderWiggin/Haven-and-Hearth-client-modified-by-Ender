@@ -38,10 +38,10 @@ public class Gob {
     }
 	
     public void ctick(int dt) {
-	dt += initdelay;
+	int dt2 = dt + initdelay;
 	initdelay = 0;
 	for(GAttrib a : attr.values())
-	    a.ctick(dt);
+	    a.ctick(dt2);
 	for(Map.Entry<Integer, Overlay> e : olprep.entrySet()) {
 	    if(e.getValue() == null)
 		continue;

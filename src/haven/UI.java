@@ -17,9 +17,14 @@ public class UI {
     public Widget mouseon;
     public Object tooltip = null;
     public FSMan fsm;
+    private Collection<AfterDraw> afterdraws = null;
 	
     public interface Receiver {
 	public void rcvmsg(int widget, String msg, Object... args);
+    }
+    
+    public interface AfterDraw {
+	public void draw(GOut g);
     }
 	
     @SuppressWarnings("serial")
@@ -48,6 +53,23 @@ public class UI {
     public void bind(Widget w, int id) {
 	widgets.put(id, w);
 	rwidgets.put(w, id);
+    }
+    
+    public void drawafter(AfterDraw ad) {
+	synchronized(afterdraws) {
+	    afterdraws.add(ad);
+	}
+    }
+
+    public void draw(GOut g) {
+	afterdraws = new LinkedList<AfterDraw>();
+	root.draw(g);
+	synchronized(afterdraws) {
+	    for(AfterDraw ad : afterdraws) {
+		ad.draw(g);
+	    }
+	}
+	afterdraws = null;
     }
 	
     public void newwidget(int id, String type, Coord c, int parent, Object... args) throws InterruptedException {
@@ -174,6 +196,21 @@ public class UI {
 	return(c.add(wdg.c.inv()).add(wdg.parent.rootpos().inv()));
     }
 	
+    public boolean dropthing(Widget w, Coord c, Object thing) {
+	if(w instanceof DropTarget) {
+	    if(((DropTarget)w).dropthing(c, thing))
+		return(true);
+	}
+	for(Widget wdg = w.lchild; wdg != null; wdg = wdg.prev) {
+	    Coord cc = w.xlate(wdg.c, true);
+	    if(c.isect(cc, wdg.sz)) {
+		if(dropthing(wdg, c.add(cc.inv()), thing))
+		    return(true);
+	    }
+	}
+	return(false);
+    }
+
     public void mousedown(Coord c, int button) {
 	lcc = mc = c;
 	if(mousegrab == null)
@@ -222,5 +259,12 @@ public class UI {
     
     public Object tooltipat(Coord c) {
         return(tooltipat(root, c));
+    }
+    
+    public int modflags() {
+	return((modshift?1:0) |
+	       (modctrl?2:0) |
+	       (modmeta?4:0) |
+	       (modsuper?8:0));
     }
 }

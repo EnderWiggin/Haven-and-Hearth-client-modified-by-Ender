@@ -22,7 +22,8 @@ public class ComMeter extends Widget {
     
     public void draw(GOut g) {
         g.image(sword, Coord.z);
-        g.image(scales[bal + 5], Coord.z);
+        g.image(scales[(-bal) + 5], Coord.z);
+	g.atext(String.format("%d", intns), sword.sz().div(new Coord(2, 1)), 0.5, 1);
     }
     
     public void uimsg(String msg, Object... args) {

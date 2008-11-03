@@ -7,6 +7,7 @@ public class Avaview extends Widget {
     public static final Coord dasz = new Coord(74, 74);
     private Coord asz;
     int avagob;
+    boolean none = false;
     AvaRender myown = null;
     public Color color = Color.WHITE;
     public static final Coord unborder = new Coord(2, 2);
@@ -44,7 +45,10 @@ public class Avaview extends Widget {
         
     public Avaview(Coord c, Widget parent, List<Indir<Resource>> rl) {
 	this(c, parent, dasz);
-	this.myown = new AvaRender(rl);
+	if(rl.size() == 0)
+	    none = true;
+	else
+	    this.myown = new AvaRender(rl);
     }
 	
     public void uimsg(String msg, Object... args) {
@@ -57,7 +61,8 @@ public class Avaview extends Widget {
         
     public void draw(GOut g) {
 	AvaRender ar = null;
-	if(myown != null) {
+	if(none) {
+	} else if(myown != null) {
 	    ar = myown;
 	} else {
 	    Gob gob = ui.sess.glob.oc.getgob(avagob);

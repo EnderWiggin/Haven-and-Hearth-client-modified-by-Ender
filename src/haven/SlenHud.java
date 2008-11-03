@@ -3,13 +3,16 @@ package haven;
 import java.util.*;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import static haven.Inventory.invsq;
 
-public class SlenHud extends Widget {
+public class SlenHud extends Widget implements DropTarget {
     public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
     public static final Coord fc = new Coord(96, -29);
     public static final Coord mc = new Coord(316, -55);
+    public static final Coord bc1 = new Coord(147, -8);
+    public static final Coord bc2 = new Coord(485, -8);
     public static final Coord sz;
     int woff = 0;
     List<HWindow> wnds = new ArrayList<HWindow>();
@@ -23,6 +26,7 @@ public class SlenHud extends Widget {
     static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12), new Color(245, 222, 179));
     Text cmdtext, lasterr;
     long errtime;
+    Indir<Resource>[] belt = new Indir[10];
 	
     static {
 	Widget.addtype("slen", new WidgetFactory() {
@@ -175,11 +179,51 @@ public class SlenHud extends Widget {
 	errtime = System.currentTimeMillis();
     }
 	
+    private Coord beltc(int i) {
+	if(i < 5) {
+	    return(bc1.add(i * (invsq.sz().x + 2), 0));
+	} else {
+	    return(bc2.add((i - 5) * (invsq.sz().x + 2), 0));
+	}
+    }
+    
+    private int beltslot(Coord c) {
+	c = xlate(c, false);
+	int sw = invsq.sz().x + 2;
+	if((c.x >= bc1.x) && (c.y >= bc1.y) && (c.y < bc1.y + invsq.sz().y)) {
+	    if((c.x - bc1.x) / sw < 5) {
+		if((c.x - bc1.x) % sw < invsq.sz().x)
+		    return((c.x - bc1.x) / sw);
+	    }
+	}
+	if((c.x >= bc2.x) && (c.y >= bc2.y) && (c.y < bc2.y + invsq.sz().y)) {
+	    if((c.x - bc2.x) / sw < 5) {
+		if((c.x - bc2.x) % sw < invsq.sz().x)
+		    return(((c.x - bc2.x) / sw) + 5);
+	    }
+	}
+	return(-1);
+    }
+
     public void draw(GOut g) {
 	vc.tick();
 	Coord bgc = sz.add(bg.sz().inv());
 	g.image(bg, bgc);
 	super.draw(g);
+	
+	for(int i = 0; i < 10; i++) {
+	    Coord c = xlate(beltc(i), true);
+	    g.image(invsq, c);
+	    g.chcolor(156, 180, 158, 255);
+	    g.atext(Integer.toString((i + 1) % 10), c.add(invsq.sz()), 1, 1);
+	    g.chcolor();
+	    Resource res = null;
+	    if(belt[i] != null)
+		res = belt[i].get();
+	    if(res != null)
+		g.image(res.layer(Resource.imgc).tex(), c.add(1, 1));
+	}
+	
 	if(cmdline != null) {
 	    GOut eg = g.reclip(new Coord(0, -20), new Coord(sz.x, 20));
 	    if((cmdtext == null) || !cmdtext.text.equals(cmdline))
@@ -216,6 +260,12 @@ public class SlenHud extends Widget {
     public void uimsg(String msg, Object... args) {
 	if(msg == "err") {
 	    error((String)args[0]);
+	} else if(msg == "setbelt") {
+	    if(args.length < 2) {
+		belt[(Integer)args[0]] = null;
+	    } else {
+		belt[(Integer)args[0]] = ui.sess.getres((Integer)args[1]);
+	    }
 	} else {
 	    super.uimsg(msg, args);
 	}
@@ -297,6 +347,15 @@ public class SlenHud extends Widget {
 	updbtns();
     }
 	
+    public boolean mousedown(Coord c, int button) {
+	int slot = beltslot(c);
+	if(slot != -1) {
+	    wdgmsg("belt", slot, button, ui.modflags());
+	    return(true);
+	}
+	return(super.mousedown(c, button));
+    }
+
     public boolean mousewheel(Coord c, int amount) {
 	c = xlate(c, false);
 	if(c.isect(new Coord(134, 29), new Coord(100, 100))) {
@@ -314,6 +373,13 @@ public class SlenHud extends Widget {
 	} else if(ch == ':') {
 	    ui.grabkeys(this);
 	    cmdline = "";
+	    return(true);
+	} else if(ch == '0') {
+	    wdgmsg("belt", 9, 1, 0);
+	    return(true);
+	} else if((ch >= '1') && (ch <= '9')) {
+	    wdgmsg("belt", ch - '1', 1, 0);
+	    return(true);
 	}
 	return(super.globtype(ch, ev));
     }
@@ -345,5 +411,28 @@ public class SlenHud extends Widget {
 	    }
 	    return(true);
 	}
+    }
+    
+    public int foldheight() {
+	return(600 - c.y);
+    }
+    
+    public boolean dropthing(Coord c, Object thing) {
+	int slot = beltslot(c);
+	if(slot != -1) {
+	    if(thing instanceof Resource) {
+		Resource res = (Resource)thing;
+		if(res.layer(Resource.action) != null) {
+		    wdgmsg("setbelt", slot, res.name);
+		    return(true);
+		}
+	    }
+	    if(thing instanceof Item) {
+		Item item = (Item)thing;
+		item.wdgmsg("dragact");
+		wdgmsg("setbelt", slot, 0);
+	    }
+	}
+	return(false);
     }
 }

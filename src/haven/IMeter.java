@@ -44,13 +44,14 @@ public class IMeter extends Widget {
 	    g.chcolor(0, 0, 0, 255);
 	    g.frect(off, msz);
 	    g.chcolor();
-	    g.image(bg, Coord.z);
 	    for(Meter m : meters) {
 		int w = msz.x;
 		w = (w * m.a) / 100;
 		g.chcolor(m.c);
 		g.frect(off, new Coord(w, msz.y));
 	    }
+	    g.chcolor();
+	    g.image(bg, Coord.z);
 	}
     }
     

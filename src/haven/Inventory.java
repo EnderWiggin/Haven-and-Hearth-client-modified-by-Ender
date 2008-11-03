@@ -1,7 +1,7 @@
 package haven;
 
 public class Inventory extends Widget implements DTarget {
-	Tex invsq;
+	public static Tex invsq = Resource.loadtex("gfx/hud/invsq");
 	Coord isz;
 
 	static {
@@ -24,9 +24,8 @@ public class Inventory extends Widget implements DTarget {
 	}
 	
 	public Inventory(Coord c, Coord sz, Widget parent) {
-		super(c, Utils.imgsz(Resource.loadimg("gfx/hud/invsq")).add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
+		super(c, invsq.sz().add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
 		isz = sz;
-		invsq = Resource.loadtex("gfx/hud/invsq");
 	}
 	
 	public boolean drop(Coord cc, Coord ul) {

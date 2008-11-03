@@ -185,7 +185,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	curf.tick("cls");
 	GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 	synchronized(ui) {
-	    ui.root.draw(g);
+	    ui.draw(g);
 	}
 	curf.tick("draw");
 	if(Utils.getprop("haven.dbtext", "off").equals("on")) {

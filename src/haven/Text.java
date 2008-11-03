@@ -50,6 +50,10 @@ public class Text {
 	public Foundry(Font f) {
 	    this(f, Color.WHITE);
 	}
+	
+	public Foundry(String font, int psz) {
+	    this(new Font(font, Font.PLAIN, psz));
+	}
 		
 	private Coord strsize(String text) {
 	    Rectangle2D b = m.getStringBounds(text, tmpl);
