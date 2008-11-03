@@ -196,7 +196,7 @@ public class SlenHud extends Widget implements DropTarget {
 		    return((c.x - bc1.x) / sw);
 	    }
 	}
-	if((c.x >= bc1.x) && (c.y >= bc2.y) && (c.y < bc2.y + invsq.sz().y)) {
+	if((c.x >= bc2.x) && (c.y >= bc2.y) && (c.y < bc2.y + invsq.sz().y)) {
 	    if((c.x - bc2.x) / sw < 5) {
 		if((c.x - bc2.x) % sw < invsq.sz().x)
 		    return(((c.x - bc2.x) / sw) + 5);
