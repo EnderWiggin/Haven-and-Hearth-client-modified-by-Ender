@@ -16,6 +16,10 @@ public class FreeSprite extends Sprite {
 			super(z);
 		}
 		
+		public SPart(int z, int subz) {
+			super(z, subz);
+		}
+		
 		protected Coord doff() {
 			return(doff);
 		}
