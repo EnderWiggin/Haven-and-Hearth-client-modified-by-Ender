@@ -10,7 +10,7 @@ public class Gob {
     public final Glob glob;
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
     Map<Integer, Overlay> olprep = new TreeMap<Integer, Overlay>();
-    Collection<Sprite> ols = new LinkedList<Sprite>();
+    public Collection<Sprite> ols = new LinkedList<Sprite>();
 	
     public static class Overlay {
 	Indir<Resource> res;

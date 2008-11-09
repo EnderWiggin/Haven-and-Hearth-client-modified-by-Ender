@@ -1,0 +1,4 @@
+#!/bin/sh
+
+CLASSPATH=build/haven.jar mkres "../res/$1.res" 1 "../ressrc/$1".*
+jar uf build/haven-res.jar -C ../ "res/$1.res"
