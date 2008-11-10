@@ -57,7 +57,7 @@ public class ComWin extends HWindow {
 	}
 	g.image(iptext.tex(), new Coord(200, 30));
 	for(int i = 0; i < ip; i++)
-	    g.image(iptex, new Coord(200 + iptext.sz().x + (i * 4), 30));
+	    g.image(iptex, new Coord(200 + iptext.sz().x + (i * 4), 32));
 	long now = System.currentTimeMillis();
 	if(now < atkc) {
 	    g.chcolor(255, 0, 128, 255);
