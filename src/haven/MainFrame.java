@@ -78,6 +78,18 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	    setwnd();
     }
 
+    private void seticon() {
+	Image icon;
+	try {
+	    java.io.InputStream data = MainFrame.class.getResourceAsStream("icon.png");
+	    icon = javax.imageio.ImageIO.read(data);
+	    data.close();
+	} catch(java.io.IOException e) {
+	    throw(new Error(e));
+	}
+	setIconImage(icon);
+    }
+
     public MainFrame(int w, int h) {
 	super("Haven and Hearth");
 	p = new HavenPanel(w, h);
@@ -86,6 +98,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	pack();
 	setResizable(false);
 	p.requestFocus();
+	seticon();
 	setVisible(true);
 	p.init();
     }
