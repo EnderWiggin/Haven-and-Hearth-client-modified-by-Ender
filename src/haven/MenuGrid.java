@@ -32,6 +32,8 @@ public class MenuGrid extends Widget {
 		for(Resource r : open.toArray(cp)) {
 		    if(!r.loading) {
 			AButton ad = r.layer(Resource.action);
+			if(ad == null)
+			    System.err.println(r);
 			if((ad.parent != null) && !ta.contains(ad.parent))
 			    open.add(ad.parent);
 			ta.add(r);
