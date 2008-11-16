@@ -40,8 +40,12 @@ public class Gob {
     public void ctick(int dt) {
 	int dt2 = dt + initdelay;
 	initdelay = 0;
-	for(GAttrib a : attr.values())
-	    a.ctick(dt2);
+	for(GAttrib a : attr.values()) {
+	    if(a instanceof Drawable)
+		a.ctick(dt2);
+	    else
+		a.ctick(dt);
+	}
 	for(Map.Entry<Integer, Overlay> e : olprep.entrySet()) {
 	    if(e.getValue() == null)
 		continue;
