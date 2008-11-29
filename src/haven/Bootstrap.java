@@ -8,6 +8,7 @@ public class Bootstrap implements UI.Receiver {
     Session sess;
     String address;
     Queue<Message> msgs = new LinkedList<Message>();
+    String inituser = null;
     byte[] initcookie = null;
 	
     public static class Message {
@@ -26,7 +27,8 @@ public class Bootstrap implements UI.Receiver {
 	address = "127.0.0.1";
     }
     
-    public void setinitcookie(byte[] cookie) {
+    public void setinitcookie(String username, byte[] cookie) {
+	inituser = username;
 	initcookie = cookie;
     }
 	
@@ -49,6 +51,7 @@ public class Bootstrap implements UI.Receiver {
 	retry: do {
 	    byte[] cookie;
 	    if(initcookie != null) {
+		username = inituser;
 		cookie = initcookie;
 		initcookie = null;
 	    } else if(token != null) {
