@@ -392,6 +392,41 @@ public class MapView extends Widget implements DTarget {
 	    curf.tick("sort");
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
+	    
+	    if(ui.modshift) {
+		g.chcolor(255, 0, 0, 128);
+		synchronized(glob.oc) {
+		    for(Gob gob : glob.oc) {
+			Drawable d = gob.getattr(Drawable.class);
+			Resource.Neg neg;
+			if(d instanceof ResDrawable) {
+			    ResDrawable rd = (ResDrawable)d;
+			    if(rd.spr == null)
+				continue;
+			    if(rd.spr.res == null)
+				continue;
+			    neg = rd.spr.res.layer(Resource.negc);
+			} else if(d instanceof Layered) {
+			    Layered lay = (Layered)d;
+			    if(lay.base.get() == null)
+				continue;
+			    neg = lay.base.get().layer(Resource.negc);
+			} else {
+			    continue;
+			}
+			if((neg.bs.x > 0) && (neg.bs.y > 0)) {
+			    Coord c1 = gob.getc().add(neg.bc);
+			    Coord c2 = gob.getc().add(neg.bc).add(neg.bs);
+			    g.frect(m2s(c1).add(oc),
+				    m2s(new Coord(c2.x, c1.y)).add(oc),
+				    m2s(c2).add(oc),
+				    m2s(new Coord(c1.x, c2.y)).add(oc));
+			}
+		    }
+		}
+		g.chcolor();
+	    }
+	    
 	    curf.tick("draw");
 	    mask.redraw(lumin);
 	    g.image(mask, Coord.z);
