@@ -236,14 +236,14 @@ public class HavenPanel extends GLCanvas implements Runnable {
 		    if(me.getID() == MouseEvent.MOUSE_PRESSED) {
 			if((me.getX() < 10) && (me.getY() < 10))
 			    throw(new RuntimeException("test"));
-			ui.mousedown(new Coord(me.getX(), me.getY()), me.getButton());
+			ui.mousedown(me, new Coord(me.getX(), me.getY()), me.getButton());
 		    } else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
-			ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
+			ui.mouseup(me, new Coord(me.getX(), me.getY()), me.getButton());
 		    } else if(me.getID() == MouseEvent.MOUSE_MOVED || me.getID() == MouseEvent.MOUSE_DRAGGED) {
 			mousepos = new Coord(me.getX(), me.getY());
-			ui.mousemove(mousepos);
+			ui.mousemove(me, mousepos);
 		    } else if(me instanceof MouseWheelEvent) {
-			ui.mousewheel(new Coord(me.getX(), me.getY()), ((MouseWheelEvent)me).getWheelRotation());
+			ui.mousewheel(me, new Coord(me.getX(), me.getY()), ((MouseWheelEvent)me).getWheelRotation());
 		    }
 		} else if(e instanceof KeyEvent) {
 		    KeyEvent ke = (KeyEvent)e;

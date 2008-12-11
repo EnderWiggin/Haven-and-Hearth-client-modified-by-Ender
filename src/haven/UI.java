@@ -2,6 +2,8 @@ package haven;
 
 import java.util.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.InputEvent;
 
 public class UI {
     public RootWidget root;
@@ -151,7 +153,18 @@ public class UI {
 	    throw(new UIException("Uimsg to non-existent widget " + id, msg, args));
     }
 	
+    private void setmods(InputEvent ev) {
+	int mod = ev.getModifiersEx();
+	modshift = (mod & InputEvent.SHIFT_DOWN_MASK) != 0;
+	modctrl = (mod & InputEvent.CTRL_DOWN_MASK) != 0;
+	modmeta = (mod & InputEvent.META_DOWN_MASK) != 0;
+	/*
+ 	modsuper = (mod & InputEvent.SUPER_DOWN_MASK) != 0;
+	*/
+    }
+
     public void type(KeyEvent ev) {
+	setmods(ev);
 	if(keygrab == null) {
 	    if(!root.type(ev.getKeyChar(), ev))
 		root.globtype(ev.getKeyChar(), ev);
@@ -161,14 +174,7 @@ public class UI {
     }
 	
     public void keydown(KeyEvent ev) {
-	if(ev.getKeyCode() == KeyEvent.VK_SHIFT)
-	    modshift = true;
-	else if(ev.getKeyCode() == KeyEvent.VK_CONTROL)
-	    modctrl = true;
-	if(ev.getKeyCode() == KeyEvent.VK_ALT)
-	    modmeta = true;
-	if(ev.getKeyCode() == KeyEvent.VK_WINDOWS)
-	    modsuper = true;
+	setmods(ev);
 	if(keygrab == null) {
 	    if(!root.keydown(ev))
 		root.globtype((char)0, ev);
@@ -178,14 +184,7 @@ public class UI {
     }
 	
     public void keyup(KeyEvent ev) {
-	if(ev.getKeyCode() == KeyEvent.VK_SHIFT)
-	    modshift = false;
-	else if(ev.getKeyCode() == KeyEvent.VK_CONTROL)
-	    modctrl = false;
-	if(ev.getKeyCode() == KeyEvent.VK_ALT)
-	    modmeta = false;
-	if(ev.getKeyCode() == KeyEvent.VK_WINDOWS)
-	    modsuper = false;
+	setmods(ev);
 	if(keygrab == null)
 	    root.keyup(ev);
 	else
@@ -211,7 +210,8 @@ public class UI {
 	return(false);
     }
 
-    public void mousedown(Coord c, int button) {
+    public void mousedown(MouseEvent ev, Coord c, int button) {
+	setmods(ev);
 	lcc = mc = c;
 	if(mousegrab == null)
 	    root.mousedown(c, button);
@@ -219,7 +219,8 @@ public class UI {
 	    mousegrab.mousedown(wdgxlate(c, mousegrab), button);
     }
 	
-    public void mouseup(Coord c, int button) {
+    public void mouseup(MouseEvent ev, Coord c, int button) {
+	setmods(ev);
 	mc = c;
 	if(mousegrab == null)
 	    root.mouseup(c, button);
@@ -227,7 +228,8 @@ public class UI {
 	    mousegrab.mouseup(wdgxlate(c, mousegrab), button);
     }
 	
-    public void mousemove(Coord c) {
+    public void mousemove(MouseEvent ev, Coord c) {
+	setmods(ev);
 	mc = c;
 	if(mousegrab == null)
 	    root.mousemove(c);
@@ -235,7 +237,8 @@ public class UI {
 	    mousegrab.mousemove(wdgxlate(c, mousegrab));
     }
 	
-    public void mousewheel(Coord c, int amount) {
+    public void mousewheel(MouseEvent ev, Coord c, int amount) {
+	setmods(ev);
 	lcc = mc = c;
 	if(mousegrab == null)
 	    root.mousewheel(c, amount);
