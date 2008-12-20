@@ -67,7 +67,11 @@ public class Window extends Widget implements DTarget {
 	
     public void draw(GOut og) {
 	GOut g = og.reclip(tlo, wsz);
-	g.image(bg, new Coord(3, 3), new Coord(3, 3), wsz.add(new Coord(-6, -6)));
+	Coord bgc = new Coord();
+	for(bgc.y = 3; bgc.y < wsz.y - 6; bgc.y += bg.sz().y) {
+	    for(bgc.x = 3; bgc.x < wsz.x - 6; bgc.x += bg.sz().x)
+		g.image(bg, bgc, new Coord(3, 3), wsz.add(new Coord(-6, -6)));
+	}
 	cdraw(og.reclip(xlate(Coord.z, true), sz));
 	wbox.draw(g, Coord.z, wsz);
 	if(cap != null) {

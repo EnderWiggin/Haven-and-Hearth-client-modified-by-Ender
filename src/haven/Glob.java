@@ -10,12 +10,32 @@ public class Glob {
     public Session sess;
     public Party party;
     public Collection<Resource> paginae = new TreeSet<Resource>();
-    public Map<String, Integer> cattr = new HashMap<String, Integer>();
+    public Map<String, CAttr> cattr = new HashMap<String, CAttr>();
 	
     public Glob(Session sess) {
 	this.sess = sess;
 	map = new MCache(sess);
 	party = new Party(this);
+    }
+    
+    public static class CAttr extends Observable {
+	String nm;
+	int base, comp;
+	
+	public CAttr(String nm, int base, int comp) {
+	    this.nm = nm.intern();
+	    this.base = base;
+	    this.comp = comp;
+	}
+	
+	public void update(int base, int comp) {
+	    if((base == this.base) && (comp == this.comp))
+		return;
+	    this.base = base;
+	    this.comp = comp;
+	    setChanged();
+	    notifyObservers(null);
+	}
     }
 	
     private static double defix(int i) {
@@ -44,10 +64,19 @@ public class Glob {
     }
     
     public void cattr(Message msg) {
-	while(!msg.eom()) {
-	    String nm = msg.string();
-	    int val = msg.int32();
-	    cattr.put(nm.intern(), val);
+	synchronized(cattr) {
+	    while(!msg.eom()) {
+		String nm = msg.string();
+		int base = msg.int32();
+		int comp = msg.int32();
+		CAttr a = cattr.get(nm);
+		if(a == null) {
+		    a = new CAttr(nm, base, comp);
+		    cattr.put(nm, a);
+		} else {
+		    a.update(base, comp);
+		}
+	    }
 	}
     }
 }
