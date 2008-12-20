@@ -10,6 +10,7 @@ public class Glob {
     public Session sess;
     public Party party;
     public Collection<Resource> paginae = new TreeSet<Resource>();
+    public Map<String, Integer> cattr = new HashMap<String, Integer>();
 	
     public Glob(Session sess) {
 	this.sess = sess;
@@ -39,6 +40,14 @@ public class Glob {
 		paginae.add(Resource.load(nm, ver)); 
 	    } else if(act == '-') {
 	    }
+	}
+    }
+    
+    public void cattr(Message msg) {
+	while(!msg.eom()) {
+	    String nm = msg.string();
+	    int val = msg.int32();
+	    cattr.put(nm.intern(), val);
 	}
     }
 }
