@@ -29,7 +29,11 @@ public abstract class TexRT extends TexGL {
 				throw(new RuntimeException("No pbuffer support"));
 			GLCapabilities caps = new GLCapabilities();
 			caps.setDoubleBuffered(false);
-			pbuf = df.createGLPbuffer(caps, null, dim.x, dim.y, g.ctx);
+			caps.setAlphaBits(8);
+			caps.setRedBits(8);
+			caps.setGreenBits(8);
+			caps.setBlueBits(8);
+			pbuf = df.createGLPbuffer(caps, null, tdim.x, tdim.y, g.ctx);
 			pbuf.addGLEventListener(new GLEventListener() {
 					public void display(GLAutoDrawable d) {
 						GL gl = d.getGL();
@@ -45,7 +49,7 @@ public abstract class TexRT extends TexGL {
 						//gl.glEnable(GL.GL_LINE_SMOOTH);
 						gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 						TexRT.this.init(gl);
-						reshape(d, 0, 0, dim.x, dim.y);
+						reshape(d, 0, 0, tdim.x, tdim.y);
 					}
 
 					public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
@@ -53,8 +57,7 @@ public abstract class TexRT extends TexGL {
 						GLU glu = new GLU();
 						gl.glMatrixMode(GL.GL_PROJECTION);
 						gl.glLoadIdentity();
-						System.out.println(x + ", " + y + ", " + w + ", " + h);
-						glu.gluOrtho2D(0, w, h, 0);
+						glu.gluOrtho2D(0, w, 0, h);
 					}
 			
 					public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
@@ -64,10 +67,8 @@ public abstract class TexRT extends TexGL {
 	}
 	
 	public void update() {
-		if(pbuf != null) {
+		if(pbuf != null)
 			pbuf.display();
-			pbuf.swapBuffers();
-		}
 	}
 	
 	private void subrend2(GL gl) {
@@ -77,10 +78,9 @@ public abstract class TexRT extends TexGL {
 			throw(new RuntimeException("Negative tex id when updating pbuf texture"));
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
 		if(!inited) {
-			gl.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 0, 0, dim.x, dim.y, 0);
+			gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
 			inited = true;
-		} else {
-			gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
 		}
+		gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
 	}
 }
