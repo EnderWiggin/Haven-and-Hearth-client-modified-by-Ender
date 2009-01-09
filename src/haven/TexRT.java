@@ -6,6 +6,8 @@ import javax.media.opengl.glu.GLU;
 public abstract class TexRT extends TexGL {
 	private GLPbuffer pbuf;
 	private boolean inited = false;
+	public Profile prof = new Profile(300);
+	private Profile.Frame curf;
 	
 	public TexRT(Coord sz) {
 		super(sz);
@@ -67,13 +69,18 @@ public abstract class TexRT extends TexGL {
 	}
 	
 	public void update() {
+		curf = prof.new Frame();
 		if(pbuf != null)
 			pbuf.display();
+		curf.tick("gl-out");
+		curf.fin();
 	}
 	
 	private void subrend2(GL gl) {
+		curf.tick("gl-in");
 		GOut g = new GOut(gl, pbuf.getContext(), dim);
 		subrend(g);
+		curf.tick("render");
 		if(id < 0)
 			throw(new RuntimeException("Negative tex id when updating pbuf texture"));
 		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
@@ -82,5 +89,6 @@ public abstract class TexRT extends TexGL {
 			inited = true;
 		}
 		gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
+		curf.tick("copy");
 	}
 }
