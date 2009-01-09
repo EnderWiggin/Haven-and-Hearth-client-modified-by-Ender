@@ -56,7 +56,7 @@ public class ILM extends TexRT {
 	public void init(GL gl) {
 		if(lbtex == null)
 			lbtex = new TexI(ljusboll);
-		gl.glClearColor(0, 0, 0, 0);
+		gl.glClearColor(0, 0, 0, 255);
 	}
 	
 	public void subrend(GOut g) {
@@ -65,7 +65,7 @@ public class ILM extends TexRT {
 		if(ll != null) {
 			for(Lumin lum : ll) {
 				Coord sc = lum.gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
-				g.image(lbtex, sc);
+				g.image(lbtex, sc, new Coord(lum.sz * 2, lum.sz * 2));
 			}
 		}
 	}
