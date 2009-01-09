@@ -56,7 +56,7 @@ public class ILM extends TexRT {
 	public void init(GL gl) {
 		if(lbtex == null)
 			lbtex = new TexI(ljusboll);
-		gl.glClearColor(0, 0, 0, 255);
+		gl.glClearColor(255, 255, 255, 255);
 	}
 	
 	public void subrend(GOut g) {
