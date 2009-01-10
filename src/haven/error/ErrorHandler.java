@@ -100,6 +100,21 @@ public class ErrorHandler extends ThreadGroup {
 	    props.put(p, System.getProperty(p));
 	Runtime rt = Runtime.getRuntime();
 	props.put("cpus", rt.availableProcessors());
+	InputStream in = ErrorHandler.class.getResourceAsStream("/buildinfo");
+	try {
+	    try {
+		if(in != null) {
+		    Properties info = new Properties();
+		    info.load(in);
+		    for(Map.Entry<Object, Object> e : info.entrySet())
+			props.put("jar." + (String)e.getKey(), e.getValue());
+		}
+	    } finally {
+		in.close();
+	    }
+	} catch(IOException e) {
+	    throw(new Error(e));
+	}
     }
 
     public ErrorHandler(ErrorStatus ui) {
