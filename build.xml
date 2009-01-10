@@ -13,9 +13,9 @@
     <exec executable="git" outputproperty="gitrev" failifexecutionfails="false">
       <arg line="rev-parse HEAD" />
     </exec>
-    <propertyfile file="build/classes/buildinfo">
-      <entry key="git-rev" value="${gitrev}" />
-    </propertyfile>
+    <echo file="build/classes/buildinfo" xml:space="default">
+      git-rev = ${gitrev}
+    </echo>
   </target>
 
   <target name="haven-client" depends="build-env">
