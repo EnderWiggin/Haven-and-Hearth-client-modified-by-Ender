@@ -28,6 +28,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
     }
 	
     private void initgl() {
+	final Thread caller = Thread.currentThread();
 	addGLEventListener(new GLEventListener() {
 		public void display(GLAutoDrawable d) {
 		    GL gl = d.getGL();
@@ -38,6 +39,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
 			
 		public void init(GLAutoDrawable d) {
 		    GL gl = d.getGL();
+		    if(caller.getThreadGroup() instanceof haven.error.ErrorHandler) {
+			haven.error.ErrorHandler h = (haven.error.ErrorHandler)caller.getThreadGroup();
+			h.lsetprop("gl.vendor", gl.glGetString(gl.GL_VENDOR));
+			h.lsetprop("gl.version", gl.glGetString(gl.GL_VERSION));
+			h.lsetprop("gl.renderer", gl.glGetString(gl.GL_RENDERER));
+			h.lsetprop("gl.exts", Arrays.asList(gl.glGetString(gl.GL_EXTENSIONS).split(" ")));
+		    }
 		    gl.glClearColor(0, 0, 0, 1);
 		    gl.glColor3f(1, 1, 1);
 		    gl.glPointSize(4);

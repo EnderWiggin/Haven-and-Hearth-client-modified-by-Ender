@@ -28,7 +28,11 @@ public class ErrorHandler extends ThreadGroup {
     public static void setprop(String key, Object val) {
 	ThreadGroup tg = Thread.currentThread().getThreadGroup();
 	if(tg instanceof ErrorHandler)
-	    ((ErrorHandler)tg).props.put(key, val);
+	    ((ErrorHandler)tg).lsetprop(key, val);
+    }
+    
+    public void lsetprop(String key, Object val) {
+	props.put(key, val);
     }
 
     private class Reporter extends Thread {
