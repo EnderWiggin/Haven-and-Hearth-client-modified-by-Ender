@@ -87,8 +87,10 @@ public abstract class TexRT extends TexGL {
 	if(id < 0)
 	    throw(new RuntimeException("Negative tex id when updating pbuf texture"));
 	gl.glBindTexture(GL.GL_TEXTURE_2D, id);
+	GOut.checkerr(gl);
 	if(!inited) {
 	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
+	    GOut.checkerr(gl);
 	    inited = true;
 	}
 	gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
