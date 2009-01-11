@@ -428,7 +428,7 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    
 	    curf.tick("draw");
-	    mask.redraw(lumin);
+	    mask.update(lumin);
 	    g.image(mask, Coord.z);
 	    for(Speaking s : speaking) {
 		s.draw(g, s.gob.sc.add(s.off));
