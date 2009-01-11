@@ -34,10 +34,16 @@ public class GOut {
 	this.sh.root = this;
     }
     
-    private void checkerr() {
+    public static void checkerr(GL gl) {
 	int err = gl.glGetError();
-	if(err != 0)
-	    throw(new RuntimeException("GL Error: " + err));
+	if(err != 0) {
+	    javax.media.opengl.glu.GLU glu = new javax.media.opengl.glu.GLU();
+	    throw(new RuntimeException("GL Error: " + err + " (" + glu.gluErrorString(err) + ")"));
+	}
+    }
+
+    private void checkerr() {
+	checkerr(gl);
     }
 	
     private void glcolor() {

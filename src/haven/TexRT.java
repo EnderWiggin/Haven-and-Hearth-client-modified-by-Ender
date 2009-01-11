@@ -50,8 +50,11 @@ public abstract class TexRT extends TexGL {
 			gl.glEnable(GL.GL_BLEND);
 			//gl.glEnable(GL.GL_LINE_SMOOTH);
 			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-			TexRT.this.init(gl);
+			GOut.checkerr(gl);
 			reshape(d, 0, 0, tdim.x, tdim.y);
+			GOut.checkerr(gl);
+			TexRT.this.init(gl);
+			GOut.checkerr(gl);
 		    }
 
 		    public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
@@ -89,6 +92,7 @@ public abstract class TexRT extends TexGL {
 	    inited = true;
 	}
 	gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
+	GOut.checkerr(gl);
 	curf.tick("copy");
     }
 }
