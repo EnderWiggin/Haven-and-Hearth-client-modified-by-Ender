@@ -34,12 +34,22 @@ public class GOut {
 	this.sh.root = this;
     }
     
+    public static class GLException extends RuntimeException {
+	public int code;
+	public String str;
+	private static javax.media.opengl.glu.GLU glu = new javax.media.opengl.glu.GLU();
+	
+	public GLException(int code) {
+	    super("GL Error: " + code + " (" + glu.gluErrorString(code) + ")");
+	    this.code = code;
+	    this.str = glu.gluErrorString(code);
+	}
+    }
+
     public static void checkerr(GL gl) {
 	int err = gl.glGetError();
-	if(err != 0) {
-	    javax.media.opengl.glu.GLU glu = new javax.media.opengl.glu.GLU();
-	    throw(new RuntimeException("GL Error: " + err + " (" + glu.gluErrorString(err) + ")"));
-	}
+	if(err != 0)
+	    throw(new GLException(err));
     }
 
     private void checkerr() {
