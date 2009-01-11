@@ -10,8 +10,10 @@ public class CharWnd extends Window {
     int exp;
     SkillList psk, nsk;
     SkillInfo ski;
+    FoodMeter foodm;
     Map<String, Attr> attrs = new TreeMap<String, Attr>();
     public static final Tex missing = Resource.loadtex("gfx/invobjs/missing");
+    public static final Tex foodmimg = Resource.loadtex("gfx/hud/charsh/foodm");
     public static final Color debuff = new Color(255, 128, 128);
     public static final Color buff = new Color(128, 255, 128);
     public static final Text.Foundry sktitfnd = new Text.Foundry("Serif", 16);
@@ -124,6 +126,57 @@ public class CharWnd extends Window {
 	    super.update();
 	    tvalb = attr.base;
 	    tvalc = attr.comp;
+	}
+    }
+    
+    private class FoodMeter extends Widget {
+	int cap;
+	List<El> els = new LinkedList<El>();
+	
+	private class El {
+	    String id;
+	    int amount;
+	    Color col;
+	    
+	    public El(String id, int amount, Color col) {
+		this.id = id;
+		this.amount = amount;
+		this.col = col;
+	    }
+	}
+	
+	public FoodMeter(Coord c, Widget parent) {
+	    super(c, foodmimg.sz(), parent);
+	}
+	
+	public void draw(GOut g) {
+	    g.chcolor(Color.BLACK);
+	    g.frect(new Coord(4, 4), sz.add(-8, -8));
+	    g.chcolor();
+	    synchronized(els) {
+		int x = 4;
+		for(El el : els) {
+		    int w = (174 * el.amount) / cap;
+		    g.chcolor(el.col);
+		    g.frect(new Coord(x, 4), new Coord(w, 24));
+		    x += w;
+		}
+		g.chcolor();
+	    }
+	    g.image(foodmimg, Coord.z);
+	    super.draw(g);
+	}
+	
+	public void clear() {
+	    synchronized(els) {
+		els.clear();
+	    }
+	}
+	
+	public void addel(String id, int amount, Color col) {
+	    synchronized(els) {
+		els.add(new El(id, amount, col));
+	    }
 	}
     }
     
@@ -297,6 +350,7 @@ public class CharWnd extends Window {
 	new Attr("agil", 100, 55);
 	new Attr("intel", 100, 70);
 	new Attr("cons", 100, 85);
+	foodm = new FoodMeter(new Coord(10, 120), cattr);
 
 	new Label(new Coord(210, 10), cattr, "Skill Values:");
 	new Label(new Coord(210, 40), cattr, "Unarmed Combat:");
@@ -376,6 +430,11 @@ public class CharWnd extends Window {
 		skl.add(res);
 	    }
 	    psk.pop(skl);
+	} else if(msg == "food") {
+	    foodm.cap = (Integer)args[0];
+	    foodm.clear();
+	    for(int i = 1; i < args.length; i += 3)
+		foodm.addel((String)args[i], (Integer)args[i + 1], (Color)args[i + 2]);
 	}
     }
     
