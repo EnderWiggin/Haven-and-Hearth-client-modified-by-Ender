@@ -119,6 +119,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 	
+    public String basename() {
+	int p = name.lastIndexOf('/');
+	if(p < 0)
+	    return(name);
+	return(name.substring(p + 1));
+    }
+
     public void loadwait() {
 	boolean i = false;
 	synchronized(loadwaited) {
