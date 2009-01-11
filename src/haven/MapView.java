@@ -393,7 +393,7 @@ public class MapView extends Widget implements DTarget {
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
 	    
-	    if(ui.modshift) {
+	    if(Utils.getprop("haven.dbtext", "off").equals("on") && ui.modshift) {
 		g.chcolor(255, 0, 0, 128);
 		synchronized(glob.oc) {
 		    for(Gob gob : glob.oc) {
