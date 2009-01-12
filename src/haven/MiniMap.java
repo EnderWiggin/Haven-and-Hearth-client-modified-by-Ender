@@ -140,14 +140,15 @@ public class MiniMap extends Widget {
 	if(missing) {
 	    g.image(nomap, Coord.z);
 	} else {
-	    if(!plx.loading && (mv.playergob != -1)) {
-		Gob gob = ui.sess.glob.oc.getgob(mv.playergob);
-		if(gob != null) {
-		    Coord ptc = gob.getc().div(tilesz);
-		    ptc = ptc.add(tc.inv()).add(sz.div(2));
-		    g.chcolor(255, 0, 0, 128);
-		    g.image(plx.layer(Resource.imgc).tex(), ptc.add(plx.layer(Resource.negc).cc.inv()));
-		    g.chcolor();
+	    if(!plx.loading) {
+		synchronized(ui.sess.glob.party.memb) {
+		    for(Party.Member m : ui.sess.glob.party.memb.values()) {
+			Coord ptc = m.getc().div(tilesz);
+			ptc = ptc.add(tc.inv()).add(sz.div(2));
+			g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 128);
+			g.image(plx.layer(Resource.imgc).tex(), ptc.add(plx.layer(Resource.negc).cc.inv()));
+			g.chcolor();
+		    }
 		}
 	    }
 	}
