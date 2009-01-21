@@ -32,6 +32,9 @@ public abstract class Tex {
     public void crender(GOut g, Coord c, Coord ul, Coord sz, Coord tsz) {
 	if((tsz.x == 0) || (tsz.y == 0))
 	    return;
+	if((c.x >= ul.x + sz.x) || (c.y >= ul.y + sz.y) ||
+	   (c.x + tsz.x <= 0) || (c.y + tsz.y <= 0))
+	    return;
 	Coord t = new Coord(c);
 	Coord uld = new Coord(0, 0);
 	Coord brd = new Coord(dim);
