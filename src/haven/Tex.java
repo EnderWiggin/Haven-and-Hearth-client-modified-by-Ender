@@ -33,7 +33,7 @@ public abstract class Tex {
 	if((tsz.x == 0) || (tsz.y == 0))
 	    return;
 	if((c.x >= ul.x + sz.x) || (c.y >= ul.y + sz.y) ||
-	   (c.x + tsz.x <= 0) || (c.y + tsz.y <= 0))
+	   (c.x + tsz.x <= ul.x) || (c.y + tsz.y <= ul.y))
 	    return;
 	Coord t = new Coord(c);
 	Coord uld = new Coord(0, 0);
