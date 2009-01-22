@@ -105,7 +105,7 @@ public class MapView extends Widget implements DTarget {
 	    Gob gob = null;
 	    for(Gob g : plob)
 		gob = g;
-	    wdgmsg("place", gob.rc, button);
+	    wdgmsg("place", gob.rc, button, ui.modflags());
 	} else {
 	    if(hit == null)
 		wdgmsg("click", c, mc, button, ui.modflags());
@@ -559,7 +559,7 @@ public class MapView extends Widget implements DTarget {
     }
 	
     public boolean drop(Coord cc, Coord ul) {
-	wdgmsg("drop");
+	wdgmsg("drop", ui.modflags());
 	return(true);
     }
 	
@@ -577,9 +577,9 @@ public class MapView extends Widget implements DTarget {
 	}
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
 	if(hit == null)
-	    wdgmsg("itemact", cc, mc);
+	    wdgmsg("itemact", cc, mc, ui.modflags());
 	else
-	    wdgmsg("itemact", cc, mc, hit.gob.id, hit.gob.getc());
+	    wdgmsg("itemact", cc, mc, ui.modflags(), hit.gob.id, hit.gob.getc());
 	return(true);
     }
 }
