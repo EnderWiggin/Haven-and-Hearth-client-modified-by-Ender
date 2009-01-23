@@ -168,7 +168,7 @@ public class MenuGrid extends Widget {
 	if(cons(r).length > 0) {
 	    cur = r;
 	} else if(r == bk) {
-	    cur = null;
+	    cur = cur.layer(Resource.action).parent;
 	} else {
 	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
 	}
