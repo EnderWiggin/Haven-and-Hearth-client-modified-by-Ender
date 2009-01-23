@@ -85,11 +85,15 @@
   <target name="clean">
     <delete dir="build" />
   </target>
-  <target depends="jars" name="profile">
+  
+  <target name="profile" depends="jars">
     <nbprofiledirect>
     </nbprofiledirect>
       <java fork="true" jar="build/haven.jar">
-        <jvmarg value="${profiler.info.jvmargs.agent}"/>
+        <jvmarg value="${profiler.info.jvmargs.agent}" />
+        <sysproperty key="haven.dbtext" value="on" />
+        <sysproperty key="haven.defserv" value="sh.seatribe.se" />
+        <sysproperty key="haven.resdir" value="/home/fredrik/src/haven/res" />
       </java>
   </target>
 </project>
