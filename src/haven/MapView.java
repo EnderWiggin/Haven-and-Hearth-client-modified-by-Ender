@@ -144,13 +144,11 @@ public class MapView extends Widget implements DTarget {
 	    if(mousemoveorigmc != null)
 		this.mc = mousemoveorigmc.add(s2m(off).inv());
 	} else if(plob != null) {
-	    synchronized(plob) {
-		Gob gob = null;
-		for(Gob g : plob)
-		    gob = g;
-		boolean plontile = this.plontile ^ ui.modshift;
-		gob.move(plontile?tilify(mc):mc);
-	    }
+	    Gob gob = null;
+	    for(Gob g : plob)
+		gob = g;
+	    boolean plontile = this.plontile ^ ui.modshift;
+	    gob.move(plontile?tilify(mc):mc);
 	}
     }
 	
@@ -191,19 +189,21 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    olftimer = System.currentTimeMillis() + (Integer)args[1];
 	} else if(msg == "place") {
-	    if(plob != null)
+	    Collection<Gob> plob = this.plob;
+	    if(plob != null) {
+		this.plob = null;
 		glob.oc.lrem(plob);
-	    plob = new LinkedList<Gob>();
-	    synchronized(plob) {
-		plontile = (Integer)args[2] != 0;
-		Gob gob = new Gob(glob, plontile?tilify(mousepos):mousepos);
-		Resource res = Resource.load((String)args[0], (Integer)args[1]);
-		gob.setattr(new ResDrawable(gob, res));
-		plob.add(gob);
-		glob.oc.ladd(plob);
-		if(args.length > 3)
-		    plrad = (Integer)args[3];
 	    }
+	    plob = new LinkedList<Gob>();
+	    plontile = (Integer)args[2] != 0;
+	    Gob gob = new Gob(glob, plontile?tilify(mousepos):mousepos);
+	    Resource res = Resource.load((String)args[0], (Integer)args[1]);
+	    gob.setattr(new ResDrawable(gob, res));
+	    plob.add(gob);
+	    glob.oc.ladd(plob);
+	    if(args.length > 3)
+		plrad = (Integer)args[3];
+	    this.plob = plob;
 	} else if(msg == "unplace") {
 	    if(plob != null)
 		glob.oc.lrem(plob);
