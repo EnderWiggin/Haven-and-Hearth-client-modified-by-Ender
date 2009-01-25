@@ -109,6 +109,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	loader.load(res);
 	return(res);
     }
+    
+    public static int numloaded() {
+	return(cache.size());
+    }
 	
     public static Resource load(String name, int ver) {
 	return(load(name, ver, 0));
