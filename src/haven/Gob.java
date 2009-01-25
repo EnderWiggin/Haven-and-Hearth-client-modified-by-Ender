@@ -3,7 +3,7 @@ package haven;
 import java.util.*;
 import java.lang.reflect.*;
 
-public class Gob {
+public class Gob implements Sprite.Owner {
     public Coord rc, sc;
     int clprio = 0;
     public int id, frame, initdelay = (int)(Math.random() * 3000);
@@ -56,8 +56,8 @@ public class Gob {
 	}
 	for(Iterator<Sprite> i = ols.iterator(); i.hasNext();) {
 	    Sprite spr = i.next();
-	    spr.tick(dt);
-	    if(spr.loops > 0)
+	    boolean done = spr.tick(dt);
+	    if(done)
 		i.remove();
 	}
     }
@@ -121,19 +121,35 @@ public class Gob {
     public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
 	Drawable d = getattr(Drawable.class);
 	Coord dro = drawoff();
-	Coord off = Coord.z;
 	if(d != null) {
-	    Coord ulc = dc.add(d.getoffset().inv());
-	    if(dro != null) {
-		ulc = ulc.add(dro);
-		off = off.add(dro);
-	    }
-	    Coord lrc = ulc.add(d.getsize());
-	    if((lrc.x > 0) && (lrc.y > 0) && (ulc.x <= sz.x) && (ulc.y <= sz.y)) {
-		for(Sprite spr : ols)
-		    spr.setup(drawer, dc, off);
-		d.setup(drawer, dc, off);
-	    }
+	    for(Sprite spr : ols)
+		spr.setup(drawer, dc, dro);
+	    d.setup(drawer, dc, dro);
 	}
+    }
+    
+    public Random mkrandoom() {
+	if(id < 0)
+	    return(MCache.mkrandoom(rc));
+	else
+	    return(new Random(id));
+    }
+    
+    public Resource.Neg getneg() {
+	Drawable d = getattr(Drawable.class);
+	if(d instanceof ResDrawable) {
+	    ResDrawable rd = (ResDrawable)d;
+	    Resource r;
+	    if((r = rd.res.get()) == null)
+		return(null);
+	    return(r.layer(Resource.negc));
+	} else if(d instanceof Layered) {
+	    Layered l = (Layered)d;
+	    Resource r;
+	    if((r = l.base.get()) == null)
+		return(null);
+	    return(r.layer(Resource.negc));
+	}
+	return(null);
     }
 }

@@ -5,8 +5,8 @@ import java.util.*;
 public class FreeSprite extends Sprite {
 	Collection<Part> parts = new LinkedList<Part>();
 	
-	protected FreeSprite(Gob gob, Resource res) {
-		super(gob, res, 1);
+	protected FreeSprite(Owner owner, Resource res) {
+		super(owner, res, 1);
 	}
 
 	public abstract class SPart extends Part {

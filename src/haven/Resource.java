@@ -349,7 +349,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public transient BufferedImage img;
 	transient private Tex tex;
 	public final int z, subz;
-	public final boolean l;
+	public final boolean nooff;
 	public final int id;
 	private int gay = -1;
 	public Coord sz;
@@ -358,7 +358,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public Image(byte[] buf) {
 	    z = Utils.int16d(buf, 0);
 	    subz = Utils.int16d(buf, 2);
-	    l = (buf[4] & 1) != 0;
+	    /* Obsolete flag 1: Layered */
+	    nooff = (buf[4] & 2) != 0;
 	    id = Utils.int16d(buf, 5);
 	    o = cdec(buf, 7);
 	    try {

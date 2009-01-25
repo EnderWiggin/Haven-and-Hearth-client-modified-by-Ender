@@ -87,12 +87,9 @@ public class MapView extends Widget implements DTarget {
 	Drawable hit = null;
 	for(Drawable d : clickable) {
 	    Gob g = d.gob;
-	    Coord ulc = g.sc.add(d.getoffset().inv());
-	    if(c.isect(ulc, d.getsize())) {
-		if(d.checkhit(c.add(ulc.inv()))) {
-		    hit = d;
-		    break;
-		}
+	    if(d.checkhit(c.add(g.sc.inv()))) {
+		hit = d;
+		break;
 	    }
 	}
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
@@ -362,6 +359,11 @@ public class MapView extends Widget implements DTarget {
 	ArrayList<Lumin> lumin = new ArrayList<Lumin>();
 	Sprite.Drawer drawer = new Sprite.Drawer() {
 		public void addpart(Sprite.Part p) {
+		    if((p.ul.x >= sz.x) ||
+		       (p.ul.y >= sz.y) ||
+		       (p.lr.x < 0) ||
+		       (p.lr.y < 0))
+			return;
 		    sprites.add(p);
 		}
 	    };
@@ -567,12 +569,9 @@ public class MapView extends Widget implements DTarget {
 	Drawable hit = null;
 	for(Drawable d : clickable) {
 	    Gob g = d.gob;
-	    Coord ulc = g.sc.add(d.getoffset().inv());
-	    if(cc.isect(ulc, d.getsize())) {
-		if(d.checkhit(cc.add(ulc.inv()))) {
-		    hit = d;
-		    break;
-		}
+	    if(d.checkhit(cc.add(g.sc.inv()))) {
+		hit = d;
+		break;
 	    }
 	}
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
