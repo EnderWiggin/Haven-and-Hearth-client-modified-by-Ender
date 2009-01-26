@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Prioritized, Serializable {
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
-    private static Loader loader = new Loader(new JarSource());
+    private static Loader loader;
     private static CacheSource prscache;
     public static ThreadGroup loadergroup = null;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
@@ -26,6 +26,21 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public static Class<AButton> action = AButton.class;
     public static Class<Audio> audio = Audio.class;
     public static Class<Tooltip> tooltip = Tooltip.class;
+
+    static {
+	loader = new Loader(new JarSource());
+	try {
+	    String dir = Utils.getprop("haven.resdir", null);
+	    if(dir == null)
+		dir = System.getenv("HAVEN_RESDIR");
+	    if(dir != null)
+		chainloader(new Loader(new FileSource(new File(dir))));
+	} catch(Exception e) {
+	    /* Ignore these. We don't want to be crashing the client
+	     * for users just because of errors in development
+	     * aids. */
+	}
+    }
 	
     private LoadException error;
     private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -93,6 +108,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	loader.load(res);
 	return(res);
+    }
+    
+    public static int numloaded() {
+	return(cache.size());
     }
 	
     public static Resource load(String name, int ver) {
@@ -182,6 +201,31 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
 	public String toString() {
 	    return("cache source backed by " + cache);
+	}
+    }
+
+    public static class FileSource implements ResSource {
+	File base;
+	
+	public FileSource(File base) {
+	    this.base = base;
+	}
+	
+	public InputStream get(String name) {
+	    File cur = base;
+	    String[] parts = name.split("/");
+	    for(int i = 0; i < parts.length - 1; i++)
+		cur = new File(cur, parts[i]);
+	    cur = new File(cur, parts[parts.length - 1] + ".res");
+	    try {
+		return(new FileInputStream(cur));
+	    } catch(FileNotFoundException e) {
+		throw((LoadException)(new LoadException("Could not find resource in filesystem: " + name, this).initCause(e)));
+	    }
+	}
+	
+	public String toString() {
+	    return("filesystem res source (" + base + ")");
 	}
     }
 

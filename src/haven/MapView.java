@@ -31,7 +31,12 @@ public class MapView extends Widget implements DTarget {
     static {
 	Widget.addtype("mapview", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new MapView(c, (Coord)args[0], parent, (Coord)args[1], (Integer)args[2]));
+		    Coord sz = (Coord)args[0];
+		    Coord mc = (Coord)args[1];
+		    int pgob = -1;
+		    if(args.length > 2)
+			pgob = (Integer)args[2];
+		    return(new MapView(c, sz, parent, mc, pgob));
 		}
 	    });
 	olc[0] = new Color(255, 0, 128);
@@ -102,7 +107,7 @@ public class MapView extends Widget implements DTarget {
 	    Gob gob = null;
 	    for(Gob g : plob)
 		gob = g;
-	    wdgmsg("place", gob.rc, button);
+	    wdgmsg("place", gob.rc, button, ui.modflags());
 	} else {
 	    if(hit == null)
 		wdgmsg("click", c, mc, button, ui.modflags());
@@ -141,13 +146,11 @@ public class MapView extends Widget implements DTarget {
 	    if(mousemoveorigmc != null)
 		this.mc = mousemoveorigmc.add(s2m(off).inv());
 	} else if(plob != null) {
-	    synchronized(plob) {
-		Gob gob = null;
-		for(Gob g : plob)
-		    gob = g;
-		boolean plontile = this.plontile ^ ui.modshift;
-		gob.move(plontile?tilify(mc):mc);
-	    }
+	    Gob gob = null;
+	    for(Gob g : plob)
+		gob = g;
+	    boolean plontile = this.plontile ^ ui.modshift;
+	    gob.move(plontile?tilify(mc):mc);
 	}
     }
 	
@@ -188,19 +191,21 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    olftimer = System.currentTimeMillis() + (Integer)args[1];
 	} else if(msg == "place") {
-	    if(plob != null)
+	    Collection<Gob> plob = this.plob;
+	    if(plob != null) {
+		this.plob = null;
 		glob.oc.lrem(plob);
-	    plob = new LinkedList<Gob>();
-	    synchronized(plob) {
-		plontile = (Integer)args[2] != 0;
-		Gob gob = new Gob(glob, plontile?tilify(mousepos):mousepos);
-		Resource res = Resource.load((String)args[0], (Integer)args[1]);
-		gob.setattr(new ResDrawable(gob, res));
-		plob.add(gob);
-		glob.oc.ladd(plob);
-		if(args.length > 3)
-		    plrad = (Integer)args[3];
 	    }
+	    plob = new LinkedList<Gob>();
+	    plontile = (Integer)args[2] != 0;
+	    Gob gob = new Gob(glob, plontile?tilify(mousepos):mousepos);
+	    Resource res = Resource.load((String)args[0], (Integer)args[1]);
+	    gob.setattr(new ResDrawable(gob, res));
+	    plob.add(gob);
+	    glob.oc.ladd(plob);
+	    if(args.length > 3)
+		plrad = (Integer)args[3];
+	    this.plob = plob;
 	} else if(msg == "unplace") {
 	    if(plob != null)
 		glob.oc.lrem(plob);
@@ -395,7 +400,7 @@ public class MapView extends Widget implements DTarget {
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
 	    
-	    if(Utils.getprop("haven.dbtext", "off").equals("on") && ui.modshift) {
+	    if(Utils.getprop("haven.bounddb", "off").equals("on") && ui.modshift) {
 		g.chcolor(255, 0, 0, 128);
 		synchronized(glob.oc) {
 		    for(Gob gob : glob.oc) {
@@ -561,7 +566,7 @@ public class MapView extends Widget implements DTarget {
     }
 	
     public boolean drop(Coord cc, Coord ul) {
-	wdgmsg("drop");
+	wdgmsg("drop", ui.modflags());
 	return(true);
     }
 	
@@ -576,9 +581,9 @@ public class MapView extends Widget implements DTarget {
 	}
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
 	if(hit == null)
-	    wdgmsg("itemact", cc, mc);
+	    wdgmsg("itemact", cc, mc, ui.modflags());
 	else
-	    wdgmsg("itemact", cc, mc, hit.gob.id, hit.gob.getc());
+	    wdgmsg("itemact", cc, mc, ui.modflags(), hit.gob.id, hit.gob.getc());
 	return(true);
     }
 }

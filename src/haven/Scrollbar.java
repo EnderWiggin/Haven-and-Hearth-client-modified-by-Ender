@@ -64,10 +64,10 @@ public class Scrollbar extends Widget {
     
     public void ch(int a) {
 	int val = this.val + a;
-	if(val < min)
-	    val = min;
 	if(val > max)
 	    val = max;
+	if(val < min)
+	    val = min;
 	this.val = val;
     }
 }

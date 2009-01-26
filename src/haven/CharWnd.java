@@ -233,6 +233,20 @@ public class CharWnd extends Window {
 	int sel;
 	List<Resource> skills = new ArrayList<Resource>();
 	Map<Resource, Integer> costs = new HashMap<Resource, Integer>();
+	Comparator<Resource> rescomp = new Comparator<Resource>() {
+	    public int compare(Resource a, Resource b) {
+		String an, bn;
+		if(a.loading)
+		    an = a.name;
+		else
+		    an = a.layer(Resource.tooltip).t;
+		if(b.loading)
+		    bn = b.name;
+		else
+		    bn = b.layer(Resource.tooltip).t;
+		return(an.compareTo(bn));
+	    }
+	};
 	
 	public SkillList(Coord c, Coord sz, Widget parent) {
 	    super(c, sz, parent);
@@ -245,6 +259,7 @@ public class CharWnd extends Window {
 	}
 	
 	public void draw(GOut g) {
+	    Collections.sort(skills, rescomp);
 	    g.chcolor(Color.BLACK);
 	    g.frect(Coord.z, sz);
 	    g.chcolor();

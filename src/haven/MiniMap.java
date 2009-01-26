@@ -10,8 +10,8 @@ import javax.imageio.ImageIO;
 
 public class MiniMap extends Widget {
     public static final URL mmbase;
-    static Map<MCache.Grid, Tex> grids = new HashMap<MCache.Grid, Tex>();
-    static Set<MCache.Grid> loading = new HashSet<MCache.Grid>();
+    static Map<String, Tex> grids = new WeakHashMap<String, Tex>();
+    static Set<String> loading = new HashSet<String>();
     static Loader loader = new Loader();
     public static final Tex bg = Resource.loadtex("gfx/hud/mmap/ptex");
     public static final Tex nomap = Resource.loadtex("gfx/hud/mmap/nomap");
@@ -32,10 +32,10 @@ public class MiniMap extends Widget {
 	public void run() {
 	    try {
 		while(true) {
-		    MCache.Grid grid;
+		    String grid;
 		    synchronized(grids) {
 			grid = null;
-			for(MCache.Grid cg : loading) {
+			for(String cg : loading) {
 			    grid = cg;
 			    break;
 			}
@@ -43,7 +43,7 @@ public class MiniMap extends Widget {
 		    if(grid == null)
 			break;
 		    try {
-			URL url = new URL(mmbase, grid.mnm + ".png");
+			URL url = new URL(mmbase, grid + ".png");
 			URLConnection c = url.openConnection();
 			InputStream in = c.getInputStream();
 			BufferedImage img;
@@ -58,7 +58,6 @@ public class MiniMap extends Widget {
 			    loading.remove(grid);
 			}
 		    } catch(IOException e) {
-			e.printStackTrace();
 			synchronized(grids) {
 			    grids.put(grid, null);
 			    loading.remove(grid);
@@ -76,6 +75,7 @@ public class MiniMap extends Widget {
 	    synchronized(this) {
 		if(me == null) {
 		    me = new Thread(Utils.tg(), this, "Minimap loader");
+		    me.setDaemon(true);
 		    me.start();
 		}
 	    }
@@ -83,9 +83,9 @@ public class MiniMap extends Widget {
 	
 	void req(MCache.Grid grid) {
 	    synchronized(grids) {
-		if(loading.contains(grid))
+		if(loading.contains(grid.mnm))
 		    return;
-		loading.add(grid);
+		loading.add(grid.mnm);
 		start();
 	    }
 	}
@@ -125,8 +125,8 @@ public class MiniMap extends Widget {
 		}
 		Tex tex;
 		synchronized(grids) {
-		    if(grids.containsKey(grid)) {
-			tex = grids.get(grid);
+		    if(grids.containsKey(grid.mnm)) {
+			tex = grids.get(grid.mnm);
 		    } else {
 			loader.req(grid);
 			continue;

@@ -281,7 +281,7 @@ public class MCache {
 	
 	public void mapdata(Message msg) {
 		Coord c = msg.coord();
-		String mmname = msg.string();
+		String mmname = msg.string().intern();
 		if(mmname.equals(""))
 		    mmname = null;
 		int l = 0, t = 0;
