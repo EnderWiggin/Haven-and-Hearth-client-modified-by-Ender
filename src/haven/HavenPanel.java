@@ -204,7 +204,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	    g.atext("Texmiss: " + dtm, new Coord(10, 515), 0, 1);
 	    Runtime rt = Runtime.getRuntime();
 	    long free = rt.freeMemory(), total = rt.totalMemory();
-	    g.atext(String.format("Mem: %,010d/%,010d/%,010d/%,010d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
+	    g.atext(String.format("Mem: %,011d/%,011d/%,011d/%,011d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
 	    g.atext(String.format("LCache: %d/%d", Layered.cache.size(), Layered.cache.cached()), new Coord(10, 485), 0, 1);
 	}
         Object tooltip = ui.tooltip;
