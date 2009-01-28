@@ -181,9 +181,10 @@ public class Layered extends Drawable {
 	g.setColor(java.awt.Color.RED);
 	g.fillRect(0, 0, buf.getWidth(), buf.getHeight());
 	*/
-	g.translate(-ul.x, -ul.y);
-	for(Sprite.Part part : parts)
+	for(Sprite.Part part : parts) {
+	    part.cc = part.cc.add(ul.inv());
 	    part.draw(buf, g);
+	}
 	g.dispose();
 	return(new Layer(buf, ul.inv()));
     }
