@@ -3,11 +3,16 @@ package haven;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 import java.util.*;
+import java.lang.reflect.Constructor;
 
 public abstract class Sprite {
     public final Resource res;
     public final Owner owner;
     public static List<Factory> factories = new LinkedList<Factory>();
+    static {
+	factories.add(AnimSprite.fact);
+	factories.add(StaticSprite.fact);
+    }
 	
     public interface Drawer {
 	public void addpart(Part p);
@@ -20,6 +25,34 @@ public abstract class Sprite {
     
     public interface Factory {
 	public Sprite create(Owner owner, Resource res, Message sdt);
+    }
+    
+    public static class DynFactory implements Factory {
+	private final Class<? extends Sprite> cl;
+	
+	public DynFactory(Class<? extends Sprite> cl) {
+	    this.cl = cl;
+	}
+	
+	public Sprite create(Owner owner, Resource res, Message sdt) {
+	    try {
+		try {
+		    Constructor<? extends Sprite> m = cl.getConstructor(Owner.class, Resource.class);
+		    return(m.newInstance(owner, res));
+		} catch(NoSuchMethodException e) {}
+		try {
+		    Constructor<? extends Sprite> m = cl.getConstructor(Owner.class, Resource.class, Message.class);
+		    return(m.newInstance(owner, res, sdt));
+		} catch(NoSuchMethodException e) {}
+		throw(new ResourceException("Cannot call sprite code of dynamic resource", res));
+	    } catch(IllegalAccessException e) {
+		throw(new ResourceException("Cannot call sprite code of dynamic resource", e, res));
+	    } catch(java.lang.reflect.InvocationTargetException e) {
+		throw(new ResourceException("Sprite code of dynamic resource threw an exception", e.getCause(), res));
+	    } catch(InstantiationException e) {
+		throw(new ResourceException("Cannot call sprite code of dynamic resource", e, res));
+	    }
+	}
     }
 	
     public static abstract class Part implements Comparable<Part> {
@@ -42,7 +75,7 @@ public abstract class Sprite {
 		return(z - other.z);
 	    if(cc.y != other.cc.y)
 		return(cc.y - other.cc.y);
-	    return(other.subz - subz);
+	    return(subz - other.subz);
 	}
 	
 	public Coord sc() {
@@ -66,12 +99,12 @@ public abstract class Sprite {
 	public Resource res;
 		
 	public ResourceException(String msg, Resource res) {
-	    super(msg);
+	    super(msg + " (" + res + ")");
 	    this.res = res;
 	}
 		
 	public ResourceException(String msg, Throwable cause, Resource res) {
-	    super(msg, cause);
+	    super(msg + " (" + res + ")", cause);
 	    this.res = res;
 	}
     }
@@ -84,6 +117,14 @@ public abstract class Sprite {
     public static Sprite create(Owner owner, Resource res, Message sdt) {
 	if(res.loading)
 	    throw(new RuntimeException("Attempted to create sprite on still loading resource"));
+	Resource.CodeEntry e = res.layer(Resource.CodeEntry.class);
+	if(e != null) {
+	    try {
+		return(e.spr().create(owner, res, sdt));
+	    } catch(RuntimeException exc) {
+		throw(new ResourceException("Error in sprite creation routine for " + res, exc, res));
+	    }
+	}
 	for(Factory f : factories) {
 	    Sprite ret = f.create(owner, res, sdt);
 	    if(ret != null)
@@ -96,7 +137,16 @@ public abstract class Sprite {
     
     public abstract void setup(Drawer d, Coord cc, Coord off);
 
-    public abstract boolean tick(int dt);
+    public boolean tick(int dt) {
+	return(false);
+    }
 
     public abstract Object stateid();
+    
+    public static void setup(Collection<Part> parts, Drawer d, Coord cc, Coord off) {
+	for(Part p : parts) {
+	    p.setup(cc, off);
+	    d.addpart(p);
+	}
+    }
 }

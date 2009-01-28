@@ -28,7 +28,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public static Class<Tooltip> tooltip = Tooltip.class;
 
     static {
-	loader = new Loader(new JarSource());
+	if(!Utils.getprop("haven.nolocalres", "").equals("yesimsure"))
+	    loader = new Loader(new JarSource());
 	try {
 	    String dir = Utils.getprop("haven.resdir", null);
 	    if(dir == null)
@@ -79,9 +80,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     
     private static void chainloader(Loader nl) {
 	synchronized(Resource.class) {
-	    Loader l;
-	    for(l = loader; l.next != null; l = l.next);
-	    l.chain(nl);
+	    if(loader == null) {
+		loader = nl;
+	    } else {
+		Loader l;
+		for(l = loader; l.next != null; l = l.next);
+		l.chain(nl);
+	    }
 	}
     }
     
@@ -94,7 +99,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    res = null;
 		    cache.remove(name);
 		} else if(res.ver > ver) {
-		    throw(new RuntimeException("Weird version number on " + name));
+		    throw(new RuntimeException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source)));
 		}
 	    }
 	    if(res != null) {
@@ -720,7 +725,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	transient private ClassLoader loader;
 	transient private Class<? extends WidgetFactory> wdg;
 	transient private WidgetFactory wdgf;
-	transient public Class<? extends Sprite> spr;
+	transient private Class<? extends Sprite.Factory> spr;
+	transient private Sprite.Factory sprf;
 		
 	public CodeEntry(byte[] buf) {
 	    int[] off = new int[1];
@@ -737,18 +743,41 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    public Class<?> findClass(String name) throws ClassNotFoundException {
 			Code c = clmap.get(name);
 			if(c == null)
-			    throw(new ClassNotFoundException("Could not find main sprite class"));
+			    throw(new ClassNotFoundException("Could not find class " + name + " in resource (" + Resource.this + ")"));
 			return(defineClass(name, c.data, 0, c.data.length));
 		    }
 		};
 	    try {
 		String clnm;
-		if((clnm = pe.get("spr")) != null)
-		    spr = loader.loadClass(clnm).asSubclass(Sprite.class);
+		if((clnm = pe.get("spr")) != null) {
+		    Class<?> cl = loader.loadClass(clnm);
+		    if(Sprite.Factory.class.isAssignableFrom(cl)) {
+			spr = cl.asSubclass(Sprite.Factory.class);
+		    } else if(Sprite.class.isAssignableFrom(cl)) {
+			sprf = new Sprite.DynFactory(cl.asSubclass(Sprite.class));
+		    }
+		}
 		if((clnm = pe.get("wdg")) != null)
 		    wdg = loader.loadClass(clnm).asSubclass(WidgetFactory.class);
 	    } catch(ClassNotFoundException e) {
 		throw(new LoadException(e, Resource.this));
+	    } catch(ClassCastException e) {
+		throw(new LoadException(e, Resource.this));
+	    }
+	}
+	
+	public Sprite.Factory spr() {
+	    synchronized(this) {
+		if(sprf == null) {
+		    try {
+			sprf = spr.newInstance();
+		    } catch(InstantiationException e) {
+			throw(new RuntimeException(e));
+		    } catch(IllegalAccessException e) {
+			throw(new RuntimeException(e));
+		    }
+		}
+		return(sprf);
 	    }
 	}
 	
@@ -925,7 +954,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
     private void checkerr() {
 	if(error != null)
-	    throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + ")", error));
+	    throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + "), from " + source, error));
     }
 	
     public int priority() {

@@ -177,6 +177,10 @@ public class Layered extends Drawable {
 	}
 	BufferedImage buf = TexI.mkbuf(lr.add(ul.inv()).add(1, 1));
 	Graphics g = buf.getGraphics();
+	/*
+	g.setColor(java.awt.Color.RED);
+	g.fillRect(0, 0, buf.getWidth(), buf.getHeight());
+	*/
 	g.translate(-ul.x, -ul.y);
 	for(Sprite.Part part : parts)
 	    part.draw(buf, g);

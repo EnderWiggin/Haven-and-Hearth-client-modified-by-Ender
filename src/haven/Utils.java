@@ -354,4 +354,13 @@ public class Utils {
 	dumptg(tg, out, 0);
 	out.flush();
     }
+
+    public static Resource myres(Class<?> c) {
+	ClassLoader cl = c.getClassLoader();
+	if(cl instanceof Resource.ResClassLoader) {
+	    return(((Resource.ResClassLoader)cl).getres());
+	} else {
+	    return(null);
+	}
+    }
 }

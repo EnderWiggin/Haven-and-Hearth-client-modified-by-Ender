@@ -50,8 +50,42 @@ public abstract class ImageSprite extends Sprite {
 	}
     }
     
+    public static boolean[] decflags(Message sdt) {
+	if(sdt == null)
+	    return(new boolean[0]);
+	boolean[] ret = new boolean[sdt.blob.length * 8];
+	int i = 0;
+	while(!sdt.eom()) {
+	    int b = sdt.uint8();
+	    for(int o = 0; o < 8; o++, i++)
+		ret[i] = (b & (o << 1)) != 0;
+	}
+	return(ret);
+    }
+
     protected ImageSprite(Owner owner, Resource res, Message sdt) {
 	super(owner, res);
+	Resource.Neg neg = res.layer(Resource.negc);
+	this.cc = neg.cc;
+    }
+    
+    public boolean checkhit(Coord c) {
+	Collection<Part> f = this.curf;
+	c = c.add(cc);
+	synchronized(f) {
+	    for(Part p : f) {
+		if(p.checkhit(c))
+		    return(true);
+	    }
+	}
+	return(false);
+    }
+
+    public void setup(Drawer d, Coord cc, Coord off) {
+	Collection<Part> f = this.curf;
+	synchronized(f) {
+	    setup(f, d, cc, off);
+	}
     }
     
     public Object stateid() {
