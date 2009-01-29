@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set +e
+
+git push
+git tag -f build
+git push origin build

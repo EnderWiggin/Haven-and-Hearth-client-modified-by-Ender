@@ -25,20 +25,6 @@ public class ResDrawable extends Drawable {
 		spr = Sprite.create(gob, res.get(), sdt.clone());
 	}
 	
-	public Coord getsize() {
-		init();
-		if(spr != null)
-			return(spr.sz);
-		return(Coord.z);
-	}
-	
-	public Coord getoffset() {
-		init();
-		if(spr != null)
-			return(spr.cc);
-		return(Coord.z);
-	}
-	
 	public boolean checkhit(Coord c) {
 		init();
 		if(spr != null)

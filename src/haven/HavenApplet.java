@@ -96,8 +96,8 @@ public class HavenApplet extends Applet {
 		    try {
 			while(true) {
 			    Bootstrap bill = new Bootstrap();
-			    if(getParameter("authcookie") != null)
-				bill.setinitcookie(Utils.hex2byte(getParameter("authcookie")));
+			    if((getParameter("username") != null) && (getParameter("authcookie") != null))
+				bill.setinitcookie(getParameter("username"), Utils.hex2byte(getParameter("authcookie")));
 			    bill.setaddr(getCodeBase().getHost());
 			    try {
 				Resource.addurl(new URL("https", getCodeBase().getHost(), 443, "/res/"));

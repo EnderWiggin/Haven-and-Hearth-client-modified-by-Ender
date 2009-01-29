@@ -2,57 +2,61 @@ package haven;
 
 import java.util.*;
 
-public class FreeSprite extends Sprite {
-	Collection<Part> parts = new LinkedList<Part>();
+public abstract class FreeSprite extends Sprite {
+    /*
+    public Coord cc = Coord.z;
+    public Coord sz = Coord.z;
+    */
+    private final Collection<Part> layers = new LinkedList<Part>();
+    
+    public interface Layer {
+	public void draw(GOut g, Coord sc);
+    }
+    
+    private class LPart extends Part {
+	Layer lay;
 	
-	protected FreeSprite(Gob gob, Resource res) {
-		super(gob, res, 1);
+	public LPart(Layer lay, int z, int subz) {
+	    super(z, subz);
+	    this.lay = lay;
 	}
+	
+	public void draw(GOut g) {
+	    lay.draw(g, sc());
+	}
+	
+	public void draw(java.awt.image.BufferedImage img, java.awt.Graphics g) {
+	}
+    }
 
-	public abstract class SPart extends Part {
-		public Coord doff = Coord.z;
-		
-		public SPart(int z) {
-			super(z);
+    protected FreeSprite(Owner owner, Resource res, int z, int subz) {
+	super(owner, res);
+	add(new Layer() {
+		public void draw(GOut g, Coord sc) {
+		    FreeSprite.this.draw(g, sc);
 		}
-		
-		public SPart(int z, int subz) {
-			super(z, subz);
-		}
-		
-		protected Coord doff() {
-			return(doff);
-		}
-		
-		protected Coord sc() {
-			return(cc.add(FreeSprite.this.cc.inv()).add(off).add(poff));
-		}
-		
-		public void draw(java.awt.image.BufferedImage img, java.awt.Graphics g) {}
-	}
-	
-	protected synchronized void add(Part p) {
-		parts.add(p);
-	}
-	
-	public boolean checkhit(Coord c) {
-		return(false);
-	}
-	
-	public synchronized void setup(Drawer d, Coord cc, Coord off) {
-		for(Part p : parts) {
-			p.cc = cc;
-			if(p instanceof SPart)
-				p.cc = p.cc.add(((SPart)p).doff());
-			p.off = off;
-			d.addpart(p);
-		}
-	}
+	    }, z, subz);
+    }
+    
+    protected FreeSprite(Owner owner, Resource res) {
+	this(owner, res, 0, 0);
+    }
+    
+    public void add(Layer lay, int z, int subz) {
+	layers.add(new LPart(lay, z, subz));
+    }
+    
+    public boolean checkhit(Coord c) {
+	return(false);
+    }
 
-	public void tick(int dt) {
-	}
-	
-	public Object stateid() {
-		return(this);
-	}
+    public void setup(Drawer d, Coord cc, Coord off) {
+	setup(layers, d, cc, off);
+    }
+
+    public Object stateid() {
+	return(this);
+    }
+    
+    public abstract void draw(GOut g, Coord sc);
 }

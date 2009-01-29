@@ -35,6 +35,8 @@ public class RootWidget extends Widget {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
 	    } else if(key == '~') {
 		new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
+	    } else if(key == '!') {
+		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).mask.prof, "ILM prof");
 	    } else if(key != 0) {
 		wdgmsg("gk", (int)key);
 	    }

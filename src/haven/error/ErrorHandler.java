@@ -28,7 +28,11 @@ public class ErrorHandler extends ThreadGroup {
     public static void setprop(String key, Object val) {
 	ThreadGroup tg = Thread.currentThread().getThreadGroup();
 	if(tg instanceof ErrorHandler)
-	    ((ErrorHandler)tg).props.put(key, val);
+	    ((ErrorHandler)tg).lsetprop(key, val);
+    }
+    
+    public void lsetprop(String key, Object val) {
+	props.put(key, val);
     }
 
     private class Reporter extends Thread {
@@ -100,6 +104,21 @@ public class ErrorHandler extends ThreadGroup {
 	    props.put(p, System.getProperty(p));
 	Runtime rt = Runtime.getRuntime();
 	props.put("cpus", rt.availableProcessors());
+	InputStream in = ErrorHandler.class.getResourceAsStream("/buildinfo");
+	try {
+	    try {
+		if(in != null) {
+		    Properties info = new Properties();
+		    info.load(in);
+		    for(Map.Entry<Object, Object> e : info.entrySet())
+			props.put("jar." + (String)e.getKey(), e.getValue());
+		}
+	    } finally {
+		in.close();
+	    }
+	} catch(IOException e) {
+	    throw(new Error(e));
+	}
     }
 
     public ErrorHandler(ErrorStatus ui) {

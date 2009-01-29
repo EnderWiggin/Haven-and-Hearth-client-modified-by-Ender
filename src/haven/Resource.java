@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Prioritized, Serializable {
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
-    private static Loader loader = new Loader(new JarSource());
+    private static Loader loader;
     private static CacheSource prscache;
     public static ThreadGroup loadergroup = null;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
@@ -26,6 +26,22 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public static Class<AButton> action = AButton.class;
     public static Class<Audio> audio = Audio.class;
     public static Class<Tooltip> tooltip = Tooltip.class;
+
+    static {
+	if(!Utils.getprop("haven.nolocalres", "").equals("yesimsure"))
+	    loader = new Loader(new JarSource());
+	try {
+	    String dir = Utils.getprop("haven.resdir", null);
+	    if(dir == null)
+		dir = System.getenv("HAVEN_RESDIR");
+	    if(dir != null)
+		chainloader(new Loader(new FileSource(new File(dir))));
+	} catch(Exception e) {
+	    /* Ignore these. We don't want to be crashing the client
+	     * for users just because of errors in development
+	     * aids. */
+	}
+    }
 	
     private LoadException error;
     private Collection<? extends Layer> layers = new LinkedList<Layer>();
@@ -64,9 +80,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     
     private static void chainloader(Loader nl) {
 	synchronized(Resource.class) {
-	    Loader l;
-	    for(l = loader; l.next != null; l = l.next);
-	    l.chain(nl);
+	    if(loader == null) {
+		loader = nl;
+	    } else {
+		Loader l;
+		for(l = loader; l.next != null; l = l.next);
+		l.chain(nl);
+	    }
 	}
     }
     
@@ -79,7 +99,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    res = null;
 		    cache.remove(name);
 		} else if(res.ver > ver) {
-		    throw(new RuntimeException("Weird version number on " + name));
+		    throw(new RuntimeException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source)));
 		}
 	    }
 	    if(res != null) {
@@ -93,6 +113,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	loader.load(res);
 	return(res);
+    }
+    
+    public static int numloaded() {
+	return(cache.size());
     }
 	
     public static Resource load(String name, int ver) {
@@ -119,6 +143,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 	
+    public String basename() {
+	int p = name.lastIndexOf('/');
+	if(p < 0)
+	    return(name);
+	return(name.substring(p + 1));
+    }
+
     public void loadwait() {
 	boolean i = false;
 	synchronized(loadwaited) {
@@ -175,6 +206,31 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
 	public String toString() {
 	    return("cache source backed by " + cache);
+	}
+    }
+
+    public static class FileSource implements ResSource {
+	File base;
+	
+	public FileSource(File base) {
+	    this.base = base;
+	}
+	
+	public InputStream get(String name) {
+	    File cur = base;
+	    String[] parts = name.split("/");
+	    for(int i = 0; i < parts.length - 1; i++)
+		cur = new File(cur, parts[i]);
+	    cur = new File(cur, parts[parts.length - 1] + ".res");
+	    try {
+		return(new FileInputStream(cur));
+	    } catch(FileNotFoundException e) {
+		throw((LoadException)(new LoadException("Could not find resource in filesystem: " + name, this).initCause(e)));
+	    }
+	}
+	
+	public String toString() {
+	    return("filesystem res source (" + base + ")");
 	}
     }
 
@@ -342,7 +398,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public transient BufferedImage img;
 	transient private Tex tex;
 	public final int z, subz;
-	public final boolean l;
+	public final boolean nooff;
 	public final int id;
 	private int gay = -1;
 	public Coord sz;
@@ -351,7 +407,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public Image(byte[] buf) {
 	    z = Utils.int16d(buf, 0);
 	    subz = Utils.int16d(buf, 2);
-	    l = (buf[4] & 1) != 0;
+	    /* Obsolete flag 1: Layered */
+	    nooff = (buf[4] & 2) != 0;
 	    id = Utils.int16d(buf, 5);
 	    o = cdec(buf, 7);
 	    try {
@@ -668,7 +725,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	transient private ClassLoader loader;
 	transient private Class<? extends WidgetFactory> wdg;
 	transient private WidgetFactory wdgf;
-	transient public Class<? extends Sprite> spr;
+	transient private Class<? extends Sprite.Factory> spr;
+	transient private Sprite.Factory sprf;
 		
 	public CodeEntry(byte[] buf) {
 	    int[] off = new int[1];
@@ -685,18 +743,41 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    public Class<?> findClass(String name) throws ClassNotFoundException {
 			Code c = clmap.get(name);
 			if(c == null)
-			    throw(new ClassNotFoundException("Could not find main sprite class"));
+			    throw(new ClassNotFoundException("Could not find class " + name + " in resource (" + Resource.this + ")"));
 			return(defineClass(name, c.data, 0, c.data.length));
 		    }
 		};
 	    try {
 		String clnm;
-		if((clnm = pe.get("spr")) != null)
-		    spr = loader.loadClass(clnm).asSubclass(Sprite.class);
+		if((clnm = pe.get("spr")) != null) {
+		    Class<?> cl = loader.loadClass(clnm);
+		    if(Sprite.Factory.class.isAssignableFrom(cl)) {
+			spr = cl.asSubclass(Sprite.Factory.class);
+		    } else if(Sprite.class.isAssignableFrom(cl)) {
+			sprf = new Sprite.DynFactory(cl.asSubclass(Sprite.class));
+		    }
+		}
 		if((clnm = pe.get("wdg")) != null)
 		    wdg = loader.loadClass(clnm).asSubclass(WidgetFactory.class);
 	    } catch(ClassNotFoundException e) {
 		throw(new LoadException(e, Resource.this));
+	    } catch(ClassCastException e) {
+		throw(new LoadException(e, Resource.this));
+	    }
+	}
+	
+	public Sprite.Factory spr() {
+	    synchronized(this) {
+		if(sprf == null) {
+		    try {
+			sprf = spr.newInstance();
+		    } catch(InstantiationException e) {
+			throw(new RuntimeException(e));
+		    } catch(IllegalAccessException e) {
+			throw(new RuntimeException(e));
+		    }
+		}
+		return(sprf);
 	    }
 	}
 	
@@ -873,7 +954,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
     private void checkerr() {
 	if(error != null)
-	    throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + ")", error));
+	    throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + "), from " + source, error));
     }
 	
     public int priority() {

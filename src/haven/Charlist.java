@@ -49,28 +49,32 @@ public class Charlist extends Widget {
     
     public void scroll(int amount) {
 	y += amount;
-	if(y > chars.size() - height)
-	    y = chars.size() - height;
+	synchronized(chars) {
+	    if(y > chars.size() - height)
+		y = chars.size() - height;
+	}
 	if(y < 0)
 	    y = 0;
     }
     
     public void draw(GOut g) {
 	int y = 20;
-	for(Char c : chars) {
-	    c.ava.visible = false;
-	    c.plb.visible = false;
-	}
-	for(int i = 0; (i < height) && (i + this.y < chars.size()); i++) {
-	    Char c = chars.get(i + this.y);
-	    g.image(bg, new Coord(0, y));
-	    c.ava.visible = true;
-	    c.plb.visible = true;
-	    int off = (bg.sz().y - c.ava.sz.y) / 2;
-	    c.ava.c = new Coord(off, off + y);
-	    c.plb.c = bg.sz().add(-105, -24 + y);
-	    g.image(c.nt.tex(), new Coord(off + c.ava.sz.x + 5, off + y));
-	    y += bg.sz().y + margin;
+	synchronized(chars) {
+	    for(Char c : chars) {
+		c.ava.visible = false;
+		c.plb.visible = false;
+	    }
+	    for(int i = 0; (i < height) && (i + this.y < chars.size()); i++) {
+		Char c = chars.get(i + this.y);
+		g.image(bg, new Coord(0, y));
+		c.ava.visible = true;
+		c.plb.visible = true;
+		int off = (bg.sz().y - c.ava.sz.y) / 2;
+		c.ava.c = new Coord(off, off + y);
+		c.plb.c = bg.sz().add(-105, -24 + y);
+		g.image(c.nt.tex(), new Coord(off + c.ava.sz.x + 5, off + y));
+		y += bg.sz().y + margin;
+	    }
 	}
 	super.draw(g);
     }
@@ -82,9 +86,11 @@ public class Charlist extends Widget {
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender instanceof Button) {
-	    for(Char c : chars) {
-		if(sender == c.plb)
-		    wdgmsg("play", c.name);
+	    synchronized(chars) {
+		for(Char c : chars) {
+		    if(sender == c.plb)
+			wdgmsg("play", c.name);
+		}
 	    }
 	} else if(sender instanceof Avaview) {
 	} else {
@@ -102,9 +108,10 @@ public class Charlist extends Widget {
 	    c.ava.visible = false;
 	    c.plb = new Button(new Coord(0, 0), 100, this, "Play");
 	    c.plb.visible = false;
-	    chars.add(c);
-	    if(chars.size() > height) {
-		sau.visible = sad.visible = true;
+	    synchronized(chars) {
+		chars.add(c);
+		if(chars.size() > height)
+		    sau.visible = sad.visible = true;
 	    }
 	}
     }

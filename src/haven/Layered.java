@@ -11,12 +11,34 @@ public class Layered extends Drawable {
     final Indir<Resource> base;
     boolean loading;
     int z = 0;
-    Sprite.Part me;
     static LayerCache cache = new LayerCache(1000);
 	
+    public static class Layer {
+	BufferedImage img;
+	Tex tex = null;
+	Coord cc;
+	
+	public Layer(BufferedImage img, Coord cc) {
+	    this.img = img;
+	    this.cc = cc;
+	}
+	
+	public Tex tex() {
+	    if(tex != null)
+		return(tex);
+	    tex = new TexI(img);
+	    return(tex);
+	}
+	
+	public void dispose() {
+	    if(tex != null)
+		tex.dispose();
+	}
+    }
+
     public static class LayerCache {
 	private int cachesz;
-	private Map<Object[], Tex> cache = new IdentityHashMap<Object[], Tex>();
+	private Map<Object[], Layer> cache = new IdentityHashMap<Object[], Layer>();
 	private LinkedList<Object[]> recency = new LinkedList<Object[]>();
 	private int cached;
 		
@@ -44,11 +66,11 @@ public class Layered extends Drawable {
 	    return(cached);
 	}
 		
-	public synchronized Tex get(Object[] id) {
-	    Tex t = cache.get(id);
-	    if(t != null)
+	public synchronized Layer get(Object[] id) {
+	    Layer l = cache.get(id);
+	    if(l != null)
 		usecache(id);
-	    return(t);
+	    return(l);
 	}
 	
 	private synchronized void cleancache() {
@@ -58,8 +80,8 @@ public class Layered extends Drawable {
 	    }
 	}
 		
-	public synchronized void put(Object[] id, Tex t) {
-	    cache.put(id, t);
+	public synchronized void put(Object[] id, Layer l) {
+	    cache.put(id, l);
 	    recency.addFirst(id);
 	    cleancache();
 	    cached++;
@@ -70,7 +92,6 @@ public class Layered extends Drawable {
 	super(gob);
 	this.base = base;
 	layers = new ArrayList<Indir<Resource>>();
-	makepart();
     }
 
     public synchronized void setlayers(List<Indir<Resource>> layers) {
@@ -109,12 +130,12 @@ public class Layered extends Drawable {
 		    if(r.get() == null)
 			loading = true;
 		    else
-			sprites.put(r, Sprite.create(gob, r.get(), base.get(), null));
+			sprites.put(r, Sprite.create(gob, r.get(), null));
 		}
 	    }
 	}
-	me.cc = cc;
-	me.off = off;
+	Sprite.Part me = makepart();
+	me.setup(cc, off);
 	drw.addpart(me);
     }
 	
@@ -130,59 +151,72 @@ public class Layered extends Drawable {
 	return(ArrayIdentity.intern(ret));
     }
 
-    private void makepart() {
-	me = new Sprite.Part(z) {
-		public void draw(BufferedImage buf, Graphics g, Coord cc, Coord off) {
-		    final ArrayList<Sprite.Part> parts = new ArrayList<Sprite.Part>();
-		    Sprite.Drawer drw = new Sprite.Drawer() {
-			    public void addpart(Sprite.Part p) {
-				parts.add(p);
-			    }
-			};
-		    for(Sprite spr : sprites.values()) {
-			if(spr != null)
-			    spr.setup(drw, cc, off);
-		    }
-		    Collections.sort(parts);
-		    for(Sprite.Part part : parts)
-			part.draw(buf, g);
+    private Layer redraw() {
+	final ArrayList<Sprite.Part> parts = new ArrayList<Sprite.Part>();
+	Sprite.Drawer drw = new Sprite.Drawer() {
+		public void addpart(Sprite.Part p) {
+		    parts.add(p);
 		}
-				
+	    };
+	for(Sprite spr : sprites.values()) {
+	    if(spr != null)
+		spr.setup(drw, Coord.z, Coord.z);
+	}
+	Collections.sort(parts);
+	Coord ul = new Coord(0, 0);
+	Coord lr = new Coord(0, 0);
+	for(Sprite.Part part : parts) {
+	    if(part.ul.x < ul.x)
+		ul.x = part.ul.x;
+	    if(part.ul.y < ul.y)
+		ul.y = part.ul.y;
+	    if(part.lr.x > lr.x)
+		lr.x = part.lr.x;
+	    if(part.lr.y > lr.y)
+		lr.y = part.lr.y;
+	}
+	BufferedImage buf = TexI.mkbuf(lr.add(ul.inv()).add(1, 1));
+	Graphics g = buf.getGraphics();
+	/*
+	g.setColor(java.awt.Color.RED);
+	g.fillRect(0, 0, buf.getWidth(), buf.getHeight());
+	*/
+	for(Sprite.Part part : parts) {
+	    part.cc = part.cc.add(ul.inv());
+	    part.draw(buf, g);
+	}
+	g.dispose();
+	return(new Layer(buf, ul.inv()));
+    }
+
+    private Sprite.Part makepart() {
+	final Layer l;
+	synchronized(Layered.this) {
+	    Object[] id = stateid();
+	    synchronized(cache) {
+		Layer ll = cache.get(id);
+		if(ll == null) {
+		    ll = redraw();
+		    cache.put(id, ll);
+		}
+		l = ll;
+	    }
+	}
+	return(new Sprite.Part(z) {
 		public void draw(BufferedImage buf, Graphics g) {
-		    synchronized(Layered.this) {
-			draw(buf, g, cc, off);
-		    }
+		    g.drawImage(l.img, -l.cc.x, -l.cc.y, null);
 		}
 				
 		public void draw(GOut g) {
-		    synchronized(Layered.this) {
-			Object[] id = stateid();
-			Tex t;
-			synchronized(cache) {
-			    if((t = cache.get(id)) == null) {
-				Coord sz = getsize();
-				BufferedImage buf = TexI.mkbuf(sz);
-				Graphics gr = buf.getGraphics();
-				draw(buf, gr, getoffset(), Coord.z);
-				t = new TexI(buf);
-				cache.put(id, t);
-			    }
-			}
-			g.image(t, cc.add(getoffset().inv()).add(off));
-		    }
+		    g.image(l.tex(), cc.add(l.cc.inv()).add(off));
 		}
-	    };
-    }
-    public Coord getoffset() {
-	if(base.get() == null)
-	    return(Coord.z);
-	return(base.get().layer(Resource.negc).cc);
-    }
-
-    public Coord getsize() {
-	if(base.get() == null)
-	    return(Coord.z);
-	return(base.get().layer(Resource.negc).sz);
+		
+		public void setup(Coord cc, Coord off) {
+		    super.setup(cc, off);
+		    ul = cc.add(l.cc.inv());
+		    lr = ul.add(l.tex().sz());
+		}
+	    });
     }
 
     public synchronized void ctick(int dt) {

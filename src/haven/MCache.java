@@ -46,6 +46,7 @@ public class MCache {
 		public long lastreq = 0;
 		Coord gc;
 		OCache oc = sess.glob.oc;
+		String mnm;
 		
 		public Grid(Coord gc) {
 			this.gc = gc;
@@ -280,11 +281,15 @@ public class MCache {
 	
 	public void mapdata(Message msg) {
 		Coord c = msg.coord();
+		String mmname = msg.string().intern();
+		if(mmname.equals(""))
+		    mmname = null;
 		int l = 0, t = 0;
 		synchronized(req) {
 			synchronized(grids) {
 				if(req.containsKey(c)) {
 					Grid g = req.get(c);
+					g.mnm = mmname;
 					for(int y = 0; y < cmaps.y; y++) {
 						for(int x = 0; x < cmaps.x; x++) {
 							if(l < 1) {

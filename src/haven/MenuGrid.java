@@ -22,6 +22,15 @@ public class MenuGrid extends Widget {
 	    });
     }
 	
+    public class PaginaException extends RuntimeException {
+	public Resource res;
+	
+	public PaginaException(Resource r) {
+	    super("Invalid pagina: " + r.name);
+	    res = r;
+	}
+    }
+
     private Resource[] cons(Resource p) {
 	Resource[] cp = new Resource[0];
 	Resource[] all;
@@ -33,7 +42,7 @@ public class MenuGrid extends Widget {
 		    if(!r.loading) {
 			AButton ad = r.layer(Resource.action);
 			if(ad == null)
-			    System.err.println(r);
+			    throw(new PaginaException(r));
 			if((ad.parent != null) && !ta.contains(ad.parent))
 			    open.add(ad.parent);
 			ta.add(r);
@@ -159,7 +168,7 @@ public class MenuGrid extends Widget {
 	if(cons(r).length > 0) {
 	    cur = r;
 	} else if(r == bk) {
-	    cur = null;
+	    cur = cur.layer(Resource.action).parent;
 	} else {
 	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
 	}

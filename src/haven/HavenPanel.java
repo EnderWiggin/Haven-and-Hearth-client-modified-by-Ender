@@ -28,6 +28,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
     }
 	
     private void initgl() {
+	final Thread caller = Thread.currentThread();
 	addGLEventListener(new GLEventListener() {
 		public void display(GLAutoDrawable d) {
 		    GL gl = d.getGL();
@@ -38,6 +39,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
 			
 		public void init(GLAutoDrawable d) {
 		    GL gl = d.getGL();
+		    if(caller.getThreadGroup() instanceof haven.error.ErrorHandler) {
+			haven.error.ErrorHandler h = (haven.error.ErrorHandler)caller.getThreadGroup();
+			h.lsetprop("gl.vendor", gl.glGetString(gl.GL_VENDOR));
+			h.lsetprop("gl.version", gl.glGetString(gl.GL_VERSION));
+			h.lsetprop("gl.renderer", gl.glGetString(gl.GL_RENDERER));
+			h.lsetprop("gl.exts", Arrays.asList(gl.glGetString(gl.GL_EXTENSIONS).split(" ")));
+		    }
 		    gl.glClearColor(0, 0, 0, 1);
 		    gl.glColor3f(1, 1, 1);
 		    gl.glPointSize(4);
@@ -190,13 +198,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	curf.tick("draw");
 	if(Utils.getprop("haven.dbtext", "off").equals("on")) {
 	    if(Resource.qdepth() > 0)
-		g.atext("RQ depth: " + Resource.qdepth(), new Coord(10, 470), 0, 1);
+		g.atext(String.format("RQ depth: %d (%d)", Resource.qdepth(), Resource.numloaded()), new Coord(10, 470), 0, 1);
 	    g.atext("FPS: " + fps, new Coord(10, 545), 0, 1);
 	    g.atext("Texhit: " + dth, new Coord(10, 530), 0, 1);
 	    g.atext("Texmiss: " + dtm, new Coord(10, 515), 0, 1);
 	    Runtime rt = Runtime.getRuntime();
 	    long free = rt.freeMemory(), total = rt.totalMemory();
-	    g.atext(String.format("Mem: %010d/%010d/%010d/%010d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
+	    g.atext(String.format("Mem: %,011d/%,011d/%,011d/%,011d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
 	    g.atext(String.format("LCache: %d/%d", Layered.cache.size(), Layered.cache.cached()), new Coord(10, 485), 0, 1);
 	}
         Object tooltip = ui.tooltip;
@@ -236,14 +244,14 @@ public class HavenPanel extends GLCanvas implements Runnable {
 		    if(me.getID() == MouseEvent.MOUSE_PRESSED) {
 			if((me.getX() < 10) && (me.getY() < 10))
 			    throw(new RuntimeException("test"));
-			ui.mousedown(new Coord(me.getX(), me.getY()), me.getButton());
+			ui.mousedown(me, new Coord(me.getX(), me.getY()), me.getButton());
 		    } else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
-			ui.mouseup(new Coord(me.getX(), me.getY()), me.getButton());
+			ui.mouseup(me, new Coord(me.getX(), me.getY()), me.getButton());
 		    } else if(me.getID() == MouseEvent.MOUSE_MOVED || me.getID() == MouseEvent.MOUSE_DRAGGED) {
 			mousepos = new Coord(me.getX(), me.getY());
-			ui.mousemove(mousepos);
+			ui.mousemove(me, mousepos);
 		    } else if(me instanceof MouseWheelEvent) {
-			ui.mousewheel(new Coord(me.getX(), me.getY()), ((MouseWheelEvent)me).getWheelRotation());
+			ui.mousewheel(me, new Coord(me.getX(), me.getY()), ((MouseWheelEvent)me).getWheelRotation());
 		    }
 		} else if(e instanceof KeyEvent) {
 		    KeyEvent ke = (KeyEvent)e;

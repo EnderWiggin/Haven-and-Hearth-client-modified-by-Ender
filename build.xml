@@ -5,9 +5,19 @@
     <mkdir dir="build" />
     <mkdir dir="build/classes" />
     <available property="has-res-jar" file="build/haven-res.jar" />
+    <available property="has-buildinfo" file="build/classes/buildinfo" />
     <available property="unpacked-lib" file="build/classes-lib" />
   </target>
   
+  <target name="buildinfo" depends="build-env" unless="has-buildinfo">
+    <exec executable="git" outputproperty="gitrev" failifexecutionfails="false">
+      <arg line="rev-parse HEAD" />
+    </exec>
+    <echo file="build/classes/buildinfo" xml:space="default">
+      git-rev = ${gitrev}
+    </echo>
+  </target>
+
   <target name="haven-client" depends="build-env">
     <javac srcdir="src" destdir="build/classes" debug="on">
       <classpath>
@@ -40,7 +50,7 @@
     </unjar>
   </target>
 
-  <target name="jar" depends="haven-client,lib-classes">
+  <target name="jar" depends="haven-client,buildinfo,lib-classes">
     <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" />
       <fileset dir="build/classes-lib" />
@@ -75,11 +85,15 @@
   <target name="clean">
     <delete dir="build" />
   </target>
-  <target depends="jars" name="profile">
+  
+  <target name="profile" depends="jars">
     <nbprofiledirect>
     </nbprofiledirect>
       <java fork="true" jar="build/haven.jar">
-        <jvmarg value="${profiler.info.jvmargs.agent}"/>
+        <jvmarg value="${profiler.info.jvmargs.agent}" />
+        <sysproperty key="haven.dbtext" value="on" />
+        <sysproperty key="haven.defserv" value="sh.seatribe.se" />
+        <sysproperty key="haven.resdir" value="/home/fredrik/src/haven/res" />
       </java>
   </target>
 </project>

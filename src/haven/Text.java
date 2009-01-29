@@ -80,6 +80,10 @@ public class Text {
 			e = te;
 			i++;
 		    }
+		    if((te < text.length()) && (text.charAt(te) == '\n')) {
+			e = te;
+			break;
+		    }
 		} while(i <= sl.length);
 		String line = text.substring(s, e);
 		lines.add(line);
