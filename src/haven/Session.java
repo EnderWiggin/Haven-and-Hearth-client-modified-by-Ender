@@ -5,8 +5,8 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 15;
-	
+    public static final int PVER = 16;
+    
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
     public static final int MSG_ACK = 2;
@@ -84,6 +84,17 @@ public class Session {
 				
 		public int compareTo(Indir<Resource> x) {
 		    return((this.getClass().cast(x)).resid - resid);
+		}
+		
+		public String toString() {
+		    if(res == null) {
+			return("<res:" + resid + ">");
+		    } else {
+			if(res.loading)
+			    return("<!" + res + ">");
+			else
+			    return("<" + res + ">");
+		    }
 		}
 	    };
 	    rescache.put(id, ret);
@@ -228,16 +239,25 @@ public class Session {
 				oc.homing(id, frame, oid, tgtc, v);
 			    }
 			} else if(type == OD_OVERLAY) {
-			    int resid = msg.uint16();
-			    Message sdt;
-			    if((resid & 0x8000) != 0) {
-				resid &= ~0x8000;
-				sdt = msg.derive(0, msg.uint8());
-			    } else {
-				sdt = new Message(0);
-			    }
 			    int olid = msg.int32();
-			    oc.overlay(id, frame, getres(resid), olid, sdt);
+			    boolean prs = (olid & 1) != 0;
+			    olid >>= 1;
+			    int resid = msg.uint16();
+			    Indir<Resource> res;
+			    Message sdt;
+			    if(resid == 65535) {
+				res = null;
+				sdt = null;
+			    } else {
+				if((resid & 0x8000) != 0) {
+				    resid &= ~0x8000;
+				    sdt = msg.derive(0, msg.uint8());
+				} else {
+				    sdt = new Message(0);
+				}
+				res = getres(resid);
+			    }
+			    oc.overlay(id, frame, olid, prs, res, sdt);
 			} else if(type == OD_END) {
 			    break;
 			} else {

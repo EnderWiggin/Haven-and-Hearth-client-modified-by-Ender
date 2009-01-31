@@ -43,6 +43,19 @@ public class Message implements java.io.Serializable {
 	blob = new byte[0];
     }
 	
+    public boolean equals(Object o2) {
+	if(!(o2 instanceof Message))
+	    return(false);
+	Message m2 = (Message)o2;
+	if(m2.blob.length != blob.length)
+	    return(false);
+	for(int i = 0; i < blob.length; i++) {
+	    if(m2.blob[i] != blob[i])
+		return(false);
+	}
+	return(true);
+    }
+
     public Message clone() {
 	return(new Message(type, blob));
     }

@@ -230,11 +230,20 @@ public class OCache implements Iterable<Gob> {
 		}
 	}
 	
-	public synchronized void overlay(int id, int frame, Indir<Resource> resid, int olid, Message sdt) {
+	public synchronized void overlay(int id, int frame, int olid, boolean prs, Indir<Resource> resid, Message sdt) {
 		Gob g = getgob(id, frame);
 		if(g == null)
 			return;
-		if(!g.olprep.containsKey(olid))
-			g.olprep.put(olid, new Gob.Overlay(resid, sdt));
+		Gob.Overlay ol = g.findol(olid);
+		if(resid != null) {
+	    		if(ol == null) {
+	    			g.ols.add(new Gob.Overlay(olid, resid, sdt));
+	    		} else if(!ol.sdt.equals(sdt)) {
+	    			g.ols.remove(ol);
+	    			g.ols.add(new Gob.Overlay(olid, resid, sdt));
+	    		}
+		} else {
+			g.ols.remove(ol);
+		}
 	}
 }

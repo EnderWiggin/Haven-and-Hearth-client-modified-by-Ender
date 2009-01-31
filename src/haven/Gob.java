@@ -9,16 +9,19 @@ public class Gob implements Sprite.Owner {
     public int id, frame, initdelay = (int)(Math.random() * 3000);
     public final Glob glob;
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
-    Map<Integer, Overlay> olprep = new TreeMap<Integer, Overlay>();
-    public Collection<Sprite> ols = new LinkedList<Sprite>();
+    public Collection<Overlay> ols = new LinkedList<Overlay>();
 	
     public static class Overlay {
-	Indir<Resource> res;
-	Message sdt;
+	public Indir<Resource> res;
+	public Message sdt;
+	public Sprite spr;
+	public int id;
 	
-	public Overlay(Indir<Resource> res, Message sdt) {
+	public Overlay(int id, Indir<Resource> res, Message sdt) {
+	    this.id = id;
 	    this.res = res;
 	    this.sdt = sdt;
+	    spr = null;
 	}
     }
     
@@ -46,22 +49,27 @@ public class Gob implements Sprite.Owner {
 	    else
 		a.ctick(dt);
 	}
-	for(Map.Entry<Integer, Overlay> e : olprep.entrySet()) {
-	    if(e.getValue() == null)
-		continue;
-	    if(e.getValue().res.get() != null) {
-		ols.add(Sprite.create(this, e.getValue().res.get(), e.getValue().sdt));
-		e.setValue(null);
+	for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
+	    Overlay ol = i.next();
+	    if(ol.spr == null) {
+		if(ol.res.get() != null)
+		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
+	    } else {
+		boolean done = ol.spr.tick(dt);
+		if(done)
+		    i.remove();
 	    }
-	}
-	for(Iterator<Sprite> i = ols.iterator(); i.hasNext();) {
-	    Sprite spr = i.next();
-	    boolean done = spr.tick(dt);
-	    if(done)
-		i.remove();
 	}
     }
 	
+    public Overlay findol(int id) {
+	for(Overlay ol : ols) {
+	    if(ol.id == id)
+		return(ol);
+	}
+	return(null);
+    }
+
     public void tick() {
 	for(GAttrib a : attr.values())
 	    a.tick();
@@ -122,8 +130,10 @@ public class Gob implements Sprite.Owner {
 	Drawable d = getattr(Drawable.class);
 	Coord dro = drawoff();
 	if(d != null) {
-	    for(Sprite spr : ols)
-		spr.setup(drawer, dc, dro);
+	    for(Overlay ol : ols) {
+		if(ol.spr != null)
+		    ol.spr.setup(drawer, dc, dro);
+	    }
 	    d.setup(drawer, dc, dro);
 	}
     }
