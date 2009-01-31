@@ -267,6 +267,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	    URL resurl = new URL(baseurl, name + ".res");
 	    URLConnection c = ssl.connect(resurl);
+	    c.addRequestProperty("User-Agent", "Haven/1.0");
 	    return(c.getInputStream());
 	}
 
@@ -532,17 +533,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     static {ltypes.put("neg", Neg.class);}
 	
     public class Anim extends Layer {
-	Image[][] f;
 	private int[] ids;
-	int d;
+	public int id, d;
+	public Image[][] f;
 		
 	public Anim(byte[] buf) {
-	    d = Utils.uint16d(buf, 0);
-	    ids = new int[Utils.uint16d(buf, 2)];
-	    if(buf.length - 4 != ids.length * 2)
+	    id = Utils.int16d(buf, 0);
+	    d = Utils.uint16d(buf, 2);
+	    ids = new int[Utils.uint16d(buf, 4)];
+	    if(buf.length - 6 != ids.length * 2)
 		throw(new LoadException("Invalid anim descriptor in " + name, Resource.this));
 	    for(int i = 0; i < ids.length; i++)
-		ids[i] = Utils.int16d(buf, 4 + (i * 2));
+		ids[i] = Utils.int16d(buf, 6 + (i * 2));
 	}
 		
 	public void init() {
@@ -551,7 +553,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    for(int i = 0; i < ids.length; i++) {
 		LinkedList<Image> buf = new LinkedList<Image>();
 		for(Image img : layers(Image.class)) {
-		    if((img.id == ids[i]) || (img.id == -1))
+		    if(img.id == ids[i])
 			buf.add(img);
 		}
 		f[i] = buf.toArray(typeinfo);

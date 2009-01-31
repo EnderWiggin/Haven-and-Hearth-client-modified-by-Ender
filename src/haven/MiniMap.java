@@ -45,6 +45,7 @@ public class MiniMap extends Widget {
 		    try {
 			URL url = new URL(mmbase, grid + ".png");
 			URLConnection c = url.openConnection();
+			c.addRequestProperty("User-Agent", "Haven/1.0");
 			InputStream in = c.getInputStream();
 			BufferedImage img;
 			try {

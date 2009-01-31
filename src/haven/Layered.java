@@ -10,7 +10,6 @@ public class Layered extends Drawable {
     Map<Indir<Resource>, Integer> delays = new TreeMap<Indir<Resource>, Integer>();
     final Indir<Resource> base;
     boolean loading;
-    int z = 0;
     static LayerCache cache = new LayerCache(1000);
 	
     public static class Layer {
@@ -134,13 +133,19 @@ public class Layered extends Drawable {
 		}
 	    }
 	}
-	Sprite.Part me = makepart();
+	/* XXX: Fix this to construct parts dynamically depending on
+	 * which layers exist. */
+	Sprite.Part me;
+	me = makepart(0);
+	me.setup(cc, off);
+	drw.addpart(me);
+	me = makepart(-10);
 	me.setup(cc, off);
 	drw.addpart(me);
     }
 	
-    private synchronized Object[] stateid() {
-	Object[] ret = new Object[layers.size()];
+    private synchronized Object[] stateid(Object... extra) {
+	Object[] ret = new Object[layers.size() + extra.length];
 	for(int i = 0; i < layers.size(); i++) {
 	    Sprite spr = sprites.get(layers.get(i));
 	    if(spr == null)
@@ -148,14 +153,17 @@ public class Layered extends Drawable {
 	    else
 		ret[i] = spr.stateid();
 	}
+	for(int i = 0; i < extra.length; i++)
+	    ret[i + layers.size()] = extra[i];
 	return(ArrayIdentity.intern(ret));
     }
 
-    private Layer redraw() {
+    private Layer redraw(final int z) {
 	final ArrayList<Sprite.Part> parts = new ArrayList<Sprite.Part>();
 	Sprite.Drawer drw = new Sprite.Drawer() {
 		public void addpart(Sprite.Part p) {
-		    parts.add(p);
+		    if(p.z == z)
+			parts.add(p);
 		}
 	    };
 	for(Sprite spr : sprites.values()) {
@@ -189,14 +197,14 @@ public class Layered extends Drawable {
 	return(new Layer(buf, ul.inv()));
     }
 
-    private Sprite.Part makepart() {
+    private Sprite.Part makepart(int z) {
 	final Layer l;
 	synchronized(Layered.this) {
-	    Object[] id = stateid();
+	    Object[] id = stateid(z);
 	    synchronized(cache) {
 		Layer ll = cache.get(id);
 		if(ll == null) {
-		    ll = redraw();
+		    ll = redraw(z);
 		    cache.put(id, ll);
 		}
 		l = ll;

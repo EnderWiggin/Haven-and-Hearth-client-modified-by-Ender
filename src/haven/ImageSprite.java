@@ -58,7 +58,7 @@ public abstract class ImageSprite extends Sprite {
 	while(!sdt.eom()) {
 	    int b = sdt.uint8();
 	    for(int o = 0; o < 8; o++, i++)
-		ret[i] = (b & (o << 1)) != 0;
+		ret[i] = (b & (1 << o)) != 0;
 	}
 	return(ret);
     }
