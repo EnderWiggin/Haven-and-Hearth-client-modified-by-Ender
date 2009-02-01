@@ -99,12 +99,12 @@ public abstract class Sprite {
 	public Resource res;
 		
 	public ResourceException(String msg, Resource res) {
-	    super(msg + " (" + res + ")");
+	    super(msg + " (" + res + ", from " + res.source + ")");
 	    this.res = res;
 	}
 		
 	public ResourceException(String msg, Throwable cause, Resource res) {
-	    super(msg + " (" + res + ")", cause);
+	    super(msg + " (" + res + ", from " + res.source + ")", cause);
 	    this.res = res;
 	}
     }
