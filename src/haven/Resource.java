@@ -173,7 +173,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public InputStream get(String name) throws IOException;
     }
     
-    public static abstract class TeeSource implements ResSource {
+    public static abstract class TeeSource implements ResSource, Serializable {
 	public ResSource back;
 	
 	public TeeSource(ResSource back) {
@@ -193,8 +193,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
     
-    public static class CacheSource implements ResSource {
-	public ResCache cache;
+    public static class CacheSource implements ResSource, Serializable {
+	public transient ResCache cache;
 	
 	public CacheSource(ResCache cache) {
 	    this.cache = cache;
@@ -209,7 +209,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 
-    public static class FileSource implements ResSource {
+    public static class FileSource implements ResSource, Serializable {
 	File base;
 	
 	public FileSource(File base) {
@@ -234,7 +234,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 
-    public static class JarSource implements ResSource {
+    public static class JarSource implements ResSource, Serializable {
 	public InputStream get(String name) {
 	    InputStream s = Resource.class.getResourceAsStream("/res/" + name + ".res");
 	    if(s == null)
@@ -247,7 +247,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
     
-    public static class HttpSource implements ResSource {
+    public static class HttpSource implements ResSource, Serializable {
 	private transient SslHelper ssl;
 	public URL baseurl;
 	
