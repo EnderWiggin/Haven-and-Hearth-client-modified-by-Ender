@@ -23,6 +23,10 @@ public class Gob implements Sprite.Owner {
 	    this.sdt = sdt;
 	    spr = null;
 	}
+	
+	public static interface CDel {
+	    public void delete();
+	}
     }
     
     public Gob(Glob glob, Coord c, int id, int frame) {
@@ -52,7 +56,7 @@ public class Gob implements Sprite.Owner {
 	for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
-		if(ol.res.get() != null)
+		if((getneg() != null) && (ol.res.get() != null))
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 	    } else {
 		boolean done = ol.spr.tick(dt);
