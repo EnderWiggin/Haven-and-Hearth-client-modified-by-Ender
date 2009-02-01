@@ -999,16 +999,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     }
 
     static {
-	try {
-	    InputStream pls;
-	    pls = Resource.class.getResourceAsStream("res-preload");
-	    if(pls != null)
-		loadlist(pls, -5);
-	    pls = Resource.class.getResourceAsStream("res-bgload");
-	    if(pls != null)
-		loadlist(pls, -10);
-	} catch(IOException e) {
-	    throw(new Error(e));
+	if(!Utils.getprop("haven.nopreload", "no").equals("yes")) {
+	    try {
+		InputStream pls;
+		pls = Resource.class.getResourceAsStream("res-preload");
+		if(pls != null)
+		    loadlist(pls, -5);
+		pls = Resource.class.getResourceAsStream("res-bgload");
+		if(pls != null)
+		    loadlist(pls, -10);
+	    } catch(IOException e) {
+		throw(new Error(e));
+	    }
 	}
     }
 }

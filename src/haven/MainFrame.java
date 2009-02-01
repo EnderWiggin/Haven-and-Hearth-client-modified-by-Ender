@@ -136,7 +136,9 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	if(jnlpcache != null)
 	    Resource.addcache(jnlpcache);
 	try {
-	    Resource.addurl(new URL(Utils.getprop("haven.resurl", "https://www.havenandhearth.com/res/")));
+	    String url = Utils.getprop("haven.resurl", "https://www.havenandhearth.com/res/");
+	    if(!url.equals(""))
+		Resource.addurl(new URL(url));
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
