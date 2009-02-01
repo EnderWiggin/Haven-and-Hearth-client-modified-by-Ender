@@ -6,6 +6,8 @@ import java.util.*;
 public class StreamTee extends InputStream {
     private InputStream in;
     private List<OutputStream> forked = new LinkedList<OutputStream>();
+    private boolean readeof = false;
+    private boolean ncwe = false; /* NCWE = No Close Without EOF */
     
     public StreamTee(InputStream in) {
 	this.in = in;
@@ -17,10 +19,16 @@ public class StreamTee extends InputStream {
     
     public void close() throws IOException {
 	in.close();
-	synchronized(forked) {
-	    for(OutputStream s : forked)
-		s.close();
+	if(!ncwe || readeof) {
+	    synchronized(forked) {
+		for(OutputStream s : forked)
+		    s.close();
+	    }
 	}
+    }
+    
+    public void setncwe() {
+	ncwe = true;
     }
     
     public void flush() throws IOException {
@@ -43,6 +51,8 @@ public class StreamTee extends InputStream {
 		for(OutputStream s : forked)
 		    s.write(rv);
 	    }
+	} else {
+	    readeof = true;
 	}
 	return(rv);
     }
@@ -54,6 +64,8 @@ public class StreamTee extends InputStream {
 		for(OutputStream s : forked)
 		    s.write(buf, off, rv);
 	    }
+	} else {
+	    readeof = true;
 	}
 	return(rv);
     }

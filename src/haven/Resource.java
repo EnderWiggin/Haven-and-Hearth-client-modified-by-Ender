@@ -185,6 +185,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
 	public InputStream get(String name) throws IOException {
 	    StreamTee tee = new StreamTee(back.get(name));
+	    tee.setncwe();
 	    tee.attach(fork(name));
 	    return(tee);
 	}
