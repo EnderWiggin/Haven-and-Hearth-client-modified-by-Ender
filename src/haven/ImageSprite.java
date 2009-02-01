@@ -66,6 +66,8 @@ public abstract class ImageSprite extends Sprite {
     protected ImageSprite(Owner owner, Resource res, Message sdt) {
 	super(owner, res);
 	Resource.Neg neg = res.layer(Resource.negc);
+	if(neg == null)
+	    throw(new ResourceException("No negative found", res));
 	this.cc = neg.cc;
     }
     
