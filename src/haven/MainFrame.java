@@ -185,10 +185,10 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
 	f.run();
 	dumplist(Resource.loadwaited, Utils.getprop("haven.loadwaited", null));
-	dumplist(Resource.allused, Utils.getprop("haven.allused", null));
+	dumplist(Resource.cached(), Utils.getprop("haven.allused", null));
 	if(jnlpcache != null) {
 	    try {
-		dumplist(Resource.allused, new PrintWriter(jnlpcache.store("tmp/allused")));
+		dumplist(Resource.cached(), new PrintWriter(jnlpcache.store("tmp/allused")));
 	    } catch(java.io.IOException e) {}
 	}
     }
@@ -227,7 +227,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	System.exit(0);
     }
 	
-    private static void dumplist(java.util.Collection<String> list, String fn) {
+    private static void dumplist(java.util.Collection<Resource> list, String fn) {
 	try {
 	    if(fn != null)
 		dumplist(list, new PrintWriter(fn));
@@ -236,10 +236,15 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
     }
     
-    private static void dumplist(java.util.Collection<String> list, PrintWriter out) {
+    private static void dumplist(java.util.Collection<Resource> list, PrintWriter out) {
 	try {
-	    for(String res : list)
-		out.println(res);
+	    for(Resource res : list) {
+		if(res.loading)
+		    continue;
+		if(res.prio < 0)
+		    continue;
+		out.println(res.name + ":" + res.ver);
+	    }
 	    out.close();
 	} catch(Exception e) {
 	    throw(new RuntimeException(e));

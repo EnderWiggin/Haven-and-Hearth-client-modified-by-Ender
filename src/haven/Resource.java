@@ -15,8 +15,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     private static CacheSource prscache;
     public static ThreadGroup loadergroup = null;
     private static Map<String, Class<? extends Layer>> ltypes = new TreeMap<String, Class<? extends Layer>>();
-    static Set<String> loadwaited = new HashSet<String>();
-    static Set<String> allused = new HashSet<String>();
+    static Set<Resource> loadwaited = new HashSet<Resource>();
     public static Class<Image> imgc = Image.class;
     public static Class<Tile> tile = Tile.class;
     public static Class<Neg> negc = Neg.class;
@@ -50,7 +49,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public boolean loading;
     public ResSource source;
     private Indir<Resource> indir = null;
-    private int prio = 0;
+    int prio = 0;
 
     private Resource(String name, int ver) {
 	this.name = name;
@@ -105,7 +104,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    if(res != null) {
 		if(res.prio < prio)
 		    res.prio = prio;
-		return res;
+		return(res);
 	    }
 	    res = new Resource(name, ver);
 	    res.prio = prio;
@@ -117,6 +116,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     
     public static int numloaded() {
 	return(cache.size());
+    }
+    
+    public static Collection<Resource> cached() {
+	return(cache.values());
     }
 	
     public static Resource load(String name, int ver) {
@@ -153,7 +156,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public void loadwait() {
 	boolean i = false;
 	synchronized(loadwaited) {
-	    loadwaited.add(name);
+	    loadwaited.add(this);
 	}
 	synchronized(this) {
 	    prio = 10;
@@ -926,9 +929,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	this.layers = layers;
 	for(Layer l : layers)
 	    l.init();
-	synchronized(allused) {
-	    allused.add(name);
-	}
     }
 	
     public Indir<Resource> indir() {
@@ -981,9 +981,20 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
     public static void loadlist(InputStream list, int prio) throws IOException {
 	BufferedReader in = new BufferedReader(new InputStreamReader(list, "us-ascii"));
-	String nm;
-	while((nm = in.readLine()) != null)
-	    load(nm, -1, prio);
+	String ln;
+	while((ln = in.readLine()) != null) {
+	    int pos = ln.indexOf(':');
+	    if(pos < 0)
+		continue;
+	    String nm = ln.substring(0, pos);
+	    int ver;
+	    try {
+		ver = Integer.parseInt(ln.substring(pos + 1));
+	    } catch(NumberFormatException e) {
+		continue;
+	    }
+	    load(nm, ver, prio);
+	}
 	in.close();
     }
 
