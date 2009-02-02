@@ -25,7 +25,7 @@ public class Party {
 	
     public class Member {
 	int gobid;
-	private Coord c;
+	private Coord c = Coord.z;
 	Color col;
 		
 	public Coord getc() {
