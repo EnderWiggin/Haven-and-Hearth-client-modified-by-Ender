@@ -68,6 +68,10 @@ public class Equipory extends Window implements DTarget {
 		    }
 		}
 	    }
+	} else if(msg == "setres") {
+	    int i = (Integer)args[0];
+	    Indir<Resource> res = ui.sess.getres((Integer)args[1]);
+	    equed.get(i).chres(res);
 	} else if(msg == "settt") {
 	    int i = (Integer)args[0];
 	    String tt = (String)args[1];

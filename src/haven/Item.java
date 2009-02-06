@@ -175,14 +175,18 @@ public class Item extends Widget implements DTarget {
 	return(false);
     }
 	
+    public void chres(Indir<Resource> res) {
+	this.res = res;
+	sh = null;
+    }
+
     public void uimsg(String name, Object... args)  {
 	if(name == "num") {
 	    num = (Integer)args[0];
 	} else if(name == "draggable") {
 	    draggable = (Integer)args[0] != 0;
 	} else if(name == "chres") {
-	    res = ui.sess.getres((Integer)args[0]);
-	    sh = null;
+	    chres(ui.sess.getres((Integer)args[0]));
 	} else if(name == "color") {
 	    olcol = (Color)args[0];
 	} else if(name == "tt") {
