@@ -53,16 +53,25 @@ public class Equipory extends Window implements DTarget {
     public void uimsg(String msg, Object... args) {
 	if(msg == "set") {
 	    synchronized(ui) {
-		for(int i = 0; i < equed.size(); i++) {
+		int i = 0;
+		while(i < equed.size()) {
 		    if(equed.get(i) != null)
 			equed.get(i).unlink();
-		    int res = (Integer)args[i];
-		    if(res >= 0)
-			equed.set(i, new Item(Coord.z, res, epoints.get(i), null));
-		    else
+		    int res = (Integer)args[i++];
+		    if(res >= 0) {
+			Item ni = new Item(Coord.z, res, epoints.get(i), null);
+			equed.set(i, ni);
+			if(args[i] instanceof String)
+			    ni.tooltip = (String)args[i++];
+		    } else {
 			equed.set(i, null);
+		    }
 		}
 	    }
+	} else if(msg == "settt") {
+	    int i = (Integer)args[0];
+	    String tt = (String)args[1];
+	    equed.get(i).tooltip = tt;
 	} else if(msg == "ava") {
 	    avagob = (Integer)args[0];
 	}
