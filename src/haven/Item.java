@@ -16,6 +16,7 @@ public class Item extends Widget implements DTarget {
     boolean h;
     Color olcol = null;
     Tex mask = null;
+    int meter = 0;
 	
     static {
 	Widget.addtype("item", new WidgetFactory() {
@@ -69,6 +70,12 @@ public class Item extends Widget implements DTarget {
 	    if(num >= 0) {
 		g.chcolor(Color.BLACK);
 		g.atext(Integer.toString(num), tex.sz(), 1, 1);
+	    }
+	    if(meter > 0) {
+		double a = ((double)meter) / 100.0;
+		g.chcolor(255, 255, 255, 64);
+		g.fellipse(sz.div(2), new Coord(15, 15), (int)(90 - (360 * a)), 90);
+		g.chcolor();
 	    }
 	    ttres = res.get();
 	}
@@ -194,6 +201,8 @@ public class Item extends Widget implements DTarget {
 		tooltip = (String)args[0];
 	    else
 		tooltip = null;
+	} else if(name == "meter") {
+	    meter = (Integer)args[0];
 	}
     }
 	
