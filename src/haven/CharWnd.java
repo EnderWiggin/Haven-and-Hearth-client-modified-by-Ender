@@ -89,11 +89,29 @@ public class CharWnd extends Window {
 			dec();
 			upd();
 		    }
+		    
+		    public boolean mousewheel(Coord c, int a) {
+			if(a < 0)
+			    inc();
+			else
+			    dec();
+			upd();
+			return(true);
+		    }
 		};
 	    plus = new IButton(new Coord(x + 45, y), cattr, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
 		    public void click() {
 			inc();
 			upd();
+		    }
+		    
+		    public boolean mousewheel(Coord c, int a) {
+			if(a < 0)
+			    inc();
+			else
+			    dec();
+			upd();
+			return(true);
 		    }
 		};
 	}
