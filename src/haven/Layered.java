@@ -107,7 +107,7 @@ public class Layered extends Drawable {
 	}
     }
 	
-    public boolean checkhit(Coord c) {
+    public synchronized boolean checkhit(Coord c) {
 	if(base.get() == null)
 	    return(false);
 	for(Sprite spr : sprites.values()) {
