@@ -77,7 +77,12 @@ public class UI {
     public void newwidget(int id, String type, Coord c, int parent, Object... args) throws InterruptedException {
 	WidgetFactory f;
 	if(type.indexOf('/') >= 0) {
-	    Resource res = Resource.load(type);
+	    int ver = -1, p;
+	    if((p = type.indexOf(':')) > 0) {
+		ver = Integer.parseInt(type.substring(p + 1));
+		type = type.substring(0, p);
+	    }
+	    Resource res = Resource.load(type, ver);
 	    res.loadwaitint();
 	    f = res.layer(Resource.CodeEntry.class).wdg();
 	} else {
