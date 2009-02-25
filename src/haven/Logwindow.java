@@ -6,13 +6,17 @@ public class Logwindow extends HWindow {
     static {
 	Widget.addtype("slenlog", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new Logwindow(parent, (String)args[0]));
+		    String t = (String)args[0];
+		    boolean cl = false;
+		    if(args.length > 1)
+			cl = (Integer)args[1] != 0;
+		    return(new Logwindow(parent, t, cl));
 		}
 	    });
     }
 	
-    public Logwindow(Widget parent, String title) {
-	super(parent, title);
+    public Logwindow(Widget parent, String title, boolean closable) {
+	super(parent, title, closable);
 	log = new Textlog(Coord.z, sz, this);
     }
 	

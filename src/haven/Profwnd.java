@@ -9,7 +9,7 @@ public class Profwnd extends HWindow {
     private static final int h = 80;
     
     public Profwnd(Widget parent, Profile prof, String title) {
-	super(parent, title);
+	super(parent, title, true);
 	this.prof = prof;
     }
     
@@ -51,6 +51,14 @@ public class Profwnd extends HWindow {
 		    }
 		}
 	    }
+	}
+    }
+    
+    public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender == cbtn) {
+	    ui.destroy(this);
+	} else {
+	    super.wdgmsg(sender, msg, args);
 	}
     }
 }

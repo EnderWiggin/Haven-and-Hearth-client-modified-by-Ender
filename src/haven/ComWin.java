@@ -18,7 +18,7 @@ public class ComWin extends HWindow {
     }
     
     public ComWin(Widget parent) {
-	super(parent, "Combat");
+	super(parent, "Combat", false);
 	(new Label(new Coord(10, 5), this, "Attack:")).setcolor(Color.BLACK);
 	new Label(new Coord(10, 55), this, "Maneuver:").setcolor(Color.BLACK);
     }
