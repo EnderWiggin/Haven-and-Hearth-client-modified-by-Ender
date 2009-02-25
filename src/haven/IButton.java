@@ -28,6 +28,7 @@ public class IButton extends SSWidget {
     }
 	
     public void render() {
+	clear();
 	Graphics g = graphics();
 	if(a)
 	    g.drawImage(down, 0, 0, null);
