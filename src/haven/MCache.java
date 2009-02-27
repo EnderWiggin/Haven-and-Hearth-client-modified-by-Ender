@@ -82,7 +82,7 @@ public class MCache {
 						Random rnd = mkrandoom(c);
 						if(rnd.nextInt(set.flavprob) == 0) {
 							Resource r = set.flavobjs.pick(rnd);
-							Gob g = new Gob(sess.glob, c.add(tc).mul(tilesz), 0, 0); 
+							Gob g = new Gob(sess.glob, c.add(tc).mul(tilesz), -1, 0); 
 							g.setattr(new ResDrawable(g, r));
 							fo.add(g);
 						}
