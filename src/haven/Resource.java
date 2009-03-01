@@ -994,7 +994,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    } catch(NumberFormatException e) {
 		continue;
 	    }
-	    load(nm, ver, prio);
+	    try {
+		load(nm, ver, prio);
+	    } catch(RuntimeException e) {
+	    }
 	}
 	in.close();
     }
