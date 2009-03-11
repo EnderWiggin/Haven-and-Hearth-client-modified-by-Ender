@@ -20,8 +20,17 @@ public class HavenPanel extends GLCanvas implements Runnable {
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
     private SyncFSM fsm = null;
+    private static final GLCapabilities caps;
+    static {
+	caps = new GLCapabilities();
+	caps.setAlphaBits(8);
+	caps.setRedBits(8);
+	caps.setGreenBits(8);
+	caps.setBlueBits(8);
+    }
 	
     public HavenPanel(int w, int h) {
+	super(caps);
 	setSize(this.w = w, this.h = h);
 	initgl();
 	setCursor(Toolkit.getDefaultToolkit().createCustomCursor(TexI.mkbuf(new Coord(1, 1)), new java.awt.Point(), ""));
