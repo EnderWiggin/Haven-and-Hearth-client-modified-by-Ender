@@ -819,6 +819,23 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     }
     static {ltypes.put("audio", Audio.class);}
 	
+    public class Music extends Resource.Layer {
+	transient javax.sound.midi.Sequence seq;
+	
+	public Music(byte[] buf) {
+	    try {
+		seq = javax.sound.midi.MidiSystem.getSequence(new ByteArrayInputStream(buf));
+	    } catch(javax.sound.midi.InvalidMidiDataException e) {
+		throw(new LoadException("Invalid MIDI data", Resource.this));
+	    } catch(IOException e) {
+		throw(new RuntimeException(e));
+	    }
+	}
+	
+	public void init() {}
+    }
+    static {ltypes.put("midi", Music.class);}
+
     private void readall(InputStream in, byte[] buf) throws IOException {
 	int ret, off = 0;
 	while(off < buf.length) {

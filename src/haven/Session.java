@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 16;
+    public static final int PVER = 17;
     
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -318,6 +318,13 @@ public class Session {
 		Audio.play(res);
 	    } else if(msg.type == Message.RMSG_CATTR) {
 		glob.cattr(msg);
+	    } else if(msg.type == Message.RMSG_MUSIC) {
+		String resnm = msg.string();
+		int resver = msg.uint16();
+		if(resnm.equals(""))
+		    Music.play(null);
+		else
+		    Music.play(Resource.load(resnm, resver));
 	    } else {
 		throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 	    }
