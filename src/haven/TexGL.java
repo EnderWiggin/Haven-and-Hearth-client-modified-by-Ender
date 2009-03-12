@@ -7,7 +7,7 @@ import javax.media.opengl.*;
 
 public abstract class TexGL extends Tex {
 	protected int id = -1;
-	private GL mygl = null;
+	protected GL mygl = null;
 	private Object idmon = new Object();
 	protected Coord tdim;
 	protected static Map<GL, Collection<Integer>> disposed = new HashMap<GL, Collection<Integer>>();

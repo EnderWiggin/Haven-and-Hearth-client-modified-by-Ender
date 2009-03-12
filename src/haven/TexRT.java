@@ -7,7 +7,7 @@ import javax.media.opengl.glu.GLU;
 
 public abstract class TexRT extends TexGL {
     private static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();
-    private boolean inited = false, incurrent = false;
+    private boolean inited = false;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
 	
@@ -16,34 +16,34 @@ public abstract class TexRT extends TexGL {
     }
 	
     public void dispose() {
-	if(incurrent) {
-	    synchronized(current) {
-		current.remove(this);
+	Collection<TexRT> tc;
+	synchronized(current) {
+	    tc = current.get(mygl);
+	}
+	if(tc != null) {
+	    synchronized(tc) {
+		tc.remove(this);
 	    }
 	}
-	incurrent = false;
-	inited = false;
 	super.dispose();
     }
 	
     protected abstract void subrend(GOut g);
 	
     protected void fill(GOut g) {
-	if(!incurrent) {
-	    GL gl = g.gl;
-	    Collection<TexRT> tc;
-	    synchronized(current) {
-		tc = current.get(gl);
-		if(tc == null) {
-		    tc = new HashSet<TexRT>();
-		    current.put(gl, tc);
-		}
+	GL gl = g.gl;
+	Collection<TexRT> tc;
+	synchronized(current) {
+	    tc = current.get(gl);
+	    if(tc == null) {
+		tc = new HashSet<TexRT>();
+		current.put(gl, tc);
 	    }
-	    synchronized(tc) {
-		tc.add(this);
-	    }
-	    incurrent = true;
 	}
+	synchronized(tc) {
+	    tc.add(this);
+	}
+	inited = false;
     }
 	
     private void subrend2(GOut g) {
