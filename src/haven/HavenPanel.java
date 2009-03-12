@@ -23,6 +23,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
     private static final GLCapabilities caps;
     static {
 	caps = new GLCapabilities();
+	caps.setDoubleBuffered(true);
 	caps.setAlphaBits(8);
 	caps.setRedBits(8);
 	caps.setGreenBits(8);
