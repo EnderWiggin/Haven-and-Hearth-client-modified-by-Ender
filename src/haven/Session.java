@@ -321,6 +321,7 @@ public class Session {
 	    } else if(msg.type == Message.RMSG_MUSIC) {
 		String resnm = msg.string();
 		int resver = msg.uint16();
+		boolean loop = !msg.eom() && (msg.uint8() != 0);
 		if(resnm.equals(""))
 		    Music.play(null, false);
 		else

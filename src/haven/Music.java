@@ -5,7 +5,13 @@ import javax.sound.midi.*;
 
 public class Music {
     private static Player player;
+    private static boolean debug = false;
     
+    private static void debug(String str) {
+	if(debug)
+	    System.out.println(str);
+    }
+
     private static class Player extends Thread {
 	private Resource res;
 	private Thread waitfor;
@@ -40,7 +46,7 @@ public class Music {
 		}
 		seq.addMetaEventListener(new MetaEventListener() {
 			public void meta(MetaMessage msg) {
-			    System.out.println("Meta " + msg.getType());
+			    debug("Meta " + msg.getType());
 			    if(msg.getType() == 47) {
 				synchronized(Player.this) {
 				    done = true;
@@ -50,7 +56,7 @@ public class Music {
 			}
 		    });
 		do {
-		    System.out.println("Start loop");
+		    debug("Start loop");
 		    done = false;
 		    seq.start();
 		    synchronized(this) {
@@ -61,7 +67,7 @@ public class Music {
 		} while(loop);
 	    } catch(InterruptedException e) {
 	    } finally {
-		System.out.println("Exit player");
+		debug("Exit player");
 		if(seq != null)
 		    seq.close();
 		if(synth != null)
@@ -88,6 +94,7 @@ public class Music {
     
     public static void main(String[] args) throws Exception {
 	Resource.addurl(new java.net.URL("https://www.havenandhearth.com/res/"));
+	debug = true;
 	play(Resource.load(args[0]), (args.length > 1)?args[1].equals("y"):false);
 	player.join();
     }
