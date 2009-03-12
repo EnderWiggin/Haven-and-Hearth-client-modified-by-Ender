@@ -55,21 +55,16 @@ public class HavenPanel extends GLCanvas implements Runnable {
 			h.lsetprop("gl.renderer", gl.glGetString(gl.GL_RENDERER));
 			h.lsetprop("gl.exts", Arrays.asList(gl.glGetString(gl.GL_EXTENSIONS).split(" ")));
 		    }
-		    gl.glClearColor(0, 0, 0, 1);
 		    gl.glColor3f(1, 1, 1);
 		    gl.glPointSize(4);
 		    gl.setSwapInterval(1);
 		    gl.glEnable(GL.GL_BLEND);
 		    //gl.glEnable(GL.GL_LINE_SMOOTH);
 		    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		    GOut.checkerr(gl);
 		}
 
 		public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
-		    GL gl = d.getGL();
-		    GLU glu = new GLU();
-		    gl.glMatrixMode(GL.GL_PROJECTION);
-		    gl.glLoadIdentity();
-		    glu.gluOrtho2D(0, w, h, 0);
 		}
 			
 		public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
@@ -198,13 +193,25 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	
     void redraw(GL gl) {
 	ui.tooltip = null;
+	GOut g = new GOut(gl, getContext(), new Coord(800, 600));
+
+	gl.glMatrixMode(GL.GL_PROJECTION);
+	gl.glLoadIdentity();
+	gl.glOrtho(0, w, 0, h, -1, 1);
+	TexRT.renderall(g);
+	curf.tick("texrt");
+
+	gl.glMatrixMode(GL.GL_PROJECTION);
+	gl.glLoadIdentity();
+	gl.glOrtho(0, w, h, 0, -1, 1);
+	gl.glClearColor(0, 0, 0, 1);
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 	curf.tick("cls");
-	GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 	synchronized(ui) {
 	    ui.draw(g);
 	}
 	curf.tick("draw");
+
 	if(Utils.getprop("haven.dbtext", "off").equals("on")) {
 	    if(Resource.qdepth() > 0)
 		g.atext(String.format("RQ depth: %d (%d)", Resource.qdepth(), Resource.numloaded()), new Coord(10, 470), 0, 1);

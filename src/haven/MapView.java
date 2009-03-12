@@ -58,12 +58,12 @@ public class MapView extends Widget implements DTarget {
 	
     public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
 	super(c, sz, parent);
-	mask = new ILM(sz);
 	this.mc = mc;
 	this.playergob = playergob;
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
+	mask = new ILM(sz, glob.oc);
     }
 	
     public static Coord m2s(Coord c) {
@@ -361,7 +361,6 @@ public class MapView extends Widget implements DTarget {
 	final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 	ArrayList<Drawable> clickable = new ArrayList<Drawable>();
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
-	ArrayList<Lumin> lumin = new ArrayList<Lumin>();
 	Sprite.Drawer drawer = new Sprite.Drawer() {
 		public void addpart(Sprite.Part p) {
 		    if((p.ul.x >= sz.x) ||
@@ -383,9 +382,6 @@ public class MapView extends Widget implements DTarget {
 		Speaking s = gob.getattr(Speaking.class);
 		if(s != null)
 		    speaking.add(s);
-		Lumin l = gob.getattr(Lumin.class);
-		if(l != null)
-		    lumin.add(l);
 	    }
 	    Collections.sort(clickable, new Comparator<Drawable>() {
 		    public int compare(Drawable a, Drawable b) {
@@ -435,7 +431,6 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    
 	    curf.tick("draw");
-	    mask.update(lumin);
 	    g.image(mask, Coord.z);
 	    for(Speaking s : speaking) {
 		s.draw(g, s.gob.sc.add(s.off));

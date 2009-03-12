@@ -14,7 +14,7 @@ import javax.media.opengl.GL;
 
 public class ILM extends TexRT {
     public final static BufferedImage ljusboll;
-    Collection<Lumin> ll;
+    OCache oc;
     TexI lbtex;
     Color amb;
 	
@@ -43,9 +43,11 @@ public class ILM extends TexRT {
 	ljusboll = lb;
     }
 	
-    public ILM(Coord sz) {
+    public ILM(Coord sz, OCache oc) {
 	super(sz);
+	this.oc = oc;
 	amb = new Color(0, 0, 0, 0);
+	lbtex = new TexI(ljusboll);
     }
 	
     protected Color setenv(GL gl) {
@@ -53,26 +55,22 @@ public class ILM extends TexRT {
 	return(amb);
     }
 	
-    public void init(GL gl) {
-	if(lbtex == null)
-	    lbtex = new TexI(ljusboll);
-	gl.glClearColor(255, 255, 255, 255);
-    }
-	
     public void subrend(GOut g) {
 	GL gl = g.gl;
+	gl.glClearColor(255, 255, 255, 255);
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-	if(ll != null) {
-	    for(Lumin lum : ll) {
-		Coord sc = lum.gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
+	synchronized(oc) {
+	    for(Gob gob : oc) {
+		if(gob.sc == null) {
+		    /* Might not have been set up by the MapView yet */
+		    continue;
+		}
+		Lumin lum = gob.getattr(Lumin.class);
+		if(lum == null)
+		    continue;
+		Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
 		g.image(lbtex, sc, new Coord(lum.sz * 2, lum.sz * 2));
 	    }
 	}
-    }
-	
-    public void update(Collection<Lumin> objs) {
-	ll = objs;
-	update();
-	ll = null;
     }
 }
