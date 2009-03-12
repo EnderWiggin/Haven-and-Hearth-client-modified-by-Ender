@@ -322,9 +322,9 @@ public class Session {
 		String resnm = msg.string();
 		int resver = msg.uint16();
 		if(resnm.equals(""))
-		    Music.play(null);
+		    Music.play(null, false);
 		else
-		    Music.play(Resource.load(resnm, resver));
+		    Music.play(Resource.load(resnm, resver), false);
 	    } else {
 		throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 	    }

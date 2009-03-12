@@ -11,6 +11,8 @@ public class Music {
 	private Thread waitfor;
 	private Sequencer seq;
 	private Synthesizer synth;
+	private boolean done;
+	private boolean loop = false;
 	
 	private Player(Resource res, Thread waitfor) {
 	    super(Utils.tg(), "Music player");
@@ -38,15 +40,28 @@ public class Music {
 		}
 		seq.addMetaEventListener(new MetaEventListener() {
 			public void meta(MetaMessage msg) {
-			    if(msg.getType() == 47)
-				Player.this.interrupt();
+			    System.out.println("Meta " + msg.getType());
+			    if(msg.getType() == 47) {
+				synchronized(Player.this) {
+				    done = true;
+				    Player.this.notifyAll();
+				}
+			    }
 			}
 		    });
-		seq.start();
-		while(true)
-		    Thread.sleep(10000);
+		do {
+		    System.out.println("Start loop");
+		    done = false;
+		    seq.start();
+		    synchronized(this) {
+			while(!done)
+			    this.wait();
+		    }
+		    seq.setTickPosition(0);
+		} while(loop);
 	    } catch(InterruptedException e) {
 	    } finally {
+		System.out.println("Exit player");
 		if(seq != null)
 		    seq.close();
 		if(synth != null)
@@ -59,14 +74,20 @@ public class Music {
 	}
     }
     
-    public static void play(Resource res) {
+    public static void play(Resource res, boolean loop) {
 	synchronized(Music.class) {
 	    if(player != null)
 		player.interrupt();
 	    if(res != null) {
 		player = new Player(res, player);
+		player.loop = loop;
 		player.start();
 	    }
 	}
+    }
+    
+    public static void main(String[] args) throws Exception {
+	play(Resource.load(args[0]), (args.length > 1)?args[1].equals("y"):false);
+	player.join();
     }
 }
