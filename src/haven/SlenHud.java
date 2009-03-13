@@ -136,6 +136,7 @@ public class SlenHud extends Widget implements DropTarget {
 	
     public void runcmd(String[] argv) {
 	String cmd = argv[0].intern();
+	boolean die = false;
 	try {
 	    if(cmd == "q") {
 		Utils.tg().interrupt();
@@ -152,6 +153,8 @@ public class SlenHud extends Widget implements DropTarget {
 		}
 	    } else if(cmd == "sfx") {
 		Audio.play(Resource.load(argv[1]));
+	    } else if(cmd == "die") {
+		die = true;
 	    } else if(cmd == "browse") {
 		if(WebBrowser.self != null) {
 		    WebBrowser.self.show(new java.net.URL(argv[1]));
@@ -173,6 +176,8 @@ public class SlenHud extends Widget implements DropTarget {
 	} catch(Exception e) {
 	    error(e.getMessage());
 	}
+	if(die)
+	    throw(new RuntimeException("Triggered death"));
     }
 	
     public void error(String err) {

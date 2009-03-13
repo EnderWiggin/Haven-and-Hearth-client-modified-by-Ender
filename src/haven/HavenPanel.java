@@ -55,6 +55,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
 			h.lsetprop("gl.version", gl.glGetString(gl.GL_VERSION));
 			h.lsetprop("gl.renderer", gl.glGetString(gl.GL_RENDERER));
 			h.lsetprop("gl.exts", Arrays.asList(gl.glGetString(gl.GL_EXTENSIONS).split(" ")));
+			h.lsetprop("gl.caps", d.getChosenGLCapabilities());
 		    }
 		    gl.glColor3f(1, 1, 1);
 		    gl.glPointSize(4);
