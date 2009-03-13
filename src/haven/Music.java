@@ -43,6 +43,13 @@ public class Music {
 		    return;
 		} catch(InvalidMidiDataException e) {
 		    return;
+		} catch(IllegalArgumentException e) {
+		    /* The soft synthesizer appears to be throwing
+		     * non-checked exceptions through from the sampled
+		     * audio system. Ignore them and only them. */
+		    if(e.getMessage().startsWith("No line matching"))
+			return;
+		    throw(e);
 		}
 		seq.addMetaEventListener(new MetaEventListener() {
 			public void meta(MetaMessage msg) {
