@@ -153,6 +153,8 @@ public class SlenHud extends Widget implements DropTarget {
 		}
 	    } else if(cmd == "sfx") {
 		Audio.play(Resource.load(argv[1]));
+	    } else if(cmd == "texdis") {
+		TexGL.disableall = (Integer.parseInt(argv[1]) != 0);
 	    } else if(cmd == "die") {
 		die = true;
 	    } else if(cmd == "browse") {

@@ -11,6 +11,7 @@ public abstract class TexGL extends Tex {
     private Object idmon = new Object();
     protected Coord tdim;
     protected static Map<GL, Collection<Integer>> disposed = new HashMap<GL, Collection<Integer>>();
+    public static boolean disableall = false;
     
     public TexGL(Coord sz) {
 	super(sz);
@@ -65,21 +66,23 @@ public abstract class TexGL extends Tex {
 	}
 	Color amb = blend(g, setenv(gl));
 	checkerr(gl);
-	gl.glBegin(GL.GL_QUADS);
-	float l = ((float)ul.x) / ((float)tdim.x);
-	float t = ((float)ul.y) / ((float)tdim.y);
-	float r = ((float)br.x) / ((float)tdim.x);
-	float b = ((float)br.y) / ((float)tdim.y);
-	gl.glColor4f((float)amb.getRed() / 255.0f,
-		     (float)amb.getGreen() / 255.0f,
-		     (float)amb.getBlue() / 255.0f,
-		     (float)amb.getAlpha() / 255.0f);
-	gl.glTexCoord2f(l, t); gl.glVertex3i(c.x, c.y, 0);
-	gl.glTexCoord2f(r, t); gl.glVertex3i(c.x + sz.x, c.y, 0);
-	gl.glTexCoord2f(r, b); gl.glVertex3i(c.x + sz.x, c.y + sz.y, 0);
-	gl.glTexCoord2f(l, b); gl.glVertex3i(c.x, c.y + sz.y, 0);
-	gl.glEnd();
-	checkerr(gl);
+	if(!disableall) {
+	    gl.glBegin(GL.GL_QUADS);
+	    float l = ((float)ul.x) / ((float)tdim.x);
+	    float t = ((float)ul.y) / ((float)tdim.y);
+	    float r = ((float)br.x) / ((float)tdim.x);
+	    float b = ((float)br.y) / ((float)tdim.y);
+	    gl.glColor4f((float)amb.getRed() / 255.0f,
+			 (float)amb.getGreen() / 255.0f,
+			 (float)amb.getBlue() / 255.0f,
+			 (float)amb.getAlpha() / 255.0f);
+	    gl.glTexCoord2f(l, t); gl.glVertex3i(c.x, c.y, 0);
+	    gl.glTexCoord2f(r, t); gl.glVertex3i(c.x + sz.x, c.y, 0);
+	    gl.glTexCoord2f(r, b); gl.glVertex3i(c.x + sz.x, c.y + sz.y, 0);
+	    gl.glTexCoord2f(l, b); gl.glVertex3i(c.x, c.y + sz.y, 0);
+	    gl.glEnd();
+	    checkerr(gl);
+	}
     }
 	
     private static void dispose(GL gl, int id) {
