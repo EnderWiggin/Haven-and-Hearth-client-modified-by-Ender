@@ -205,13 +205,25 @@ public class Audio {
 	ckpl();
     }
 
+    private static void playres(Resource res) {
+	Collection<Resource.Audio> clips = res.layers(Resource.audio);
+	int s = (int)(Math.random() * clips.size());
+	Resource.Audio clip = null;
+	for(Resource.Audio cp : clips) {
+	    clip = cp;
+	    if(--s < 0)
+		break;
+	}
+	play(clip.clip);
+    }
+
     public static void play(final Resource clip) {
 	queue(new Runnable() {
 		public void run() {
 		    if(clip.loading)
 			queue.add(this);
 		    else
-			play(clip.layer(Resource.audio).clip);
+			playres(clip);
 		}
 	    });
     }
@@ -223,7 +235,7 @@ public class Audio {
 		    if(r == null)
 			queue.add(this);
 		    else
-			play(r.layer(Resource.audio).clip);
+			playres(r);
 		}
 	    });
     }
