@@ -325,7 +325,7 @@ public class Session {
 		if(resnm.equals(""))
 		    Music.play(null, false);
 		else
-		    Music.play(Resource.load(resnm, resver), false);
+		    Music.play(Resource.load(resnm, resver), loop);
 	    } else {
 		throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 	    }
