@@ -387,9 +387,11 @@ public class CharWnd extends Window {
 
 	new Label(new Coord(210, 10), cattr, "Skill Values:");
 	new Label(new Coord(210, 40), cattr, "Unarmed Combat:");
-	new Label(new Coord(210, 55), cattr, "Melee Combat:");
 	new SAttr("unarmed", 300, 40);
+	new Label(new Coord(210, 55), cattr, "Melee Combat:");
 	new SAttr("melee", 300, 55);
+	new Label(new Coord(210, 70), cattr, "Marksmanship:");
+	new SAttr("ranged", 300, 70);
 	new Label(new Coord(210, 85), cattr, "Cost:");
 	cost = new Label(new Coord(300, 85), cattr, "0");
 	new Label(new Coord(210, 100), cattr, "Learning Points:");
