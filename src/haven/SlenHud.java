@@ -18,7 +18,7 @@ public class SlenHud extends Widget implements DropTarget {
     List<HWindow> wnds = new ArrayList<HWindow>();
     HWindow awnd;
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
-    IButton hb, invb, equb, chrb;
+    IButton hb, invb, equb, chrb, budb;
     Button sub, sdb;
     VC vc;
     String cmdline = null;
@@ -107,6 +107,7 @@ public class SlenHud extends Widget implements DropTarget {
 	invb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/invu"), Resource.loadimg("gfx/hud/slen/invd"));
 	equb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/equu"), Resource.loadimg("gfx/hud/slen/equd"));
 	chrb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/chru"), Resource.loadimg("gfx/hud/slen/chrd"));
+	budb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/budu"), Resource.loadimg("gfx/hud/slen/budd"));
 	vc = new VC(this, new IButton(new Coord(380, 600), parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd")) {
 		public void click() {
 		    vc.show();
@@ -260,6 +261,9 @@ public class SlenHud extends Widget implements DropTarget {
 	    return;
 	} else if(sender == chrb) {
 	    wdgmsg("chr");
+	    return;
+	} else if(sender == budb) {
+	    wdgmsg("bud");
 	    return;
 	}
 	super.wdgmsg(sender, msg, args);
