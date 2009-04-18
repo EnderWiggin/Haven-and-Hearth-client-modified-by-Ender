@@ -25,7 +25,7 @@ public class CheckBox extends Widget {
 	if(button != 1)
 	    return(false);
 	a = !a;
-	wdgmsg("ch", a);
+	changed(a);
 	return(true);
     }
 
@@ -35,5 +35,9 @@ public class CheckBox extends Widget {
 	if(a)
 	    g.image(mark, Coord.z);
 	super.draw(g);
+    }
+    
+    public void changed(boolean val) {
+	wdgmsg("ch", a);
     }
 }

@@ -82,6 +82,11 @@ public class GOut {
 	checkerr();
     }
 	
+    public void aimage(Tex tex, Coord c, double ax, double ay) {
+	Coord sz = tex.sz();
+	image(tex, c.add((int)((double)sz.x * -ax), (int)((double)sz.y * -ay)));
+    }
+	
     public void image(Tex tex, Coord c, Coord sz) {
 	if(tex == null)
 	    return;
