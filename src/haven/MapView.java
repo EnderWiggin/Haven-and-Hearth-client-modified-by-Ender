@@ -457,6 +457,7 @@ public class MapView extends Widget implements DTarget {
 	return((d + 1) / 2);
     }
 	
+    /*
     private void fixlight() {
 	Astronomy a = glob.ast;
 	if(a == null) {
@@ -474,6 +475,7 @@ public class MapView extends Widget implements DTarget {
 	double ll = ml + ((1 - ml) * sa);
 	mask.amb = mkc(hs * 0.4, hs * 0.2, nl * 0.25 * ll, 1 - ll);
     }
+    */
 	
     public void drawarrows(GOut g) {
 	Coord oc = viewoffset(sz, mc);
@@ -544,7 +546,8 @@ public class MapView extends Widget implements DTarget {
 	    unflashol();
 	map.sendreqs();
 	try {
-	    fixlight();
+	    if((mask.amb = glob.amblight) == null)
+		mask.amb = new Color(0, 0, 0, 0);
 	    drawmap(g);
 	    drawarrows(g);
 	    g.chcolor(Color.WHITE);

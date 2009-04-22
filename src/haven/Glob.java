@@ -3,6 +3,10 @@ package haven;
 import java.util.*;
 
 public class Glob {
+    public static final int GMSG_TIME = 0;
+    public static final int GMSG_ASTRO = 1;
+    public static final int GMSG_LIGHT = 2;
+	
     public long time;
     public Astronomy ast;
     public OCache oc = new OCache(this);
@@ -11,7 +15,8 @@ public class Glob {
     public Party party;
     public Collection<Resource> paginae = new TreeSet<Resource>();
     public Map<String, CAttr> cattr = new HashMap<String, CAttr>();
-	
+    public java.awt.Color amblight = null;
+    
     public Glob(Session sess) {
 	this.sess = sess;
 	map = new MCache(sess);
@@ -43,12 +48,23 @@ public class Glob {
     }
 	
     public void blob(Message msg) {
-	time = msg.int32();
-	double dt = defix(msg.int32());
-	double mp = defix(msg.int32());
-	double yt = defix(msg.int32());
-	boolean night = (dt < 0.25) || (dt > 0.75);
-	ast = new Astronomy(dt, mp, yt, night);
+	while(!msg.eom()) {
+	    switch(msg.uint8()) {
+	    case GMSG_TIME:
+		time = msg.int32();
+		break;
+	    case GMSG_ASTRO:
+		double dt = defix(msg.int32());
+		double mp = defix(msg.int32());
+		double yt = defix(msg.int32());
+		boolean night = (dt < 0.25) || (dt > 0.75);
+		ast = new Astronomy(dt, mp, yt, night);
+		break;
+	    case GMSG_LIGHT:
+		amblight = msg.color();
+		break;
+	    }
+	}
     }
 	
     public void paginae(Message msg) {
