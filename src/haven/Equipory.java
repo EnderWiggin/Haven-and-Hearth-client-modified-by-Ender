@@ -61,7 +61,7 @@ public class Equipory extends Window implements DTarget {
 		    if(res >= 0) {
 			Item ni = new Item(Coord.z, res, epoints.get(i), null);
 			equed.set(i++, ni);
-			if(args[o] instanceof String)
+			if((o < args.length) && (args[o] instanceof String))
 			    ni.tooltip = (String)args[o++];
 		    } else {
 			equed.set(i++, null);
