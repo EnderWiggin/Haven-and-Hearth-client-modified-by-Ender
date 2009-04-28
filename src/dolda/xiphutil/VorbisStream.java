@@ -144,8 +144,10 @@ public class VorbisStream {
 	    int len = dsp.synthesis_pcmout(pcmp, idxp);
 	    if(len > 0) {
 		float[][] ret = new float[chn][];
-		for(int i = 0; i < chn; i++)
-		    ret[i] = Arrays.copyOfRange(pcmp[0][i], idxp[i], idxp[i] + len);
+		for(int i = 0; i < chn; i++) {
+		    ret[i] = new float[len];
+		    System.arraycopy(pcmp[0][i], idxp[i], ret[i], 0, len);
+		}
 		dsp.synthesis_read(len);
 		return(ret);
 	    }

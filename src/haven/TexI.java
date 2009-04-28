@@ -47,7 +47,8 @@ public class TexI extends TexGL {
 	
     public TexI mkmask() {
 	TexI n = new TexI(dim);
-	n.pixels = java.util.Arrays.copyOf(pixels, pixels.length);
+	n.pixels = new byte[pixels.length];
+	System.arraycopy(pixels, 0, n.pixels, 0, pixels.length);
 	n.fmt = GL.GL_ALPHA;
 	return(n);
     }
