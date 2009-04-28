@@ -48,7 +48,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public int ver;
     public boolean loading;
     public ResSource source;
-    private Indir<Resource> indir = null;
+    private transient Indir<Resource> indir = null;
     int prio = 0;
 
     private Resource(String name, int ver) {
