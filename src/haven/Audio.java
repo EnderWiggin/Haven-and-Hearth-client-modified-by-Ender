@@ -130,7 +130,6 @@ public class Audio {
 		    return;
 		}
 		int bufsize = line.getBufferSize();
-		System.out.println(bufsize);
 		byte[] buf = new byte[1024];
 		while(true) {
 		    if(Thread.interrupted())
