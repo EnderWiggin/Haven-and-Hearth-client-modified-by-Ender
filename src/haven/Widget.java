@@ -25,7 +25,7 @@ public class Widget {
 			       MenuGrid.class, SlenHud.class, HWindow.class, CheckBox.class, Logwindow.class,
 			       MapMod.class, ISBox.class, ComMeter.class, Fightview.class, IMeter.class,
 			       GiveButton.class, Charlist.class, ComWin.class, CharWnd.class, BuddyWnd.class,
-			       ChatHW.class};
+			       ChatHW.class, Speedget.class};
 	
     static {
 	addtype("cnt", new WidgetFactory() {
