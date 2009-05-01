@@ -62,6 +62,8 @@ public class Profile {
 	    hist[i] = this;
 	    if(++i >= hist.length)
 		i = 0;
+	    pw = null;
+	    nw = null;
 	}
 	
 	public String toString() {
