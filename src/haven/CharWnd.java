@@ -376,17 +376,20 @@ public class CharWnd extends Window {
 	new Img(new Coord(10, 70), Resource.loadtex("gfx/hud/charsh/intel"), cattr);
 	new Img(new Coord(10, 85), Resource.loadtex("gfx/hud/charsh/cons"), cattr);
 	new Img(new Coord(10, 100), Resource.loadtex("gfx/hud/charsh/perc"), cattr);
+	new Img(new Coord(10, 115), Resource.loadtex("gfx/hud/charsh/csm"), cattr);
 	new Label(new Coord(30, 40), cattr, "Strength:");
 	new Label(new Coord(30, 55), cattr, "Agility:");
 	new Label(new Coord(30, 70), cattr, "Intelligence:");
 	new Label(new Coord(30, 85), cattr, "Constitution:");
 	new Label(new Coord(30, 100), cattr, "Perception:");
+	new Label(new Coord(30, 115), cattr, "Charisma:");
 	new Attr("str", 100, 40);
 	new Attr("agil", 100, 55);
 	new Attr("intel", 100, 70);
 	new Attr("cons", 100, 85);
 	new Attr("perc", 100, 100);
-	foodm = new FoodMeter(new Coord(10, 120), cattr);
+	new Attr("csm", 100, 115);
+	foodm = new FoodMeter(new Coord(10, 150), cattr);
 
 	new Label(new Coord(210, 10), cattr, "Skill Values:");
 	new Label(new Coord(210, 40), cattr, "Unarmed Combat:");
