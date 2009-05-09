@@ -93,12 +93,19 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	Resource res;
 	synchronized(cache) {
 	    res = cache.get(name);
-	    if((res != null) && (res.ver != -1) && (ver != -1)) {
-		if(res.ver < ver) {
-		    res = null;
-		    cache.remove(name);
-		} else if(res.ver > ver) {
-		    throw(new RuntimeException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source)));
+	    if(res != null) {
+		if((res.ver != -1) && (ver != -1)) {
+		    if(res.ver < ver) {
+			res = null;
+			cache.remove(name);
+		    } else if(res.ver > ver) {
+			throw(new RuntimeException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source)));
+		    }
+		} else if(ver == -1) {
+		    if(res.error != null) {
+			res = null;
+			cache.remove(name);
+		    }
 		}
 	    }
 	    if(res != null) {
