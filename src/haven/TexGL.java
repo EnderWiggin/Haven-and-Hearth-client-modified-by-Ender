@@ -56,7 +56,7 @@ public abstract class TexGL extends Tex {
     public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
 	GL gl = g.gl;
 	synchronized(idmon) {
-	    if(mygl != gl) {
+	    if((id != -1) && (mygl != gl)) {
 		dispose(mygl, id);
 		id = -1;
 	    }
