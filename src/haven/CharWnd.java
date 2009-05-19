@@ -127,13 +127,13 @@ public class CharWnd extends Window {
 
 	boolean inc() {
 	    tvalb++; tvalc++;
-	    cost += tvalb;
+	    cost += tvalb * 100;
 	    return(true);
 	}
 	
 	boolean dec() {
 	    if(tvalb > attr.base) {
-		cost -= tvalb;
+		cost -= tvalb * 100;
 		tvalb--; tvalc--;
 		return(true);
 	    }
