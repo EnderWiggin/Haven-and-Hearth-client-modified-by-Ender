@@ -144,6 +144,8 @@ public class CharWnd extends Window {
 	    super.update();
 	    tvalb = attr.base;
 	    tvalc = attr.comp;
+	    cost = 0;
+	    upd();
 	}
     }
     
@@ -391,13 +393,6 @@ public class CharWnd extends Window {
 	new Attr("csm", 100, 115);
 	foodm = new FoodMeter(new Coord(10, 150), cattr);
 
-	new Label(new Coord(210, 10), cattr, "Skill Values:");
-	new Label(new Coord(210, 40), cattr, "Unarmed Combat:");
-	new SAttr("unarmed", 300, 40);
-	new Label(new Coord(210, 55), cattr, "Melee Combat:");
-	new SAttr("melee", 300, 55);
-	new Label(new Coord(210, 70), cattr, "Marksmanship:");
-	new SAttr("ranged", 300, 70);
 	new Label(new Coord(210, 85), cattr, "Cost:");
 	cost = new Label(new Coord(300, 85), cattr, "0");
 	new Label(new Coord(210, 100), cattr, "Learning Points:");
@@ -407,6 +402,13 @@ public class CharWnd extends Window {
 		buysattrs();
 	    }
 	};
+	new Label(new Coord(210, 10), cattr, "Skill Values:");
+	new Label(new Coord(210, 40), cattr, "Unarmed Combat:");
+	new SAttr("unarmed", 300, 40);
+	new Label(new Coord(210, 55), cattr, "Melee Combat:");
+	new SAttr("melee", 300, 55);
+	new Label(new Coord(210, 70), cattr, "Marksmanship:");
+	new SAttr("ranged", 300, 70);
 	
 	skill = new Widget(Coord.z, new Coord(400, 275), this);
 	ski = new SkillInfo(new Coord(10, 10), new Coord(180, 260), skill);
@@ -452,6 +454,8 @@ public class CharWnd extends Window {
     public void uimsg(String msg, Object... args) {
 	if(msg == "exp") {
 	    exp = (Integer)args[0];
+	    updexp();
+	} else if(msg == "reset") {
 	    updexp();
 	} else if(msg == "nsk") {
 	    Collection<Resource> skl = new LinkedList<Resource>();
