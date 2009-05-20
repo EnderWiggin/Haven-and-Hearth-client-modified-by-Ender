@@ -113,13 +113,18 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	p.setfsm(this);
 	ui.start();
 	try {
+	    byte[] authck = null;
+	    if(Utils.getprop("haven.authck", null) != null)
+		authck = Utils.hex2byte(Utils.getprop("haven.authck", null));
 	    while(true) {
 		Bootstrap bill = new Bootstrap();
 		String defaddr = Utils.getprop("haven.defserv", null);
 		if(defaddr != null)
 		    bill.setaddr(defaddr);
-		if((Utils.getprop("haven.authuser", null) != null) && (Utils.getprop("haven.authck", null) != null))
-		    bill.setinitcookie(Utils.getprop("haven.authuser", null), Utils.hex2byte(Utils.getprop("haven.authck", null)));
+		if((Utils.getprop("haven.authuser", null) != null) && (authck != null)) {
+		    bill.setinitcookie(Utils.getprop("haven.authuser", null), authck);
+		    authck = null;
+		}
 		Session sess = bill.run(p);
 		RemoteUI rui = new RemoteUI(sess);
 		rui.run(p.newui(sess));
