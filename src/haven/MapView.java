@@ -106,15 +106,90 @@ public class MapView extends Widget implements DTarget {
 		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
 	    mv.mc = mc;
 	}
+	
+	public void moved(MapView mv) {}
     }
+    
+    private static class NewCam extends DragCam {
+	private double xa = 0, ya = 0;
+	private boolean reset = true;
+	private final double speed = 0.15, rspeed = 0.15;
+	private double sincemove = 0;
+	private long last = System.currentTimeMillis();
 	
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    long now = System.currentTimeMillis();
+	    double dt = ((double)(now - last)) / 1000.0;
+	    last = now;
+	    
+	    Coord mc = mv.mc.add(s2m(sz.add(mv.sz.inv()).div(2)));
+	    Coord sc = m2s(player.getc()).add(m2s(mc).inv());
+	    if(reset) {
+		xa = (double)sc.x / (double)sz.x;
+		ya = (double)sc.y / (double)sz.y;
+		if(xa < -0.25) xa = -0.25;
+		if(xa > 0.25) xa = 0.25;
+		if(ya < -0.15) ya = -0.15;
+		if(ya > 0.25) ya = 0.25;
+		reset = false;
+	    }
+	    Coord vsz = sz.div(16);
+	    Coord vc = new Coord((int)(sz.x * xa), (int)(sz.y * ya));
+	    boolean moved = false;
+	    if(sc.x < vc.x - vsz.x) {
+		if(xa < 0.25)
+		    xa += speed * dt;
+		moved = true;
+		mc = mc.add(s2m(new Coord(sc.x - (vc.x - vsz.x) - 4, 0)));
+	    }
+	    if(sc.x > vc.x + vsz.x) {
+		if(xa > -0.25)
+		    xa -= speed * dt;
+		moved = true;
+		mc = mc.add(s2m(new Coord(sc.x - (vc.x + vsz.x) + 4, 0)));
+	    }
+	    if(sc.y < vc.y - vsz.y) {
+		if(ya < 0.25)
+		    ya += speed * dt;
+		moved = true;
+		mc = mc.add(s2m(new Coord(0, sc.y - (vc.y - vsz.y) - 2)));
+	    }
+	    if(sc.y > vc.y + vsz.y) {
+		if(ya > -0.15)
+		    ya -= speed * dt;
+		moved = true;
+		mc = mc.add(s2m(new Coord(0, sc.y - (vc.y + vsz.y) + 2)));
+	    }
+	    if(!moved) {
+		sincemove += dt;
+		if(sincemove > 1) {
+		    if(xa < -0.1)
+			xa += rspeed * dt;
+		    if(xa > 0.1)
+			xa -= rspeed * dt;
+		    if(ya < -0.1)
+			ya += rspeed * dt;
+		    if(ya > 0.1)
+			ya -= rspeed * dt;
+		}
+	    } else {
+		sincemove = 0;
+	    }
+	    mv.mc = mc.add(s2m(mv.sz.add(sz.inv()).div(2)));
+	}
+	
+	public void moved(MapView mv) {
+	    reset = true;
+	}
+    }
+    
     private class Loading extends RuntimeException {}
-	
+    
     public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
 	super(c, sz, parent);
 	this.mc = mc;
 	this.playergob = playergob;
-	cam = new DefCam();
+	cam = new NewCam();
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
@@ -130,7 +205,7 @@ public class MapView extends Widget implements DTarget {
     }
 	
     static Coord viewoffset(Coord sz, Coord vc) {
-	return(m2s(vc).inv().add(new Coord(sz.x / 2, sz.y / 2)));
+	return(m2s(vc).inv().add(sz.div(2)));
     }
 	
     public void grab(Grabber grab) {
