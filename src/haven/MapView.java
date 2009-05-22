@@ -8,7 +8,8 @@ import java.awt.Color;
 import java.util.*;
 
 public class MapView extends Widget implements DTarget {
-    Coord mc, mousepos;
+    public Coord mc, mousepos;
+    Camera cam;
     List<Drawable> clickable = new ArrayList<Drawable>();
     private int[] visol = new int[31];
     private long olftimer = 0;
@@ -22,11 +23,9 @@ public class MapView extends Widget implements DTarget {
     boolean plontile;
     int plrad = 0;
     int playergob = -1;
-    Coord mousemoveorig = null;
-    Coord mousemoveorigmc = null;
+    boolean viewdrag = false;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
-    public static final Coord mapborder = new Coord(250, 150);
 	
     static {
 	Widget.addtype("mapview", new WidgetFactory() {
@@ -52,14 +51,70 @@ public class MapView extends Widget implements DTarget {
 	void mmouseup(Coord mc, int button);
 	void mmousemove(Coord mc);
     }
+    
+    public static interface Camera {
+	public void setpos(MapView mv, Gob player, Coord sz);
+	public void click(MapView mv, Coord sc, Coord mc);
+	public void drag(MapView mv, Coord sc, Coord mc);
+	public void release(MapView mv, Coord sc, Coord mc);
+	public void moved(MapView mv);
+    }
+    
+    private static abstract class DragCam implements Camera {
+	Coord o, mo;
 	
-    @SuppressWarnings("serial")
-	private class Loading extends RuntimeException {}
+	public void click(MapView mv, Coord sc, Coord mc) {
+	    o = sc;
+	    mo = null;
+	}
+	
+	public void drag(MapView mv, Coord sc, Coord mc) {
+	    Coord off = sc.add(o.inv());
+	    if((mo == null) && (off.dist(Coord.z) > 5))
+		mo = mv.mc;
+	    if(mo != null) {
+		mv.mc = mo.add(s2m(off).inv());
+		moved(mv);
+	    }
+	}
+	
+	public void release(MapView mv, Coord sc, Coord mc) {
+	    if(mo == null) {
+		mv.mc = mc;
+		moved(mv);
+	    }
+	}
+    }
+    
+    private static class DefCam extends DragCam {
+	public final Coord border = new Coord(250, 150);
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    Coord mc = mv.mc;
+	    Coord oc = m2s(mc).inv();
+	    int bt = -((sz.y / 2) - border.y);
+	    int bb = (sz.y / 2) - border.y;
+	    int bl = -((sz.x / 2) - border.x);
+	    int br = (sz.x / 2) - border.x;
+	    Coord sc = m2s(player.getc()).add(oc);
+	    if(sc.x < bl)
+		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
+	    if(sc.x > br)
+		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
+	    if(sc.y < bt)
+		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
+	    if(sc.y > bb)
+		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
+	    mv.mc = mc;
+	}
+    }
+	
+    private class Loading extends RuntimeException {}
 	
     public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
 	super(c, sz, parent);
 	this.mc = mc;
 	this.playergob = playergob;
+	cam = new DefCam();
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
@@ -101,8 +156,9 @@ public class MapView extends Widget implements DTarget {
 	if(grab != null) {
 	    grab.mmousedown(mc, button);
 	} else if(button == 2) {
-	    mousemoveorig = c;
-	    mousemoveorigmc = null;
+	    if(cam != null)
+		cam.click(this, c, mc);
+	    viewdrag = true;
 	} else if(plob != null) {
 	    Gob gob = null;
 	    for(Gob g : plob)
@@ -123,11 +179,10 @@ public class MapView extends Widget implements DTarget {
 	    grab.mmouseup(mc, button);
 	    return(true);
 	} else {
-	    if((button == 2) && (mousemoveorig != null)) {
-		Coord off = c.add(mousemoveorig.inv());
-		if(mousemoveorigmc == null)
-		    this.mc = mc;
-		mousemoveorig = null;
+	    if(button == 2) {
+		if(viewdrag && (cam != null))
+		    cam.release(this, c, mc);
+		viewdrag = false;
 	    }
 	    return(true);
 	}
@@ -139,12 +194,9 @@ public class MapView extends Widget implements DTarget {
 	Collection<Gob> plob = this.plob;
 	if(grab != null) {
 	    grab.mmousemove(mc);
-	} else if(mousemoveorig != null) {
-	    Coord off = c.add(mousemoveorig.inv());
-	    if((mousemoveorigmc == null) && ((Math.abs(off.x) > 5) || (Math.abs(off.y) > 5)))
-		mousemoveorigmc = this.mc;
-	    if(mousemoveorigmc != null)
-		this.mc = mousemoveorigmc.add(s2m(off).inv());
+	} else if(viewdrag) {
+	    if(cam != null)
+		cam.drag(this, c, mc);
 	} else if(plob != null) {
 	    Gob gob = null;
 	    for(Gob g : plob)
@@ -182,6 +234,8 @@ public class MapView extends Widget implements DTarget {
     public void uimsg(String msg, Object... args) {
 	if(msg == "move") {
 	    move((Coord)args[0], (Integer)args[1] != 0);
+	    if(cam != null)
+		cam.moved(this);
 	} else if(msg == "flashol") {
 	    unflashol();
 	    olflash = (Integer)args[0];
@@ -509,26 +563,15 @@ public class MapView extends Widget implements DTarget {
     }
 	
     private void checkmappos() {
-	Coord oc = m2s(mc).inv();
-	Gob player = glob.oc.getgob(playergob);
-	int bt = -((sz.y / 2) - mapborder.y);
-	int bb = (sz.y / 2) - mapborder.y;
-	int bl = -((sz.x / 2) - mapborder.x);
-	int br = (sz.x / 2) - mapborder.x;
+	if(cam == null)
+	    return;
+	Coord sz = this.sz;
 	SlenHud slen = ui.root.findchild(SlenHud.class);
 	if(slen != null)
-	    bb -= slen.foldheight();
-	if(player != null) {
-	    Coord sc = m2s(player.getc()).add(oc);
-	    if(sc.x < bl)
-		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
-	    if(sc.x > br)
-		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
-	    if(sc.y < bt)
-		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
-	    if(sc.y > bb)
-		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
-	}
+	    sz = sz.add(0, -slen.foldheight());
+	Gob player = glob.oc.getgob(playergob);
+	if(player != null)
+	    cam.setpos(this, player, sz);
     }
 
     public void draw(GOut g) {
