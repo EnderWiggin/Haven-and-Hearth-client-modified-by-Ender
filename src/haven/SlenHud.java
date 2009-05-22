@@ -35,9 +35,9 @@ public class SlenHud extends Widget implements DropTarget {
 		}
 	    });
 	int h = bg.sz().y;
-	h = (h - fc.y > h)?(h - fc.y):h;
-	h = (h - mc.y > h)?(h - mc.y):h;
 	sz = new Coord(800, h);
+	sz.y = (h - fc.y > sz.y)?(h - fc.y):sz.y;
+	sz.y = (h - mc.y > sz.y)?(h - mc.y):sz.y;
     }
 	
     static class VC {
