@@ -189,7 +189,7 @@ public class MapView extends Widget implements DTarget {
 	super(c, sz, parent);
 	this.mc = mc;
 	this.playergob = playergob;
-	cam = new NewCam();
+	cam = new DefCam();
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
