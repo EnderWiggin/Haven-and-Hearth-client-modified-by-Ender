@@ -65,6 +65,8 @@ public class Makewindow extends HWindow {
 	}
 	if(sender instanceof Item)
 	    return;
+	if(sender instanceof Inventory)
+	    return;
 	super.wdgmsg(sender, msg, args);
     }
 }
