@@ -558,7 +558,7 @@ public class CharWnd extends Window {
 		skill.visible = true;
 		belief.visible = false;
 	    }
-	}.tooltip = "Skillz0rs";
+	}.tooltip = "Skills";
 	new IButton(new Coord(150, 280), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
 	    public void click() {
 		cattr.visible = false;
