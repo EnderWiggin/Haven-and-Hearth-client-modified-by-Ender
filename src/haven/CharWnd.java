@@ -1,13 +1,15 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class CharWnd extends Window {
-    Widget cattr, skill;
+    Widget cattr, skill, belief;
     Label cost, skcost;
     Label explbl;
     int exp;
+    int btime = 0;
     SkillList psk, nsk;
     SkillInfo ski;
     FoodMeter foodm;
@@ -18,6 +20,8 @@ public class CharWnd extends Window {
     public static final Color buff = new Color(128, 255, 128);
     public static final Text.Foundry sktitfnd = new Text.Foundry("Serif", 16);
     public static final Text.Foundry skbodfnd = new Text.Foundry("SansSerif", 9);
+    public static final Tex btimeoff = Resource.loadtex("gfx/hud/charsh/shieldgray");
+    public static final Tex btimeon = Resource.loadtex("gfx/hud/charsh/shield");
     
     static {
 	Widget.addtype("chr", new WidgetFactory() {
@@ -29,16 +33,99 @@ public class CharWnd extends Window {
     
     class Attr implements Observer {
 	String nm;
-	Label lbl;
 	Glob.CAttr attr;
 	
-	Attr(String nm, int x, int y) {
+	Attr(String nm) {
 	    this.nm = nm;
 	    attr = ui.sess.glob.cattr.get(nm);
-	    this.lbl = new Label(new Coord(x, y), cattr, "0");
 	    attrs.put(nm, this);
-	    update();
 	    attr.addObserver(this);
+	}
+	
+	public void update() {}
+	
+	public void update(Observable attrslen, Object uudata) {
+	    Glob.CAttr attr = (Glob.CAttr)attrslen;
+	    update();
+	}
+	
+	private void destroy() {
+	    attr.deleteObserver(this);
+	}
+    }
+    
+    class Belief extends Attr {
+	boolean inv;
+	Img flarper;
+	int lx;
+	final Tex slider = Resource.loadtex("gfx/hud/charsh/bslider");
+	final Tex flarp = Resource.loadtex("gfx/hud/sflarp");
+	final IButton lb, rb;
+	final BufferedImage lbu = Resource.loadimg("gfx/hud/charsh/leftup");
+	final BufferedImage lbd = Resource.loadimg("gfx/hud/charsh/leftdown");
+	final BufferedImage lbg = Resource.loadimg("gfx/hud/charsh/leftgrey");
+	final BufferedImage rbu = Resource.loadimg("gfx/hud/charsh/rightup");
+	final BufferedImage rbd = Resource.loadimg("gfx/hud/charsh/rightdown");
+	final BufferedImage rbg = Resource.loadimg("gfx/hud/charsh/rightgrey");
+	
+	Belief(String nm, String left, String right, boolean inv, int x, int y) {
+	    super(nm);
+	    this.inv = inv;
+	    lx = x;
+	    Label lbl = new Label(new Coord(x, y), belief, String.format("%s / %s", Utils.titlecase(left), Utils.titlecase(right)));
+	    lbl.c = new Coord(72 + x - (lbl.sz.x / 2), y);
+	    y += 15;
+	    new Img(new Coord(x, y), Resource.loadtex("gfx/hud/charsh/" + left), belief);
+	    lb = new IButton(new Coord(x + 16, y), belief, lbu, lbd) {
+		    public void click() {
+			buy(-1);
+		    }
+		};
+	    new Img(new Coord(x + 32, y + 4), slider, belief);
+	    rb = new IButton(new Coord(x + 112, y), belief, rbu, rbd) {
+		    public void click() {
+			buy(1);
+		    }
+		};
+	    new Img(new Coord(x + 128, y), Resource.loadtex("gfx/hud/charsh/" + right), belief);
+	    flarper = new Img(new Coord(0, y + 2), flarp, belief);
+	    update();
+	}
+	
+	public void buy(int ch) {
+	    if(inv)
+		ch = -ch;
+	    CharWnd.this.wdgmsg("believe", nm, ch);
+	}
+	
+	public void update() {
+	    int val = attr.comp;
+	    if(inv)
+		val = -val;
+	    flarper.c = new Coord((7 * (val + 5)) + 31 + lx, flarper.c.y);
+	    if(btime > 0) {
+		lb.up = lbg;
+		lb.down = lbg;
+		rb.up = rbg;
+		rb.down = rbg;
+	    } else {
+		lb.up = lbu;
+		lb.down = lbd;
+		rb.up = rbu;
+		rb.down = rbd;
+	    }
+	    lb.render();
+	    rb.render();
+	}
+    }
+
+    class NAttr extends Attr {
+	Label lbl;
+	
+	NAttr(String nm, int x, int y) {
+	    super(nm);
+	    this.lbl = new Label(new Coord(x, y), cattr, "0");
+	    update();
 	}
 	
 	public void update() {
@@ -49,15 +136,6 @@ public class CharWnd extends Window {
 		lbl.setcolor(buff);
 	    else
 		lbl.setcolor(Color.WHITE);
-	}
-	
-	public void update(Observable attrslen, Object uudata) {
-	    Glob.CAttr attr = (Glob.CAttr)attrslen;
-	    update();
-	}
-	
-	private void destroy() {
-	    attr.deleteObserver(this);
 	}
     }
     
@@ -75,7 +153,7 @@ public class CharWnd extends Window {
 	    this.cost.setcolor(new Color(255, 255, 255));
     }
 
-    class SAttr extends Attr {
+    class SAttr extends NAttr {
 	IButton minus, plus;
 	int tvalb, tvalc;
 	int cost;
@@ -149,6 +227,25 @@ public class CharWnd extends Window {
 	}
     }
     
+    private class BTimer extends Widget {
+	public BTimer(Coord c, Widget parent) {
+	    super(c, btimeoff.sz(), parent);
+	}
+	
+	public void draw(GOut g) {
+	    if(btime > 0) {
+		g.image(btimeoff, Coord.z);
+		if(btime < 3600)
+		    tooltip = "Less than one hour left";
+		else
+		    tooltip = String.format("%d hours left", ((btime - 1) / 3600) + 1);
+	    } else {
+		g.image(btimeon, Coord.z);
+		tooltip = null;
+	    }
+	}
+    }
+
     private class FoodMeter extends Widget {
 	int cap;
 	List<El> els = new LinkedList<El>();
@@ -385,12 +482,12 @@ public class CharWnd extends Window {
 	new Label(new Coord(30, 85), cattr, "Constitution:");
 	new Label(new Coord(30, 100), cattr, "Perception:");
 	new Label(new Coord(30, 115), cattr, "Charisma:");
-	new Attr("str", 100, 40);
-	new Attr("agil", 100, 55);
-	new Attr("intel", 100, 70);
-	new Attr("cons", 100, 85);
-	new Attr("perc", 100, 100);
-	new Attr("csm", 100, 115);
+	new NAttr("str", 100, 40);
+	new NAttr("agil", 100, 55);
+	new NAttr("intel", 100, 70);
+	new NAttr("cons", 100, 85);
+	new NAttr("perc", 100, 100);
+	new NAttr("csm", 100, 115);
 	foodm = new FoodMeter(new Coord(10, 150), cattr);
 
 	new Label(new Coord(210, 85), cattr, "Cost:");
@@ -436,19 +533,39 @@ public class CharWnd extends Window {
 	    };
 	
 	skill.visible = false;
+
+	belief = new Widget(Coord.z, new Coord(400, 275), this);
+	new BTimer(new Coord(10, 10), belief);
+	new Belief("life", "death", "life", false, 18, 50);
+	new Belief("night", "night", "day", true, 18, 85);
+	new Belief("civil", "barbarism", "civilization", false, 18, 120);
+	new Belief("nature", "nature", "industry", true, 18, 155);
+	new Belief("martial", "martial", "peaceful", true, 18, 190);
+	new Belief("change", "tradition", "change", false, 18, 225);
+	
+	belief.visible = false;
 	
 	new IButton(new Coord(10, 280), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
 	    public void click() {
 		cattr.visible = true;
 		skill.visible = false;
+		belief.visible = false;
 	    }
-	};
+	}.tooltip = "Attributes";
 	new IButton(new Coord(80, 280), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
 	    public void click() {
 		cattr.visible = false;
 		skill.visible = true;
+		belief.visible = false;
 	    }
-	};
+	}.tooltip = "Skillz0rs";
+	new IButton(new Coord(150, 280), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
+	    public void click() {
+		cattr.visible = false;
+		skill.visible = false;
+		belief.visible = true;
+	    }
+	}.tooltip = "Personal Beliefs";
     }
 
     public void uimsg(String msg, Object... args) {
@@ -480,6 +597,8 @@ public class CharWnd extends Window {
 	    foodm.clear();
 	    for(int i = 1; i < args.length; i += 3)
 		foodm.addel((String)args[i], (Integer)args[i + 1], (Color)args[i + 2]);
+	} else if(msg == "btime") {
+	    btime = (Integer)args[0];
 	}
     }
     

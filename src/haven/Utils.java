@@ -369,4 +369,8 @@ public class Utils {
 	    return(null);
 	}
     }
+    
+    public static String titlecase(String str) {
+	return(Character.toTitleCase(str.charAt(0)) + str.substring(1));
+    }
 }
