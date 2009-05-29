@@ -31,13 +31,15 @@ public class Textlog extends Widget {
                 }
 		g.chcolor();
                 int y = -cury;
-                for(Text line : lines) {
-                    int dy1 = sz.y + y;
-                    int dy2 = dy1 + line.sz().y;
-                    if((dy2 > 0) && (dy1 < sz.y))
-                        g.image(line.tex(), new Coord(margin, dy1));
-                    y += line.sz().y;
-                }
+		synchronized(lines) {
+		    for(Text line : lines) {
+			int dy1 = sz.y + y;
+			int dy2 = dy1 + line.sz().y;
+			if((dy2 > 0) && (dy1 < sz.y))
+			    g.image(line.tex(), new Coord(margin, dy1));
+			y += line.sz().y;
+		    }
+		}
                 if(maxy > sz.y) {
                     int fx = sz.x - sflarp.sz().x;
                     int cx = fx + (sflarp.sz().x / 2) - (schain.sz().x / 2);
@@ -61,7 +63,9 @@ public class Textlog extends Widget {
                         rl = fnd.renderwrap(line, sz.x - (margin * 2) - sflarp.sz().x);
                 else
                         rl = fnd.renderwrap(line, col, sz.x - (margin * 2) - sflarp.sz().x);
-		lines.add(rl);
+		synchronized(lines) {
+			lines.add(rl);
+		}
                 if(cury == maxy)
                         cury += rl.sz().y;
                 maxy += rl.sz().y;
