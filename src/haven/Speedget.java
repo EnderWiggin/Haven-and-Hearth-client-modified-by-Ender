@@ -67,7 +67,8 @@ public class Speedget extends Widget {
     }
     
     public boolean mousewheel(Coord c, int amount) {
-	wdgmsg("set", (cur + max + 1 + amount) % (max + 1));
+	if(max >= 0)
+	    wdgmsg("set", (cur + max + 1 + amount) % (max + 1));
 	return(true);
     }
 }
