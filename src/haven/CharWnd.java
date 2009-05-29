@@ -490,11 +490,23 @@ public class CharWnd extends Window {
 	new NAttr("csm", 100, 115);
 	foodm = new FoodMeter(new Coord(10, 150), cattr);
 
-	new Label(new Coord(210, 85), cattr, "Cost:");
-	cost = new Label(new Coord(300, 85), cattr, "0");
-	new Label(new Coord(210, 100), cattr, "Learning Points:");
-	explbl = new Label(new Coord(300, 100), cattr, "0");
-	new Button(new Coord(210, 115), 75, cattr, "Buy") {
+	new Label(new Coord(210, 100), cattr, "Cost:");
+	cost = new Label(new Coord(300, 100), cattr, "0");
+	new Label(new Coord(210, 115), cattr, "Learning Points:");
+	explbl = new Label(new Coord(300, 115), cattr, "0");
+	new Label(new Coord(210, 130), cattr, "Learning Ability:");
+	new NAttr("expmod", 300, 130) {
+	    public void update() {
+		lbl.settext(String.format("%d%%", attr.comp));
+		if(attr.comp < 100)
+		    lbl.setcolor(debuff);
+		else if(attr.comp > 100)
+		    lbl.setcolor(buff);
+		else
+		    lbl.setcolor(Color.WHITE);
+	    }
+	};
+	new Button(new Coord(210, 145), 75, cattr, "Buy") {
 	    public void click() {
 		buysattrs();
 	    }
@@ -558,7 +570,7 @@ public class CharWnd extends Window {
 		skill.visible = true;
 		belief.visible = false;
 	    }
-	}.tooltip = "Skillz0rs";
+	}.tooltip = "Skills";
 	new IButton(new Coord(150, 280), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
 	    public void click() {
 		cattr.visible = false;
