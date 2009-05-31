@@ -44,6 +44,7 @@ public class MCache {
 	Collection<Gob> fo = new LinkedList<Gob>();
 	boolean regged = false;
 	public long lastreq = 0;
+	public int reqs = 0;
 	Coord gc;
 	OCache oc = sess.glob.oc;
 	String mnm;
@@ -367,14 +368,19 @@ public class MCache {
     public void sendreqs() {
 	long now = System.currentTimeMillis();
 	synchronized(req) {
-	    for(Map.Entry<Coord, Grid> e : req.entrySet()) {
+	    for(Iterator<Map.Entry<Coord, Grid>> i = req.entrySet().iterator(); i.hasNext();) {
+		Map.Entry<Coord, Grid> e = i.next();
 		Coord c = e.getKey();
 		Grid gr = e.getValue();
 		if(now - gr.lastreq > 1000) {
 		    gr.lastreq = now;
-		    Message msg = new Message(Session.MSG_MAPREQ);
-		    msg.addcoord(c);
-		    sess.sendmsg(msg);
+		    if(++gr.reqs >= 5) {
+			i.remove();
+		    } else {
+			Message msg = new Message(Session.MSG_MAPREQ);
+			msg.addcoord(c);
+			sess.sendmsg(msg);
+		    }
 		}
 	    }
 	}
