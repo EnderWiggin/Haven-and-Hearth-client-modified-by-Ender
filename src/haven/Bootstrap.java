@@ -115,7 +115,12 @@ public class Bootstrap implements UI.Receiver {
 		ui.uimsg(1, "prg", "Authenticating...");
 		AuthClient auth = null;
 		try {
-		    auth = new AuthClient(authserver, username);
+		    try {
+			auth = new AuthClient(authserver, username);
+		    } catch(UnknownHostException e) {
+			ui.uimsg(1, "error", "Could not locate server");
+			continue retry;
+		    }
 		    if(!auth.trypasswd(password)) {
 			auth.close();
 			password = "";
