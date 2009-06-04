@@ -172,7 +172,7 @@ public class BuddyWnd extends Window {
 		    for(int i = 0; i < h; i++) {
 			if(i + sb.val >= buddies.size())
 			    continue;
-			Buddy b = buddies.get(i);
+			Buddy b = buddies.get(i + sb.val);
 			if(b == sel) {
 			    g.chcolor(255, 255, 0, 128);
 			    g.frect(new Coord(0, i * 20), new Coord(sz.x, 20));
