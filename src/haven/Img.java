@@ -2,11 +2,23 @@ package haven;
 
 public class Img extends Widget {
     private Tex img;
+    public boolean hit = false;
 	
     static {
 	Widget.addtype("img", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new Img(c, Resource.loadtex((String)args[0]), parent));
+		    Tex tex;
+		    if(args.length > 1) {
+			Resource res = Resource.load((String)args[0], (Integer)args[1]);
+			res.loadwait();
+			tex = res.layer(Resource.imgc).tex();
+		    } else {
+			tex = Resource.loadtex((String)args[0]);
+		    }
+		    Img ret = new Img(c, tex, parent);
+		    if(args.length > 2)
+			ret.hit = (Integer)args[2] != 0;
+		    return(ret);
 		}
 	    });
     }
@@ -26,5 +38,13 @@ public class Img extends Widget {
 	if(name == "ch") {
 	    img = Resource.loadtex((String)args[0]);
 	}
+    }
+    
+    public boolean mousedown(Coord c, int button) {
+	if(hit) {
+	    wdgmsg("click", c, button, ui.modflags());
+	    return(true);
+	}
+	return(false);
     }
 }
