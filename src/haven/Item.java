@@ -68,7 +68,7 @@ public class Item extends Widget implements DTarget {
 	    }
 	    g.image(tex, Coord.z);
 	    if(num >= 0) {
-		g.chcolor(Color.BLACK);
+		g.chcolor(Color.WHITE);
 		g.atext(Integer.toString(num), tex.sz(), 1, 1);
 	    }
 	    if(meter > 0) {
