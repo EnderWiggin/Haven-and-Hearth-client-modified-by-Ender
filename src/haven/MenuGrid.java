@@ -36,7 +36,10 @@ public class MenuGrid extends Widget {
 	Resource[] all;
 	{
 	    Collection<Resource> ta = new HashSet<Resource>();
-	    Collection<Resource> open = new HashSet<Resource>(ui.sess.glob.paginae);
+	    Collection<Resource> open;
+	    synchronized(ui.sess.glob.paginae) {
+		open = new HashSet<Resource>(ui.sess.glob.paginae);
+	    }
 	    while(!open.isEmpty()) {
 		for(Resource r : open.toArray(cp)) {
 		    if(!r.loading) {

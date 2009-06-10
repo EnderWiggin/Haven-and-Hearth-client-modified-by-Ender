@@ -68,13 +68,15 @@ public class Glob {
     }
 	
     public void paginae(Message msg) {
-	while(!msg.eom()) {
-	    int act = msg.uint8();
-	    if(act == '+') {
-		String nm = msg.string();
-		int ver = msg.uint16();
-		paginae.add(Resource.load(nm, ver)); 
-	    } else if(act == '-') {
+	synchronized(paginae) {
+	    while(!msg.eom()) {
+		int act = msg.uint8();
+		if(act == '+') {
+		    String nm = msg.string();
+		    int ver = msg.uint16();
+		    paginae.add(Resource.load(nm, ver)); 
+		} else if(act == '-') {
+		}
 	    }
 	}
     }
