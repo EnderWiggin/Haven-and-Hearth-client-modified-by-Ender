@@ -490,12 +490,13 @@ public class CharWnd extends Window {
 	new NAttr("csm", 100, 115);
 	foodm = new FoodMeter(new Coord(10, 150), cattr);
 
-	new Label(new Coord(210, 100), cattr, "Cost:");
-	cost = new Label(new Coord(300, 100), cattr, "0");
-	new Label(new Coord(210, 115), cattr, "Learning Points:");
-	explbl = new Label(new Coord(300, 115), cattr, "0");
-	new Label(new Coord(210, 130), cattr, "Learning Ability:");
-	new NAttr("expmod", 300, 130) {
+	int expbase = 130;
+	new Label(new Coord(210, expbase), cattr, "Cost:");
+	cost = new Label(new Coord(300, expbase), cattr, "0");
+	new Label(new Coord(210, expbase + 15), cattr, "Learning Points:");
+	explbl = new Label(new Coord(300, expbase + 15), cattr, "0");
+	new Label(new Coord(210, expbase + 30), cattr, "Learning Ability:");
+	new NAttr("expmod", 300, expbase + 30) {
 	    public void update() {
 		lbl.settext(String.format("%d%%", attr.comp));
 		if(attr.comp < 100)
@@ -506,7 +507,7 @@ public class CharWnd extends Window {
 		    lbl.setcolor(Color.WHITE);
 	    }
 	};
-	new Button(new Coord(210, 145), 75, cattr, "Buy") {
+	new Button(new Coord(210, expbase + 45), 75, cattr, "Buy") {
 	    public void click() {
 		buysattrs();
 	    }
@@ -518,6 +519,10 @@ public class CharWnd extends Window {
 	new SAttr("melee", 300, 55);
 	new Label(new Coord(210, 70), cattr, "Marksmanship:");
 	new SAttr("ranged", 300, 70);
+	new Label(new Coord(210, 85), cattr, "Exploration:");
+	new SAttr("explore", 300, 85);
+	new Label(new Coord(210, 100), cattr, "Stealth:");
+	new SAttr("stealth", 300, 100);
 	
 	skill = new Widget(Coord.z, new Coord(400, 275), this);
 	ski = new SkillInfo(new Coord(10, 10), new Coord(180, 260), skill);
