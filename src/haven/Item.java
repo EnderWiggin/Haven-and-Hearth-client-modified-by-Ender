@@ -197,7 +197,7 @@ public class Item extends Widget implements DTarget {
 	} else if(name == "color") {
 	    olcol = (Color)args[0];
 	} else if(name == "tt") {
-	    if(args.length > 0)
+	    if((args.length > 0) && (((String)args[0]).length() > 0))
 		tooltip = (String)args[0];
 	    else
 		tooltip = null;

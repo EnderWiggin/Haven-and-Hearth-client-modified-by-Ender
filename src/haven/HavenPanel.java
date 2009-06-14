@@ -228,15 +228,18 @@ public class HavenPanel extends GLCanvas implements Runnable {
         Object tooltip = ui.tooltip;
         if(tooltip == null)
             tooltip = ui.tooltipat(mousepos);
+	Tex tt = null;
 	if(tooltip != null) {
-	    Tex tt = null;
 	    if(tooltip instanceof Text) {
 		tt = ((Text)tooltip).tex();
 	    } else if(tooltip instanceof Tex) {
 		tt = (Tex)tooltip;
 	    } else if(tooltip instanceof String) {
-		tt = (Text.render((String)tooltip)).tex();
+		if(((String)tooltip).length() > 0)
+		    tt = (Text.render((String)tooltip)).tex();
 	    }
+	}
+	if(tt != null) {
 	    Coord sz = tt.sz();
 	    Coord pos = mousepos.add(sz.inv());
 	    g.chcolor(244, 247, 21, 192);
