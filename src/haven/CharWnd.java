@@ -198,8 +198,12 @@ public class CharWnd extends Window {
 	    lbl.settext(Integer.toString(tvalc));
 	    if(tvalb > attr.base)
 		lbl.setcolor(new Color(128, 128, 255));
+	    else if(attr.comp > attr.base)
+		lbl.setcolor(buff);
+	    else if(attr.comp < attr.base)
+		lbl.setcolor(debuff);
 	    else
-		lbl.setcolor(new Color(255, 255, 255));
+		lbl.setcolor(Color.WHITE);
 	    updexp();
 	}
 
