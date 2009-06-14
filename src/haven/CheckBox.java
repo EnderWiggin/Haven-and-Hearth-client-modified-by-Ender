@@ -2,7 +2,7 @@ package haven;
 
 public class CheckBox extends Widget {
     static Tex box, mark;
-    boolean a = false;
+    public boolean a = false;
     Text lbl;
 	
     static {
