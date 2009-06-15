@@ -158,12 +158,12 @@ public class SlenHud extends Widget implements DropTarget {
 		int i = 1;
 		String opt;
 		boolean loop = false;
-		while((opt = argv[i]).charAt(0) == '-') {
-		    i++;
-		    if(opt.equals("-l"))
-			loop = true;
-		}
 		if(i < argv.length) {
+		    while((opt = argv[i]).charAt(0) == '-') {
+			i++;
+			if(opt.equals("-l"))
+			    loop = true;
+		    }
 		    String resnm = argv[i++];
 		    int ver = -1;
 		    if(i < argv.length)
