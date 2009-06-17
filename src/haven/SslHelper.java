@@ -7,6 +7,7 @@ import java.security.cert.*;
 import java.security.cert.Certificate;
 import javax.net.ssl.*;
 import java.nio.channels.SocketChannel;
+import java.nio.channels.UnresolvedAddressException;
 
 public class SslHelper {
     private KeyStore creds, trusted;
@@ -112,7 +113,12 @@ public class SslHelper {
     }
     
     private static Socket j2seIsStupid(String host, int port) throws IOException {
-	SocketChannel chn = SocketChannel.open(new InetSocketAddress(host, port));
+	SocketChannel chn;
+	try {
+	    chn = SocketChannel.open(new InetSocketAddress(host, port));
+	} catch(UnresolvedAddressException e) {
+	    throw((UnknownHostException)new UnknownHostException().initCause(e));
+	}
 	return(chn.socket());
     }
 
