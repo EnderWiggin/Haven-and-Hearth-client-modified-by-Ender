@@ -12,6 +12,10 @@ public class HtmlReporter {
 	"os.arch", "os.name", "os.version",
 	"thnm", "usr",
     };
+    public static final Class[] boring = {
+	RuntimeException.class,
+	javax.media.opengl.GLException.class,
+    };
     
     public static String htmlhead(String title) {
 	StringBuilder buf = new StringBuilder();
@@ -129,6 +133,16 @@ public class HtmlReporter {
 	out.flush();
     }
 
+    public static Throwable findrootexc(Throwable t) {
+	if(t.getCause() == null)
+	    return(t);
+	for(Class b : boring) {
+	    if(t.getClass() == b)
+		return(findrootexc(t.getCause()));
+	}
+	return(t);
+    }
+
     public static void makeindex(OutputStream outs, Map<File, Report> reports, Map<File, Exception> failed) throws IOException {
 	PrintWriter out = new PrintWriter(new OutputStreamWriter(outs, "UTF-8"));
 	out.print(htmlhead("Error Index"));
@@ -168,7 +182,7 @@ public class HtmlReporter {
 	    out.print(htmlq(file.getName()));
 	    out.println("</a></td>");
 	    out.println("        <td>" + htmlq(dfmt.format(new Date(rep.time))) + "</td>");
-	    out.println("        <td>" + htmlq(rep.t.getClass().getSimpleName()) + "</td>");
+	    out.println("        <td>" + htmlq(findrootexc(rep.t).getClass().getSimpleName()) + "</td>");
 	    for(String pn : props) {
 		out.print("        <td>");
 		if(rep.props.containsKey(pn)) {
