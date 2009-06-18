@@ -6,7 +6,7 @@ import javax.media.opengl.*;
 
 public class GOut {
     GL gl;
-    Coord ul, sz;
+    public Coord ul, sz;
     private Color color = Color.WHITE;
     final GLContext ctx;
     private Shared sh;
