@@ -23,7 +23,6 @@ public class MapView extends Widget implements DTarget {
     boolean plontile;
     int plrad = 0;
     int playergob = -1;
-    boolean viewdrag = false;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
 	
@@ -54,39 +53,52 @@ public class MapView extends Widget implements DTarget {
     
     public static interface Camera {
 	public void setpos(MapView mv, Gob player, Coord sz);
-	public void click(MapView mv, Coord sc, Coord mc);
-	public void drag(MapView mv, Coord sc, Coord mc);
-	public void release(MapView mv, Coord sc, Coord mc);
+	public boolean click(MapView mv, Coord sc, Coord mc, int button);
+	public void move(MapView mv, Coord sc, Coord mc);
+	public boolean release(MapView mv, Coord sc, Coord mc, int button);
 	public void moved(MapView mv);
     }
     
     private static abstract class DragCam implements Camera {
 	Coord o, mo;
+	boolean dragging = false;
 	
-	public void click(MapView mv, Coord sc, Coord mc) {
-	    o = sc;
-	    mo = null;
+	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
+	    if(button == 2) {
+		o = sc;
+		mo = null;
+		dragging = true;
+		return(true);
+	    }
+	    return(false);
 	}
 	
-	public void drag(MapView mv, Coord sc, Coord mc) {
-	    Coord off = sc.add(o.inv());
-	    if((mo == null) && (off.dist(Coord.z) > 5))
-		mo = mv.mc;
-	    if(mo != null) {
-		mv.mc = mo.add(s2m(off).inv());
-		moved(mv);
+	public void move(MapView mv, Coord sc, Coord mc) {
+	    if(dragging) {
+		Coord off = sc.add(o.inv());
+		if((mo == null) && (off.dist(Coord.z) > 5))
+		    mo = mv.mc;
+		if(mo != null) {
+		    mv.mc = mo.add(s2m(off).inv());
+		    moved(mv);
+		}
 	    }
 	}
 	
-	public void release(MapView mv, Coord sc, Coord mc) {
-	    if(mo == null) {
-		mv.mc = mc;
-		moved(mv);
+	public boolean release(MapView mv, Coord sc, Coord mc, int button) {
+	    if((button == 2) && dragging) {
+		dragging = false;
+		if(mo == null) {
+		    mv.mc = mc;
+		    moved(mv);
+		}
+		return(true);
 	    }
+	    return(false);
 	}
     }
     
-    private static class DefCam extends DragCam {
+    private static class BorderCam extends DragCam {
 	public final Coord border = new Coord(250, 150);
 	public void setpos(MapView mv, Gob player, Coord sz) {
 	    Coord mc = mv.mc;
@@ -110,7 +122,7 @@ public class MapView extends Widget implements DTarget {
 	public void moved(MapView mv) {}
     }
     
-    private static class NewCam extends DragCam {
+    private static class PredictCam extends DragCam {
 	private double xa = 0, ya = 0;
 	private boolean reset = true;
 	private final double speed = 0.15, rspeed = 0.15;
@@ -189,7 +201,7 @@ public class MapView extends Widget implements DTarget {
 	super(c, sz, parent);
 	this.mc = mc;
 	this.playergob = playergob;
-	cam = new DefCam();
+	cam = new BorderCam();
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
@@ -230,10 +242,8 @@ public class MapView extends Widget implements DTarget {
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
 	    grab.mmousedown(mc, button);
-	} else if(button == 2) {
-	    if(cam != null)
-		cam.click(this, c, mc);
-	    viewdrag = true;
+	} else if((cam != null) && cam.click(this, c, mc, button)) {
+	    /* Nothing */
 	} else if(plob != null) {
 	    Gob gob = null;
 	    for(Gob g : plob)
@@ -253,12 +263,9 @@ public class MapView extends Widget implements DTarget {
 	if(grab != null) {
 	    grab.mmouseup(mc, button);
 	    return(true);
+	} else if((cam != null) && cam.release(this, c, mc, button)) {
+	    return(true);
 	} else {
-	    if(button == 2) {
-		if(viewdrag && (cam != null))
-		    cam.release(this, c, mc);
-		viewdrag = false;
-	    }
 	    return(true);
 	}
     }
@@ -267,11 +274,10 @@ public class MapView extends Widget implements DTarget {
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	this.mousepos = mc;
 	Collection<Gob> plob = this.plob;
+	if(cam != null)
+	    cam.move(this, c, mc);
 	if(grab != null) {
 	    grab.mmousemove(mc);
-	} else if(viewdrag) {
-	    if(cam != null)
-		cam.drag(this, c, mc);
 	} else if(plob != null) {
 	    Gob gob = null;
 	    for(Gob g : plob)
