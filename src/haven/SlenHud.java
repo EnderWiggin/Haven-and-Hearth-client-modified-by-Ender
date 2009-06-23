@@ -202,6 +202,8 @@ public class SlenHud extends Widget implements DropTarget {
 			mv.cam = new MapView.BorderCam();
 		    } else if(argv[1].equals("predict")) {
 			mv.cam = new MapView.PredictCam();
+		    } else if(argv[1].equals("fixed")) {
+			mv.cam = new MapView.FixedCam();
 		    }
 		}
 	    } else {

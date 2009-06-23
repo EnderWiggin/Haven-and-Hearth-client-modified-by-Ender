@@ -236,6 +236,25 @@ public class MapView extends Widget implements DTarget {
 	}
     }
     
+    static class FixedCam extends DragCam {
+	public final Coord border = new Coord(250, 150);
+	private Coord off = Coord.z;
+	private boolean setoff = false;
+	
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    if(setoff) {
+		borderize(mv, player, sz, border);
+		off = mv.mc.add(player.getc().inv());
+		setoff = false;
+	    }
+	    mv.mc = player.getc().add(off);
+	}
+	
+	public void moved(MapView mv) {
+	    setoff = true;
+	}
+    }
+    
     private class Loading extends RuntimeException {}
     
     public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
