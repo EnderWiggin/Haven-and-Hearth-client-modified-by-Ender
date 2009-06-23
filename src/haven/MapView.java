@@ -51,15 +51,42 @@ public class MapView extends Widget implements DTarget {
 	void mmousemove(Coord mc);
     }
     
-    public static interface Camera {
-	public void setpos(MapView mv, Gob player, Coord sz);
-	public boolean click(MapView mv, Coord sc, Coord mc, int button);
-	public void move(MapView mv, Coord sc, Coord mc);
-	public boolean release(MapView mv, Coord sc, Coord mc, int button);
-	public void moved(MapView mv);
+    public static class Camera {
+	public void setpos(MapView mv, Gob player, Coord sz) {}
+	
+	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
+	    return(false);
+	}
+	
+	public void move(MapView mv, Coord sc, Coord mc) {}
+	
+	public boolean release(MapView mv, Coord sc, Coord mc, int button) {
+	    return(false);
+	}
+	
+	public void moved(MapView mv) {}
+	
+	public static void borderize(MapView mv, Gob player, Coord sz, Coord border) {
+	    Coord mc = mv.mc;
+	    Coord oc = m2s(mc).inv();
+	    int bt = -((sz.y / 2) - border.y);
+	    int bb = (sz.y / 2) - border.y;
+	    int bl = -((sz.x / 2) - border.x);
+	    int br = (sz.x / 2) - border.x;
+	    Coord sc = m2s(player.getc()).add(oc);
+	    if(sc.x < bl)
+		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
+	    if(sc.x > br)
+		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
+	    if(sc.y < bt)
+		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
+	    if(sc.y > bb)
+		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
+	    mv.mc = mc;
+	}
     }
     
-    private static abstract class DragCam implements Camera {
+    private static abstract class DragCam extends Camera {
 	Coord o, mo;
 	boolean dragging = false;
 	
@@ -98,31 +125,45 @@ public class MapView extends Widget implements DTarget {
 	}
     }
     
-    private static class BorderCam extends DragCam {
+    static class OrigCam extends Camera {
 	public final Coord border = new Coord(250, 150);
+	
 	public void setpos(MapView mv, Gob player, Coord sz) {
-	    Coord mc = mv.mc;
-	    Coord oc = m2s(mc).inv();
-	    int bt = -((sz.y / 2) - border.y);
-	    int bb = (sz.y / 2) - border.y;
-	    int bl = -((sz.x / 2) - border.x);
-	    int br = (sz.x / 2) - border.x;
-	    Coord sc = m2s(player.getc()).add(oc);
-	    if(sc.x < bl)
-		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
-	    if(sc.x > br)
-		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
-	    if(sc.y < bt)
-		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
-	    if(sc.y > bb)
-		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
-	    mv.mc = mc;
+	    borderize(mv, player, sz, border);
 	}
 	
-	public void moved(MapView mv) {}
+	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
+	    if(button == 1)
+		mv.mc = mc;
+	    return(false);
+	}
+    }
+
+    static class WrapCam extends Camera {
+	public final Coord region = new Coord(200, 150);
+	
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    Coord sc = m2s(player.getc().add(mv.mc.inv()));
+	    if(sc.x < -region.x)
+		mv.mc = mv.mc.add(s2m(new Coord(-region.x * 2, 0)));
+	    if(sc.x > region.x)
+		mv.mc = mv.mc.add(s2m(new Coord(region.x * 2, 0)));
+	    if(sc.y < -region.y)
+		mv.mc = mv.mc.add(s2m(new Coord(0, -region.y * 2)));
+	    if(sc.y > region.y)
+		mv.mc = mv.mc.add(s2m(new Coord(0, region.y * 2)));
+	}
+    }
+
+    static class BorderCam extends DragCam {
+	public final Coord border = new Coord(250, 150);
+
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    borderize(mv, player, sz, border);
+	}
     }
     
-    private static class PredictCam extends DragCam {
+    static class PredictCam extends DragCam {
 	private double xa = 0, ya = 0;
 	private boolean reset = true;
 	private final double speed = 0.15, rspeed = 0.15;
