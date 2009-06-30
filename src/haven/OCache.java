@@ -249,4 +249,11 @@ public class OCache implements Iterable<Gob> {
 				g.ols.remove(ol);
 		}
 	}
+
+	public synchronized void authority(int id, int frame, int er, int ir, boolean my) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		g.setattr(new Authority(g, er, ir, my));
+	}
 }
