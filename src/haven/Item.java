@@ -236,6 +236,8 @@ public class Item extends Widget implements DTarget {
 	    if(!tempdrag) {
 		if(ui.modshift)
 		    wdgmsg("transfer", c);
+		else if(ui.modctrl)
+		    wdgmsg("drop", c);
 		else
 		    wdgmsg("take", c);
 	    } else {
