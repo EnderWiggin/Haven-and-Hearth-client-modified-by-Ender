@@ -76,6 +76,9 @@ public class Glob {
 		    int ver = msg.uint16();
 		    paginae.add(Resource.load(nm, ver)); 
 		} else if(act == '-') {
+		    String nm = msg.string();
+		    int ver = msg.uint16();
+		    paginae.remove(Resource.load(nm, ver)); 
 		}
 	    }
 	}
