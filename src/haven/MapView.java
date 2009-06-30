@@ -512,7 +512,7 @@ public class MapView extends Widget implements DTarget {
 	    return;
 	if(plrad > 0) {
 	    g.chcolor(0, 255, 0, 32);
-	    g.fellipse(gob.sc, new Coord(plrad * 2, plrad));
+	    g.fellipse(gob.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
 	    g.chcolor();
 	}
     }
