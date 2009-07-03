@@ -273,6 +273,8 @@ public class CharWnd extends Window {
 	public void draw(GOut g) {
 	    g.chcolor(Color.BLACK);
 	    g.frect(new Coord(4, 4), sz.add(-8, -8));
+	    g.chcolor(255, 255, 255, 128);
+	    g.image(foodmimg, Coord.z);
 	    g.chcolor();
 	    synchronized(els) {
 		int x = 4;
@@ -284,20 +286,26 @@ public class CharWnd extends Window {
 		}
 		g.chcolor();
 	    }
+	    g.chcolor(255, 255, 255, 128);
 	    g.image(foodmimg, Coord.z);
+	    g.chcolor();
 	    super.draw(g);
 	}
 	
-	public void clear() {
+	public void update(Object... args) {
+	    cap = (Integer)args[0];
+	    int sum = 0;
 	    synchronized(els) {
 		els.clear();
+		for(int i = 1; i < args.length; i += 3) {
+		    String id = (String)args[i];
+		    int amount = (Integer)args[i + 1];
+		    Color col = (Color)args[i + 2];
+		    els.add(new El(id, amount, col));
+		    sum += amount;
+		}
 	    }
-	}
-	
-	public void addel(String id, int amount, Color col) {
-	    synchronized(els) {
-		els.add(new El(id, amount, col));
-	    }
+	    tooltip = String.format("%d / %d", sum, cap);
 	}
     }
     
@@ -614,10 +622,7 @@ public class CharWnd extends Window {
 	    }
 	    psk.pop(skl);
 	} else if(msg == "food") {
-	    foodm.cap = (Integer)args[0];
-	    foodm.clear();
-	    for(int i = 1; i < args.length; i += 3)
-		foodm.addel((String)args[i], (Integer)args[i + 1], (Color)args[i + 2]);
+	    foodm.update(args);
 	} else if(msg == "btime") {
 	    btime = (Integer)args[0];
 	}
