@@ -109,8 +109,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	    }
 	    if(res != null) {
-		if(res.prio < prio)
-		    res.prio = prio;
+		res.boostprio(prio);
 		return(res);
 	    }
 	    res = new Resource(name, ver);
@@ -139,14 +138,19 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    ret += l.queue.size();
 	return(ret);
     }
-	
+    
     public static Resource load(String name) {
 	return(load(name, -1));
     }
-	
+    
+    public void boostprio(int newprio) {
+	if(prio < newprio)
+	    prio = newprio;
+    }
+    
     public void loadwaitint() throws InterruptedException {
 	synchronized(this) {
-	    prio = 10;
+	    boostprio(10);
 	    while(loading) {
 		wait();
 	    }
@@ -166,7 +170,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    loadwaited.add(this);
 	}
 	synchronized(this) {
-	    prio = 10;
+	    boostprio(10);
 	    while(loading) {
 		try {
 		    wait();

@@ -74,8 +74,10 @@ public class Session {
 		public Resource get() {
 		    if(res == null)
 			return(null);
-		    if(res.loading)
+		    if(res.loading) {
+			res.boostprio(0);
 			return(null);
+		    }
 		    return(res);
 		}
 					
@@ -313,7 +315,7 @@ public class Session {
 		String resname = msg.string();
 		int resver = msg.uint16();
 		synchronized(rescache) {
-		    getres(resid).set(Resource.load(resname, resver));
+		    getres(resid).set(Resource.load(resname, resver, -5));
 		}
 	    } else if(msg.type == Message.RMSG_PARTY) {
 		glob.party.msg(msg);
