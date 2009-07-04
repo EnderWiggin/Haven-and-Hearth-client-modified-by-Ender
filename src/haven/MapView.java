@@ -574,6 +574,14 @@ public class MapView extends Widget implements DTarget {
 		Drawable d = gob.getattr(Drawable.class);
 		if(d != null)
 		    clickable.add(d);
+		/*
+		Authority a = gob.getattr(Authority.class);
+		if(a != null) {
+		    Sprite.Part p = a.mkpart();
+		    p.setup(dc, Coord.z);
+		    sprites.add(p);
+		}
+		*/
 		Speaking s = gob.getattr(Speaking.class);
 		if(s != null)
 		    speaking.add(s);
