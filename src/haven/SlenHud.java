@@ -108,6 +108,14 @@ public class SlenHud extends Widget implements DropTarget {
 	equb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/equu"), Resource.loadimg("gfx/hud/slen/equd"));
 	chrb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/chru"), Resource.loadimg("gfx/hud/slen/chrd"));
 	budb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/budu"), Resource.loadimg("gfx/hud/slen/budd"));
+	Resource autht = Resource.load("gfx/hud/slen/autht");
+	autht.loadwait();
+	new IButton(new Coord(5, -autht.layer(Resource.imgc).sz.y), this, autht.layer(Resource.imgc).img, autht.layer(Resource.imgc).img) {
+	    public void click() {
+		MapView mv = ui.root.findchild(MapView.class);
+		mv.authdraw = !mv.authdraw;
+	    }
+	};
 	vc = new VC(this, new IButton(new Coord(380, 600), parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd")) {
 		public void click() {
 		    vc.show();

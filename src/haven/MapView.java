@@ -15,6 +15,7 @@ public class MapView extends Widget implements DTarget {
     private long olftimer = 0;
     private int olflash = 0;
     static Color[] olc = new Color[31];
+    public boolean authdraw = false;
     Grabber grab = null;
     ILM mask;
     final MCache map;
@@ -574,14 +575,14 @@ public class MapView extends Widget implements DTarget {
 		Drawable d = gob.getattr(Drawable.class);
 		if(d != null)
 		    clickable.add(d);
-		/*
-		Authority a = gob.getattr(Authority.class);
-		if(a != null) {
-		    Sprite.Part p = a.mkpart();
-		    p.setup(dc, Coord.z);
-		    sprites.add(p);
+		if(authdraw) {
+		    Authority a = gob.getattr(Authority.class);
+		    if(a != null) {
+			Sprite.Part p = a.mkpart();
+			p.setup(dc, Coord.z);
+			sprites.add(p);
+		    }
 		}
-		*/
 		Speaking s = gob.getattr(Speaking.class);
 		if(s != null)
 		    speaking.add(s);
