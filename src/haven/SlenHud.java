@@ -9,8 +9,10 @@ public class SlenHud extends Widget implements DropTarget {
     public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
+    public static final Tex dispbg = Resource.loadtex("gfx/hud/slen/dispbg");
     public static final Coord fc = new Coord(96, -29);
     public static final Coord mc = new Coord(316, -55);
+    public static final Coord dispc = new Coord(0, 4 - dispbg.sz().y);
     public static final Coord bc1 = new Coord(147, -8);
     public static final Coord bc2 = new Coord(485, -8);
     public static final Coord sz;
@@ -103,19 +105,36 @@ public class SlenHud extends Widget implements DropTarget {
 	super(new Coord(800, 600).add(sz.inv()), sz, parent);
 	new Img(fc, flarps, this);
 	new Img(mc, mbg, this);
+	new Img(dispc, dispbg, this);
 	hb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/hbu"), Resource.loadimg("gfx/hud/slen/hbd"));
 	invb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/invu"), Resource.loadimg("gfx/hud/slen/invd"));
 	equb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/equu"), Resource.loadimg("gfx/hud/slen/equd"));
 	chrb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/chru"), Resource.loadimg("gfx/hud/slen/chrd"));
 	budb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/budu"), Resource.loadimg("gfx/hud/slen/budd"));
-	Resource autht = Resource.load("gfx/hud/slen/autht");
-	autht.loadwait();
-	new IButton(new Coord(5, -autht.layer(Resource.imgc).sz.y), this, autht.layer(Resource.imgc).img, autht.layer(Resource.imgc).img) {
-	    public void click() {
-		MapView mv = ui.root.findchild(MapView.class);
-		mv.authdraw = !mv.authdraw;
-	    }
-	};
+	{
+	    new IButton(dispc, this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
+		public void click() {
+		    MapView mv = ui.root.findchild(MapView.class);
+		    mv.authdraw = !mv.authdraw;
+		}
+	    };
+	}
+	{
+	    new IButton(dispc, this, Resource.loadimg("gfx/hud/slen/dispclaim"), Resource.loadimg("gfx/hud/slen/dispclaimd")) {
+		private boolean v = false;
+		
+		public void click() {
+		    MapView mv = ui.root.findchild(MapView.class);
+		    if(v) {
+			mv.disol(0, 1);
+			v = false;
+		    } else {
+			mv.enol(0, 1);
+			v = true;
+		    }
+		}
+	    };
+	}
 	vc = new VC(this, new IButton(new Coord(380, 600), parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd")) {
 		public void click() {
 		    vc.show();
