@@ -36,6 +36,8 @@ public class Session {
     public static final int SESSERR_CONN = 3;
     public static final int SESSERR_PVER = 4;
     public static final int SESSERR_EXPR = 5;
+    
+    static final int ackthresh = 30;
 	
     DatagramSocket sk;
     InetAddress server;
@@ -43,6 +45,8 @@ public class Session {
     public int connfailed = 0;
     public String state = "conn";
     int tseq = 0, rseq = 0;
+    int ackseq;
+    long acktime = -1;
     LinkedList<Message> uimsgs = new LinkedList<Message>();
     Map<Integer, Message> waiting = new TreeMap<Integer, Message>();
     LinkedList<Message> pending = new LinkedList<Message>();
@@ -145,12 +149,6 @@ public class Session {
 	public RWorker() {
 	    super(Utils.tg(), "Session reader");
 	    setDaemon(true);
-	}
-		
-	private void sendack(int seq) {
-	    byte[] msg = {MSG_ACK, 0, 0};
-	    Utils.uint16e(seq, msg, 1);
-	    sendmsg(msg);
 	}
 		
 	private void gotack(int seq) {
@@ -474,6 +472,10 @@ public class Session {
 				to = 200;
 			}
 			synchronized(this) {
+			    if(acktime > 0)
+				to = acktime + ackthresh - now;
+			    if(to < 0)
+				to = 0;
 			    this.wait(to);
 			}
 			now = System.currentTimeMillis();
@@ -517,8 +519,19 @@ public class Session {
 				if(del)
 				    i.remove();
 			    }
-			    if(msg != null)
+			    if(msg != null) {
 				sendmsg(msg);
+				beat = false;
+			    }
+			}
+			synchronized(this) {
+			    if((acktime > 0) && (now - acktime >= ackthresh)) {
+				byte[] msg = {MSG_ACK, 0, 0};
+				Utils.uint16e(ackseq, msg, 1);
+				sendmsg(msg);
+				acktime = -1;
+				beat = false;
+			    }
 			}
 			if(beat) {
 			    if(now - last > 5000) {
@@ -568,6 +581,15 @@ public class Session {
 	sworker.start();
 	ticker = new Ticker();
 	ticker.start();
+    }
+		
+    private void sendack(int seq) {
+	synchronized(sworker) {
+	    if(acktime < 0)
+		acktime = System.currentTimeMillis();
+	    ackseq = seq;
+	    sworker.notifyAll();
+	}
     }
 	
     public void close() {
