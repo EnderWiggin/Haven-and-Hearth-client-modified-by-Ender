@@ -12,6 +12,7 @@ import java.nio.channels.UnresolvedAddressException;
 public class SslHelper {
     private KeyStore creds, trusted;
     private SSLContext ctx = null;
+    private SSLSocketFactory sfac = null;
     private int tserial = 0;
     private char[] pw;
     private HostnameVerifier ver = null;
@@ -55,9 +56,20 @@ public class SslHelper {
 	}
 	return(ctx);
     }
+
+    private synchronized SSLSocketFactory sfac() {
+	if(sfac == null)
+	    sfac = ctx().getSocketFactory();
+	return(sfac);
+    }
     
-    public synchronized void trust(Certificate cert) {
+    private void clear() {
 	ctx = null;
+	sfac = null;
+    }
+
+    public synchronized void trust(Certificate cert) {
+	clear();
 	try {
 	    trusted.setCertificateEntry("cert-" + tserial++, cert);
 	} catch(KeyStoreException e) {
@@ -74,7 +86,7 @@ public class SslHelper {
     }
     
     public synchronized void loadCredsPkcs12(InputStream in, char[] pw) throws IOException, CertificateException {
-	ctx = null;
+	clear();
 	try {
 	    creds = KeyStore.getInstance("PKCS12");
 	    creds.load(in, pw);
@@ -90,7 +102,7 @@ public class SslHelper {
 	if(!url.getProtocol().equals("https"))
 	    throw(new MalformedURLException("Can only be used to connect to HTTPS servers"));
 	HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
-	conn.setSSLSocketFactory(ctx().getSocketFactory());
+	conn.setSSLSocketFactory(sfac());
 	if(ver != null)
 	    conn.setHostnameVerifier(ver);
 	return(conn);
@@ -109,7 +121,7 @@ public class SslHelper {
     }
     
     public SSLSocket connect(Socket sk, String host, int port, boolean autoclose) throws IOException {
-	return((SSLSocket)ctx().getSocketFactory().createSocket(sk, host, port, autoclose));
+	return((SSLSocket)sfac().createSocket(sk, host, port, autoclose));
     }
     
     private static Socket j2seIsStupid(String host, int port) throws IOException {
