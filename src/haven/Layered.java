@@ -227,7 +227,7 @@ public class Layered extends Drawable {
 		}
 		
 		public void drawol(GOut g) {
-		    g.image(l.ol(), cc.add(l.cc.inv()).add(off));
+		    g.image(l.ol(), cc.add(l.cc.inv()).add(off).add(-1, -1));
 		}
 		
 		public void setup(Coord cc, Coord off) {

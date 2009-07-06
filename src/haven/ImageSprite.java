@@ -33,7 +33,7 @@ public abstract class ImageSprite extends Sprite {
 	public void drawol(GOut g) {
 	    if(ol == null)
 		ol = new TexI(Utils.outline(img.img, java.awt.Color.YELLOW));
-	    g.image(ol, sc().add(img.o));
+	    g.image(ol, sc().add(img.o).add(-1, -1));
 	}
 	
 	public Coord sc() {
