@@ -664,26 +664,6 @@ public class MapView extends Widget implements DTarget {
 	return((d + 1) / 2);
     }
 	
-    /*
-    private void fixlight() {
-	Astronomy a = glob.ast;
-	if(a == null) {
-	    mask.amb = new Color(0, 0, 0, 0);
-	    return;
-	}
-	double p2 = Math.PI * 2;
-	double sa = -Math.cos(a.dt * p2);
-	double la = anorm(-Math.cos(a.mp * p2));
-	double hs = Math.pow(Math.sin(a.dt * p2), 2);
-	double nl = clip(-sa * 2, 0, 1);
-	hs = clip((hs - 0.5) * 2, 0, 1);
-	double ml = 0.1 + la * 0.2;
-	sa = anorm(clip(sa * 1.5, -1, 1));
-	double ll = ml + ((1 - ml) * sa);
-	mask.amb = mkc(hs * 0.4, hs * 0.2, nl * 0.25 * ll, 1 - ll);
-    }
-    */
-	
     public void drawarrows(GOut g) {
 	Coord oc = viewoffset(sz, mc);
 	Coord hsz = sz.div(2);
