@@ -43,6 +43,7 @@ public abstract class ImageSprite extends Sprite {
 	}
 	
 	public boolean checkhit(Coord c) {
+	    c = c.add(ImageSprite.this.cc);
 	    if((c.x < img.o.x) || (c.y < img.o.y) || (c.x >= img.o.x + img.sz.x) || (c.y >= img.o.y + img.sz.y))
 		return(false);
 	    int cl = img.img.getRGB(c.x - img.o.x, c.y - img.o.y);
@@ -73,7 +74,6 @@ public abstract class ImageSprite extends Sprite {
     
     public boolean checkhit(Coord c) {
 	Collection<Part> f = this.curf;
-	c = c.add(cc);
 	synchronized(f) {
 	    for(Part p : f) {
 		if(p.checkhit(c))

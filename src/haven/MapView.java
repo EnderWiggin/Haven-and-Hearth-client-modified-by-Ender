@@ -10,7 +10,7 @@ import java.util.*;
 public class MapView extends Widget implements DTarget {
     public Coord mc, mousepos;
     Camera cam;
-    List<Drawable> clickable = new ArrayList<Drawable>();
+    Map<Sprite.Part, Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
@@ -45,7 +45,7 @@ public class MapView extends Widget implements DTarget {
 	olc[16] = new Color(0, 255, 0);
 	olc[17] = new Color(255, 255, 0);
     }
-	
+    
     public interface Grabber {
 	void mmousedown(Coord mc, int button);
 	void mmouseup(Coord mc, int button);
@@ -290,16 +290,24 @@ public class MapView extends Widget implements DTarget {
 	    this.grab = null;
     }
 	
+    private Gob gobatpos(Coord c) {
+	for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
+	    Sprite.Part d = e.getKey();
+	    Gob gob = e.getValue();
+	    String desc;
+	    if(d instanceof ImageSprite.ImagePart)
+		desc = ((ImageSprite.ImagePart)d).img.getres().name;
+	    else
+		desc = d.toString();
+	    if(d.checkhit(c.add(gob.sc.inv())))
+		return(gob);
+	}
+	return(null);
+    }
+
     public boolean mousedown(Coord c, int button) {
 	setfocus(this);
-	Drawable hit = null;
-	for(Drawable d : clickable) {
-	    Gob g = d.gob;
-	    if(d.checkhit(c.add(g.sc.inv()))) {
-		hit = d;
-		break;
-	    }
-	}
+	Gob hit = gobatpos(c);
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
 	    grab.mmousedown(mc, button);
@@ -314,7 +322,7 @@ public class MapView extends Widget implements DTarget {
 	    if(hit == null)
 		wdgmsg("click", c, mc, button, ui.modflags());
 	    else
-		wdgmsg("click", c, mc, button, ui.modflags(), hit.gob.id, hit.gob.getc());
+		wdgmsg("click", c, mc, button, ui.modflags(), hit.id, hit.getc());
 	}
 	return(true);
     }
@@ -554,27 +562,29 @@ public class MapView extends Widget implements DTarget {
 	drawplobeffect(g);
 	curf.tick("plobeff");
 		
-	final ArrayList<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
-	ArrayList<Drawable> clickable = new ArrayList<Drawable>();
+	final List<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
+	final Map<Sprite.Part,Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
-	Sprite.Drawer drawer = new Sprite.Drawer() {
-		public void addpart(Sprite.Part p) {
-		    if((p.ul.x >= sz.x) ||
-		       (p.ul.y >= sz.y) ||
-		       (p.lr.x < 0) ||
-		       (p.lr.y < 0))
-			return;
-		    sprites.add(p);
-		}
-	    };
+	class GobMapper implements Sprite.Drawer {
+	    Gob cur = null;
+
+	    public void addpart(Sprite.Part p) {
+		if((p.ul.x >= sz.x) ||
+		   (p.ul.y >= sz.y) ||
+		   (p.lr.x < 0) ||
+		   (p.lr.y < 0))
+		    return;
+		sprites.add(p);
+		clickable.put(p, cur);
+	    }
+	}
+	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
 	    for(Gob gob : glob.oc) {
+		drawer.cur = gob;
 		Coord dc = m2s(gob.getc()).add(oc);
 		gob.sc = dc;
 		gob.drawsetup(drawer, dc, sz);
-		Drawable d = gob.getattr(Drawable.class);
-		if(d != null)
-		    clickable.add(d);
 		if(authdraw) {
 		    Authority a = gob.getattr(Authority.class);
 		    if(a != null) {
@@ -587,15 +597,8 @@ public class MapView extends Widget implements DTarget {
 		if(s != null)
 		    speaking.add(s);
 	    }
-	    Collections.sort(clickable, new Comparator<Drawable>() {
-		    public int compare(Drawable a, Drawable b) {
-			if(a.gob.clprio != b.gob.clprio)
-			    return(a.gob.clprio - b.gob.clprio);
-			return(b.gob.sc.y - a.gob.sc.y);
-		    }
-		});
 	    this.clickable = clickable;
-	    Collections.sort(sprites);
+	    Collections.sort(sprites, Sprite.partcmp);
 	    curf.tick("sort");
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
@@ -762,19 +765,12 @@ public class MapView extends Widget implements DTarget {
     }
 	
     public boolean iteminteract(Coord cc, Coord ul) {
-	Drawable hit = null;
-	for(Drawable d : clickable) {
-	    Gob g = d.gob;
-	    if(d.checkhit(cc.add(g.sc.inv()))) {
-		hit = d;
-		break;
-	    }
-	}
+	Gob hit = gobatpos(cc);
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
 	if(hit == null)
 	    wdgmsg("itemact", cc, mc, ui.modflags());
 	else
-	    wdgmsg("itemact", cc, mc, ui.modflags(), hit.gob.id, hit.gob.getc());
+	    wdgmsg("itemact", cc, mc, ui.modflags(), hit.id, hit.getc());
 	return(true);
     }
 }

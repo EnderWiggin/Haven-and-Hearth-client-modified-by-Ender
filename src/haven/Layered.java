@@ -170,7 +170,7 @@ public class Layered extends Drawable {
 	    if(spr != null)
 		spr.setup(drw, Coord.z, Coord.z);
 	}
-	Collections.sort(parts);
+	Collections.sort(parts, Sprite.partcmp);
 	Coord ul = new Coord(0, 0);
 	Coord lr = new Coord(0, 0);
 	for(Sprite.Part part : parts) {
@@ -223,6 +223,10 @@ public class Layered extends Drawable {
 		    super.setup(cc, off);
 		    ul = cc.add(l.cc.inv());
 		    lr = ul.add(l.tex().sz());
+		}
+		
+		public boolean checkhit(Coord c) {
+		    return(Layered.this.checkhit(c));
 		}
 	    });
     }

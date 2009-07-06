@@ -13,7 +13,47 @@ public abstract class Sprite {
 	factories.add(AnimSprite.fact);
 	factories.add(StaticSprite.fact);
     }
-	
+    
+    public static final Comparator<Part> partcmp = new Comparator<Part>() {
+	public int compare(Part a, Part b) {
+	    if(a.z != b.z)
+		return(a.z - b.z);
+	    if(a.cc.y != b.cc.y)
+		return(a.cc.y - b.cc.y);
+	    return(a.subz - b.subz);
+	}
+    };
+    
+    public static final Comparator<Part> partidcmp = new Comparator<Part>() {
+	private int eid = 0;
+	private Map<Part, Integer> emergency = null;
+		    
+	public int compare(Part a, Part b) {
+	    int c = partcmp.compare(a, b);
+	    if(c != 0)
+		return(c);
+	    c = System.identityHashCode(a) - System.identityHashCode(b);
+	    if(c != 0)
+		return(c);
+	    if(a == b)
+		return(0);
+	    if(emergency == null) {
+		System.err.println("Could not impose ordering on distinct sprite parts, invoking emergency protocol!");
+		emergency = new IdentityHashMap<Part, Integer>();
+	    }
+	    int ai, bi;
+	    if(emergency.containsKey(a))
+		ai = emergency.get(a);
+	    else
+		emergency.put(a, ai = eid++);
+	    if(emergency.containsKey(a))
+		bi = emergency.get(a);
+	    else
+		emergency.put(b, bi = eid++);
+	    return(ai - bi);
+	}
+    };
+    
     public interface Drawer {
 	public void addpart(Part p);
     }
@@ -55,7 +95,7 @@ public abstract class Sprite {
 	}
     }
 	
-    public static abstract class Part implements Comparable<Part> {
+    public static abstract class Part {
 	public Coord cc, off;
 	public Coord ul = Coord.z, lr = Coord.z;
 	public int z, subz;
@@ -68,14 +108,6 @@ public abstract class Sprite {
 	public Part(int z, int subz) {
 	    this.z = z;
 	    this.subz = subz;
-	}
-	
-	public int compareTo(Part other) {
-	    if(z != other.z)
-		return(z - other.z);
-	    if(cc.y != other.cc.y)
-		return(cc.y - other.cc.y);
-	    return(subz - other.subz);
 	}
 	
 	public Coord sc() {
