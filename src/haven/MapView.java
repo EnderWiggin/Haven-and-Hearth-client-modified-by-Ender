@@ -11,6 +11,7 @@ public class MapView extends Widget implements DTarget {
     public Coord mc, mousepos;
     Camera cam;
     Map<Sprite.Part, Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
+    List<Sprite.Part> obscured = Collections.emptyList();
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
@@ -301,14 +302,14 @@ public class MapView extends Widget implements DTarget {
     }
 	
     private Gob gobatpos(Coord c) {
+	for(Sprite.Part d : obscured) {
+	    Gob gob = clickable.get(d);
+	    if(d.checkhit(c.add(gob.sc.inv())))
+		return(gob);
+	}
 	for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
 	    Sprite.Part d = e.getKey();
 	    Gob gob = e.getValue();
-	    String desc;
-	    if(d instanceof ImageSprite.ImagePart)
-		desc = ((ImageSprite.ImagePart)d).img.getres().name;
-	    else
-		desc = d.toString();
 	    if(d.checkhit(c.add(gob.sc.inv())))
 		return(gob);
 	}
@@ -627,7 +628,7 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    this.clickable = clickable;
 	    Collections.sort(sprites, Sprite.partcmp);
-	    List<Sprite.Part> obscured = findobsc();
+	    obscured = findobsc();
 	    curf.tick("sort");
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
