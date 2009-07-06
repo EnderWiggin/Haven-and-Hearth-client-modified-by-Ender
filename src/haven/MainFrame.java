@@ -4,6 +4,7 @@ import java.awt.*;
 import java.net.URL;
 import java.awt.event.*;
 import java.io.PrintWriter;
+import java.util.*;
 
 public class MainFrame extends Frame implements Runnable, FSMan {
     HavenPanel p;
@@ -195,7 +196,12 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	dumplist(Resource.cached(), Utils.getprop("haven.allused", null));
 	if(jnlpcache != null) {
 	    try {
-		dumplist(Resource.cached(), new PrintWriter(jnlpcache.store("tmp/allused")));
+		Collection<Resource> used = new LinkedList<Resource>();
+		for(Resource res : Resource.cached()) {
+		    if(res.prio >= 0)
+			used.add(res);
+		}
+		dumplist(used, new PrintWriter(jnlpcache.store("tmp/allused")));
 	    } catch(java.io.IOException e) {}
 	}
     }
@@ -234,7 +240,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	System.exit(0);
     }
 	
-    private static void dumplist(java.util.Collection<Resource> list, String fn) {
+    private static void dumplist(Collection<Resource> list, String fn) {
 	try {
 	    if(fn != null)
 		dumplist(list, new PrintWriter(fn));
@@ -243,12 +249,10 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
     }
     
-    private static void dumplist(java.util.Collection<Resource> list, PrintWriter out) {
+    private static void dumplist(Collection<Resource> list, PrintWriter out) {
 	try {
 	    for(Resource res : list) {
 		if(res.loading)
-		    continue;
-		if(res.prio < 0)
 		    continue;
 		out.println(res.name + ":" + res.ver);
 	    }
