@@ -10,6 +10,7 @@ public abstract class ImageSprite extends Sprite {
     
     public class ImagePart extends Part {
 	Resource.Image img;
+	Tex ol = null;
 	
 	public ImagePart(Resource.Image img) {
 	    super(img.z, img.subz);
@@ -27,6 +28,12 @@ public abstract class ImageSprite extends Sprite {
 	
 	public void draw(GOut g) {
 	    g.image(img.tex(), sc().add(img.o));
+	}
+	
+	public void drawol(GOut g) {
+	    if(ol == null)
+		ol = new TexI(Utils.outline(img.img, java.awt.Color.YELLOW));
+	    g.image(ol, sc().add(img.o));
 	}
 	
 	public Coord sc() {

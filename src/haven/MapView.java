@@ -26,7 +26,17 @@ public class MapView extends Widget implements DTarget {
     int playergob = -1;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
-	
+    Coord plfpos = null;
+    long lastmove = 0;
+    Sprite.Part obscpart = null;
+    Gob obscgob = null;
+    
+    public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
+	public int compare(Sprite.Part a, Sprite.Part b) {
+	    return(-Sprite.partidcmp.compare(a, b));
+	}
+    };
+    
     static {
 	Widget.addtype("mapview", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
@@ -526,6 +536,24 @@ public class MapView extends Widget implements DTarget {
 	}
     }
 
+    private List<Sprite.Part> findobsc() {
+	ArrayList<Sprite.Part> obsc = new ArrayList<Sprite.Part>();
+	if(obscgob == null)
+	    return(obsc);
+	boolean adding = false;
+	for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
+	    Sprite.Part p = e.getKey();
+	    Gob gob = e.getValue();
+	    if(gob == obscgob) {
+		adding = true;
+		continue;
+	    }
+	    if(adding && obscpart.checkhit(gob.sc.add(obscgob.sc.inv())))
+		obsc.add(p);
+	}
+	return(obsc);
+    }
+
     public void drawmap(GOut g) {
 	int x, y, i;
 	int stw, sth;
@@ -599,9 +627,12 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    this.clickable = clickable;
 	    Collections.sort(sprites, Sprite.partcmp);
+	    List<Sprite.Part> obscured = findobsc();
 	    curf.tick("sort");
 	    for(Sprite.Part part : sprites)
 		part.draw(g);
+	    for(Sprite.Part part : obscured)
+		part.drawol(g);
 	    
 	    if(Utils.getprop("haven.bounddb", "off").equals("on") && ui.modshift) {
 		g.chcolor(255, 0, 0, 128);
@@ -695,6 +726,34 @@ public class MapView extends Widget implements DTarget {
 	}
     }
 	
+    private void checkplmove() {
+	Gob pl;
+	long now = System.currentTimeMillis();
+	if((playergob >= 0) && ((pl = glob.oc.getgob(playergob)) != null)) {
+	    Coord plp = pl.getc();
+	    if((plfpos == null) || !plfpos.equals(plp)) {
+		lastmove = now;
+		plfpos = plp;
+		if((obscpart != null) && !obscpart.checkhit(pl.sc.add(obscgob.sc.inv()))) {
+		    obscpart = null;
+		    obscgob = null;
+		}
+	    } else if(now - lastmove > 500) {
+		for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
+		    Sprite.Part p = e.getKey();
+		    Gob gob = e.getValue();
+		    if(gob == pl)
+			break;
+		    if(p.checkhit(pl.sc.add(gob.sc.inv()))) {
+			obscpart = p;
+			obscgob = gob;
+			break;
+		    }
+		}
+	    }
+	}
+    }
+
     private void checkmappos() {
 	if(cam == null)
 	    return;
@@ -721,6 +780,7 @@ public class MapView extends Widget implements DTarget {
 	if((olftimer != 0) && (olftimer < System.currentTimeMillis()))
 	    unflashol();
 	map.sendreqs();
+	checkplmove();
 	try {
 	    if((mask.amb = glob.amblight) == null)
 		mask.amb = new Color(0, 0, 0, 0);

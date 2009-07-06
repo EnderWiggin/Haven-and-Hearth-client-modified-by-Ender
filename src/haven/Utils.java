@@ -373,4 +373,28 @@ public class Utils {
     public static String titlecase(String str) {
 	return(Character.toTitleCase(str.charAt(0)) + str.substring(1));
     }
+    
+    public static BufferedImage outline(BufferedImage img, java.awt.Color col) {
+	Coord sz = imgsz(img).add(2, 2);
+	BufferedImage ol = TexI.mkbuf(sz);
+	for(int y = 0; y < sz.y; y++) {
+	    for(int x = 0; x < sz.x; x++) {
+		boolean t;
+		if((y == 0) || (x == 0) || (y == sz.y - 1) || (x == sz.x - 1)) {
+		    t = true;
+		} else {
+		    int cl = img.getRGB(x - 1, y - 1);
+		    t = Utils.rgbm.getAlpha(cl) < 250;
+		}
+		if(!t)
+		    continue;
+		if(((x > 1) && (y > 0) && (y < sz.y - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 2, y - 1)) >= 250)) ||
+		   ((x > 0) && (y > 1) && (x < sz.x - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 1, y - 2)) >= 250)) ||
+		   ((x < sz.x - 2) && (y > 0) && (y < sz.y - 1) && (Utils.rgbm.getAlpha(img.getRGB(x, y - 1)) >= 250)) ||
+		   ((x > 0) && (y < sz.y - 2) && (x < sz.x - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 1, y)) >= 250)))
+		    ol.setRGB(x, y, col.getRGB());
+	    }
+	}
+	return(ol);
+    }
 }

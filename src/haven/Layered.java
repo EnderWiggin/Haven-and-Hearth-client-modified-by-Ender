@@ -16,6 +16,7 @@ public class Layered extends Drawable {
 	BufferedImage img;
 	Tex tex = null;
 	Coord cc;
+	Tex ol = null;
 	
 	public Layer(BufferedImage img, Coord cc) {
 	    this.img = img;
@@ -27,6 +28,12 @@ public class Layered extends Drawable {
 		return(tex);
 	    tex = new TexI(img);
 	    return(tex);
+	}
+	
+	public Tex ol() {
+	    if(ol == null)
+		ol = new TexI(Utils.outline(img, java.awt.Color.YELLOW));
+	    return(ol);
 	}
 	
 	public void dispose() {
@@ -217,6 +224,10 @@ public class Layered extends Drawable {
 				
 		public void draw(GOut g) {
 		    g.image(l.tex(), cc.add(l.cc.inv()).add(off));
+		}
+		
+		public void drawol(GOut g) {
+		    g.image(l.ol(), cc.add(l.cc.inv()).add(off));
 		}
 		
 		public void setup(Coord cc, Coord off) {

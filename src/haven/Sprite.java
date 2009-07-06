@@ -125,6 +125,7 @@ public abstract class Sprite {
 
 	public abstract void draw(BufferedImage buf, Graphics g);
 	public abstract void draw(GOut g);
+	public void drawol(GOut g) {}
     }
 
     public static class ResourceException extends RuntimeException {
