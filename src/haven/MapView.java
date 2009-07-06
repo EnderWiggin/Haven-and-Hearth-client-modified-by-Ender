@@ -730,7 +730,7 @@ public class MapView extends Widget implements DTarget {
     private void checkplmove() {
 	Gob pl;
 	long now = System.currentTimeMillis();
-	if((playergob >= 0) && ((pl = glob.oc.getgob(playergob)) != null)) {
+	if((playergob >= 0) && ((pl = glob.oc.getgob(playergob)) != null) && (pl.sc != null)) {
 	    Coord plp = pl.getc();
 	    if((plfpos == null) || !plfpos.equals(plp)) {
 		lastmove = now;
@@ -743,6 +743,8 @@ public class MapView extends Widget implements DTarget {
 		for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
 		    Sprite.Part p = e.getKey();
 		    Gob gob = e.getValue();
+		    if(gob.sc == null)
+			continue;
 		    if(gob == pl)
 			break;
 		    if(p.checkhit(pl.sc.add(gob.sc.inv()))) {
