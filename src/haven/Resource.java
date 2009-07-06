@@ -1045,4 +1045,50 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	}
     }
+    
+    public static void updateloadlist(File file) throws Exception {
+	BufferedReader r = new BufferedReader(new FileReader(file));
+	Map<String, Integer> orig = new HashMap<String, Integer>();
+	String ln;
+	while((ln = r.readLine()) != null) {
+	    int pos = ln.indexOf(':');
+	    if(pos < 0) {
+		System.err.println("Weird line: " + ln);
+		continue;
+	    }
+	    String nm = ln.substring(0, pos);
+	    int ver = Integer.parseInt(ln.substring(pos + 1));
+	    orig.put(nm, ver);
+	}
+	r.close();
+	for(String nm : orig.keySet())
+	    load(nm);
+	while(true) {
+	    int d = qdepth();
+	    if(d == 0)
+		break;
+	    System.out.print("\033[1GLoading... " + d + "\033[K");
+	    Thread.sleep(500);
+	}
+	System.out.println();
+	PrintWriter w = new PrintWriter(file);
+	for(Map.Entry<String, Integer> e : orig.entrySet()) {
+	    String nm = e.getKey();
+	    int ver = e.getValue();
+	    Resource res = load(nm);
+	    if(res.loading)
+		throw(new RuntimeException("Preloaded res " + nm + " shouldn't still be loading."));
+	    if(res.ver != ver)
+		System.out.println(nm + ": " + ver + " -> " + res.ver);
+	    w.println(nm + ":" + ver);
+	}
+	w.close();
+    }
+
+    public static void main(String[] args) throws Exception {
+	String cmd = args[0].intern();
+	if(cmd == "update") {
+	    updateloadlist(new File(args[1]));
+	}
+    }
 }
