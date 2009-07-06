@@ -680,14 +680,6 @@ public class MapView extends Widget implements DTarget {
 	}
     }
 	
-    private double clip(double d, double min, double max) {
-	if(d < min)
-	    return(min);
-	if(d > max)
-	    return(max);
-	return(d);
-    }
-	
     private Color mkc(double r, double g, double b, double a) {
 	return(new Color((int)(r * 255), (int)(g * 255), (int)(b * 255), (int)(a * 255)));
     }

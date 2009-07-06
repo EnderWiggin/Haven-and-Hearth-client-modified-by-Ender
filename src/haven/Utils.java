@@ -397,4 +397,20 @@ public class Utils {
 	}
 	return(ol);
     }
+    
+    public static BufferedImage outline2(BufferedImage img, java.awt.Color col) {
+	BufferedImage ol = outline(img, col);
+	Graphics g = ol.getGraphics();
+	g.drawImage(img, 1, 1, null);
+	g.dispose();
+	return(ol);
+    }
+
+    public static double clip(double d, double min, double max) {
+	if(d < min)
+	    return(min);
+	if(d > max)
+	    return(max);
+	return(d);
+    }
 }
