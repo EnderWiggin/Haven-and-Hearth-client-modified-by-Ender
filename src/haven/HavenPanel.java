@@ -213,13 +213,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
 
 	gl.glMatrixMode(GL.GL_PROJECTION);
 	gl.glLoadIdentity();
-	gl.glOrtho(0, w, 0, h, -1, 1);
+	gl.glOrtho(0, getWidth(), 0, getHeight(), -1, 1);
 	TexRT.renderall(g);
 	curf.tick("texrt");
 
 	gl.glMatrixMode(GL.GL_PROJECTION);
 	gl.glLoadIdentity();
-	gl.glOrtho(0, w, h, 0, -1, 1);
+	gl.glOrtho(0, getWidth(), getHeight(), 0, -1, 1);
 	gl.glClearColor(0, 0, 0, 1);
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 	curf.tick("cls");
