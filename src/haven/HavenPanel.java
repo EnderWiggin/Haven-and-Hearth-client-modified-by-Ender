@@ -3,6 +3,7 @@ package haven;
 import java.awt.GraphicsConfiguration;
 import java.awt.Cursor;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.event.*;
 import java.util.*;
 import javax.media.opengl.*;
@@ -197,6 +198,15 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	return(ui);
     }
 	
+    private static Cursor makeawtcurs(BufferedImage img, Coord hs) {
+	java.awt.Dimension cd = Toolkit.getDefaultToolkit().getBestCursorSize(img.getWidth(), img.getHeight());
+	BufferedImage buf = TexI.mkbuf(new Coord((int)cd.getWidth(), (int)cd.getHeight()));
+	java.awt.Graphics g = buf.getGraphics();
+	g.drawImage(img, 0, 0, null);
+	g.dispose();
+	return(Toolkit.getDefaultToolkit().createCustomCursor(buf, new java.awt.Point(hs.x, hs.y), ""));
+    }
+
     void redraw(GL gl) {
 	ui.tooltip = null;
 	GOut g = new GOut(gl, getContext(), new Coord(800, 600));
@@ -257,12 +267,12 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	if(!curs.loading) {
 	    if(cursmode == "awt") {
 		if(curs != lastcursor) {
-		    Coord hs = curs.layer(Resource.negc).cc;
-		    setCursor(Toolkit.getDefaultToolkit().
-			      createCustomCursor(curs.layer(Resource.imgc).img,
-						 new java.awt.Point(hs.x, hs.y),
-						 ""));
-		    lastcursor = curs;
+		    try {
+			setCursor(makeawtcurs(curs.layer(Resource.imgc).img, curs.layer(Resource.negc).cc));
+			lastcursor = curs;
+		    } catch(Exception e) {
+			cursmode = "tex";
+		    }
 		}
 	    } else if(cursmode == "tex") {
 		Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
