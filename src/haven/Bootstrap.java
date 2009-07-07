@@ -47,7 +47,7 @@ public class Bootstrap implements UI.Receiver {
 	if(Utils.getpref("savedtoken", "").length() == 64)
 	    token = Utils.hex2byte(Utils.getpref("savedtoken", null));
 	username = Utils.getpref("username", "");
-	String authserver = System.getProperty("haven.authserv", address);
+	String authserver = Utils.getprop("haven.authserv", address);
 	retry: do {
 	    byte[] cookie;
 	    if(initcookie != null) {
