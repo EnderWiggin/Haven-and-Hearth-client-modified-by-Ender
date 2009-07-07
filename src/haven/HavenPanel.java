@@ -3,6 +3,7 @@ package haven;
 import java.awt.GraphicsConfiguration;
 import java.awt.Cursor;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.event.*;
 import java.util.*;
 import javax.media.opengl.*;
@@ -16,6 +17,8 @@ public class HavenPanel extends GLCanvas implements Runnable {
     int dth = 0, dtm = 0;
     public static int texhit = 0, texmiss = 0;
     Queue<InputEvent> events = new LinkedList<InputEvent>();
+    private String cursmode = "tex";
+    private Resource lastcursor = null;
     public Coord mousepos = new Coord(0, 0);
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
@@ -34,6 +37,8 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	super(caps);
 	setSize(this.w = w, this.h = h);
 	initgl();
+	if(Toolkit.getDefaultToolkit().getMaximumCursorColors() >= 256)
+	    cursmode = "awt";
 	setCursor(Toolkit.getDefaultToolkit().createCustomCursor(TexI.mkbuf(new Coord(1, 1)), new java.awt.Point(), ""));
     }
 	
@@ -193,6 +198,15 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	return(ui);
     }
 	
+    private static Cursor makeawtcurs(BufferedImage img, Coord hs) {
+	java.awt.Dimension cd = Toolkit.getDefaultToolkit().getBestCursorSize(img.getWidth(), img.getHeight());
+	BufferedImage buf = TexI.mkbuf(new Coord((int)cd.getWidth(), (int)cd.getHeight()));
+	java.awt.Graphics g = buf.getGraphics();
+	g.drawImage(img, 0, 0, null);
+	g.dispose();
+	return(Toolkit.getDefaultToolkit().createCustomCursor(buf, new java.awt.Point(hs.x, hs.y), ""));
+    }
+
     void redraw(GL gl) {
 	ui.tooltip = null;
 	GOut g = new GOut(gl, getContext(), new Coord(800, 600));
@@ -251,8 +265,19 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	}
 	Resource curs = ui.root.getcurs(mousepos);
 	if(!curs.loading) {
-	    Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
-	    g.image(curs.layer(Resource.imgc).tex(), dc);
+	    if(cursmode == "awt") {
+		if(curs != lastcursor) {
+		    try {
+			setCursor(makeawtcurs(curs.layer(Resource.imgc).img, curs.layer(Resource.negc).cc));
+			lastcursor = curs;
+		    } catch(Exception e) {
+			cursmode = "tex";
+		    }
+		}
+	    } else if(cursmode == "tex") {
+		Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
+		g.image(curs.layer(Resource.imgc).tex(), dc);
+	    }
 	}
     }
 	
