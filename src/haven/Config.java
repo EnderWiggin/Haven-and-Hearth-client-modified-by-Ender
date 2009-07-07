@@ -1,6 +1,7 @@
 package haven;
 
 import java.net.URL;
+import java.io.PrintStream;
 import static haven.Utils.getprop;
 
 public class Config {
@@ -40,7 +41,45 @@ public class Config {
 	}
     }
     
+    private static void usage(PrintStream out) {
+	out.println("usage: haven.jar [-hdf] [-r RESDIR] [-U RESURL] [-A AUTHSERV] [SERVER]");
+    }
+
     public static void cmdline(String[] args) {
-	
+	PosixArgs opt = PosixArgs.getopt(args, "hdU:fr:A:");
+	if(opt == null) {
+	    usage(System.err);
+	    System.exit(1);
+	}
+	for(char c : opt.parsed()) {
+	    switch(c) {
+	    case 'h':
+		usage(System.out);
+		System.exit(0);
+		break;
+	    case 'd':
+		dbtext = true;
+		break;
+	    case 'f':
+		fullscreen = true;
+		break;
+	    case 'r':
+		resdir = opt.arg;
+		break;
+	    case 'A':
+		authserv = opt.arg;
+		break;
+	    case 'U':
+		try {
+		    resurl = new URL(opt.arg);
+		} catch(java.net.MalformedURLException e) {
+		    System.err.println(e);
+		    System.exit(1);
+		}
+		break;
+	    }
+	}
+	if(opt.rest.length > 0)
+	    defserv = opt.rest[0];
     }
 }
