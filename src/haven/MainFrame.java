@@ -164,7 +164,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
     }
 
-    private static void main2() {
+    private static void main2(String[] args) {
+	Config.cmdline(args);
 	ThreadGroup g = Utils.tg();
 	Resource.loadergroup = g;
 	setupres();
@@ -195,7 +196,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	}
     }
     
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 	/* Set up the error handler as early as humanly possible. */
 	ThreadGroup g;
 	if(Utils.getprop("haven.errorhandler", "off").equals("on")) {
@@ -216,7 +217,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		    } catch(InterruptedException e) {
 			return;
 		    }
-		    main2();
+		    main2(args);
 		}
 	    }, "Haven main thread");
 	main.start();

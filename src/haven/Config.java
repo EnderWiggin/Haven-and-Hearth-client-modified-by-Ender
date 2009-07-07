@@ -39,4 +39,8 @@ public class Config {
 	    throw(new RuntimeException(e));
 	}
     }
+    
+    public static void cmdline(String[] args) {
+	
+    }
 }
