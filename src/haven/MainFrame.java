@@ -95,8 +95,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	p = new HavenPanel(w, h);
 	fsmode = findmode(w, h);
 	add(p);
-	pack();
 	setResizable(false);
+	pack();
 	p.requestFocus();
 	seticon();
 	setVisible(true);
