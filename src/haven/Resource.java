@@ -27,10 +27,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public static Class<Tooltip> tooltip = Tooltip.class;
 
     static {
-	if(!Utils.getprop("haven.nolocalres", "").equals("yesimsure"))
+	if(!Config.nolocalres)
 	    loader = new Loader(new JarSource());
 	try {
-	    String dir = Utils.getprop("haven.resdir", null);
+	    String dir = Config.resdir;
 	    if(dir == null)
 		dir = System.getenv("HAVEN_RESDIR");
 	    if(dir != null)
@@ -1031,7 +1031,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     }
 
     static {
-	if(!Utils.getprop("haven.nopreload", "no").equals("yes")) {
+	if(!Config.nopreload) {
 	    try {
 		InputStream pls;
 		pls = Resource.class.getResourceAsStream("res-preload");

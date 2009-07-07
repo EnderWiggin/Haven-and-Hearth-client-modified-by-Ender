@@ -113,17 +113,13 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	p.setfsm(this);
 	ui.start();
 	try {
-	    byte[] authck = null;
-	    if(Utils.getprop("haven.authck", null) != null)
-		authck = Utils.hex2byte(Utils.getprop("haven.authck", null));
 	    while(true) {
 		Bootstrap bill = new Bootstrap();
-		String defaddr = Utils.getprop("haven.defserv", null);
-		if(defaddr != null)
-		    bill.setaddr(defaddr);
-		if((Utils.getprop("haven.authuser", null) != null) && (authck != null)) {
-		    bill.setinitcookie(Utils.getprop("haven.authuser", null), authck);
-		    authck = null;
+		if(Config.defserv != null)
+		    bill.setaddr(Config.defserv);
+		if((Config.authuser != null) && (Config.authck != null)) {
+		    bill.setinitcookie(Config.authuser, Config.authck);
+		    Config.authck = null;
 		}
 		Session sess = bill.run(p);
 		RemoteUI rui = new RemoteUI(sess);
@@ -139,13 +135,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     public static void setupres() {
 	if(ResCache.global != null)
 	    Resource.addcache(ResCache.global);
-	try {
-	    String url = Utils.getprop("haven.resurl", "https://www.havenandhearth.com/res/");
-	    if(!url.equals(""))
-		Resource.addurl(new URL(url));
-	} catch(java.net.MalformedURLException e) {
-	    throw(new RuntimeException(e));
-	}
+	if(Config.resurl != null)
+	    Resource.addurl(Config.resurl);
 	if(ResCache.global != null) {
 	    try {
 		Resource.loadlist(ResCache.global.fetch("tmp/allused"), -10);
@@ -178,7 +169,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	Resource.loadergroup = g;
 	setupres();
 	MainFrame f = new MainFrame(800, 600);
-	if(Utils.getprop("haven.fullscreen", "off").equals("on"))
+	if(Config.fullscreen)
 	    f.setfs();
 	f.g = g;
 	if(g instanceof haven.error.ErrorHandler) {
@@ -190,8 +181,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		});
 	}
 	f.run();
-	dumplist(Resource.loadwaited, Utils.getprop("haven.loadwaited", null));
-	dumplist(Resource.cached(), Utils.getprop("haven.allused", null));
+	dumplist(Resource.loadwaited, Config.loadwaited);
+	dumplist(Resource.cached(), Config.allused);
 	if(ResCache.global != null) {
 	    try {
 		Collection<Resource> used = new LinkedList<Resource>();

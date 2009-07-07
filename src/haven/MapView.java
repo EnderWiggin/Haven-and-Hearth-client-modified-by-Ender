@@ -635,7 +635,7 @@ public class MapView extends Widget implements DTarget {
 	    for(Sprite.Part part : obscured)
 		part.drawol(g);
 	    
-	    if(Utils.getprop("haven.bounddb", "off").equals("on") && ui.modshift) {
+	    if(Config.bounddb && ui.modshift) {
 		g.chcolor(255, 0, 0, 128);
 		synchronized(glob.oc) {
 		    for(Gob gob : glob.oc) {
@@ -782,7 +782,7 @@ public class MapView extends Widget implements DTarget {
 	    drawmap(g);
 	    drawarrows(g);
 	    g.chcolor(Color.WHITE);
-	    if(Utils.getprop("haven.dbtext", "off").equals("on"))
+	    if(Config.dbtext)
 		g.atext(mc.toString(), new Coord(10, 560), 0, 1);
 	} catch(Loading l) {
 	    String text = "Loading...";
