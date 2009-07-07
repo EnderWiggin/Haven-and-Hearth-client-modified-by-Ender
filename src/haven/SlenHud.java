@@ -233,16 +233,6 @@ public class SlenHud extends Widget implements DropTarget {
 			mv.cam = new MapView.FixedCam();
 		    }
 		}
-	    } else if(cmd == "size") {
-		if(MainFrame.latest != null) {
-		    for(HWindow w : wnds) {
-			if(w.title.equals("Messages")) {
-			    Logwindow l = ((Logwindow)w);
-			    l.log.append(MainFrame.latest.getSize().toString());
-			    l.log.append(MainFrame.latest.p.getSize().toString());
-			}
-		    }
-		}
 	    } else {
 		error(cmd + ": no such command");
 	    }

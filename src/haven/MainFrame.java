@@ -10,7 +10,6 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
-    static MainFrame latest = null;
 	
     static {
 	try {
@@ -171,7 +170,6 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	Resource.loadergroup = g;
 	setupres();
 	MainFrame f = new MainFrame(800, 600);
-	latest = f;
 	if(Config.fullscreen)
 	    f.setfs();
 	f.g = g;
