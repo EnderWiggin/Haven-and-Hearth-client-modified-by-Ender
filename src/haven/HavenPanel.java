@@ -16,6 +16,8 @@ public class HavenPanel extends GLCanvas implements Runnable {
     int dth = 0, dtm = 0;
     public static int texhit = 0, texmiss = 0;
     Queue<InputEvent> events = new LinkedList<InputEvent>();
+    private String cursmode = "tex";
+    private Resource lastcursor = null;
     public Coord mousepos = new Coord(0, 0);
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
@@ -34,6 +36,8 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	super(caps);
 	setSize(this.w = w, this.h = h);
 	initgl();
+	if(Toolkit.getDefaultToolkit().getMaximumCursorColors() >= 256)
+	    cursmode = "awt";
 	setCursor(Toolkit.getDefaultToolkit().createCustomCursor(TexI.mkbuf(new Coord(1, 1)), new java.awt.Point(), ""));
     }
 	
@@ -251,8 +255,19 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	}
 	Resource curs = ui.root.getcurs(mousepos);
 	if(!curs.loading) {
-	    Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
-	    g.image(curs.layer(Resource.imgc).tex(), dc);
+	    if(cursmode == "awt") {
+		if(curs != lastcursor) {
+		    Coord hs = curs.layer(Resource.negc).cc;
+		    setCursor(Toolkit.getDefaultToolkit().
+			      createCustomCursor(curs.layer(Resource.imgc).img,
+						 new java.awt.Point(hs.x, hs.y),
+						 ""));
+		    lastcursor = curs;
+		}
+	    } else if(cursmode == "tex") {
+		Coord dc = mousepos.add(curs.layer(Resource.negc).cc.inv());
+		g.image(curs.layer(Resource.imgc).tex(), dc);
+	    }
 	}
     }
 	
