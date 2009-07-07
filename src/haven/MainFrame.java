@@ -10,7 +10,6 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
-    static JnlpCache jnlpcache;
 	
     static {
 	try {
@@ -138,9 +137,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     }
     
     public static void setupres() {
-	jnlpcache = JnlpCache.create();
-	if(jnlpcache != null)
-	    Resource.addcache(jnlpcache);
+	if(ResCache.global != null)
+	    Resource.addcache(ResCache.global);
 	try {
 	    String url = Utils.getprop("haven.resurl", "https://www.havenandhearth.com/res/");
 	    if(!url.equals(""))
@@ -148,9 +146,9 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
-	if(jnlpcache != null) {
+	if(ResCache.global != null) {
 	    try {
-		Resource.loadlist(jnlpcache.fetch("tmp/allused"), -10);
+		Resource.loadlist(ResCache.global.fetch("tmp/allused"), -10);
 	    } catch(java.io.IOException e) {}
 	}
     }
@@ -194,14 +192,14 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	f.run();
 	dumplist(Resource.loadwaited, Utils.getprop("haven.loadwaited", null));
 	dumplist(Resource.cached(), Utils.getprop("haven.allused", null));
-	if(jnlpcache != null) {
+	if(ResCache.global != null) {
 	    try {
 		Collection<Resource> used = new LinkedList<Resource>();
 		for(Resource res : Resource.cached()) {
 		    if(res.prio >= 0)
 			used.add(res);
 		}
-		dumplist(used, new PrintWriter(jnlpcache.store("tmp/allused")));
+		dumplist(used, new PrintWriter(ResCache.global.store("tmp/allused")));
 	    } catch(java.io.IOException e) {}
 	}
     }
