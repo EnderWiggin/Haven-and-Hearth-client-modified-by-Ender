@@ -60,6 +60,7 @@
 	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
       </manifest>
     </jar>
+    <chmod file="build/haven.jar" perm="a+x" />
   </target>
   
   <target name="res-jar" depends="build-env" unless="has-res-jar">
