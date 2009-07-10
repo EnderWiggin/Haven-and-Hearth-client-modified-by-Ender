@@ -256,4 +256,11 @@ public class OCache implements Iterable<Gob> {
 			return;
 		g.setattr(new Authority(g, er, ir, my));
 	}
+	
+	public synchronized void health(int id, int frame, int hp) {
+		Gob g = getgob(id, frame);
+		if(g == null)
+			return;
+		g.setattr(new GobHealth(g, hp));
+	}
 }
