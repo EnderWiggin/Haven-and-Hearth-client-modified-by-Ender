@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.prefs.*;
 import java.util.*;
 import java.awt.Graphics;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class Utils {
@@ -374,7 +375,7 @@ public class Utils {
 	return(Character.toTitleCase(str.charAt(0)) + str.substring(1));
     }
     
-    public static BufferedImage outline(BufferedImage img, java.awt.Color col) {
+    public static BufferedImage outline(BufferedImage img, Color col) {
 	Coord sz = imgsz(img).add(2, 2);
 	BufferedImage ol = TexI.mkbuf(sz);
 	for(int y = 0; y < sz.y; y++) {
@@ -398,7 +399,7 @@ public class Utils {
 	return(ol);
     }
     
-    public static BufferedImage outline2(BufferedImage img, java.awt.Color col) {
+    public static BufferedImage outline2(BufferedImage img, Color col) {
 	BufferedImage ol = outline(img, col);
 	Graphics g = ol.getGraphics();
 	g.drawImage(img, 1, 1, null);
@@ -412,5 +413,14 @@ public class Utils {
 	if(d > max)
 	    return(max);
 	return(d);
+    }
+    
+    public static Color blendcol(Color in, Color bl) {
+	int f1 = bl.getAlpha();
+	int f2 = 255 - bl.getAlpha();
+	return(new Color(((in.getRed() * f2) + (bl.getRed() * f1)) / 255,
+			 ((in.getGreen() * f2) + (bl.getGreen() * f1)) / 255,
+			 ((in.getBlue() * f2) + (bl.getBlue() * f1)) / 255,
+			 in.getAlpha()));
     }
 }

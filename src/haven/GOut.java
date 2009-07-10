@@ -16,7 +16,7 @@ public class GOut {
 	GOut root;
     }
 	
-    private GOut(GOut o) {
+    protected GOut(GOut o) {
 	this.gl = o.gl;
 	this.ul = o.ul;
 	this.sz = o.sz;
@@ -201,11 +201,11 @@ public class GOut {
     }
     
     public void chcolor(int r, int g, int b, int a) {
-	this.color = new Color(r, g, b, a);
+	chcolor(new Color(r, g, b, a));
     }
 	
     public void chcolor() {
-	this.color = Color.WHITE;
+	chcolor(Color.WHITE);
     }
     
     Color getcolor() {

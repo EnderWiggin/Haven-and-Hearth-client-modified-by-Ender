@@ -99,6 +99,11 @@ public abstract class Sprite {
 	public Coord cc, off;
 	public Coord ul = Coord.z, lr = Coord.z;
 	public int z, subz;
+	public Effect effect;
+	
+	public static interface Effect {
+	    public GOut apply(GOut in);
+	}
 	
 	public Part(int z) {
 	    this.z = z;

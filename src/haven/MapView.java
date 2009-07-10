@@ -596,8 +596,18 @@ public class MapView extends Widget implements DTarget {
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
 	class GobMapper implements Sprite.Drawer {
 	    Gob cur = null;
+	    Sprite.Part.Effect fx = null;
+	    
+	    public void chcur(Gob cur) {
+		this.cur = cur;
+		GobHealth hlt = cur.getattr(GobHealth.class);
+		fx = null;
+		if(hlt != null)
+		    fx = hlt.getfx();
+	    }
 
 	    public void addpart(Sprite.Part p) {
+		p.effect = fx;
 		if((p.ul.x >= sz.x) ||
 		   (p.ul.y >= sz.y) ||
 		   (p.lr.x < 0) ||
@@ -610,7 +620,7 @@ public class MapView extends Widget implements DTarget {
 	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
 	    for(Gob gob : glob.oc) {
-		drawer.cur = gob;
+		drawer.chcur(gob);
 		Coord dc = m2s(gob.getc()).add(oc);
 		gob.sc = dc;
 		gob.drawsetup(drawer, dc, sz);
@@ -630,8 +640,12 @@ public class MapView extends Widget implements DTarget {
 	    Collections.sort(sprites, Sprite.partcmp);
 	    obscured = findobsc();
 	    curf.tick("sort");
-	    for(Sprite.Part part : sprites)
-		part.draw(g);
+	    for(Sprite.Part part : sprites) {
+		if(part.effect != null)
+		    part.draw(part.effect.apply(g));
+		else
+		    part.draw(g);
+	    }
 	    for(Sprite.Part part : obscured)
 		part.drawol(g);
 	    
