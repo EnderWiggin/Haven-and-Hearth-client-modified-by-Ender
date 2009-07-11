@@ -24,7 +24,7 @@ public class GobHealth extends GAttrib {
     }
 
     public Sprite.Part.Effect getfx() {
-	if(hp == 4)
+	if(hp >= 4)
 	    return(null);
 	return(fx);
     }
