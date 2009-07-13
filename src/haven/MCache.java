@@ -14,6 +14,7 @@ public class MCache {
     public static final Coord tilesz = new Coord(11, 11);
     public static final Coord cmaps = new Coord(100, 100);
     Random gen;
+    java.util.Map<Integer, Defrag> fragbufs = new TreeMap<Integer, Defrag>();
 	
     public class Overlay {
 	Coord c1, c2;
@@ -281,7 +282,7 @@ public class MCache {
 	return(ol);
     }
 	
-    public void mapdata(Message msg) {
+    public void mapdata2(Message msg) {
 	Coord c = msg.coord();
 	String mmname = msg.string().intern();
 	if(mmname.equals(""))
@@ -321,6 +322,34 @@ public class MCache {
 		    }
 		    grids.put(c, g);
 		}
+	    }
+	}
+    }
+    
+    public void mapdata(Message msg) {
+	long now = System.currentTimeMillis();
+	int pktid = msg.uint16();
+	int off = msg.uint16();
+	int len = msg.uint16();
+	Defrag fragbuf;
+	synchronized(fragbufs) {
+	    if((fragbuf = fragbufs.get(pktid)) == null) {
+		fragbuf = new Defrag(len);
+		fragbufs.put(pktid, fragbuf);
+	    }
+	    fragbuf.add(msg.blob, 6, msg.blob.length - 6, off);
+	    fragbuf.last = now;
+	    if(fragbuf.done()) {
+		mapdata2(fragbuf.msg());
+		fragbufs.remove(pktid);
+	    }
+	
+	    /* Clean up old buffers */
+	    for(Iterator<Map.Entry<Integer, Defrag>> i = fragbufs.entrySet().iterator(); i.hasNext();) {
+		Map.Entry<Integer, Defrag> e = i.next();
+		Defrag old = e.getValue();
+		if(now - old.last > 10000)
+		    i.remove();
 	    }
 	}
     }
