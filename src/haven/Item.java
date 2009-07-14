@@ -264,7 +264,7 @@ public class Item extends Widget implements DTarget {
     }
 	
     public boolean iteminteract(Coord cc, Coord ul) {
-	wdgmsg("itemact");
+	wdgmsg("itemact", ui.modflags());
 	return(true);
     }
 }
