@@ -9,6 +9,8 @@ set -e
 tempdir="$(mktemp -d /tmp/haven.build.XXXXXX)"
 cd "$tempdir"
 git-archive --format=tar --remote=/srv/git/client "$1" | tar x
+mkdir -p build/classes
+echo "git-rev = $1" >build/classes/buildinfo
 ant
 cp build/haven.jar /tmp
 cd /tmp
