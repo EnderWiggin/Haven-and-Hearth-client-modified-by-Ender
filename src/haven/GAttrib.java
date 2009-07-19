@@ -1,15 +1,15 @@
 package haven;
 
 public abstract class GAttrib {
-	Gob gob;
+    Gob gob;
 	
-	public GAttrib(Gob gob) {
-		this.gob = gob;
-	}
+    public GAttrib(Gob gob) {
+	this.gob = gob;
+    }
 	
-	public void tick() {
-	}
+    public void tick() {
+    }
 	
-	public void ctick(int dt) {
-	}
+    public void ctick(int dt) {
+    }
 }
