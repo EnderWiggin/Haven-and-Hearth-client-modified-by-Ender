@@ -69,4 +69,12 @@ public class Makewindow extends HWindow {
 	    return;
 	super.wdgmsg(sender, msg, args);
     }
+    
+    public boolean globtype(char ch, java.awt.event.KeyEvent ev) {
+	if(ch == '\n') {
+	    wdgmsg("make");
+	    return(true);
+	}
+	return(super.globtype(ch, ev));
+    }
 }
