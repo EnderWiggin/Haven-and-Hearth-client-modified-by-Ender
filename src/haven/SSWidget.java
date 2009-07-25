@@ -2,6 +2,9 @@ package haven;
 
 import java.awt.Graphics;
 
+/*
+ * This is old and should be deprecated.
+ */
 public class SSWidget extends Widget {
     private TexIM surf;
 	
