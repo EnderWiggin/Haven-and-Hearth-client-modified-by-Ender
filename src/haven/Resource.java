@@ -430,7 +430,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    try {
 		img = ImageIO.read(new ByteArrayInputStream(buf, 11, buf.length - 11));
 	    } catch(IOException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	    if(img == null)
 		throw(new LoadException("Invalid image data in " + name, Resource.this));
@@ -475,7 +475,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    try {
 		t = new String(buf, "UTF-8");
 	    } catch(UnsupportedEncodingException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	}
                 
@@ -497,7 +497,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    try {
 		img = ImageIO.read(new ByteArrayInputStream(buf, 4, buf.length - 4));
 	    } catch(IOException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	    if(img == null)
 		throw(new LoadException("Invalid image data in " + name, Resource.this));
@@ -673,7 +673,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    try {
 		text = new String(buf, "UTF-8");
 	    } catch(UnsupportedEncodingException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	}
 		
@@ -839,7 +839,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    } catch(javax.sound.midi.InvalidMidiDataException e) {
 		throw(new LoadException("Invalid MIDI data", Resource.this));
 	    } catch(IOException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	}
 	
@@ -937,21 +937,21 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    try {
 		cons = lc.getConstructor(Resource.class, byte[].class);
 	    } catch(NoSuchMethodException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	    Layer l;
 	    try {
 		l = cons.newInstance(this, buf);
 	    } catch(InstantiationException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    } catch(InvocationTargetException e) {
 		Throwable c = e.getCause();
 		if(c instanceof RuntimeException) 
 		    throw((RuntimeException)c);
 		else
-		    throw(new RuntimeException(c));
+		    throw(new LoadException(c, Resource.this));
 	    } catch(IllegalAccessException e) {
-		throw(new RuntimeException(e));
+		throw(new LoadException(e, Resource.this));
 	    }
 	    layers.add(l);
 	}
