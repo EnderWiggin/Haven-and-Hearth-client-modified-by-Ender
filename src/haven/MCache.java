@@ -106,8 +106,8 @@ public class MCache {
 	}
     }
 	
-    private Tileset loadset(String name) {
-	Resource res = Resource.load(name);
+    private Tileset loadset(String name, int ver) {
+	Resource res = Resource.load(name, ver);
 	res.loadwait();
 	return(res.layer(Resource.tileset));
     }
@@ -115,17 +115,6 @@ public class MCache {
     public MCache(Session sess) {
 	this.sess = sess;
 	sets = new Tileset[256];
-	sets[0] = loadset("gfx/tiles/wald/wald");
-	sets[1] = loadset("gfx/tiles/grass/grass");
-	sets[2] = loadset("gfx/tiles/swamp/swamp");
-	sets[3] = loadset("gfx/tiles/dirt/dirt");
-	sets[4] = loadset("gfx/tiles/playa/playa");
-	sets[5] = loadset("gfx/tiles/water/water");
-	sets[6] = loadset("gfx/tiles/plowed/plowed");
-	sets[7] = loadset("gfx/tiles/floor-wood/floor-wood");
-	sets[8] = loadset("gfx/tiles/floor-mine/mine");
-	sets[9] = loadset("gfx/tiles/floor-stone/stone");
-	sets[255] = loadset("gfx/tiles/nil/nil");
 	gen = new Random();
     }
 
@@ -351,6 +340,15 @@ public class MCache {
 		if(now - old.last > 10000)
 		    i.remove();
 	    }
+	}
+    }
+    
+    public void tilemap(Message msg) {
+	while(!msg.eom()) {
+	    int id = msg.uint8();
+	    String resnm = msg.string();
+	    int resver = msg.uint16();
+	    sets[id] = loadset(resnm, resver);
 	}
     }
 	
