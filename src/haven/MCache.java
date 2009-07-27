@@ -154,6 +154,19 @@ public class MCache {
 		req.put(cc, new Grid(cc));
 	}
     }
+    
+    public void invalblob(Message msg) {
+	int type = msg.uint8();
+	if(type == 0) {
+	    invalidate(msg.coord());
+	} else if(type == 1) {
+	    Coord ul = msg.coord();
+	    Coord lr = msg.coord();
+	    trim(ul, lr);
+	} else if(type == 2) {
+	    trimall();
+	}
+    }
 	
     public Tile[] gettrans(Coord tc) {
 	Grid g;
@@ -365,12 +378,12 @@ public class MCache {
 	}
     }
 	
-    public void trim(Coord cc) {
+    public void trim(Coord ul, Coord lr) {
 	for(Iterator<Map.Entry<Coord, Grid>> i = grids.entrySet().iterator(); i.hasNext();) {
 	    Map.Entry<Coord, Grid> e = i.next();
 	    Coord gc = e.getKey();
 	    Grid g = e.getValue();
-	    if((Math.abs(gc.x - cc.x) > 1) || (Math.abs(gc.y - cc.y) > 1)) {
+	    if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
 		i.remove();
 		g.remove();
 	    }
@@ -379,7 +392,7 @@ public class MCache {
 	    Map.Entry<Coord, Grid> e = i.next();
 	    Coord gc = e.getKey();
 	    Grid g = e.getValue();
-	    if((Math.abs(gc.x - cc.x) > 1) || (Math.abs(gc.y - cc.y) > 1)) {
+	    if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
 		i.remove();
 		g.remove();
 	    }

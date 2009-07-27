@@ -307,7 +307,7 @@ public class Session {
 		    uimsgs.add(msg);
 		}
 	    } else if(msg.type == Message.RMSG_MAPIV) {
-		glob.map.invalidate(msg.coord());
+		glob.map.invalblob(msg);
 	    } else if(msg.type == Message.RMSG_GLOBLOB) {
 		glob.blob(msg);
 	    } else if(msg.type == Message.RMSG_PAGINAE) {
