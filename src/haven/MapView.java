@@ -104,6 +104,7 @@ public class MapView extends Widget implements DTarget {
 	
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
 	    if(button == 2) {
+		mv.ui.grabmouse(mv);
 		o = sc;
 		mo = null;
 		dragging = true;
@@ -126,6 +127,7 @@ public class MapView extends Widget implements DTarget {
 	
 	public boolean release(MapView mv, Coord sc, Coord mc, int button) {
 	    if((button == 2) && dragging) {
+		mv.ui.grabmouse(null);
 		dragging = false;
 		if(mo == null) {
 		    mv.mc = mc;

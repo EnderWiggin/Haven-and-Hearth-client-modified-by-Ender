@@ -439,7 +439,7 @@ public class SlenHud extends Widget implements DropTarget {
     }
 	
     public boolean globtype(char ch, KeyEvent ev) {
-	if(ev.getKeyCode() == KeyEvent.VK_CONTEXT_MENU) {
+	if(ch == ' ') {
 	    vc.toggle();
 	    return(true);
 	} else if(ch == ':') {
