@@ -85,6 +85,14 @@ respective licensing details are as follows:
    sure to distribute the corresponding source code (and remember to
    honor our acclaimed, trademark icon).
 
+It must be noticed that the Git repository which is the main keeper of
+this source tree contains, in historical versions, copies of the game
+resources (this was before the file `haven-res.jar' existed). In these
+versions, they are located in a directory named `res'. They are
+subject to the same terms as `lib/haven-res.jar' as described
+above. You are free to copy them around verbatim as part of the Git
+repository.
+
 If you change the source code so as to incorporate other files of new
 ownership or other licenses (like your own stuff), you should remember
 to update this file accordingly, so as to not confuse any new
