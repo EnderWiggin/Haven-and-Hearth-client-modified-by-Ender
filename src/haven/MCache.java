@@ -106,8 +106,8 @@ public class MCache {
 	}
     }
 	
-    private Tileset loadset(String name) {
-	Resource res = Resource.load(name);
+    private Tileset loadset(String name, int ver) {
+	Resource res = Resource.load(name, ver);
 	res.loadwait();
 	return(res.layer(Resource.tileset));
     }
@@ -115,17 +115,6 @@ public class MCache {
     public MCache(Session sess) {
 	this.sess = sess;
 	sets = new Tileset[256];
-	sets[0] = loadset("gfx/tiles/wald/wald");
-	sets[1] = loadset("gfx/tiles/grass/grass");
-	sets[2] = loadset("gfx/tiles/swamp/swamp");
-	sets[3] = loadset("gfx/tiles/dirt/dirt");
-	sets[4] = loadset("gfx/tiles/playa/playa");
-	sets[5] = loadset("gfx/tiles/water/water");
-	sets[6] = loadset("gfx/tiles/plowed/plowed");
-	sets[7] = loadset("gfx/tiles/floor-wood/floor-wood");
-	sets[8] = loadset("gfx/tiles/floor-mine/mine");
-	sets[9] = loadset("gfx/tiles/floor-stone/stone");
-	sets[255] = loadset("gfx/tiles/nil/nil");
 	gen = new Random();
     }
 
@@ -163,6 +152,19 @@ public class MCache {
 	synchronized(req) {
 	    if(req.get(cc) == null)
 		req.put(cc, new Grid(cc));
+	}
+    }
+    
+    public void invalblob(Message msg) {
+	int type = msg.uint8();
+	if(type == 0) {
+	    invalidate(msg.coord());
+	} else if(type == 1) {
+	    Coord ul = msg.coord();
+	    Coord lr = msg.coord();
+	    trim(ul, lr);
+	} else if(type == 2) {
+	    trimall();
 	}
     }
 	
@@ -353,6 +355,15 @@ public class MCache {
 	    }
 	}
     }
+    
+    public void tilemap(Message msg) {
+	while(!msg.eom()) {
+	    int id = msg.uint8();
+	    String resnm = msg.string();
+	    int resver = msg.uint16();
+	    sets[id] = loadset(resnm, resver);
+	}
+    }
 	
     public void trimall() {
 	synchronized(req) {
@@ -367,12 +378,12 @@ public class MCache {
 	}
     }
 	
-    public void trim(Coord cc) {
+    public void trim(Coord ul, Coord lr) {
 	for(Iterator<Map.Entry<Coord, Grid>> i = grids.entrySet().iterator(); i.hasNext();) {
 	    Map.Entry<Coord, Grid> e = i.next();
 	    Coord gc = e.getKey();
 	    Grid g = e.getValue();
-	    if((Math.abs(gc.x - cc.x) > 1) || (Math.abs(gc.y - cc.y) > 1)) {
+	    if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
 		i.remove();
 		g.remove();
 	    }
@@ -381,7 +392,7 @@ public class MCache {
 	    Map.Entry<Coord, Grid> e = i.next();
 	    Coord gc = e.getKey();
 	    Grid g = e.getValue();
-	    if((Math.abs(gc.x - cc.x) > 1) || (Math.abs(gc.y - cc.y) > 1)) {
+	    if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
 		i.remove();
 		g.remove();
 	    }

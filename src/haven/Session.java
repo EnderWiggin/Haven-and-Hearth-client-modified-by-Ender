@@ -5,7 +5,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 22;
+    public static final int PVER = 23;
     
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -307,7 +307,7 @@ public class Session {
 		    uimsgs.add(msg);
 		}
 	    } else if(msg.type == Message.RMSG_MAPIV) {
-		glob.map.invalidate(msg.coord());
+		glob.map.invalblob(msg);
 	    } else if(msg.type == Message.RMSG_GLOBLOB) {
 		glob.blob(msg);
 	    } else if(msg.type == Message.RMSG_PAGINAE) {
@@ -336,6 +336,8 @@ public class Session {
 		    Music.play(null, false);
 		else
 		    Music.play(Resource.load(resnm, resver), loop);
+	    } else if(msg.type == Message.RMSG_TILES) {
+		glob.map.tilemap(msg);
 	    } else {
 		throw(new MessageException("Unknown rmsg type: " + msg.type, msg));
 	    }

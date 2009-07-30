@@ -369,13 +369,9 @@ public class MapView extends Widget implements DTarget {
 	}
     }
 	
-    public void move(Coord mc, boolean trimall) {
+    public void move(Coord mc) {
 	this.mc = mc;
 	Coord cc = mc.div(cmaps.mul(tilesz));
-	if(trimall)
-	    map.trimall();
-	else
-	    map.trim(cc);
     }
 	
     private static Coord tilify(Coord c) {
@@ -396,7 +392,7 @@ public class MapView extends Widget implements DTarget {
 
     public void uimsg(String msg, Object... args) {
 	if(msg == "move") {
-	    move((Coord)args[0], (Integer)args[1] != 0);
+	    move((Coord)args[0]);
 	    if(cam != null)
 		cam.moved(this);
 	} else if(msg == "flashol") {

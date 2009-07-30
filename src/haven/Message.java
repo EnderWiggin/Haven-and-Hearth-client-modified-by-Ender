@@ -15,6 +15,7 @@ public class Message implements java.io.Serializable {
     public static final int RMSG_SFX = 8;
     public static final int RMSG_CATTR = 9;
     public static final int RMSG_MUSIC = 10;
+    public static final int RMSG_TILES = 11;
 	
     public static final int T_END = 0;
     public static final int T_INT = 1;
