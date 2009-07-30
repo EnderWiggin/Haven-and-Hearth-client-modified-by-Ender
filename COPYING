@@ -91,7 +91,11 @@ resources (this was before the file `haven-res.jar' existed). In these
 versions, they are located in a directory named `res'. They are
 subject to the same terms as `lib/haven-res.jar' as described
 above. You are free to copy them around verbatim as part of the Git
-repository.
+repository. If, for any reason, you decide to publish a historical
+version of this source tree which contains these resources, or any
+derivative work thereof, you must add a notice pointing this fact out,
+and the fact that they are owned by Fredrik Tolf and Björn
+Johannessen, and are proprietary to us.
 
 If you change the source code so as to incorporate other files of new
 ownership or other licenses (like your own stuff), you should remember
