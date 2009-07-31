@@ -31,7 +31,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 23;
+    public static final int PVER = 24;
     
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -369,9 +369,7 @@ public class Session {
 	    }
 	}
 		
-	private void getrel(Message msg) {
-	    int seq = msg.uint16();
-	    msg = new Message(msg.uint8(), msg.blob, msg.off, msg.blob.length - msg.off);
+	private void getrel(int seq, Message msg) {
 	    if(seq == rseq) {
 		synchronized(uimsgs) {
 		    handlerel(msg);
@@ -432,7 +430,20 @@ public class Session {
 		    if(state != "conn") {
 			if(msg.type == MSG_SESS) {
 			} else if(msg.type == MSG_REL) {
-			    getrel(msg);
+			    int seq = msg.uint16();
+			    while(!msg.eom()) {
+				int type = msg.uint8();
+				int len;
+				if((type & 0x80) != 0) {
+				    type &= 0x7f;
+				    len = msg.uint16();
+				} else {
+				    len = msg.blob.length - msg.off;
+				}
+				getrel(seq, new Message(type, msg.blob, msg.off, len));
+				msg.off += len;
+				seq++;
+			    }
 			} else if(msg.type == MSG_ACK) {
 			    gotack(msg.uint16());
 			} else if(msg.type == MSG_MAPDATA) {
@@ -526,7 +537,11 @@ public class Session {
 				for(Message msg : pending) {
 				    if(now - msg.last > 60) { /* XXX */
 					msg.last = now;
-					sendmsg(msg);
+					Message rmsg = new Message(MSG_REL);
+					rmsg.adduint16(msg.seq);
+					rmsg.adduint8(msg.type);
+					rmsg.addbytes(msg.blob);
+					sendmsg(rmsg);
 				    }
 				}
 				beat = false;
@@ -633,13 +648,10 @@ public class Session {
     }
 	
     public void queuemsg(Message msg) {
-	Message rmsg = new Message(MSG_REL);
-	rmsg.adduint16(rmsg.seq = tseq);
-	rmsg.adduint8(msg.type);
-	rmsg.addbytes(msg.blob);
+	msg.seq = tseq;
 	tseq = (tseq + 1) % 65536;
 	synchronized(pending) {
-	    pending.add(rmsg);
+	    pending.add(msg);
 	}
 	synchronized(sworker) {
 	    sworker.notify();
