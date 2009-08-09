@@ -26,91 +26,98 @@
 
 package haven.error;
 
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Dialog;
-import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public abstract class ErrorGui extends JDialog implements ErrorStatus {
     private JLabel status;
-    private JPanel vp, dp;
-    private boolean verified, done;
-	
+    private JPanel details;
+    private JButton closebtn, detbtn;
+    private JTextArea exbox;
+    private Thread reporter;
+    private boolean done;
+    
     public ErrorGui(java.awt.Frame parent) {
 	super(parent, "Haven error!", true);
 	setMinimumSize(new Dimension(300, 100));
 	setResizable(false);
-	setLayout(new BorderLayout());
-	add(status = new JLabel(""), BorderLayout.CENTER);
-	    
-	vp = new JPanel();
-	vp.setLayout(new FlowLayout());
-	JButton b;
-	vp.add(b = new JButton("Yes"));
-	b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+	add(new JPanel() {{
+	    setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+	    add(new JLabel("An error has occurred!"));
+	    add(status = new JLabel("Please wait..."));
+	    add(new JPanel() {{
+		setLayout(new FlowLayout());
+		setAlignmentX(0);
+		add(closebtn = new JButton("Close") {{
+		    addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ev) {
+				ErrorGui.this.dispose();
+				synchronized(ErrorGui.this) {
+				    done = true;
+				    ErrorGui.this.notifyAll();
+				}
+			    }
+			});
+		}});
+		add(detbtn = new JButton("Details >>>") {{
+		    addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent ev) {
+				if(details.isVisible()) {
+				    details.setVisible(false);
+				    detbtn.setText("Details >>>");
+				} else {
+				    details.setVisible(true);
+				    detbtn.setText("<<< Details");
+				}
+				ErrorGui.this.pack();
+			    }
+			});
+		}});
+	    }});
+	    add(details = new JPanel() {{
+		setLayout(new BorderLayout());
+		setAlignmentX(0);
+		setVisible(false);
+		add(exbox = new JTextArea() {{
+		    setEditable(false);
+		}});
+	    }});
+	}});
+	addWindowListener(new WindowAdapter() {
+		public void windowClosing(WindowEvent ev) {
+		    ErrorGui.this.dispose();
 		    synchronized(ErrorGui.this) {
-			verified = true;
 			done = true;
 			ErrorGui.this.notifyAll();
 		    }
+		    reporter.interrupt();
 		}
 	    });
-	vp.add(b = new JButton("No"));
-	b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    synchronized(ErrorGui.this) {
-			verified = false;
-			done = true;
-			ErrorGui.this.notifyAll();
-		    }
-		}
-	    });
-	dp = new JPanel();
-	dp.setLayout(new FlowLayout());
-	dp.add(b = new JButton("OK"));
-	b.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    synchronized(ErrorGui.this) {
-			done = true;
-			ErrorGui.this.notifyAll();
-		    }
-		}
-	    });
+	pack();
     }
-
+    
     public boolean goterror(Throwable t) {
-	done = false;
+	reporter = Thread.currentThread();
+	java.io.StringWriter w = new java.io.StringWriter();
+	t.printStackTrace(new java.io.PrintWriter(w));
+	final String tr = w.toString();
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    add(vp, BorderLayout.SOUTH);
-		    status.setText("An error has occurred! Do you wish to report it?");
+		    closebtn.setEnabled(false);
+		    status.setText("Please wait...");
+		    exbox.setText(tr);
 		    pack();
 		    setVisible(true);
 		}
 	    });
-	synchronized(this) {
-	    try {
-		while(!done) {
-		    wait();
-		}
-	    } catch(InterruptedException e) {
-		throw(new Error(e));
-	    }
-	}
-	remove(vp);
-	pack();
-	if(!verified)
-	    errorsent();
-	return(verified);
+	return(true);
     }
 	
     public void connecting() {
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    status.setText("Connecting to server");
+		    status.setText("Connecting to server...");
 		    pack();
 		}
 	    });
@@ -119,7 +126,7 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
     public void sending() {
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    status.setText("Sending error");
+		    status.setText("Sending error...");
 		    pack();
 		}
 	    });
@@ -129,8 +136,8 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 	done = false;
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    add(dp, BorderLayout.SOUTH);
-		    status.setText("Done");
+		    closebtn.setEnabled(true);
+		    status.setText("The error has been reported.");
 		    pack();
 		}
 	    });
@@ -150,7 +157,7 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 	done = false;
 	SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
-		    add(dp, BorderLayout.SOUTH);
+		    closebtn.setEnabled(true);
 		    status.setText("An error occurred while sending!");
 		    pack();
 		}
