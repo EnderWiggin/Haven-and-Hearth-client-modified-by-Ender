@@ -35,7 +35,7 @@ public class Config {
     public static String authuser;
     public static String authserv;
     public static String defserv;
-    public static URL resurl;
+    public static URL resurl, mapurl;
     public static boolean fullscreen;
     public static boolean dbtext;
     public static boolean bounddb;
@@ -54,6 +54,8 @@ public class Config {
 	    defserv = getprop("haven.defserv", null);
 	    if(!(p = getprop("haven.resurl", "https://www.havenandhearth.com/res/")).equals(""))
 		resurl = new URL(p);
+	    if(!(p = getprop("haven.mapurl", "http://www.havenandhearth.com/mm/")).equals(""))
+		mapurl = new URL(p);
 	    fullscreen = getprop("haven.fullscreen", "off").equals("on");
 	    loadwaited = getprop("haven.loadwaited", null);
 	    allused = getprop("haven.allused", null);

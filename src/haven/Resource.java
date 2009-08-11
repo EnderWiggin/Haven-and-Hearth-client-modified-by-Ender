@@ -289,25 +289,33 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     }
     
     public static class HttpSource implements ResSource, Serializable {
-	private transient SslHelper ssl;
+	private final transient SslHelper ssl;
 	public URL baseurl;
+	
+	{
+	    ssl = new SslHelper();
+	    try {
+		ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
+	    } catch(java.security.cert.CertificateException e) {
+		throw(new Error("Invalid built-in certificate", e));
+	    } catch(IOException e) {
+		throw(new Error(e));
+	    }
+	    ssl.ignoreName();
+	}
 	
 	public HttpSource(URL baseurl) {
 	    this.baseurl = baseurl;
+	    System.out.println(baseurl);
 	}
 		
 	public InputStream get(String name) throws IOException {
-	    if(ssl == null) {
-		ssl = new SslHelper();
-		try {
-		    ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
-		} catch(java.security.cert.CertificateException e) {
-		    throw(new LoadException("Invalid built-in certificate", e, null));
-		}
-		ssl.ignoreName();
-	    }
 	    URL resurl = new URL(baseurl, name + ".res");
-	    URLConnection c = ssl.connect(resurl);
+	    URLConnection c;
+	    if(resurl.getProtocol().equals("https"))
+		c = ssl.connect(resurl);
+	    else
+		c = resurl.openConnection();
 	    c.addRequestProperty("User-Agent", "Haven/1.0");
 	    return(c.getInputStream());
 	}

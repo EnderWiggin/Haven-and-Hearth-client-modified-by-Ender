@@ -35,7 +35,6 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 public class MiniMap extends Widget {
-    public static final URL mmbase;
     static Map<String, Tex> grids = new WeakHashMap<String, Tex>();
     static Set<String> loading = new HashSet<String>();
     static Loader loader = new Loader();
@@ -43,14 +42,6 @@ public class MiniMap extends Widget {
     public static final Tex nomap = Resource.loadtex("gfx/hud/mmap/nomap");
     public static final Resource plx = Resource.load("gfx/hud/mmap/x");
     MapView mv;
-    
-    static {
-	try {
-	    mmbase = new URL("http://www.havenandhearth.com/mm/");
-	} catch(MalformedURLException e) {
-	    throw(new Error(e));
-	}
-    }
     
     static class Loader implements Runnable {
 	Thread me = null;
@@ -69,7 +60,7 @@ public class MiniMap extends Widget {
 		    if(grid == null)
 			break;
 		    try {
-			URL url = new URL(mmbase, grid + ".png");
+			URL url = new URL(Config.mapurl, grid + ".png");
 			URLConnection c = url.openConnection();
 			c.addRequestProperty("User-Agent", "Haven/1.0");
 			InputStream in = c.getInputStream();
