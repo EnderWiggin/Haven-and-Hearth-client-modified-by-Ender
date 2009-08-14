@@ -29,6 +29,7 @@ package haven;
 import java.util.*;
 import haven.Resource.Tileset;
 import haven.Resource.Tile;
+import java.util.zip.Inflater;
 
 public class MCache {
     Tileset[] sets = null;
@@ -105,6 +106,9 @@ public class MCache {
 	    Coord tc = gc.mul(cmaps);
 	    for(c.y = 0; c.y < cmaps.x; c.y++) {
 		for(c.x = 0; c.x < cmaps.y; c.x++) {
+		    if(sets[tiles[c.x][c.y]] == null) {
+			System.err.println(tiles[c.x][c.y]);
+		    }
 		    Tileset set = sets[tiles[c.x][c.y]];
 		    if(set.flavobjs.size() > 0) {
 			Random rnd = mkrandoom(c);
@@ -315,31 +319,44 @@ public class MCache {
 	String mmname = msg.string().intern();
 	if(mmname.equals(""))
 	    mmname = null;
-	int l = 0, t = 0;
+	boolean[] mine = new boolean[256];
+	while(true) {
+	    int pidx = msg.uint8();
+	    if(pidx == 255)
+		break;
+	    mine[pidx] = true;
+	}
+	byte[] blob = new byte[cmaps.x * cmaps.y * 2];
+	{
+	    Inflater z = new Inflater();
+	    z.setInput(msg.blob, msg.off, msg.blob.length - msg.off);
+	    try {
+		if(z.inflate(blob) != blob.length)
+		    throw(new RuntimeException("Got incorrectly sized map blob"));
+	    } catch(java.util.zip.DataFormatException e) {
+		throw(new RuntimeException("Got malformed map blob", e));
+	    }
+	}
 	synchronized(req) {
 	    synchronized(grids) {
 		if(req.containsKey(c)) {
+		    int i = 0;
 		    Grid g = req.get(c);
 		    g.mnm = mmname;
 		    for(int y = 0; y < cmaps.y; y++) {
 			for(int x = 0; x < cmaps.x; x++) {
-			    if(l < 1) {
-				l = msg.uint16();
-				t = msg.uint8();
-			    }
-			    g.tiles[x][y] = t;
-			    l--;
+			    g.tiles[x][y] = Utils.ub(blob[i++]);
 			}
 		    }
 		    for(int y = 0; y < cmaps.y; y++) {
 			for(int x = 0; x < cmaps.x; x++) {
-			    if(l < 1) {
-				l = msg.uint16();
-				t = msg.uint8();
-				//System.out.println(l + ", " + t);
-			    }
-			    g.ol[x][y] = t;
-			    l--;
+			    int pidx = Utils.ub(blob[i++]);
+			    if(pidx == 255)
+				g.ol[x][y] = 0;
+			    else if(mine[pidx])
+				g.ol[x][y] = 2;
+			    else
+				g.ol[x][y] = 1;
 			}
 		    }
 		    req.remove(c);
@@ -356,7 +373,7 @@ public class MCache {
     
     public void mapdata(Message msg) {
 	long now = System.currentTimeMillis();
-	int pktid = msg.uint16();
+	int pktid = msg.int32();
 	int off = msg.uint16();
 	int len = msg.uint16();
 	Defrag fragbuf;
@@ -365,7 +382,7 @@ public class MCache {
 		fragbuf = new Defrag(len);
 		fragbufs.put(pktid, fragbuf);
 	    }
-	    fragbuf.add(msg.blob, 6, msg.blob.length - 6, off);
+	    fragbuf.add(msg.blob, 8, msg.blob.length - 8, off);
 	    fragbuf.last = now;
 	    if(fragbuf.done()) {
 		mapdata2(fragbuf.msg());
