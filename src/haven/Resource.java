@@ -306,7 +306,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
 	public HttpSource(URL baseurl) {
 	    this.baseurl = baseurl;
-	    System.out.println(baseurl);
 	}
 		
 	public InputStream get(String name) throws IOException {
