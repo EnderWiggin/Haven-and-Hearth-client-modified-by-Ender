@@ -1109,11 +1109,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    String nm = e.getKey();
 	    int ver = e.getValue();
 	    Resource res = load(nm);
-	    if(res.loading)
-		throw(new RuntimeException("Preloaded res " + nm + " shouldn't still be loading."));
+	    res.loadwait();
+	    res.checkerr();
 	    if(res.ver != ver)
 		System.out.println(nm + ": " + ver + " -> " + res.ver);
-	    w.println(nm + ":" + ver);
+	    w.println(nm + ":" + res.ver);
 	}
 	w.close();
     }
