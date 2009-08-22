@@ -28,6 +28,7 @@ package haven;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.annotation.*;
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -663,6 +664,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    packbuf.update();
 	}
 		
+	@SuppressWarnings("unchecked")
 	public void init() {
 	    flavobjs = new WeightList<Resource>();
 	    for(int i = 0; i < flw.length; i++)
@@ -741,7 +743,17 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public void init() {}
     }
     static {ltypes.put("action", AButton.class);}
-	
+    
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface PublishedCode {
+	String name();
+	Class<? extends Instancer> instancer() default Instancer.class;
+	public interface Instancer {
+	    public Object make(Class<?> cl) throws InstantiationException, IllegalAccessException;
+	}
+    }
+
     public class Code extends Layer {
 	public final String name;
 	transient public final byte[] data;
@@ -773,10 +785,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	private Map<String, Code> clmap = new TreeMap<String, Code>();
 	private Map<String, String> pe = new TreeMap<String, String>();
 	transient private ClassLoader loader;
-	transient private Class<? extends WidgetFactory> wdg;
-	transient private WidgetFactory wdgf;
-	transient private Class<? extends Sprite.Factory> spr;
-	transient private Sprite.Factory sprf;
+	transient private Map<String, Class<?>> lpe = new TreeMap<String, Class<?>>();
+	transient private Map<Class<?>, Object> ipe = new HashMap<Class<?>, Object>();
 		
 	public CodeEntry(byte[] buf) {
 	    int[] off = new int[1];
@@ -798,51 +808,47 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    }
 		};
 	    try {
-		String clnm;
-		if((clnm = pe.get("spr")) != null) {
+		for(Map.Entry<String, String> e : pe.entrySet()) {
+		    String name = e.getKey();
+		    String clnm = e.getValue();
 		    Class<?> cl = loader.loadClass(clnm);
-		    if(Sprite.Factory.class.isAssignableFrom(cl)) {
-			spr = cl.asSubclass(Sprite.Factory.class);
-		    } else if(Sprite.class.isAssignableFrom(cl)) {
-			sprf = new Sprite.DynFactory(cl.asSubclass(Sprite.class));
-		    }
+		    lpe.put(name, cl);
 		}
-		if((clnm = pe.get("wdg")) != null)
-		    wdg = loader.loadClass(clnm).asSubclass(WidgetFactory.class);
 	    } catch(ClassNotFoundException e) {
 		throw(new LoadException(e, Resource.this));
-	    } catch(ClassCastException e) {
-		throw(new LoadException(e, Resource.this));
 	    }
 	}
 	
-	public Sprite.Factory spr() {
-	    synchronized(this) {
-		if(sprf == null) {
-		    try {
-			sprf = spr.newInstance();
-		    } catch(InstantiationException e) {
-			throw(new RuntimeException(e));
-		    } catch(IllegalAccessException e) {
-			throw(new RuntimeException(e));
-		    }
+	public <T> T get(Class<T> cl) {
+	    PublishedCode entry = cl.getAnnotation(PublishedCode.class);
+	    if(entry == null)
+		throw(new RuntimeException("Tried to fetch non-published res-loaded class " + cl.getName() + " from " + Resource.this.name));
+	    Class<?> acl;
+	    synchronized(lpe) {
+		if(lpe.get(entry.name()) == null) {
+		    throw(new RuntimeException("Tried to fetch non-present res-loaded class " + cl.getName() + " from " + Resource.this.name));
+		} else {
+		    acl = lpe.get(entry.name());
 		}
-		return(sprf);
 	    }
-	}
-	
-	public WidgetFactory wdg() {
-	    synchronized(this) {
-		if(wdgf == null) {
-		    try {
-			wdgf = wdg.newInstance();
-		    } catch(InstantiationException e) {
-			throw(new RuntimeException(e));
-		    } catch(IllegalAccessException e) {
-			throw(new RuntimeException(e));
+	    try {
+		synchronized(ipe) {
+		    if(ipe.get(acl) != null) {
+			return(cl.cast(ipe.get(acl)));
+		    } else {
+			T inst;
+			if(entry.instancer() != PublishedCode.Instancer.class)
+			    inst = cl.cast(entry.instancer().newInstance().make(acl));
+			else
+			    inst = cl.cast(acl.newInstance());
+			ipe.put(acl, inst);
+			return(inst);
 		    }
 		}
-		return(wdgf);
+	    } catch(InstantiationException e) {
+		throw(new RuntimeException(e));
+	    } catch(IllegalAccessException e) {
+		throw(new RuntimeException(e));
 	    }
 	}
     }

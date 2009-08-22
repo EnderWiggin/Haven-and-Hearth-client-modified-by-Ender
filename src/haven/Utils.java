@@ -147,7 +147,7 @@ public class Utils {
 	}
     }
     
-    static String getprop(String propname, String def) {
+    public static String getprop(String propname, String def) {
 	try {
 	    return(System.getProperty(propname, def));
 	} catch(SecurityException e) {

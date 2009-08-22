@@ -110,7 +110,7 @@ public class UI {
 	    }
 	    Resource res = Resource.load(type, ver);
 	    res.loadwaitint();
-	    f = res.layer(Resource.CodeEntry.class).wdg();
+	    f = res.layer(Resource.CodeEntry.class).get(WidgetFactory.class);
 	} else {
 	    f = Widget.gettype(type);
 	}

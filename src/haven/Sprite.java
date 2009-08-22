@@ -89,6 +89,20 @@ public abstract class Sprite {
 	public Resource.Neg getneg();
     }
     
+    public static class FactMaker implements Resource.PublishedCode.Instancer {
+	public FactMaker() {
+	}
+	
+	public Factory make(Class<?> cl) throws InstantiationException, IllegalAccessException {
+	    if(Factory.class.isAssignableFrom(cl))
+		return(cl.asSubclass(Factory.class).newInstance());
+	    if(Sprite.class.isAssignableFrom(cl))
+		return(new DynFactory(cl.asSubclass(Sprite.class)));
+	    return(null);
+	}
+    }
+
+    @Resource.PublishedCode(name = "spr", instancer = FactMaker.class)
     public interface Factory {
 	public Sprite create(Owner owner, Resource res, Message sdt);
     }
@@ -184,7 +198,7 @@ public abstract class Sprite {
 	Resource.CodeEntry e = res.layer(Resource.CodeEntry.class);
 	if(e != null) {
 	    try {
-		return(e.spr().create(owner, res, sdt));
+		return(e.get(Factory.class).create(owner, res, sdt));
 	    } catch(RuntimeException exc) {
 		throw(new ResourceException("Error in sprite creation routine for " + res, exc, res));
 	    }
