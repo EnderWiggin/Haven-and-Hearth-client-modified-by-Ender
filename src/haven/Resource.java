@@ -401,6 +401,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    } else {
 			next.load(res);
 		    }
+		} catch(RuntimeException e) {
+		    throw(new LoadException(e, res));
 		}
 	    } finally {
 		try {
@@ -431,7 +433,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	    
 	public LoadException(Throwable cause, Resource res) {
-	    super(cause);
+	    super("Load error in resource " + res.toString(), cause);
 	    this.res = res;
 	}
     }
