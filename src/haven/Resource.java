@@ -433,7 +433,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	    
 	public LoadException(Throwable cause, Resource res) {
-	    super("Load error in resource " + res.toString(), cause);
+	    super("Load error in resource " + res.toString() + ", from " + res.source, cause);
 	    this.res = res;
 	}
     }
