@@ -682,7 +682,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		flavobjs.add(load(fln[i], flv[i]), flw[i]);
 	    Collection<Tile> tiles = new LinkedList<Tile>();
 	    ground = new WeightList<Tile>();
-	    if((fl & 1) != 0) {
+	    boolean hastrans = (fl & 1) != 0;
+	    if(hastrans) {
 		ctrans = new WeightList[15];
 		btrans = new WeightList[15];
 		for(int i = 0; i < 15; i++) {
@@ -694,9 +695,9 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    for(Tile t : layers(Tile.class)) {
 		if(t.t == 'g')
 		    ground.add(t, t.w);
-		else if(t.t == 'b')
+		else if(t.t == 'b' && hastrans)
 		    btrans[t.id - 1].add(t, t.w);
-		else if(t.t == 'c')
+		else if(t.t == 'c' && hastrans)
 		    ctrans[t.id - 1].add(t, t.w);
 		tiles.add(t);
 		if(tsz == null) {
