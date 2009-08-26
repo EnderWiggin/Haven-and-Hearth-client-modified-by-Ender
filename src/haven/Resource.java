@@ -613,7 +613,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	
     public class Tileset extends Layer {
 	private int fl;
-	private String fobase;
+	private String[] fln;
+	private int[] flv;
 	private int[] flw;
 	WeightList<Resource> flavobjs;
 	WeightList<Tile> ground;
@@ -623,12 +624,19 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public Tileset(byte[] buf) {
 	    int[] off = new int[1];
 	    off[0] = 0;
-	    fobase = Utils.strd(buf, off);
-	    fl = Utils.ub(buf[off[0]]);
-	    flw = new int[Utils.uint16d(buf, off[0] + 1)];
-	    flavprob = Utils.uint16d(buf, off[0] + 3);
-	    for(int i = 0; i < flw.length; i++)
-		flw[i] = Utils.ub(buf[off[0] + 5]);
+	    fl = Utils.ub(buf[off[0]++]);
+	    int flnum = Utils.uint16d(buf, off[0]++);
+	    fln = new String[flnum];
+	    flv = new int[flnum];
+	    flw = new int[flnum];
+	    flavprob = Utils.uint16d(buf, off[0]);
+	    off[0] += 2;
+	    for(int i = 0; i < flw.length; i++) {
+		fln[i] = Utils.strd(buf, off);
+		flv[i] = Utils.uint16d(buf, off[0]);
+		off[0] += 2;
+		flw[i] = Utils.ub(buf[off[0]++]);
+	    }
 	}
 		
 	private void packtiles(Collection<Tile> tiles, Coord tsz) {
@@ -668,7 +676,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public void init() {
 	    flavobjs = new WeightList<Resource>();
 	    for(int i = 0; i < flw.length; i++)
-		flavobjs.add(load(String.format("%s/f%d", fobase, i + 1)), flw[i]);
+		flavobjs.add(load(fln[i], flv[i]), flw[i]);
 	    Collection<Tile> tiles = new LinkedList<Tile>();
 	    ground = new WeightList<Tile>();
 	    if((fl & 1) != 0) {
@@ -726,10 +734,12 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    int[] off = new int[1];
 	    off[0] = 0;
 	    String pr = Utils.strd(buf, off);
+	    int pver = Utils.uint16d(buf, off[0]);
+	    off[0] += 2;
 	    if(pr.length() == 0)
 		parent = null;
 	    else
-		parent = load(pr);
+		parent = load(pr, pver);
 	    name = Utils.strd(buf, off);
 	    Utils.strd(buf, off); /* Prerequisite skill */
 	    hk = (char)Utils.uint16d(buf, off[0]);
