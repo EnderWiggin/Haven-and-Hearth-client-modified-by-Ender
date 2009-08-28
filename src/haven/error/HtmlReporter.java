@@ -292,7 +292,6 @@ public class HtmlReporter {
 	    out.println("<table><tr>");
 	    out.println("    <th>File</th>");
 	    out.println("    <th>Time</th>");
-	    out.println("    <th>Exception</th>");
 	    for(String pn : props)
 		out.println("    <th>" + htmlq(pn) + "</th>");
 	    out.println("</tr>");
@@ -318,7 +317,6 @@ public class HtmlReporter {
 		out.print(htmlq(file.getName()));
 		out.println("</a></td>");
 		out.println("        <td>" + htmlq(dfmt.format(new Date(rep.time))) + "</td>");
-		out.println("        <td>" + htmlq(findrootexc(rep.t).getClass().getSimpleName()) + "</td>");
 		for(String pn : props) {
 		    out.print("        <td>");
 		    if(rep.props.containsKey(pn)) {
