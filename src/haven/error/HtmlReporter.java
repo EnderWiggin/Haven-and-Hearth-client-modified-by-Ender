@@ -46,7 +46,7 @@ public class HtmlReporter {
     
     public static final Comparator<StackTraceElement> stcmp = new Comparator<StackTraceElement>() {
 	private Pattern[] classids = new Pattern[] {
-		Pattern.compile("(sun\\.reflect\\.Generated\\wAccessor)\\d+"),
+		Pattern.compile("(sun\\.reflect\\.Generated\\w+Accessor)\\d+"),
 	    };
 	
 	private int equals(String a, String b) {
