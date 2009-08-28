@@ -43,6 +43,59 @@ public class HtmlReporter {
 	javax.media.opengl.GLException.class,
     };
     
+    public static final Comparator<Throwable> thcmp = new Comparator<Throwable>() {
+	public int compare(Throwable a, Throwable b) {
+	    int sc = a.getClass().getName().compareTo(b.getClass().getName());
+	    if(sc != 0)
+		return(sc);
+	    StackTraceElement[] at = a.getStackTrace(), bt = b.getStackTrace();
+	    if(at.length != bt.length)
+		return(at.length - bt.length);
+	    for(int i = 0; i < at.length; i++) {
+		sc = at[i].getFileName().compareTo(bt[i].getFileName());
+		if(sc != 0)
+		    return(sc);
+		sc = at[i].getClassName().compareTo(bt[i].getClassName());
+		if(sc != 0)
+		    return(sc);
+		sc = at[i].getMethodName().compareTo(bt[i].getMethodName());
+		if(sc != 0)
+		    return(sc);
+		if(at[i].getLineNumber() != bt[i].getLineNumber())
+		    return(at[i].getLineNumber() - bt[i].getLineNumber());
+	    }
+	    if((a.getCause() == null) && (b.getCause() == null))
+		return(0);
+	    if(a.getCause() == null)
+		return(-1);
+	    if(b.getCause() == null)
+		return(1);
+	    return(compare(a.getCause(), b.getCause()));
+	}
+    };
+
+    public static class ErrorIdentity implements Comparable<ErrorIdentity> {
+	public String jarrev;
+	public Throwable t;
+	
+	public ErrorIdentity(Report r) {
+	    if((jarrev = (String)r.props.get("jar.git-rev")) == null)
+		jarrev = "";
+	    t = r.t;
+	}
+
+	public int compareTo(ErrorIdentity o) {
+	    int sc = jarrev.compareTo(o.jarrev);
+	    if(sc != 0)
+		return(sc);
+	    return(thcmp.compare(t, o.t));
+	}
+	
+	public boolean equals(ErrorIdentity o) {
+	    return(compareTo(o) == 0);
+	}
+    }
+
     public static String htmlhead(String title) {
 	StringBuilder buf = new StringBuilder();
 	buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -178,48 +231,57 @@ public class HtmlReporter {
 	for(String pn : idxprops)
 	    props.add(pn);
 	
-	out.println("<table><tr>");
-	out.println("    <th>File</th>");
-	out.println("    <th>Time</th>");
-	out.println("    <th>Exception</th>");
-	for(String pn : props)
-	    out.println("    <th>" + htmlq(pn) + "</th>");
-	out.println("</tr>");
-	
-	List<Map.Entry<File, Report>> reps = new ArrayList<Map.Entry<File, Report>>();
-	reps.addAll(reports.entrySet());
-	Collections.sort(reps, new Comparator<Map.Entry<File, Report>>() {
-		public int compare(Map.Entry<File, Report> a, Map.Entry<File, Report> b) {
-		    long at = a.getValue().time, bt = b.getValue().time;
-		    if(at > bt)
-			return(-1);
-		    else if(at < bt)
-			return(1);
-		    else
-			return(0);
-		}
-	    });
-	for(Map.Entry<File, Report> rent : reps) {
-	    File file = rent.getKey();
-	    Report rep = rent.getValue();
-	    out.println("    <tr>");
-	    out.print("        <td>");
-	    out.println("<a href=\"" + htmlq(file.getName()) + ".html\">");
-	    out.print(htmlq(file.getName()));
-	    out.println("</a></td>");
-	    out.println("        <td>" + htmlq(dfmt.format(new Date(rep.time))) + "</td>");
-	    out.println("        <td>" + htmlq(findrootexc(rep.t).getClass().getSimpleName()) + "</td>");
-	    for(String pn : props) {
-		out.print("        <td>");
-		if(rep.props.containsKey(pn)) {
-		    out.print(htmlq(rep.props.get(pn).toString()));
-		}
-		out.println("</td>");
-	    }
-	    out.println("    </tr>");
+	Map<ErrorIdentity, List<Map.Entry<File, Report>>> groups = new TreeMap<ErrorIdentity, List<Map.Entry<File, Report>>>();
+	for(Map.Entry<File, Report> rent : reports.entrySet()) {
+	    ErrorIdentity id = new ErrorIdentity(rent.getValue());
+	    if(groups.get(id) != null)
+		groups.put(id, new ArrayList<Map.Entry<File, Report>>());
+	    groups.get(id).add(rent);
 	}
-	out.println("</table>");
-
+	for(ErrorIdentity id : groups.keySet()) {
+	    out.println("<h2>" + htmlq(findrootexc(id.t).getClass().getSimpleName()) + "</h2>");
+	    out.println("<table><tr>");
+	    out.println("    <th>File</th>");
+	    out.println("    <th>Time</th>");
+	    out.println("    <th>Exception</th>");
+	    for(String pn : props)
+		out.println("    <th>" + htmlq(pn) + "</th>");
+	    out.println("</tr>");
+	
+	    List<Map.Entry<File, Report>> reps = groups.get(id);
+	    Collections.sort(reps, new Comparator<Map.Entry<File, Report>>() {
+		    public int compare(Map.Entry<File, Report> a, Map.Entry<File, Report> b) {
+			long at = a.getValue().time, bt = b.getValue().time;
+			if(at > bt)
+			    return(-1);
+			else if(at < bt)
+			    return(1);
+			else
+			    return(0);
+		    }
+		});
+	    for(Map.Entry<File, Report> rent : reps) {
+		File file = rent.getKey();
+		Report rep = rent.getValue();
+		out.println("    <tr>");
+		out.print("        <td>");
+		out.println("<a href=\"" + htmlq(file.getName()) + ".html\">");
+		out.print(htmlq(file.getName()));
+		out.println("</a></td>");
+		out.println("        <td>" + htmlq(dfmt.format(new Date(rep.time))) + "</td>");
+		out.println("        <td>" + htmlq(findrootexc(rep.t).getClass().getSimpleName()) + "</td>");
+		for(String pn : props) {
+		    out.print("        <td>");
+		    if(rep.props.containsKey(pn)) {
+			out.print(htmlq(rep.props.get(pn).toString()));
+		    }
+		    out.println("</td>");
+		}
+		out.println("    </tr>");
+	    }
+	    out.println("</table>");
+	}
+	
 	if(failed.size() > 0) {
 	    out.println("<h2>Unreadable reports</h2>");
 	    out.println("<table>");
