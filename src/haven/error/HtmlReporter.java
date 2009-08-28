@@ -28,6 +28,7 @@ package haven.error;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 import java.text.*;
 
 public class HtmlReporter {
@@ -43,6 +44,52 @@ public class HtmlReporter {
 	javax.media.opengl.GLException.class,
     };
     
+    public static final Comparator<StackTraceElement> stcmp = new Comparator<StackTraceElement>() {
+	private Pattern[] classids = new Pattern[] {
+		Pattern.compile("(sun\\.reflect\\.Generated\\wAccessor)\\d+"),
+	    };
+	
+	private int equals(String a, String b) {
+	    if((a == null) && (b == null))
+		return(0);
+	    if(a == null)
+		return(-1);
+	    if(b == null)
+		return(1);
+	    return(a.compareTo(b));
+	}
+
+	public int compare(StackTraceElement a, StackTraceElement b) {
+	    int sc = equals(a.getFileName(), b.getFileName());
+	    if(sc != 0)
+		return(sc);
+	    
+	    clsmatch: {
+		for(Pattern classid : classids) {
+		    Matcher ma = classid.matcher(a.getClassName());
+		    Matcher mb = classid.matcher(b.getClassName());
+		    if(ma.matches() && mb.matches()) {
+			sc = equals(ma.group(1), mb.group(1));
+			if(sc != 0)
+			    return(sc);
+			break clsmatch;
+		    }
+		}
+		sc = equals(a.getClassName(), b.getClassName());
+		if(sc != 0)
+		    return(sc);
+	    }
+	    
+	    sc = equals(a.getMethodName(), b.getMethodName());
+	    if(sc != 0)
+		return(sc);
+	    
+	    if(a.getLineNumber() != b.getLineNumber())
+		return(a.getLineNumber() - b.getLineNumber());
+	    return(0);
+	}
+    };
+
     public static final Comparator<Throwable> thcmp = new Comparator<Throwable>() {
 	private int equals(String a, String b) {
 	    if((a == null) && (b == null))
@@ -62,17 +109,9 @@ public class HtmlReporter {
 	    if(at.length != bt.length)
 		return(at.length - bt.length);
 	    for(int i = 0; i < at.length; i++) {
-		sc = equals(at[i].getFileName(), bt[i].getFileName());
+		sc = stcmp.compare(at[i], bt[i]);
 		if(sc != 0)
 		    return(sc);
-		sc = equals(at[i].getClassName(), bt[i].getClassName());
-		if(sc != 0)
-		    return(sc);
-		sc = equals(at[i].getMethodName(), bt[i].getMethodName());
-		if(sc != 0)
-		    return(sc);
-		if(at[i].getLineNumber() != bt[i].getLineNumber())
-		    return(at[i].getLineNumber() - bt[i].getLineNumber());
 	    }
 	    if((a.getCause() == null) && (b.getCause() == null))
 		return(0);
