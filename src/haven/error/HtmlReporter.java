@@ -44,21 +44,31 @@ public class HtmlReporter {
     };
     
     public static final Comparator<Throwable> thcmp = new Comparator<Throwable>() {
+	private int equals(String a, String b) {
+	    if((a == null) && (b == null))
+		return(0);
+	    if(a == null)
+		return(-1);
+	    if(b == null)
+		return(1);
+	    return(a.compareTo(b));
+	}
+
 	public int compare(Throwable a, Throwable b) {
-	    int sc = a.getClass().getName().compareTo(b.getClass().getName());
+	    int sc = equals(a.getClass().getName(), b.getClass().getName());
 	    if(sc != 0)
 		return(sc);
 	    StackTraceElement[] at = a.getStackTrace(), bt = b.getStackTrace();
 	    if(at.length != bt.length)
 		return(at.length - bt.length);
 	    for(int i = 0; i < at.length; i++) {
-		sc = at[i].getFileName().compareTo(bt[i].getFileName());
+		sc = equals(at[i].getFileName(), bt[i].getFileName());
 		if(sc != 0)
 		    return(sc);
-		sc = at[i].getClassName().compareTo(bt[i].getClassName());
+		sc = equals(at[i].getClassName(), bt[i].getClassName());
 		if(sc != 0)
 		    return(sc);
-		sc = at[i].getMethodName().compareTo(bt[i].getMethodName());
+		sc = equals(at[i].getMethodName(), bt[i].getMethodName());
 		if(sc != 0)
 		    return(sc);
 		if(at[i].getLineNumber() != bt[i].getLineNumber())
