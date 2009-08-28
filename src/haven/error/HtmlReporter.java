@@ -44,9 +44,12 @@ public class HtmlReporter {
 	javax.media.opengl.GLException.class,
     };
     
-    public static final Comparator<StackTraceElement> stcmp = new Comparator<StackTraceElement>() {
-	private Pattern[] classids = new Pattern[] {
-		Pattern.compile("(sun\\.reflect\\.Generated\\w+Accessor)\\d+"),
+    public static class ErrorIdentity implements Comparable<ErrorIdentity> {
+	public String jarrev;
+	public Throwable t;
+	private Pattern[] ignclass = new Pattern[] {
+		Pattern.compile("sun\\.reflect\\..*"),
+		Pattern.compile("java\\.lang\\.reflect\\..*"),
 	    };
 	
 	private int equals(String a, String b) {
@@ -58,27 +61,15 @@ public class HtmlReporter {
 		return(1);
 	    return(a.compareTo(b));
 	}
-
-	public int compare(StackTraceElement a, StackTraceElement b) {
+	
+	public int stcmp(StackTraceElement a, StackTraceElement b) {
 	    int sc = equals(a.getFileName(), b.getFileName());
 	    if(sc != 0)
 		return(sc);
 	    
-	    clsmatch: {
-		for(Pattern classid : classids) {
-		    Matcher ma = classid.matcher(a.getClassName());
-		    Matcher mb = classid.matcher(b.getClassName());
-		    if(ma.matches() && mb.matches()) {
-			sc = equals(ma.group(1), mb.group(1));
-			if(sc != 0)
-			    return(sc);
-			break clsmatch;
-		    }
-		}
-		sc = equals(a.getClassName(), b.getClassName());
-		if(sc != 0)
-		    return(sc);
-	    }
+	    sc = equals(a.getClassName(), b.getClassName());
+	    if(sc != 0)
+		return(sc);
 	    
 	    sc = equals(a.getMethodName(), b.getMethodName());
 	    if(sc != 0)
@@ -88,28 +79,37 @@ public class HtmlReporter {
 		return(a.getLineNumber() - b.getLineNumber());
 	    return(0);
 	}
-    };
 
-    public static final Comparator<Throwable> thcmp = new Comparator<Throwable>() {
-	private int equals(String a, String b) {
-	    if((a == null) && (b == null))
-		return(0);
-	    if(a == null)
-		return(-1);
-	    if(b == null)
-		return(1);
-	    return(a.compareTo(b));
-	}
-
-	public int compare(Throwable a, Throwable b) {
+	public int thcmp(Throwable a, Throwable b) {
 	    int sc = equals(a.getClass().getName(), b.getClass().getName());
 	    if(sc != 0)
 		return(sc);
 	    StackTraceElement[] at = a.getStackTrace(), bt = b.getStackTrace();
-	    if(at.length != bt.length)
-		return(at.length - bt.length);
-	    for(int i = 0; i < at.length; i++) {
-		sc = stcmp.compare(at[i], bt[i]);
+	    int ai = 0, bi = 0;
+	    while(true) {
+		boolean ad = ai >= at.length, bd = bi >= bt.length;
+		if(ad && bd)
+		    break;
+		else if(ad && !bd)
+		    return(-1);
+		else if(!ad && bd)
+		    return(1);
+		ign: while(true) {
+		    for(Pattern ignp : ignclass) {
+			Matcher ma = ignp.matcher(at[ai].getClassName());
+			if(ma.matches()) {
+			    ai++;
+			    continue ign;
+			}
+			Matcher mb = ignp.matcher(bt[bi].getClassName());
+			if(mb.matches()) {
+			    bi++;
+			    continue ign;
+			}
+		    }
+		    break;
+		}
+		sc = stcmp(at[ai++], bt[bi++]);
 		if(sc != 0)
 		    return(sc);
 	    }
@@ -119,14 +119,9 @@ public class HtmlReporter {
 		return(-1);
 	    if(b.getCause() == null)
 		return(1);
-	    return(compare(a.getCause(), b.getCause()));
+	    return(thcmp(a.getCause(), b.getCause()));
 	}
-    };
 
-    public static class ErrorIdentity implements Comparable<ErrorIdentity> {
-	public String jarrev;
-	public Throwable t;
-	
 	public ErrorIdentity(Report r) {
 	    if((jarrev = (String)r.props.get("jar.git-rev")) == null)
 		jarrev = "";
@@ -137,7 +132,7 @@ public class HtmlReporter {
 	    int sc = jarrev.compareTo(o.jarrev);
 	    if(sc != 0)
 		return(sc);
-	    return(thcmp.compare(t, o.t));
+	    return(thcmp(t, o.t));
 	}
 	
 	public boolean equals(ErrorIdentity o) {
