@@ -234,7 +234,7 @@ public class HtmlReporter {
 	Map<ErrorIdentity, List<Map.Entry<File, Report>>> groups = new TreeMap<ErrorIdentity, List<Map.Entry<File, Report>>>();
 	for(Map.Entry<File, Report> rent : reports.entrySet()) {
 	    ErrorIdentity id = new ErrorIdentity(rent.getValue());
-	    if(groups.get(id) != null)
+	    if(groups.get(id) == null)
 		groups.put(id, new ArrayList<Map.Entry<File, Report>>());
 	    groups.get(id).add(rent);
 	}
