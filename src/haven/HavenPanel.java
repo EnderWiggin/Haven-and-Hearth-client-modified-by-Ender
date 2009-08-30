@@ -47,7 +47,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
     private Resource lastcursor = null;
     public Coord mousepos = new Coord(0, 0);
     public Profile prof = new Profile(300);
-    private Profile.Frame curf;
+    private ThreadLocal<Profile.Frame> curf = new ThreadLocal<Profile.Frame>();
     private SyncFSM fsm = null;
     private static final GLCapabilities caps;
     static {
@@ -241,18 +241,21 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	gl.glLoadIdentity();
 	gl.glOrtho(0, getWidth(), 0, getHeight(), -1, 1);
 	TexRT.renderall(g);
-	curf.tick("texrt");
+	if(curf.get() != null)
+	    curf.get().tick("texrt");
 
 	gl.glMatrixMode(GL.GL_PROJECTION);
 	gl.glLoadIdentity();
 	gl.glOrtho(0, getWidth(), getHeight(), 0, -1, 1);
 	gl.glClearColor(0, 0, 0, 1);
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-	curf.tick("cls");
+	if(curf.get() != null)
+	    curf.get().tick("cls");
 	synchronized(ui) {
 	    ui.draw(g);
 	}
-	curf.tick("draw");
+	if(curf.get() != null)
+	    curf.get().tick("draw");
 
 	if(Config.dbtext) {
 	    if(Resource.qdepth() > 0)
@@ -361,15 +364,18 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	    fthen = System.currentTimeMillis();
 	    while(true) {
 		then = System.currentTimeMillis();
-		curf = prof.new Frame();
+		if(Config.profile)
+		    curf.set(prof.new Frame());
 		synchronized(ui) {
 		    if(ui.sess != null)
 			ui.sess.glob.oc.ctick();
 		    dispatch();
 		}
-		curf.tick("dsp");
+		if(curf.get() != null)
+		    curf.get().tick("dsp");
 		uglyjoglhack();
-		curf.tick("aux");
+		if(curf.get() != null)
+		    curf.get().tick("aux");
 		frames++;
 		now = System.currentTimeMillis();
 		if(now - then < fd) {
@@ -377,7 +383,8 @@ public class HavenPanel extends GLCanvas implements Runnable {
 			events.wait(fd - (now - then));
 		    }
 		}
-		curf.tick("wait");
+		if(curf.get() != null)
+		    curf.get().tick("wait");
 		if(now - fthen > 1000) {
 		    fps = frames;
 		    frames = 0;
@@ -386,7 +393,10 @@ public class HavenPanel extends GLCanvas implements Runnable {
 		    texhit = texmiss = 0;
 		    fthen = now;
 		}
-		curf.fin();
+		if(curf.get() != null) {
+		    curf.get().fin();
+		    curf.remove();
+		}
 		if(Thread.interrupted())
 		    throw(new InterruptedException());
 	    }

@@ -583,8 +583,9 @@ public class MapView extends Widget implements DTarget {
 	int x, y, i;
 	int stw, sth;
 	Coord oc, tc, ctc, sc;
-		
-	curf = prof.new Frame();
+	
+	if(Config.profile)
+	    curf = prof.new Frame();
 	stw = (tilesz.x * 4) - 2;
 	sth = tilesz.y * 2;
 	oc = viewoffset(sz, mc);
@@ -610,10 +611,12 @@ public class MapView extends Widget implements DTarget {
 		}
 	    }
 	}
-	curf.tick("map");
+	if(curf != null)
+	    curf.tick("map");
 
 	drawplobeffect(g);
-	curf.tick("plobeff");
+	if(curf != null)
+	    curf.tick("plobeff");
 		
 	final List<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 	final Map<Sprite.Part,Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
@@ -663,7 +666,8 @@ public class MapView extends Widget implements DTarget {
 	    this.clickable = clickable;
 	    Collections.sort(sprites, Sprite.partcmp);
 	    obscured = findobsc();
-	    curf.tick("sort");
+	    if(curf != null)
+		curf.tick("sort");
 	    for(Sprite.Part part : sprites) {
 		if(part.effect != null)
 		    part.draw(part.effect.apply(g));
@@ -707,13 +711,17 @@ public class MapView extends Widget implements DTarget {
 		g.chcolor();
 	    }
 	    
-	    curf.tick("draw");
+	    if(curf != null)
+		curf.tick("draw");
 	    g.image(mask, Coord.z);
 	    for(Speaking s : speaking) {
 		s.draw(g, s.gob.sc.add(s.off));
 	    }
-	    curf.tick("aux");
-	    curf.fin();
+	    if(curf != null) {
+		curf.tick("aux");
+		curf.fin();
+		curf = null;
+	    }
 	    //System.out.println(curf);
 	}
     }

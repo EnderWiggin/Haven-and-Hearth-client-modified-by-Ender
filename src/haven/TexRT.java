@@ -76,9 +76,11 @@ public abstract class TexRT extends TexGL {
 	if(id < 0)
 	    return;
 	GL gl = g.gl;
-	curf = prof.new Frame();
+	if(Config.profile)
+	    curf = prof.new Frame();
 	subrend(g);
-	curf.tick("render");
+	if(curf != null)
+	    curf.tick("render");
 	g.texsel(id);
 	GOut.checkerr(gl);
 	if(!inited) {
@@ -88,8 +90,11 @@ public abstract class TexRT extends TexGL {
 	}
 	gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
 	GOut.checkerr(gl);
-	curf.tick("copy");
-	curf.fin();
+	if(curf != null) {
+	    curf.tick("copy");
+	    curf.fin();
+	    curf = null;
+	}
     }
     
     public static void renderall(GOut g) {

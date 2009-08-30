@@ -39,6 +39,7 @@ public class Config {
     public static boolean fullscreen;
     public static boolean dbtext;
     public static boolean bounddb;
+    public static boolean profile;
     public static boolean nolocalres;
     public static String resdir;
     public static boolean nopreload;
@@ -61,6 +62,7 @@ public class Config {
 	    allused = getprop("haven.allused", null);
 	    dbtext = getprop("haven.dbtext", "off").equals("on");
 	    bounddb = getprop("haven.bounddb", "off").equals("on");
+	    profile = getprop("haven.profile", "off").equals("on");
 	    nolocalres = getprop("haven.nolocalres", "").equals("yesimsure");
 	    resdir = getprop("haven.resdir", null);
 	    nopreload = getprop("haven.nopreload", "no").equals("yes");
