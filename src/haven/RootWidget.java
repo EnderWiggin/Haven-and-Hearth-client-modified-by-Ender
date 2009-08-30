@@ -57,11 +57,11 @@ public class RootWidget extends Widget {
 	      logout = null;
 	      }
 	      } else */
-	    if(key == '`') {
+	    if(Config.profile && (key == '`')) {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
-	    } else if(key == '~') {
+	    } else if(Config.profile && (key == '~')) {
 		new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
-	    } else if(key == '!') {
+	    } else if(Config.profile && (key == '!')) {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).mask.prof, "ILM prof");
 	    } else if(key != 0) {
 		wdgmsg("gk", (int)key);
