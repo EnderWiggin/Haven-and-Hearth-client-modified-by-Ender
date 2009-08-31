@@ -52,9 +52,9 @@ public class Item extends Widget implements DTarget {
 		    int q = (Integer)args[1];
 		    int num = -1;
 		    String tooltip = null;
-		    int ca = 2;
+		    int ca = 3;
 		    Coord drag = null;
-		    if((Integer)args[1] != 0)
+		    if((Integer)args[2] != 0)
 			drag = (Coord)args[ca++];
 		    if(args.length > ca)
 			tooltip = (String)args[ca++];
