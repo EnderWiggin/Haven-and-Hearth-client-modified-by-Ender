@@ -526,6 +526,7 @@ public class CharWnd extends Window {
 	baseval(y += 15, "agil", "Agility");
 	baseval(y += 15, "intel", "Intelligence");
 	baseval(y += 15, "cons", "Constitution");
+	baseval(y += 15, "perc", "Perception");
 	baseval(y += 15, "csm", "Charisma");
 	baseval(y += 15, "dxt", "Dexterity");
 	baseval(y += 15, "psy", "Psyche");
