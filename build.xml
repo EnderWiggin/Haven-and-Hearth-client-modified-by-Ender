@@ -28,6 +28,7 @@
 	<pathelement path="lib/jorbis.jar" />
 	<pathelement path="lib/jogg.jar" />
       </classpath>
+      <compilerarg value="-Xlint:unchecked" />
       <!-- <compilerarg value="-Xbarda" /> -->
     </javac>
     <copy todir="build/classes/haven" file="etc/ressrv.crt" />
