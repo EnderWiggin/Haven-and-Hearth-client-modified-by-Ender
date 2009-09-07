@@ -119,10 +119,14 @@ public class Item extends Widget implements DTarget {
 	    }
 	}
 	if(h) {
-	    if(tooltip != null)
+	    if(tooltip != null) {
 		ui.tooltip = tooltip;
-	    else if((ttres != null) && (ttres.layer(Resource.tooltip) != null))
-		ui.tooltip = ttres.layer(Resource.tooltip).t + ", quality " + q;
+	    } else if((ttres != null) && (ttres.layer(Resource.tooltip) != null)) {
+		String tt = ttres.layer(Resource.tooltip).t;
+		if(q > 0)
+		    tt = tt + ", quality " + q;
+		ui.tooltip = tt;
+	    }
 	}
 	if(tempdrag) {
 	    ui.drawafter(new UI.AfterDraw() {
