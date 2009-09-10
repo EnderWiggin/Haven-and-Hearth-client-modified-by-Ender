@@ -54,6 +54,7 @@ public class SlenHud extends Widget implements DropTarget {
     static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12), new Color(245, 222, 179));
     Text cmdtext, lasterr;
     long errtime;
+    @SuppressWarnings("unchecked")
     Indir<Resource>[] belt = new Indir[10];
 	
     static {

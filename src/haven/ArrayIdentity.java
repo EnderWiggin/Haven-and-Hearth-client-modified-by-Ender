@@ -78,6 +78,11 @@ public class ArrayIdentity {
 	}
     }
     
+    @SuppressWarnings("unchecked")
+    private static <T> Entry<T> getcanon(Entry<T> e) {
+	return((Entry<T>)set.get(e));
+    }
+
     public static <T> T[] intern(T[] arr) {
 	synchronized(ArrayIdentity.class) {
 	    if(cleanint++ > 100) {
@@ -85,9 +90,9 @@ public class ArrayIdentity {
 		cleanint = 0;
 	    }
 	}
-	Entry<T> e = new Entry(arr);
+	Entry<T> e = new Entry<T>(arr);
 	synchronized(ArrayIdentity.class) {
-	    Entry<T> e2 = (Entry<T>)set.get(e);
+	    Entry<T> e2 = getcanon(e);
 	    T[] ret;
 	    if(e2 == null) {
 		set.put(e, e);

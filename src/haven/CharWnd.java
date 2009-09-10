@@ -503,32 +503,36 @@ public class CharWnd extends Window {
 	    wdgmsg("buy", nsk.skills.get(nsk.sel).basename());
     }
 
-    public CharWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 310), parent, "Character Sheet");
-	
-	cattr = new Widget(Coord.z, new Coord(400, 275), this);
-	new Label(new Coord(10, 10), cattr, "Base Attributes:");
-	new Img(new Coord(10, 40), Resource.loadtex("gfx/hud/charsh/str"), cattr);
-	new Img(new Coord(10, 55), Resource.loadtex("gfx/hud/charsh/agil"), cattr);
-	new Img(new Coord(10, 70), Resource.loadtex("gfx/hud/charsh/intel"), cattr);
-	new Img(new Coord(10, 85), Resource.loadtex("gfx/hud/charsh/cons"), cattr);
-	new Img(new Coord(10, 100), Resource.loadtex("gfx/hud/charsh/perc"), cattr);
-	new Img(new Coord(10, 115), Resource.loadtex("gfx/hud/charsh/csm"), cattr);
-	new Label(new Coord(30, 40), cattr, "Strength:");
-	new Label(new Coord(30, 55), cattr, "Agility:");
-	new Label(new Coord(30, 70), cattr, "Intelligence:");
-	new Label(new Coord(30, 85), cattr, "Constitution:");
-	new Label(new Coord(30, 100), cattr, "Perception:");
-	new Label(new Coord(30, 115), cattr, "Charisma:");
-	new NAttr("str", 100, 40);
-	new NAttr("agil", 100, 55);
-	new NAttr("intel", 100, 70);
-	new NAttr("cons", 100, 85);
-	new NAttr("perc", 100, 100);
-	new NAttr("csm", 100, 115);
-	foodm = new FoodMeter(new Coord(10, 150), cattr);
+    private void baseval(int y, String id, String nm) {
+	new Img(new Coord(10, y), Resource.loadtex("gfx/hud/charsh/" + id), cattr);
+	new Label(new Coord(30, y), cattr, nm + ":");
+	new NAttr(id, 100, y);
+    }
 
-	int expbase = 130;
+    private void skillval(int y, String id, String nm) {
+	new Img(new Coord(210, y), Resource.loadtex("gfx/hud/charsh/" + id), cattr);
+	new Label(new Coord(230, y), cattr, nm + ":");
+	new SAttr(id, 320, y);
+    }
+
+    public CharWnd(Coord c, Widget parent) {
+	super(c, new Coord(400, 340), parent, "Character Sheet");
+	
+	int y;
+	cattr = new Widget(Coord.z, new Coord(400, 300), this);
+	new Label(new Coord(10, 10), cattr, "Base Attributes:");
+	y = 25;
+	baseval(y += 15, "str", "Strength");
+	baseval(y += 15, "agil", "Agility");
+	baseval(y += 15, "intel", "Intelligence");
+	baseval(y += 15, "cons", "Constitution");
+	baseval(y += 15, "perc", "Perception");
+	baseval(y += 15, "csm", "Charisma");
+	baseval(y += 15, "dxt", "Dexterity");
+	baseval(y += 15, "psy", "Psyche");
+	foodm = new FoodMeter(new Coord(10, 180), cattr);
+
+	int expbase = 220;
 	new Label(new Coord(210, expbase), cattr, "Cost:");
 	cost = new Label(new Coord(300, expbase), cattr, "0");
 	new Label(new Coord(210, expbase + 15), cattr, "Learning Points:");
@@ -550,17 +554,20 @@ public class CharWnd extends Window {
 		buysattrs();
 	    }
 	};
+
+	y = 25;
 	new Label(new Coord(210, 10), cattr, "Skill Values:");
-	new Label(new Coord(210, 40), cattr, "Unarmed Combat:");
-	new SAttr("unarmed", 300, 40);
-	new Label(new Coord(210, 55), cattr, "Melee Combat:");
-	new SAttr("melee", 300, 55);
-	new Label(new Coord(210, 70), cattr, "Marksmanship:");
-	new SAttr("ranged", 300, 70);
-	new Label(new Coord(210, 85), cattr, "Exploration:");
-	new SAttr("explore", 300, 85);
-	new Label(new Coord(210, 100), cattr, "Stealth:");
-	new SAttr("stealth", 300, 100);
+	skillval(y += 15, "unarmed", "Unarmed Combat");
+	skillval(y += 15, "melee", "Melee Combat");
+	skillval(y += 15, "ranged", "Marksmanship");
+	skillval(y += 15, "explore", "Exploration");
+	skillval(y += 15, "stealth", "Stealth");
+	skillval(y += 15, "sewing", "Sewing");
+	skillval(y += 15, "smithing", "Smithing");
+	skillval(y += 15, "carpentry", "Carpentry");
+	skillval(y += 15, "cooking", "Cooking");
+	skillval(y += 15, "farming", "Farming");
+	skillval(y += 15, "survive", "Survival");
 	
 	skill = new Widget(Coord.z, new Coord(400, 275), this);
 	ski = new SkillInfo(new Coord(10, 10), new Coord(180, 260), skill);
@@ -600,21 +607,21 @@ public class CharWnd extends Window {
 	
 	belief.visible = false;
 	
-	new IButton(new Coord(10, 280), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
+	new IButton(new Coord(10, 310), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
 	    public void click() {
 		cattr.visible = true;
 		skill.visible = false;
 		belief.visible = false;
 	    }
 	}.tooltip = "Attributes";
-	new IButton(new Coord(80, 280), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
+	new IButton(new Coord(80, 310), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
 	    public void click() {
 		cattr.visible = false;
 		skill.visible = true;
 		belief.visible = false;
 	    }
 	}.tooltip = "Skills";
-	new IButton(new Coord(150, 280), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
+	new IButton(new Coord(150, 310), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
 	    public void click() {
 		cattr.visible = false;
 		skill.visible = false;

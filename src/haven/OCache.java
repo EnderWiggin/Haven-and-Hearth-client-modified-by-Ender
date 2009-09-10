@@ -69,6 +69,7 @@ public class OCache implements Iterable<Gob> {
 	lastctick = now; 
     }
 	
+    @SuppressWarnings("unchecked")
     public Iterator<Gob> iterator() {
 	Collection<Iterator<Gob>> is = new LinkedList<Iterator<Gob>>();
 	for(Collection<Gob> gc : local)

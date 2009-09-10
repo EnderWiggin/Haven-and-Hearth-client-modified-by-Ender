@@ -34,11 +34,10 @@ import java.util.Map.Entry;
 public class Partyview extends Widget {
     int ign;
     Party party = ui.sess.glob.party;
-    Map<Integer, Party.Member> om = null;
-    Party.Member ol = null;
-    Map<Party.Member, Avaview> avs = new HashMap<Party.Member, Avaview>();
+    Map<Integer, Member> om = null;
+    Member ol = null;
+    Map<Member, Avaview> avs = new HashMap<Member, Avaview>();
     Button leave = null;
-    private static final Map.Entry<?, ?>[] cp = new Map.Entry[0];
 	
     static {
 	Widget.addtype("pv", new WidgetFactory() {
@@ -56,8 +55,8 @@ public class Partyview extends Widget {
 	
     private void update() {
 	if(party.memb != om) {
-	    Collection<Party.Member> old = new HashSet<Party.Member>(avs.keySet());
-	    for(Party.Member m : (om = party.memb).values()) {
+	    Collection<Member> old = new HashSet<Member>(avs.keySet());
+	    for(Member m : (om = party.memb).values()) {
 		if(m.gobid == ign)
 		    continue;
 		Avaview w = avs.get(m);
@@ -68,23 +67,23 @@ public class Partyview extends Widget {
 		    old.remove(w);
 		}
 	    }
-	    for(Party.Member m : old) {
+	    for(Member m : old) {
 		ui.destroy(avs.get(m));
 		avs.remove(m);
 	    }
-	    Map.Entry<Party.Member, Widget>[] wl = (Map.Entry<Party.Member, Widget>[])avs.entrySet().toArray(cp);
-	    Arrays.sort(wl, new Comparator<Map.Entry<Party.Member, Widget>>() {
-		    public int compare(Entry<Member, Widget> a, Entry<Member, Widget> b) {
+	    List<Map.Entry<Member, Avaview>> wl = new ArrayList<Map.Entry<Member, Avaview>>(avs.entrySet());
+	    Collections.sort(wl, new Comparator<Map.Entry<Member, Avaview>>() {
+		    public int compare(Entry<Member, Avaview> a, Entry<Member, Avaview> b) {
 			return(a.getKey().gobid - b.getKey().gobid);
 		    }
 		});
 	    int i = 0;
-	    for(Map.Entry<Party.Member, Widget> e : wl) {
+	    for(Map.Entry<Member, Avaview> e : wl) {
 		e.getValue().c = new Coord((i % 2) * 43, (i / 2) * 43 + 24);
 		i++;
 	    }
 	}
-	for(Map.Entry<Party.Member, Avaview> e : avs.entrySet()) {
+	for(Map.Entry<Member, Avaview> e : avs.entrySet()) {
 	    e.getValue().color = e.getKey().col;
 	}
 	if((avs.size() > 0) && (leave == null)) {
@@ -101,7 +100,7 @@ public class Partyview extends Widget {
 	    wdgmsg("leave");
 	    return;
 	}
-	for(Party.Member m : avs.keySet()) {
+	for(Member m : avs.keySet()) {
 	    if(sender == avs.get(m)) {
 		wdgmsg("click", m.gobid, args[0]);
 		return;
