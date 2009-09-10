@@ -190,4 +190,31 @@ public class Text {
 	    tex = new TexI(img);
 	return(tex);
     }
+    
+    public static void main(String[] args) throws Exception {
+	String cmd = args[0].intern();
+	if(cmd == "render") {
+	    PosixArgs opt = PosixArgs.getopt(args, 1, "aw:f:s:");
+	    boolean aa = false;
+	    String font = "SansSerif";
+	    int width = 100, size = 10;
+	    for(char c : opt.parsed()) {
+		if(c == 'a') {
+		    aa = true;
+		} else if(c == 'f') {
+		    font = opt.arg;
+		} else if(c == 'w') {
+		    width = Integer.parseInt(opt.arg);
+		} else if(c == 's') {
+		    size = Integer.parseInt(opt.arg);
+		}
+	    }
+	    Foundry f = new Foundry(font, size);
+	    f.aa = aa;
+	    Text t = f.renderwrap(opt.rest[0], width);
+	    java.io.OutputStream out = new java.io.FileOutputStream(opt.rest[1]);
+	    javax.imageio.ImageIO.write(t.img, "PNG", out);
+	    out.close();
+	}
+    }
 }

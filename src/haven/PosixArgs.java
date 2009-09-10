@@ -47,13 +47,13 @@ public class PosixArgs {
 	parsed = new ArrayList<Arg>();
     }
 
-    public static PosixArgs getopt(String[] argv, String desc) {
+    public static PosixArgs getopt(String[] argv, int start, String desc) {
 	PosixArgs ret = new PosixArgs();
 	List<Character> fl = new ArrayList<Character>(), fla = new ArrayList<Character>();
 	List<String> rest = new ArrayList<String>();
 	for(int i = 0; i < desc.length();) {
 	    char ch = desc.charAt(i++);
-	    if((i < desc.length() - 1) && (desc.charAt(i) == ':')) {
+	    if((i < desc.length()) && (desc.charAt(i) == ':')) {
 		i++;
 		fla.add(ch);
 	    } else {
@@ -61,7 +61,7 @@ public class PosixArgs {
 	    }
 	}
 	boolean acc = true;
-	for(int i = 0; i < argv.length;) {
+	for(int i = start; i < argv.length;) {
 	    String arg = argv[i++];
 	    if(acc && arg.equals("--")) {
 		acc = false;
@@ -92,6 +92,10 @@ public class PosixArgs {
 	}
 	ret.rest = rest.toArray(new String[0]);
 	return(ret);
+    }
+    
+    public static PosixArgs getopt(String[] argv, String desc) {
+	return(getopt(argv, 0, desc));
     }
     
     public Iterable<Character> parsed() {
