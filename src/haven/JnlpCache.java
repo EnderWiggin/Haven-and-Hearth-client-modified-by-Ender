@@ -30,6 +30,7 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.net.URL;
 import javax.jnlp.*;
+import java.util.*;
 
 public class JnlpCache implements ResCache {
     private PersistenceService back;
@@ -64,7 +65,7 @@ public class JnlpCache implements ResCache {
 	return(buf.toString());
     }
 
-    private void put(URL loc, byte[] data) {
+    private void realput(URL loc, byte[] data) {
 	FileContents file;
 	try {
 	    try {
@@ -92,8 +93,42 @@ public class JnlpCache implements ResCache {
 	    return;
 	}
     }
+    
+    private void put(final URL loc, final byte[] data) {
+	/*
+	 * Interestingly enough, it seems that the JNLP persistence
+	 * cache, at least in Sun's implementation, is REALLY
+	 * SLOW. "Really slow" meaning that it takes like 1 second to
+	 * save each muffin. How they managed to do this, I have no
+	 * clue, but to counter it, so as to not take up precious
+	 * resource/minimap loader time, the actual storage is
+	 * deferred.
+	 *
+	 * Sucks? You don't say.
+	 */
+	Utils.defer(new Runnable() {
+		public void run() {
+		    realput(loc, data);
+		}
+	    });
+    }
+    
+    private InputStream get(URL loc) throws IOException {
+	FileContents file = back.get(loc);
+	return(file.getInputStream());
+    }
 
     public OutputStream store(final String name) throws IOException {
+	/*
+	 * The persistence service actually yields a real
+	 * OutputStream, but since it needs to know the final size of
+	 * the data before that, it isn't actually possible to use it
+	 * as an OutputStream in any reasonable manner. Thus, all data
+	 * is first "pre-cached" in a ByteArrayOutputStream, and then
+	 * written to the persistence store.
+	 *
+	 * Oh God, it's so stupid.
+	 */
 	OutputStream ret = new ByteArrayOutputStream() {
 		public void close() {
 		    byte[] res = toByteArray();
@@ -110,9 +145,7 @@ public class JnlpCache implements ResCache {
     public InputStream fetch(String name) throws IOException {
 	try {
 	    URL loc = new URL(base, mangle(name));
-	    FileContents file = back.get(loc);
-	    InputStream in = file.getInputStream();
-	    return(in);
+	    return(get(loc));
 	} catch(IOException e) {
 	    throw(e);
 	} catch(Exception e) {
