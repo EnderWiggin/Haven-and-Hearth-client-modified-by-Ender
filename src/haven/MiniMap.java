@@ -50,13 +50,19 @@ public class MiniMap extends Widget {
 	    URL url = new URL(Config.mapurl, nm + ".png");
 	    URLConnection c = url.openConnection();
 	    c.addRequestProperty("User-Agent", "Haven/1.0");
-	    StreamTee tee = new StreamTee(c.getInputStream());
-	    tee.setncwe();
-	    tee.attach(ResCache.global.store("mm/" + nm));
-	    return(tee);
+	    InputStream s = c.getInputStream();
+	    if(ResCache.global != null) {
+		StreamTee tee = new StreamTee(s);
+		tee.setncwe();
+		tee.attach(ResCache.global.store("mm/" + nm));
+		s = tee;
+	    }
+	    return(s);
 	}
 	
 	private InputStream getcached(String nm) throws IOException {
+	    if(ResCache.global == null)
+		throw(new FileNotFoundException("No resource cache installed"));
 	    return(ResCache.global.fetch("mm/" + nm));
 	}
 
