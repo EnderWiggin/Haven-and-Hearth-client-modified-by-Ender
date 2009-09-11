@@ -46,6 +46,20 @@ public class MiniMap extends Widget {
     static class Loader implements Runnable {
 	Thread me = null;
 	
+	private InputStream getreal(String nm) throws IOException {
+	    URL url = new URL(Config.mapurl, nm + ".png");
+	    URLConnection c = url.openConnection();
+	    c.addRequestProperty("User-Agent", "Haven/1.0");
+	    StreamTee tee = new StreamTee(c.getInputStream());
+	    tee.setncwe();
+	    tee.attach(ResCache.global.store("mm/" + nm));
+	    return(tee);
+	}
+	
+	private InputStream getcached(String nm) throws IOException {
+	    return(ResCache.global.fetch("mm/" + nm));
+	}
+
 	public void run() {
 	    try {
 		while(true) {
@@ -60,10 +74,12 @@ public class MiniMap extends Widget {
 		    if(grid == null)
 			break;
 		    try {
-			URL url = new URL(Config.mapurl, grid + ".png");
-			URLConnection c = url.openConnection();
-			c.addRequestProperty("User-Agent", "Haven/1.0");
-			InputStream in = c.getInputStream();
+			InputStream in;
+			try {
+			    in = getcached(grid);
+			} catch(FileNotFoundException e) {
+			    in = getreal(grid);
+			}
 			BufferedImage img;
 			try {
 			    img = ImageIO.read(in);
