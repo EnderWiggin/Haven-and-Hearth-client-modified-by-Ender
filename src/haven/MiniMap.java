@@ -90,6 +90,7 @@ public class MiniMap extends Widget {
 			try {
 			    img = ImageIO.read(in);
 			} finally {
+                            Utils.readtileof(in);
 			    in.close();
 			}
 			Tex tex = new TexI(img);
