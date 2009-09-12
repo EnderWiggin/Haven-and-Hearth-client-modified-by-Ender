@@ -54,6 +54,8 @@ public class Bufflist extends Widget {
 	int w = frame.sz().x + margin;
 	long now = System.currentTimeMillis();
 	for(Buff b : ui.sess.glob.buffs.values()) {
+	    if(!b.major)
+		continue;
 	    Coord bc = new Coord(i * w, 0);
 	    if(b.ameter >= 0) {
 		g.image(cframe, bc);
@@ -80,7 +82,7 @@ public class Bufflist extends Widget {
 			m *= (ot - pt) / ot;
 		    }
 		    g.chcolor(0, 0, 0, 128);
-		    g.fellipse(bc.add(imgoff).add(img.sz().div(2)), img.sz().div(2), (int)(90 - (360 * m)), 90);
+		    g.fellipse(bc.add(imgoff).add(img.sz().div(2)), img.sz().div(2), 90, (int)(90 + (360 * m)));
 		    g.chcolor();
 		}
 	    }
@@ -94,6 +96,8 @@ public class Bufflist extends Widget {
 	int w = frame.sz().x + margin;
 	tooltip = null;
 	for(Buff b : ui.sess.glob.buffs.values()) {
+	    if(!b.major)
+		continue;
 	    Coord bc = new Coord(i * w, 0);
 	    if(c.isect(bc, frame.sz())) {
 		Resource.Tooltip tt;
