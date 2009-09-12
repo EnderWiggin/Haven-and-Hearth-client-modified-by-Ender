@@ -76,7 +76,7 @@ public class Bufflist extends Widget {
 		    if(b.cticks >= 0) {
 			double ot = b.cticks * 0.06;
 			double pt = ((double)(now - b.gettime)) / 1000.0;
-			m *= 1.0 - ((ot - pt) / ot);
+			m *= (ot - pt) / ot;
 		    }
 		    g.chcolor(255, 255, 255, 64);
 		    g.fellipse(imgoff.add(img.sz().div(2)), img.sz().div(2), (int)(90 - (360 * m)), 90);
