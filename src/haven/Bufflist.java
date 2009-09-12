@@ -83,6 +83,24 @@ public class Bufflist extends Widget {
 		    g.chcolor();
 		}
 	    }
+	    if(++i >= 5)
+		break;
+	}
+    }
+    
+    public void mousemove(Coord c) {
+	int i = 0;
+	int w = frame.sz().x + margin;
+	tooltip = null;
+	for(Buff b : ui.sess.glob.buffs.values()) {
+	    Coord bc = new Coord(i * w, 0);
+	    if(c.isect(bc, frame.sz())) {
+		Resource.Tooltip tt;
+		if(b.tt != null)
+		    tooltip = b.tt;
+		else if((b.res.get() != null) && ((tt = b.res.get().layer(Resource.tooltip)) != null))
+		    tooltip = tt.t;
+	    }
 	}
     }
 }
