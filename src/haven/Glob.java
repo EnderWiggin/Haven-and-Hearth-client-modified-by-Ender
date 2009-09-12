@@ -152,8 +152,10 @@ public class Glob {
 		buff.tt = tt;
 	    buff.ameter = ameter;
 	    buff.nmeter = nmeter;
+	    buff.ntext = null;
 	    buff.cmeter = cmeter;
 	    buff.cticks = cticks;
+	    buff.gettime = System.currentTimeMillis();
 	    buffs.put(id, buff);
 	} else if(name == "rm") {
 	    int id = msg.int32();

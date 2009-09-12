@@ -26,7 +26,10 @@
 
 package haven;
 
+import java.awt.Color;
+
 public class Buff {
+    public static final Text.Foundry nfnd = new Text.Foundry("SansSerif", 10);
     int id;
     Indir<Resource> res;
     String tt = null;
@@ -34,9 +37,17 @@ public class Buff {
     int nmeter = -1;
     int cmeter = -1;
     int cticks = -1;
+    long gettime;
+    Tex ntext = null;
     
     public Buff(int id, Indir<Resource> res) {
 	this.id = id;
 	this.res = res;
+    }
+    
+    Tex nmeter() {
+	if(ntext == null)
+	    ntext = new TexI(Utils.outline2(nfnd.render(Integer.toString(nmeter), Color.WHITE).img, Color.BLACK));
+	return(ntext);
     }
 }
