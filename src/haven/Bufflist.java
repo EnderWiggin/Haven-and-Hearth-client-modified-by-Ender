@@ -78,7 +78,7 @@ public class Bufflist extends Widget {
 			double pt = ((double)(now - b.gettime)) / 1000.0;
 			m *= (ot - pt) / ot;
 		    }
-		    g.chcolor(255, 255, 255, 64);
+		    g.chcolor(0, 0, 0, 64);
 		    g.fellipse(imgoff.add(img.sz().div(2)), img.sz().div(2), (int)(90 - (360 * m)), 90);
 		    g.chcolor();
 		}
