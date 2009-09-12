@@ -136,10 +136,11 @@ public class Glob {
 	    int id = msg.int32();
 	    Indir<Resource> res = sess.getres(msg.uint16());
 	    String tt = msg.string();
-	    int ameter = msg.uint8();
-	    int nmeter = msg.uint16();
-	    int cmeter = msg.uint8();
+	    int ameter = msg.int32();
+	    int nmeter = msg.int32();
+	    int cmeter = msg.int32();
 	    int cticks = msg.int32();
+	    boolean major = msg.uint8() != 0;
 	    Buff buff;
 	    if((buff = buffs.get(id)) == null) {
 		buff = new Buff(id, res);
@@ -155,6 +156,7 @@ public class Glob {
 	    buff.ntext = null;
 	    buff.cmeter = cmeter;
 	    buff.cticks = cticks;
+	    buff.major = major;
 	    buff.gettime = System.currentTimeMillis();
 	    buffs.put(id, buff);
 	} else if(name == "rm") {

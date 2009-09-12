@@ -39,6 +39,7 @@ public class Buff {
     int cticks = -1;
     long gettime;
     Tex ntext = null;
+    boolean major = false;
     
     public Buff(int id, Indir<Resource> res) {
 	this.id = id;
