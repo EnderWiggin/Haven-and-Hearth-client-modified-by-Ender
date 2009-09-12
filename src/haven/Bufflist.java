@@ -54,22 +54,23 @@ public class Bufflist extends Widget {
 	int w = frame.sz().x + margin;
 	long now = System.currentTimeMillis();
 	for(Buff b : ui.sess.glob.buffs.values()) {
+	    Coord bc = new Coord(i * w, 0);
 	    if(b.ameter >= 0) {
-		g.image(cframe, new Coord(i * w, 0));
+		g.image(cframe, bc);
 		g.chcolor(Color.BLACK);
-		g.frect(ameteroff, ametersz);
+		g.frect(bc.add(ameteroff), ametersz);
 		g.chcolor(Color.WHITE);
-		g.frect(ameteroff, new Coord((b.ameter * ametersz.x) / 100, ametersz.y));
+		g.frect(bc.add(ameteroff), new Coord((b.ameter * ametersz.x) / 100, ametersz.y));
 		g.chcolor();
 	    } else {
-		g.image(frame, new Coord(i * w, 0));
+		g.image(frame, bc);
 	    }
 	    if(b.res.get() != null) {
 		Tex img = b.res.get().layer(Resource.imgc).tex();
-		g.image(img, new Coord(i * w, 0).add(imgoff));
+		g.image(img, bc.add(imgoff));
 		if(b.nmeter >= 0) {
 		    Tex ntext = b.nmeter();
-		    g.image(ntext, imgoff.add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
+		    g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
 		}
 		if(b.cmeter >= 0) {
 		    double m = b.cmeter / 100.0;
@@ -79,7 +80,7 @@ public class Bufflist extends Widget {
 			m *= (ot - pt) / ot;
 		    }
 		    g.chcolor(0, 0, 0, 128);
-		    g.fellipse(imgoff.add(img.sz().div(2)), img.sz().div(2), (int)(90 - (360 * m)), 90);
+		    g.fellipse(bc.add(imgoff).add(img.sz().div(2)), img.sz().div(2), (int)(90 - (360 * m)), 90);
 		    g.chcolor();
 		}
 	    }
