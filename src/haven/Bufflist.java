@@ -101,6 +101,8 @@ public class Bufflist extends Widget {
 		else if((b.res.get() != null) && ((tt = b.res.get().layer(Resource.tooltip)) != null))
 		    tooltip = tt.t;
 	    }
+	    if(++i >= 5)
+		break;
 	}
     }
 }
