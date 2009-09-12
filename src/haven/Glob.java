@@ -41,6 +41,7 @@ public class Glob {
     public Party party;
     public Collection<Resource> paginae = new TreeSet<Resource>();
     public Map<String, CAttr> cattr = new HashMap<String, CAttr>();
+    public Map<Integer, Buff> buffs = new TreeMap<Integer, Buff>();
     public java.awt.Color amblight = null;
     
     public Glob(Session sess) {
@@ -124,6 +125,39 @@ public class Glob {
 		    a.update(base, comp);
 		}
 	    }
+	}
+    }
+    
+    public void buffmsg(Message msg) {
+	String name = msg.string().intern();
+	if(name == "clear") {
+	    buffs.clear();
+	} else if(name == "set") {
+	    int id = msg.int32();
+	    Indir<Resource> res = sess.getres(msg.uint16());
+	    String tt = msg.string();
+	    int ameter = msg.uint8();
+	    int nmeter = msg.uint16();
+	    int cmeter = msg.uint8();
+	    int cticks = msg.int32();
+	    Buff buff;
+	    if((buff = buffs.get(id)) == null) {
+		buff = new Buff(id, res);
+	    } else {
+		buff.res = res;
+	    }
+	    if(tt.equals(""))
+		buff.tt = null;
+	    else
+		buff.tt = tt;
+	    buff.ameter = ameter;
+	    buff.nmeter = nmeter;
+	    buff.cmeter = cmeter;
+	    buff.cticks = cticks;
+	    buffs.put(id, buff);
+	} else if(name == "rm") {
+	    int id = msg.int32();
+	    buffs.remove(id);
 	}
     }
 }
