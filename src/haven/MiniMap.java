@@ -51,12 +51,19 @@ public class MiniMap extends Widget {
 	    URLConnection c = url.openConnection();
 	    c.addRequestProperty("User-Agent", "Haven/1.0");
 	    InputStream s = c.getInputStream();
+	    /*
+	     * I've commented this out, since it seems that the JNLP
+	     * PersistenceService (or at least Sun's implementation of
+	     * it) is SLOWER THAN SNAILS, so this caused more problems
+	     * than it solved.
+	     *
 	    if(ResCache.global != null) {
 		StreamTee tee = new StreamTee(s);
 		tee.setncwe();
 		tee.attach(ResCache.global.store("mm/" + nm));
 		s = tee;
 	    }
+	    */
 	    return(s);
 	}
 	
