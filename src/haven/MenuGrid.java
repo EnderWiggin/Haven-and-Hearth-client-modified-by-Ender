@@ -34,9 +34,11 @@ import java.util.*;
 public class MenuGrid extends Widget {
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
     public final static Coord bgsz = bg.sz().add(-1, -1);
+    public final static Resource next = Resource.load("gfx/hud/sc-next");
     public final static Resource bk = Resource.load("gfx/hud/sc-back");
     private static Coord gsz = new Coord(4, 4);
     private Resource cur, pressed, dragging, layout[][] = new Resource[gsz.x][gsz.y];
+    private int curoff = 0;
     private Map<Character, Resource> hotmap = new TreeMap<Character, Resource>();
     private Resource hover = null;
 	
@@ -108,13 +110,15 @@ public class MenuGrid extends Widget {
     private void updlayout() {
 	Resource[] cur = cons(this.cur);
 	Arrays.sort(cur, sorter);
-	int i = 0;
+	int i = curoff;
 	hotmap.clear();
 	for(int y = 0; y < gsz.y; y++) {
 	    for(int x = 0; x < gsz.x; x++) {
 		Resource btn = null;
 		if((this.cur != null) && (x == gsz.x - 1) && (y == gsz.y - 1)) {
 		    btn = bk;
+		} else if((cur.length - curoff > 15) && (x == gsz.x - 2) && (y == gsz.y - 1)) {
+		    btn = next;
 		} else if(i < cur.length) {
 		    Resource.AButton ad = cur[i].layer(Resource.action);
 		    hotmap.put(Character.toUpperCase(ad.hk), cur[i]);
@@ -198,6 +202,10 @@ public class MenuGrid extends Widget {
 	    cur = r;
 	} else if(r == bk) {
 	    cur = cur.layer(Resource.action).parent;
+	} else if(r == next) {
+	    if((curoff + 14) >= cons(cur).length)
+		curoff = 0;
+	    curoff += 1;
 	} else {
 	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
 	}
@@ -236,6 +244,8 @@ public class MenuGrid extends Widget {
 	    this.cur = null;
 	    updlayout();
 	    return(true);
+	} else if((k == 'N') && (layout[gsz.x - 2][gsz.y - 1] == next)) {
+	    use(next);
 	}
 	Resource r = hotmap.get(Character.toUpperCase(k));
 	if(r != null) {
