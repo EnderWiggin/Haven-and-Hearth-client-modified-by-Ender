@@ -117,7 +117,7 @@ public class MenuGrid extends Widget {
 		Resource btn = null;
 		if((this.cur != null) && (x == gsz.x - 1) && (y == gsz.y - 1)) {
 		    btn = bk;
-		} else if((cur.length - curoff > 15) && (x == gsz.x - 2) && (y == gsz.y - 1)) {
+		} else if((cur.length > ((gsz.x * gsz.y) - 1)) && (x == gsz.x - 2) && (y == gsz.y - 1)) {
 		    btn = next;
 		} else if(i < cur.length) {
 		    Resource.AButton ad = cur[i].layer(Resource.action);
@@ -200,8 +200,10 @@ public class MenuGrid extends Widget {
     private void use(Resource r) {
 	if(cons(r).length > 0) {
 	    cur = r;
+	    curoff = 0;
 	} else if(r == bk) {
 	    cur = cur.layer(Resource.action).parent;
+	    curoff = 0;
 	} else if(r == next) {
 	    if((curoff + 14) >= cons(cur).length)
 		curoff = 0;
@@ -236,12 +238,14 @@ public class MenuGrid extends Widget {
 		cur = null;
 	    else
 		cur = Resource.load(res);
+	    curoff = 0;
 	}
     }
 	
     public boolean globtype(char k, KeyEvent ev) {
 	if((k == 27) && (this.cur != null)) {
 	    this.cur = null;
+	    curoff = 0;
 	    updlayout();
 	    return(true);
 	} else if((k == 'N') && (layout[gsz.x - 2][gsz.y - 1] == next)) {
