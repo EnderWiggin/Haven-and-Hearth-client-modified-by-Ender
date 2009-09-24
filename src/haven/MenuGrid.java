@@ -207,7 +207,8 @@ public class MenuGrid extends Widget {
 	} else if(r == next) {
 	    if((curoff + 14) >= cons(cur).length)
 		curoff = 0;
-	    curoff += 1;
+	    else
+		curoff += 14;
 	} else {
 	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
 	}
@@ -250,6 +251,7 @@ public class MenuGrid extends Widget {
 	    return(true);
 	} else if((k == 'N') && (layout[gsz.x - 2][gsz.y - 1] == next)) {
 	    use(next);
+	    return(true);
 	}
 	Resource r = hotmap.get(Character.toUpperCase(k));
 	if(r != null) {
