@@ -129,11 +129,11 @@ public class MiniMap extends Widget {
 	    }
 	}
 	
-	void req(MCache.Grid grid) {
+	void req(String nm) {
 	    synchronized(grids) {
-		if(loading.contains(grid.mnm))
+		if(loading.contains(nm))
 		    return;
-		loading.add(grid.mnm);
+		loading.add(nm);
 		start();
 	    }
 	}
@@ -144,6 +144,17 @@ public class MiniMap extends Widget {
 	this.mv = mv;
     }
     
+    public static Tex getgrid(String nm) {
+	synchronized(grids) {
+	    if(grids.containsKey(nm)) {
+		return(grids.get(nm));
+	    } else {
+		loader.req(nm);
+		return(null);
+	    }
+	}
+    }
+
     public void draw(GOut g) {
 	Coord tc = mv.mc.div(tilesz);
 	Coord ulg = tc.div(cmaps);
@@ -171,15 +182,7 @@ public class MiniMap extends Widget {
 		    missing = true;
 		    break outer;
 		}
-		Tex tex;
-		synchronized(grids) {
-		    if(grids.containsKey(grid.mnm)) {
-			tex = grids.get(grid.mnm);
-		    } else {
-			loader.req(grid);
-			continue;
-		    }
-		}
+		Tex tex = getgrid(grid.mnm);
 		if(tex == null)
 		    continue;
 		g.image(tex, cg.mul(cmaps).add(tc.inv()).add(sz.div(2)));
