@@ -28,6 +28,7 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
+import java.security.*;
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -144,15 +145,19 @@ public class MiniMap extends Widget {
 	this.mv = mv;
     }
     
-    public static Tex getgrid(String nm) {
-	synchronized(grids) {
-	    if(grids.containsKey(nm)) {
-		return(grids.get(nm));
-	    } else {
-		loader.req(nm);
-		return(null);
-	    }
-	}
+    public static Tex getgrid(final String nm) {
+	return(AccessController.doPrivileged(new PrivilegedAction<Tex>() {
+		public Tex run() {
+		    synchronized(grids) {
+			if(grids.containsKey(nm)) {
+			    return(grids.get(nm));
+			} else {
+			    loader.req(nm);
+			    return(null);
+			}
+		    }
+		}
+	    }));
     }
 
     public void draw(GOut g) {
