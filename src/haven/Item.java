@@ -35,6 +35,7 @@ public class Item extends Widget implements DTarget {
     static Resource missing = Resource.load("gfx/invobjs/missing");
     boolean dm = false, tempdrag = false, draggable = false;
     int q;
+    boolean hq;
     Coord doff;
     String tooltip;
     int num = -1;
@@ -123,8 +124,11 @@ public class Item extends Widget implements DTarget {
 		ui.tooltip = tooltip;
 	    } else if((ttres != null) && (ttres.layer(Resource.tooltip) != null)) {
 		String tt = ttres.layer(Resource.tooltip).t;
-		if(q > 0)
+		if(q > 0) {
 		    tt = tt + ", quality " + q;
+		    if(hq)
+			tt = tt + "+";
+		}
 		ui.tooltip = tt;
 	    }
 	}
@@ -153,10 +157,22 @@ public class Item extends Widget implements DTarget {
 	return(new TexI(sh));
     }
 	
+    private void decq(int q)
+    {
+	if(q < 0) {
+	    this.q = q;
+	    hq = false;
+	} else {
+	    int fl = (q & 0xff000000) >> 24;
+	    this.q = (q & 0xffffff);
+	    hq = ((fl & 1) != 0);
+	}
+    }
+
     public Item(Coord c, Indir<Resource> res, int q, Widget parent, Coord drag, int num) {
 	super(c, Coord.z, parent);
 	this.res = res;
-	this.q = q;
+	decq(q);
 	fixsize();
 	this.num = num;
 	if(drag == null) {
@@ -218,7 +234,7 @@ public class Item extends Widget implements DTarget {
     public void chres(Indir<Resource> res, int q) {
 	this.res = res;
 	sh = null;
-	this.q = q;
+	decq(q);
     }
 
     public void uimsg(String name, Object... args)  {
