@@ -30,7 +30,7 @@ import java.util.*;
 import java.awt.Font;
 
 public class Makewindow extends HWindow {
-    Widget btn;
+    Widget obtn, cbtn;
     List<Widget> inputs;
     List<Widget> outputs;
     static Coord boff = new Coord(7, 9);
@@ -50,7 +50,8 @@ public class Makewindow extends HWindow {
 	nm.c = new Coord(sz.x - 10 - nm.sz.x, 10);
 	new Label(new Coord(10, 18), this, "Input:");
 	new Label(new Coord(10, 73), this, "Result:");
-	btn = new Button(new Coord(370, 71), 50, this, "Craft");
+	obtn = new Button(new Coord(290, 71), 60, this, "Craft");
+	cbtn = new Button(new Coord(360, 71), 60, this, "Craft All");
     }
 	
     public void uimsg(String msg, Object... args) {
@@ -83,10 +84,14 @@ public class Makewindow extends HWindow {
     }
 	
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if(sender == btn) {
-	    if(msg == "activate") {
-		wdgmsg("make");
-	    }
+	if(sender == obtn) {
+	    if(msg == "activate")
+		wdgmsg("make", 0);
+	    return;
+	}
+	if(sender == cbtn) {
+	    if(msg == "activate")
+		wdgmsg("make", 1);
 	    return;
 	}
 	if(sender instanceof Item)
@@ -98,7 +103,7 @@ public class Makewindow extends HWindow {
     
     public boolean globtype(char ch, java.awt.event.KeyEvent ev) {
 	if(ch == '\n') {
-	    wdgmsg("make");
+	    wdgmsg("make", ui.modctrl?1:0);
 	    return(true);
 	}
 	return(super.globtype(ch, ev));
