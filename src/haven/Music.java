@@ -103,8 +103,19 @@ public class Music {
 		debug("Exit player");
 		if(seq != null)
 		    seq.close();
-		if(synth != null)
-		    synth.close();
+		try {
+		    if(synth != null)
+			synth.close();
+		} catch(InterruptedException e2) {
+		    /* XXX: There appears to be a bug in Sun's
+		     * software MIDI implementation that throws back
+		     * an unchecked InterruptedException here when two
+		     * interrupts come close together (such as in the
+		     * case when the current player is first stopped,
+		     * and then another started immediately afterwards
+		     * on a new song before the first one has had time
+		     * to terminate entirely). */
+		}
 		synchronized(Music.class) {
 		    if(player == this)
 			player = null;
