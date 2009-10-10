@@ -561,6 +561,19 @@ public class MapView extends Widget implements DTarget {
 	}
     }
 
+    private boolean follows(Gob g1, Gob g2) {
+	Following flw;
+	if((flw = g1.getattr(Following.class)) != null) {
+	    if(flw.tgt() == g2)
+		return(true);
+	}
+	if((flw = g2.getattr(Following.class)) != null) {
+	    if(flw.tgt() == g1)
+		return(true);
+	}
+	return(false);
+    }
+
     private List<Sprite.Part> findobsc() {
 	ArrayList<Sprite.Part> obsc = new ArrayList<Sprite.Part>();
 	if(obscgob == null)
@@ -573,6 +586,8 @@ public class MapView extends Widget implements DTarget {
 		adding = true;
 		continue;
 	    }
+	    if(follows(gob, obscgob))
+		continue;
 	    if(adding && obscpart.checkhit(gob.sc.add(obscgob.sc.inv())))
 		obsc.add(p);
 	}
