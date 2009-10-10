@@ -29,17 +29,26 @@ package haven;
 public class Following extends Moving {
     int tgt;
     Coord doff;
+    boolean add1;
 	
-    public Following(Gob gob, int tgt, Coord doff) {
+    public Following(Gob gob, int tgt, Coord doff, boolean add1) {
 	super(gob);
 	this.tgt = tgt;
 	this.doff = doff;
+	this.add1 = add1;
     }
 	
     public Coord getc() {
 	Gob tgt = gob.glob.oc.getgob(this.tgt);
 	if(tgt == null)
 	    return(gob.rc);
-	return(tgt.getc().add(1, 1));
+	Coord c = tgt.getc();
+	if(add1)
+	    c = c.add(1, 1);
+	return(c);
+    }
+    
+    public Gob tgt() {
+	return(gob.glob.oc.getgob(this.tgt));
     }
 }
