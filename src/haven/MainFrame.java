@@ -29,7 +29,7 @@ package haven;
 import java.awt.*;
 import java.net.URL;
 import java.awt.event.*;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 public class MainFrame extends Frame implements Runnable, FSMan {
@@ -107,10 +107,10 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     private void seticon() {
 	Image icon;
 	try {
-	    java.io.InputStream data = MainFrame.class.getResourceAsStream("icon.png");
+	    InputStream data = MainFrame.class.getResourceAsStream("icon.png");
 	    icon = javax.imageio.ImageIO.read(data);
 	    data.close();
-	} catch(java.io.IOException e) {
+	} catch(IOException e) {
 	    throw(new Error(e));
 	}
 	setIconImage(icon);
@@ -166,7 +166,20 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	if(ResCache.global != null) {
 	    try {
 		Resource.loadlist(ResCache.global.fetch("tmp/allused"), -10);
-	    } catch(java.io.IOException e) {}
+	    } catch(IOException e) {}
+	}
+	if(!Config.nopreload) {
+	    try {
+		InputStream pls;
+		pls = Resource.class.getResourceAsStream("res-preload");
+		if(pls != null)
+		    Resource.loadlist(pls, -5);
+		pls = Resource.class.getResourceAsStream("res-bgload");
+		if(pls != null)
+		    Resource.loadlist(pls, -10);
+	    } catch(IOException e) {
+		throw(new Error(e));
+	    }
 	}
     }
     
@@ -179,7 +192,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	try {
 	    javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
 		    public void run() {
-			java.io.PrintStream bitbucket = new java.io.PrintStream(new java.io.ByteArrayOutputStream());
+			PrintStream bitbucket = new PrintStream(new ByteArrayOutputStream());
 			bitbucket.print(LoginScreen.textf);
 			bitbucket.print(LoginScreen.textfs);
 		    }
@@ -218,7 +231,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 			used.add(res);
 		}
 		dumplist(used, new PrintWriter(ResCache.global.store("tmp/allused")));
-	    } catch(java.io.IOException e) {}
+	    } catch(IOException e) {}
 	}
     }
     

@@ -1083,22 +1083,6 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	in.close();
     }
 
-    static {
-	if(!Config.nopreload) {
-	    try {
-		InputStream pls;
-		pls = Resource.class.getResourceAsStream("res-preload");
-		if(pls != null)
-		    loadlist(pls, -5);
-		pls = Resource.class.getResourceAsStream("res-bgload");
-		if(pls != null)
-		    loadlist(pls, -10);
-	    } catch(IOException e) {
-		throw(new Error(e));
-	    }
-	}
-    }
-    
     public static void updateloadlist(File file) throws Exception {
 	BufferedReader r = new BufferedReader(new FileReader(file));
 	Map<String, Integer> orig = new HashMap<String, Integer>();

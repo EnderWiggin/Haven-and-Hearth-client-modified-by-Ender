@@ -31,12 +31,14 @@ import java.net.URL;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 public class HavenApplet extends Applet {
     public static Map<ThreadGroup, HavenApplet> applets = new HashMap<ThreadGroup, HavenApplet>();
     ThreadGroup p;
     HavenPanel h;
     boolean running = false;
+    static boolean initedonce = false;
     
     private class ErrorPanel extends Canvas implements haven.error.ErrorStatus {
 	String status = "";
@@ -101,6 +103,30 @@ public class HavenApplet extends Applet {
 	}
     }
     
+    private void initonce() {
+	if(initedonce)
+	    return;
+	initedonce = true;
+	try {
+	    Resource.addurl(new URL("https", getCodeBase().getHost(), 443, "/res/"));
+	} catch(java.net.MalformedURLException e) {
+	    throw(new RuntimeException(e));
+	}
+	if(!Config.nopreload) {
+	    try {
+		InputStream pls;
+		pls = Resource.class.getResourceAsStream("res-preload");
+		if(pls != null)
+		    Resource.loadlist(pls, -5);
+		pls = Resource.class.getResourceAsStream("res-bgload");
+		if(pls != null)
+		    Resource.loadlist(pls, -10);
+	    } catch(IOException e) {
+		throw(new Error(e));
+	    }
+	}
+    }
+    
     public void destroy() {
 	stopgame();
     }
@@ -125,11 +151,6 @@ public class HavenApplet extends Applet {
 			    if((getParameter("username") != null) && (getParameter("authcookie") != null))
 				bill.setinitcookie(getParameter("username"), Utils.hex2byte(getParameter("authcookie")));
 			    bill.setaddr(getCodeBase().getHost());
-			    try {
-				Resource.addurl(new URL("https", getCodeBase().getHost(), 443, "/res/"));
-			    } catch(java.net.MalformedURLException e) {
-				throw(new RuntimeException(e));
-			    }
 			    Session sess = bill.run(h);
 			    RemoteUI rui = new RemoteUI(sess);
 			    rui.run(h.newui(sess));
@@ -158,6 +179,7 @@ public class HavenApplet extends Applet {
     }
     
     public void init() {
+	initonce();
 	resize(800, 600);
 	startgame();
     }
