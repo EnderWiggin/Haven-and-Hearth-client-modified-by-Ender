@@ -31,7 +31,8 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class CharWnd extends Window {
-    Widget cattr, skill, belief;
+    Widget cattr, skill, belief, worship;
+    Worship ancw;
     Label cost, skcost;
     Label explbl;
     int exp;
@@ -48,6 +49,8 @@ public class CharWnd extends Window {
     public static final Text.Foundry skbodfnd = new Text.Foundry("SansSerif", 9);
     public static final Tex btimeoff = Resource.loadtex("gfx/hud/charsh/shieldgray");
     public static final Tex btimeon = Resource.loadtex("gfx/hud/charsh/shield");
+    public static final Tex nmeter = Resource.loadtex("gfx/hud/charsh/numenmeter");
+    public static final Tex ancestors = Resource.loadtex("gfx/hud/charsh/ancestors");
     
     static {
 	Widget.addtype("chr", new WidgetFactory() {
@@ -275,7 +278,7 @@ public class CharWnd extends Window {
 	    }
 	}
     }
-
+    
     private class FoodMeter extends Widget {
 	int cap;
 	List<El> els = new LinkedList<El>();
@@ -379,6 +382,45 @@ public class CharWnd extends Window {
 	public boolean mousewheel(Coord c, int amount) {
 	    sb.ch(amount * 20);
 	    return(true);
+	}
+    }
+
+    private class Worship extends Widget {
+	Inventory[] wishes = new Inventory[3];
+	Text title, numen;
+	Tex img;
+	
+	public Worship(Coord c, Widget parent, String title, Tex img) {
+	    super(c, new Coord(100, 200), parent);
+	    this.title = Text.render(title);
+	    this.img = img;
+	    this.numen = Text.render("0");
+	    for(int i = 0; i < wishes.length; i++)
+		wishes[i] = new Inventory(new Coord(i * 31, 119), new Coord(1, 1), this);
+	    new Button(new Coord(10, 160), 80, this, "Forfeit") {
+		public void click() {
+		    CharWnd.this.wdgmsg("forfeit", 0);
+		}
+	    };
+	}
+	
+	public void draw(GOut g) {
+	    g.image(title.tex(), new Coord(50 - (title.tex().sz().x / 2), 0));
+	    g.image(img, new Coord(50 - (img.sz().x / 2), 15));
+	    Coord nmc = new Coord(50 - (nmeter.sz().x / 2), 100);
+	    g.image(nmeter, nmc);
+	    g.image(numen.tex(), nmc.add(18, 16 - numen.tex().sz().y));
+	    super.draw(g);
+	}
+	
+	public void wish(int i, Indir<Resource> res, int amount) {
+	    wishes[i].unlink();
+	    wishes[i] = new Inventory(new Coord(i * 31, 119), new Coord(1, 1), this);
+	    new Item(Coord.z, res, -1, wishes[i], null, amount);
+	}
+	
+	public void numen(int n) {
+	    this.numen = Text.render(Integer.toString(n));
 	}
     }
 
@@ -606,12 +648,14 @@ public class CharWnd extends Window {
 	new Belief("change", "tradition", "change", false, 18, 225);
 	
 	belief.visible = false;
-	
+
 	new IButton(new Coord(10, 310), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
 	    public void click() {
 		cattr.visible = true;
 		skill.visible = false;
 		belief.visible = false;
+		if(worship != null)
+		    worship.visible = false;
 	    }
 	}.tooltip = "Attributes";
 	new IButton(new Coord(80, 310), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
@@ -619,6 +663,8 @@ public class CharWnd extends Window {
 		cattr.visible = false;
 		skill.visible = true;
 		belief.visible = false;
+		if(worship != null)
+		    worship.visible = false;
 	    }
 	}.tooltip = "Skills";
 	new IButton(new Coord(150, 310), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
@@ -626,8 +672,26 @@ public class CharWnd extends Window {
 		cattr.visible = false;
 		skill.visible = false;
 		belief.visible = true;
+		if(worship != null)
+		    worship.visible = false;
 	    }
 	}.tooltip = "Personal Beliefs";
+    }
+    
+    private void initworship() {
+	if(worship != null)
+	    return;
+	worship = new Widget(Coord.z, new Coord(400, 275), this);
+	ancw = new Worship(new Coord(150, 50), worship, "The Ancestors", ancestors);
+	worship.visible = false;
+	new IButton(new Coord(220, 310), this, Resource.loadimg("gfx/hud/charsh/worshipup"), Resource.loadimg("gfx/hud/charsh/worshipdown")) {
+	    public void click() {
+		cattr.visible = false;
+		skill.visible = false;
+		belief.visible = false;
+		worship.visible = true;
+	    }
+	}.tooltip = "Worship";
     }
 
     public void uimsg(String msg, Object... args) {
@@ -658,9 +722,33 @@ public class CharWnd extends Window {
 	    foodm.update(args);
 	} else if(msg == "btime") {
 	    btime = (Integer)args[0];
+	} else if(msg == "wish") {
+	    int ent = (Integer)args[0];
+	    int wish = (Integer)args[1];
+	    int resid = (Integer)args[2];
+	    int amount = (Integer)args[3];
+	    if(ent == 0) {
+		initworship();
+		ancw.wish(wish, ui.sess.getres(resid), amount);
+	    }
+	} else if(msg == "numen") {
+	    int ent = (Integer)args[0];
+	    int numen = (Integer)args[1];
+	    if(ent == 0) {
+		initworship();
+		ancw.numen(numen);
+	    }
 	}
     }
     
+    public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender instanceof Item)
+	    return;
+	if(sender instanceof Inventory)
+	    return;
+	super.wdgmsg(sender, msg, args);
+    }
+
     public void destroy() {
 	for(Attr attr : attrs.values())
 	    attr.destroy();
