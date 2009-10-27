@@ -100,9 +100,9 @@ public class ErrorHandler extends ThreadGroup {
 	    c.addRequestProperty("Content-Type", "application/x-java-error");
 	    c.connect();
 	    ObjectOutputStream o = new ObjectOutputStream(c.getOutputStream());
+	    status.sending();
 	    o.writeObject(r);
 	    o.close();
-	    status.sending();
 	    InputStream i = c.getInputStream();
 	    byte[] buf = new byte[1024];
 	    while(i.read(buf) >= 0);
