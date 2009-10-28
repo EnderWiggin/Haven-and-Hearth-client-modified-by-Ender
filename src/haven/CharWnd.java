@@ -649,13 +649,16 @@ public class CharWnd extends Window {
 	
 	belief.visible = false;
 
+	worship = new Widget(Coord.z, new Coord(400, 275), this);
+	ancw = new Worship(new Coord(150, 50), worship, "The Ancestors", ancestors);
+	worship.visible = false;
+
 	new IButton(new Coord(10, 310), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
 	    public void click() {
 		cattr.visible = true;
 		skill.visible = false;
 		belief.visible = false;
-		if(worship != null)
-		    worship.visible = false;
+		worship.visible = false;
 	    }
 	}.tooltip = "Attributes";
 	new IButton(new Coord(80, 310), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
@@ -663,8 +666,7 @@ public class CharWnd extends Window {
 		cattr.visible = false;
 		skill.visible = true;
 		belief.visible = false;
-		if(worship != null)
-		    worship.visible = false;
+		worship.visible = false;
 	    }
 	}.tooltip = "Skills";
 	new IButton(new Coord(150, 310), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
@@ -672,18 +674,9 @@ public class CharWnd extends Window {
 		cattr.visible = false;
 		skill.visible = false;
 		belief.visible = true;
-		if(worship != null)
-		    worship.visible = false;
+		worship.visible = false;
 	    }
 	}.tooltip = "Personal Beliefs";
-    }
-    
-    private void initworship() {
-	if(worship != null)
-	    return;
-	worship = new Widget(Coord.z, new Coord(400, 275), this);
-	ancw = new Worship(new Coord(150, 50), worship, "The Ancestors", ancestors);
-	worship.visible = false;
 	new IButton(new Coord(220, 310), this, Resource.loadimg("gfx/hud/charsh/worshipup"), Resource.loadimg("gfx/hud/charsh/worshipdown")) {
 	    public void click() {
 		cattr.visible = false;
@@ -693,7 +686,7 @@ public class CharWnd extends Window {
 	    }
 	}.tooltip = "Worship";
     }
-
+    
     public void uimsg(String msg, Object... args) {
 	if(msg == "exp") {
 	    exp = (Integer)args[0];
@@ -727,17 +720,13 @@ public class CharWnd extends Window {
 	    int wish = (Integer)args[1];
 	    int resid = (Integer)args[2];
 	    int amount = (Integer)args[3];
-	    if(ent == 0) {
-		initworship();
+	    if(ent == 0)
 		ancw.wish(wish, ui.sess.getres(resid), amount);
-	    }
 	} else if(msg == "numen") {
 	    int ent = (Integer)args[0];
 	    int numen = (Integer)args[1];
-	    if(ent == 0) {
-		initworship();
+	    if(ent == 0)
 		ancw.numen(numen);
-	    }
 	}
     }
     
