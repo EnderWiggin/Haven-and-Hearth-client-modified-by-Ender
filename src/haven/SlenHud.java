@@ -143,6 +143,7 @@ public class SlenHud extends Widget implements DropTarget {
 		public void click() {
 		    MapView mv = ui.root.findchild(MapView.class);
 		    mv.authdraw = !mv.authdraw;
+		    Utils.setpref("authdraw", mv.authdraw?"on":"off");
 		}
 	    };
 	}
