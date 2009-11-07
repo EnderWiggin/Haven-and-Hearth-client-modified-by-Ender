@@ -32,8 +32,8 @@ import javax.media.opengl.*;
 import javax.media.opengl.glu.GLU;
 
 public abstract class TexRT extends TexGL {
-    private static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();
-    private boolean inited = false;
+    static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();
+    private boolean inited = false, incurrent = false;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
 	
@@ -41,34 +41,32 @@ public abstract class TexRT extends TexGL {
 	super(sz);
     }
 	
-    public void dispose() {
-	Collection<TexRT> tc;
-	synchronized(current) {
-	    tc = current.get(mygl);
-	}
-	if(tc != null) {
+    protected abstract boolean subrend(GOut g);
+	
+    private void rerender(GL gl) {
+	if(!incurrent) {
+	    Collection<TexRT> tc;
+	    synchronized(current) {
+		tc = current.get(gl);
+		if(tc == null) {
+		    tc = new HashSet<TexRT>();
+		    current.put(gl, tc);
+		}
+	    }
 	    synchronized(tc) {
-		tc.remove(this);
+		tc.add(this);
 	    }
+	    incurrent = true;
 	}
-	super.dispose();
     }
-	
-    protected abstract void subrend(GOut g);
-	
+
+    public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
+	super.render(g, c, ul, br, sz);
+	rerender(g.gl);
+    }
+    
     protected void fill(GOut g) {
-	GL gl = g.gl;
-	Collection<TexRT> tc;
-	synchronized(current) {
-	    tc = current.get(gl);
-	    if(tc == null) {
-		tc = new HashSet<TexRT>();
-		current.put(gl, tc);
-	    }
-	}
-	synchronized(tc) {
-	    tc.add(this);
-	}
+	rerender(g.gl);
 	inited = false;
     }
 	
@@ -78,7 +76,11 @@ public abstract class TexRT extends TexGL {
 	GL gl = g.gl;
 	if(Config.profile)
 	    curf = prof.new Frame();
-	subrend(g);
+	if(!subrend(g)) {
+	    if(!inited)
+		throw(new RuntimeException("TexRT (" + getClass().getName() + ") refused to render on initial use"));
+	    return;
+	}
 	if(curf != null)
 	    curf.tick("render");
 	g.texsel(id);
@@ -102,11 +104,14 @@ public abstract class TexRT extends TexGL {
 	Collection<TexRT> tc;
 	synchronized(current) {
 	    tc = current.get(gl);
+	    current.put(gl, new HashSet<TexRT>());
 	}
 	if(tc != null) {
 	    synchronized(tc) {
-		for(TexRT t : tc)
+		for(TexRT t : tc) {
+		    t.incurrent = false;
 		    t.subrend2(g);
+		}
 	    }
 	}
     }
