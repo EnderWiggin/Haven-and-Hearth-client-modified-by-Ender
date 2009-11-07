@@ -33,7 +33,7 @@ import javax.media.opengl.glu.GLU;
 
 public abstract class TexRT extends TexGL {
     static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();
-    private boolean incurrent = false;
+    private GL incurrent = null;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
 	
@@ -44,7 +44,7 @@ public abstract class TexRT extends TexGL {
     protected abstract boolean subrend(GOut g);
 	
     private void rerender(GL gl) {
-	if(!incurrent) {
+	if(incurrent != gl) {
 	    Collection<TexRT> tc;
 	    synchronized(current) {
 		tc = current.get(gl);
@@ -56,7 +56,7 @@ public abstract class TexRT extends TexGL {
 	    synchronized(tc) {
 		tc.add(this);
 	    }
-	    incurrent = true;
+	    incurrent = gl;
 	}
     }
 
@@ -107,7 +107,7 @@ public abstract class TexRT extends TexGL {
 	if(tc != null) {
 	    synchronized(tc) {
 		for(TexRT t : tc) {
-		    t.incurrent = false;
+		    t.incurrent = null;
 		    t.subrend2(g);
 		}
 	    }
