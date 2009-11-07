@@ -36,6 +36,9 @@ public class Avatar extends GAttrib {
     }
 	
     void setlayers(List<Indir<Resource>> layers) {
-	rend = new AvaRender(layers);
+	if(rend == null)
+	    rend = new AvaRender(layers);
+	else
+	    rend.setlay(layers);
     }
 }

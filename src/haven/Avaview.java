@@ -86,27 +86,25 @@ public class Avaview extends Widget {
     }
         
     public void draw(GOut g) {
-	AvaRender ar = null;
+	Tex at = null;
 	if(none) {
 	} else if(myown != null) {
-	    ar = myown;
+	    at = myown;
 	} else {
 	    Gob gob = ui.sess.glob.oc.getgob(avagob);
 	    Avatar ava = null;
 	    if(gob != null)
 		ava = gob.getattr(Avatar.class);
 	    if(ava != null)
-		ar = ava.rend;
+		at = ava.rend;
 	}
 	GOut g2 = g.reclip(Window.wbox.tloff().add(unborder.inv()), asz);
-	Tex at;
 	int yo;
-	if(ar == null) {
+	if(at == null) {
 	    at = missing;
 	    yo = 0;
 	} else {
 	    g2.image(Equipory.bg, new Coord(Equipory.bg.sz().x / 2 - asz.x / 2, 20).inv());
-	    at = ar.tex();
 	    yo = (20 * asz.y) / dasz.y;
 	}
 	Coord tsz = new Coord((at.sz().x * asz.x) / dasz.x, (at.sz().y * asz.y) / dasz.y);
