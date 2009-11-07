@@ -33,7 +33,7 @@ import javax.media.opengl.glu.GLU;
 
 public abstract class TexRT extends TexGL {
     static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();
-    private boolean inited = false, incurrent = false;
+    private boolean incurrent = false;
     public Profile prof = new Profile(300);
     private Profile.Frame curf;
 	
@@ -65,9 +65,15 @@ public abstract class TexRT extends TexGL {
 	rerender(g.gl);
     }
     
+    protected byte[] initdata() {
+	return(new byte[tdim.x * tdim.y * 4]);
+    }
+
     protected void fill(GOut g) {
 	rerender(g.gl);
-	inited = false;
+	byte[] idat = initdata();
+	g.gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, (idat == null)?null:java.nio.ByteBuffer.wrap(idat));
+	GOut.checkerr(g.gl);
     }
 	
     private void subrend2(GOut g) {
@@ -76,20 +82,12 @@ public abstract class TexRT extends TexGL {
 	GL gl = g.gl;
 	if(Config.profile)
 	    curf = prof.new Frame();
-	if(!subrend(g)) {
-	    if(!inited)
-		throw(new RuntimeException("TexRT (" + getClass().getName() + ") refused to render on initial use"));
+	if(!subrend(g))
 	    return;
-	}
 	if(curf != null)
 	    curf.tick("render");
 	g.texsel(id);
 	GOut.checkerr(gl);
-	if(!inited) {
-	    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
-	    GOut.checkerr(gl);
-	    inited = true;
-	}
 	gl.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, dim.x, dim.y);
 	GOut.checkerr(gl);
 	if(curf != null) {

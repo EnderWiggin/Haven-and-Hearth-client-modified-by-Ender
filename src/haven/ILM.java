@@ -81,7 +81,7 @@ public class ILM extends TexRT {
 	return(amb);
     }
 	
-    public boolean subrend(GOut g) {
+    protected boolean subrend(GOut g) {
 	GL gl = g.gl;
 	gl.glClearColor(255, 255, 255, 255);
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -99,5 +99,9 @@ public class ILM extends TexRT {
 	    }
 	}
 	return(true);
+    }
+    
+    protected byte[] initdata() {
+	return(null);
     }
 }

@@ -258,8 +258,6 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	    curf.get().tick("draw");
 
 	if(Config.dbtext) {
-	    if(Resource.qdepth() > 0)
-		g.atext(String.format("RQ depth: %d (%d)", Resource.qdepth(), Resource.numloaded()), new Coord(10, 470), 0, 1);
 	    g.atext("FPS: " + fps, new Coord(10, 545), 0, 1);
 	    g.atext("Texhit: " + dth, new Coord(10, 530), 0, 1);
 	    g.atext("Texmiss: " + dtm, new Coord(10, 515), 0, 1);
@@ -267,6 +265,9 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	    long free = rt.freeMemory(), total = rt.totalMemory();
 	    g.atext(String.format("Mem: %,011d/%,011d/%,011d/%,011d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
 	    g.atext(String.format("LCache: %d/%d", Layered.cache.size(), Layered.cache.cached()), new Coord(10, 485), 0, 1);
+	    g.atext(String.format("RT-current: %d", TexRT.current.get(gl).size()), new Coord(10, 470), 0, 1);
+	    if(Resource.qdepth() > 0)
+		g.atext(String.format("RQ depth: %d (%d)", Resource.qdepth(), Resource.numloaded()), new Coord(10, 455), 0, 1);
 	}
         Object tooltip = ui.tooltip;
         if(tooltip == null)
