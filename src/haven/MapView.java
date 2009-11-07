@@ -42,7 +42,7 @@ public class MapView extends Widget implements DTarget {
     private long olftimer = 0;
     private int olflash = 0;
     static Color[] olc = new Color[31];
-    public boolean authdraw = false;
+    public boolean authdraw = Utils.getpref("authdraw", "on").equals("on");
     Grabber grab = null;
     ILM mask;
     final MCache map;
