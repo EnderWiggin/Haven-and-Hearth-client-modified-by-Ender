@@ -53,41 +53,43 @@ public class Bufflist extends Widget {
 	int i = 0;
 	int w = frame.sz().x + margin;
 	long now = System.currentTimeMillis();
-	for(Buff b : ui.sess.glob.buffs.values()) {
-	    if(!b.major)
-		continue;
-	    Coord bc = new Coord(i * w, 0);
-	    if(b.ameter >= 0) {
-		g.image(cframe, bc);
-		g.chcolor(Color.BLACK);
-		g.frect(bc.add(ameteroff), ametersz);
-		g.chcolor(Color.WHITE);
-		g.frect(bc.add(ameteroff), new Coord((b.ameter * ametersz.x) / 100, ametersz.y));
-		g.chcolor();
-	    } else {
-		g.image(frame, bc);
-	    }
-	    if(b.res.get() != null) {
-		Tex img = b.res.get().layer(Resource.imgc).tex();
-		g.image(img, bc.add(imgoff));
-		if(b.nmeter >= 0) {
-		    Tex ntext = b.nmeter();
-		    g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
-		}
-		if(b.cmeter >= 0) {
-		    double m = b.cmeter / 100.0;
-		    if(b.cticks >= 0) {
-			double ot = b.cticks * 0.06;
-			double pt = ((double)(now - b.gettime)) / 1000.0;
-			m *= (ot - pt) / ot;
-		    }
-		    g.chcolor(0, 0, 0, 128);
-		    g.fellipse(bc.add(imgoff).add(img.sz().div(2)), img.sz().div(2), 90, (int)(90 + (360 * m)));
+	synchronized(ui.sess.glob.buffs) {
+	    for(Buff b : ui.sess.glob.buffs.values()) {
+		if(!b.major)
+		    continue;
+		Coord bc = new Coord(i * w, 0);
+		if(b.ameter >= 0) {
+		    g.image(cframe, bc);
+		    g.chcolor(Color.BLACK);
+		    g.frect(bc.add(ameteroff), ametersz);
+		    g.chcolor(Color.WHITE);
+		    g.frect(bc.add(ameteroff), new Coord((b.ameter * ametersz.x) / 100, ametersz.y));
 		    g.chcolor();
+		} else {
+		    g.image(frame, bc);
 		}
+		if(b.res.get() != null) {
+		    Tex img = b.res.get().layer(Resource.imgc).tex();
+		    g.image(img, bc.add(imgoff));
+		    if(b.nmeter >= 0) {
+			Tex ntext = b.nmeter();
+			g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
+		    }
+		    if(b.cmeter >= 0) {
+			double m = b.cmeter / 100.0;
+			if(b.cticks >= 0) {
+			    double ot = b.cticks * 0.06;
+			    double pt = ((double)(now - b.gettime)) / 1000.0;
+			    m *= (ot - pt) / ot;
+			}
+			g.chcolor(0, 0, 0, 128);
+			g.fellipse(bc.add(imgoff).add(img.sz().div(2)), img.sz().div(2), 90, (int)(90 + (360 * m)));
+			g.chcolor();
+		    }
+		}
+		if(++i >= 5)
+		    break;
 	    }
-	    if(++i >= 5)
-		break;
 	}
     }
     
@@ -95,19 +97,21 @@ public class Bufflist extends Widget {
 	int i = 0;
 	int w = frame.sz().x + margin;
 	tooltip = null;
-	for(Buff b : ui.sess.glob.buffs.values()) {
-	    if(!b.major)
-		continue;
-	    Coord bc = new Coord(i * w, 0);
-	    if(c.isect(bc, frame.sz())) {
-		Resource.Tooltip tt;
-		if(b.tt != null)
-		    tooltip = b.tt;
-		else if((b.res.get() != null) && ((tt = b.res.get().layer(Resource.tooltip)) != null))
-		    tooltip = tt.t;
+	synchronized(ui.sess.glob.buffs) {
+	    for(Buff b : ui.sess.glob.buffs.values()) {
+		if(!b.major)
+		    continue;
+		Coord bc = new Coord(i * w, 0);
+		if(c.isect(bc, frame.sz())) {
+		    Resource.Tooltip tt;
+		    if(b.tt != null)
+			tooltip = b.tt;
+		    else if((b.res.get() != null) && ((tt = b.res.get().layer(Resource.tooltip)) != null))
+			tooltip = tt.t;
+		}
+		if(++i >= 5)
+		    break;
 	    }
-	    if(++i >= 5)
-		break;
 	}
     }
 }

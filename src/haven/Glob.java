@@ -130,38 +130,40 @@ public class Glob {
     
     public void buffmsg(Message msg) {
 	String name = msg.string().intern();
-	if(name == "clear") {
-	    buffs.clear();
-	} else if(name == "set") {
-	    int id = msg.int32();
-	    Indir<Resource> res = sess.getres(msg.uint16());
-	    String tt = msg.string();
-	    int ameter = msg.int32();
-	    int nmeter = msg.int32();
-	    int cmeter = msg.int32();
-	    int cticks = msg.int32();
-	    boolean major = msg.uint8() != 0;
-	    Buff buff;
-	    if((buff = buffs.get(id)) == null) {
-		buff = new Buff(id, res);
-	    } else {
-		buff.res = res;
+	synchronized(buffs) {
+	    if(name == "clear") {
+		buffs.clear();
+	    } else if(name == "set") {
+		int id = msg.int32();
+		Indir<Resource> res = sess.getres(msg.uint16());
+		String tt = msg.string();
+		int ameter = msg.int32();
+		int nmeter = msg.int32();
+		int cmeter = msg.int32();
+		int cticks = msg.int32();
+		boolean major = msg.uint8() != 0;
+		Buff buff;
+		if((buff = buffs.get(id)) == null) {
+		    buff = new Buff(id, res);
+		} else {
+		    buff.res = res;
+		}
+		if(tt.equals(""))
+		    buff.tt = null;
+		else
+		    buff.tt = tt;
+		buff.ameter = ameter;
+		buff.nmeter = nmeter;
+		buff.ntext = null;
+		buff.cmeter = cmeter;
+		buff.cticks = cticks;
+		buff.major = major;
+		buff.gettime = System.currentTimeMillis();
+		buffs.put(id, buff);
+	    } else if(name == "rm") {
+		int id = msg.int32();
+		buffs.remove(id);
 	    }
-	    if(tt.equals(""))
-		buff.tt = null;
-	    else
-		buff.tt = tt;
-	    buff.ameter = ameter;
-	    buff.nmeter = nmeter;
-	    buff.ntext = null;
-	    buff.cmeter = cmeter;
-	    buff.cticks = cticks;
-	    buff.major = major;
-	    buff.gettime = System.currentTimeMillis();
-	    buffs.put(id, buff);
-	} else if(name == "rm") {
-	    int id = msg.int32();
-	    buffs.remove(id);
 	}
     }
 }
