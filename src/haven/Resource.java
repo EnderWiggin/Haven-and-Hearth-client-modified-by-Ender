@@ -309,8 +309,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    this.baseurl = baseurl;
 	}
 		
+	private URL encodeurl(URL raw) throws IOException {
+	    /* This is "kinda" ugly. It is, actually, how the Java
+	     * documentation recommend that it be done, though... */
+	    try {
+		return(new URL(new URI(raw.getProtocol(), raw.getHost(), raw.getPath(), raw.getRef()).toASCIIString()));
+	    } catch(URISyntaxException e) {
+		throw(new IOException(e));
+	    }
+	}
+
 	public InputStream get(String name) throws IOException {
-	    URL resurl = new URL(baseurl, name + ".res");
+	    URL resurl = encodeurl(new URL(baseurl, name + ".res"));
 	    URLConnection c;
 	    if(resurl.getProtocol().equals("https"))
 		c = ssl.connect(resurl);
