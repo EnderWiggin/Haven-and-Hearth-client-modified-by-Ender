@@ -62,7 +62,7 @@ public class Text {
 	private FontMetrics m;
 	Font font;
 	Color defcol;
-	boolean aa = false;
+	public boolean aa = false;
 		
 	public Foundry(Font f, Color defcol) {
 	    font = f;
