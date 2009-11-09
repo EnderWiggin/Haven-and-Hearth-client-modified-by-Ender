@@ -103,7 +103,7 @@ public class Item extends Widget implements DTarget {
 	    if(meter > 0) {
 		double a = ((double)meter) / 100.0;
 		g.chcolor(255, 255, 255, 64);
-		g.fellipse(sz.div(2), new Coord(15, 15), (int)(90 - (360 * a)), 90);
+		g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
 		g.chcolor();
 	    }
 	    ttres = res.get();
