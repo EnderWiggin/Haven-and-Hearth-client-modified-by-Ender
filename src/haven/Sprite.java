@@ -221,7 +221,7 @@ public abstract class Sprite {
 
     public abstract Object stateid();
     
-    public static void setup(Collection<Part> parts, Drawer d, Coord cc, Coord off) {
+    public static void setup(Collection<? extends Part> parts, Drawer d, Coord cc, Coord off) {
 	for(Part p : parts) {
 	    p.setup(cc, off);
 	    d.addpart(p);

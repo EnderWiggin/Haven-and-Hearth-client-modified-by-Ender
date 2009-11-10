@@ -261,6 +261,17 @@ public class SlenHud extends Widget implements DropTarget {
 			mv.cam = new MapView.FixedCam();
 		    }
 		}
+	    } else if(cmd == "plol") {
+		MapView mv = ui.root.findchild(MapView.class);
+		Indir<Resource> res = Resource.load(argv[1]).indir();
+		Message sdt;
+		if(argv.length > 2)
+		    sdt = new Message(0, Utils.hex2byte(argv[2]));
+		else
+		    sdt = new Message(0);
+		Gob pl;
+		if((mv.playergob >= 0) && ((pl = ui.sess.glob.oc.getgob(mv.playergob)) != null))
+		    pl.ols.add(new Gob.Overlay(-1, res, sdt));
 	    } else {
 		error(cmd + ": no such command");
 	    }
