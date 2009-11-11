@@ -38,7 +38,17 @@ public class Audio {
     private static Object queuemon = new Object();
     private static Collection<Runnable> queue = new LinkedList<Runnable>();
     private static int bufsize = 32768;
+    public static double volume = 1.0;
     
+    static {
+	volume = Double.parseDouble(Utils.getpref("sfxvol", "1.0"));
+    }
+    
+    public static void setvolume(double volume) {
+	Audio.volume = volume;
+	Utils.setpref("sfxvol", Double.toString(volume));
+    }
+
     public interface CS {
 	public boolean get(double[] sample);
     }
@@ -128,7 +138,7 @@ public class Audio {
 			val[ch] += sm[ch];
 		}
 		for(int i = 0; i < nch; i++) {
-		    int iv = (int)(val[i] * 32767.0);
+		    int iv = (int)(val[i] * volume * 32767.0);
 		    if(iv < 0) {
 			if(iv < -32768)
 			    iv = -32768;

@@ -272,6 +272,8 @@ public class SlenHud extends Widget implements DropTarget {
 		Gob pl;
 		if((mv.playergob >= 0) && ((pl = ui.sess.glob.oc.getgob(mv.playergob)) != null))
 		    pl.ols.add(new Gob.Overlay(-1, res, sdt));
+	    } else if(cmd == "sfxvol") {
+		Audio.setvolume(Double.parseDouble(argv[1]));
 	    } else {
 		error(cmd + ": no such command");
 	    }
