@@ -33,7 +33,7 @@ import java.awt.Color;
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
     static Resource missing = Resource.load("gfx/invobjs/missing");
-    boolean dm = false, tempdrag = false, draggable = false;
+    boolean dm = false;
     int q;
     boolean hq;
     Coord doff;
@@ -131,15 +131,6 @@ public class Item extends Widget implements DTarget {
 		}
 		ui.tooltip = tt;
 	    }
-	}
-	if(tempdrag) {
-	    ui.drawafter(new UI.AfterDraw() {
-		    public void draw(GOut g) {
-			g.chcolor(255, 255, 255, 128);
-			g.image(ttres.layer(Resource.imgc).tex(), ui.mc.add(doff.inv()));
-			g.chcolor();
-		    }
-		});
 	}
     }
 
@@ -240,8 +231,6 @@ public class Item extends Widget implements DTarget {
     public void uimsg(String name, Object... args)  {
 	if(name == "num") {
 	    num = (Integer)args[0];
-	} else if(name == "draggable") {
-	    draggable = (Integer)args[0] != 0;
 	} else if(name == "chres") {
 	    chres(ui.sess.getres((Integer)args[0]), (Integer)args[1]);
 	} else if(name == "color") {
@@ -259,10 +248,12 @@ public class Item extends Widget implements DTarget {
     public boolean mousedown(Coord c, int button) {
 	if(!dm) {
 	    if(button == 1) {
-		if(draggable)
-		    ui.grabmouse(this);
-		doff = c;
-		tempdrag = false;
+		if(ui.modshift)
+		    wdgmsg("transfer", c);
+		else if(ui.modctrl)
+		    wdgmsg("drop", c);
+		else
+		    wdgmsg("take", c);
 		return(true);
 	    } else if(button == 3) {
 		wdgmsg("iact", c);
@@ -279,33 +270,10 @@ public class Item extends Widget implements DTarget {
 	return(false);
     }
 
-    public boolean mouseup(Coord c, int button) {
-	if(!dm && (button == 1) && (doff != null)) {
-	    doff = null;
-	    ui.grabmouse(null);
-	    if(!tempdrag) {
-		if(ui.modshift)
-		    wdgmsg("transfer", c);
-		else if(ui.modctrl)
-		    wdgmsg("drop", c);
-		else
-		    wdgmsg("take", c);
-	    } else {
-		tempdrag = false;
-		ui.dropthing(ui.root, ui.mc, this);
-	    }
-	}
-	return(false);
-    }
-	
     public void mousemove(Coord c) {
 	h = c.isect(Coord.z, sz);
 	if(dm) {
 	    this.c = this.c.add(c.add(doff.inv()));
-	} else if(doff != null) {
-	    if(draggable && (c.add(doff.inv()).dist(Coord.z) > 5)) {
-		tempdrag = true;
-	    }
 	}
     }
 	

@@ -31,7 +31,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import static haven.Inventory.invsq;
 
-public class SlenHud extends Widget implements DropTarget {
+public class SlenHud extends Widget implements DTarget, DropTarget {
     public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
@@ -530,6 +530,19 @@ public class SlenHud extends Widget implements DropTarget {
 	return(600 - c.y);
     }
     
+    public boolean drop(Coord cc, Coord ul) {
+	int slot = beltslot(cc);
+	if(slot != -1) {
+	    wdgmsg("setbelt", slot, 0);
+	    return(true);
+	}
+	return(false);
+    }
+
+    public boolean iteminteract(Coord cc, Coord ul) {
+	return(false);
+    }
+
     public boolean dropthing(Coord c, Object thing) {
 	int slot = beltslot(c);
 	if(slot != -1) {
@@ -539,11 +552,6 @@ public class SlenHud extends Widget implements DropTarget {
 		    wdgmsg("setbelt", slot, res.name);
 		    return(true);
 		}
-	    }
-	    if(thing instanceof Item) {
-		Item item = (Item)thing;
-		item.wdgmsg("dragact");
-		wdgmsg("setbelt", slot, 0);
 	    }
 	}
 	return(false);
