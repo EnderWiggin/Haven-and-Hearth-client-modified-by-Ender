@@ -82,6 +82,22 @@ public class Avaview extends Widget {
 	    this.avagob = (Integer)args[0];
 	    return;
 	}
+	if(msg == "ch") {
+	    List<Indir<Resource>> rl = new LinkedList<Indir<Resource>>();
+	    for(Object arg : args)
+		rl.add(ui.sess.getres((Integer)arg));
+	    if(rl.size() == 0) {
+		this.myown = null;
+		none = true;
+	    } else {
+		if(myown != null)
+		    myown.setlay(rl);
+		else
+		    myown = new AvaRender(rl);
+		none = false;
+	    }
+	    return;
+	}
 	super.uimsg(msg, args);
     }
         
