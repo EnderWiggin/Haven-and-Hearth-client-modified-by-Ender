@@ -733,9 +733,22 @@ public class MapView extends Widget implements DTarget {
 	    if(curf != null)
 		curf.tick("draw");
 	    g.image(mask, Coord.z);
+	    long now = System.currentTimeMillis();
 	    for(KinInfo k : kin) {
 		Tex t = k.rendered();
-		g.image(t, k.gob.sc.add(-t.sz().x / 2, -40 - t.sz().y));
+		Coord gc = k.gob.sc;
+		if(gc.isect(Coord.z, sz)) {
+		    if(k.seen == 0)
+			k.seen = now;
+		    int tm = (int)(now - k.seen);
+		    if(tm < 7500) {
+			g.chcolor(255, 255, 255, 255 - ((255 * tm) / 7500));
+			g.image(t, gc.add(-t.sz().x / 2, -40 - t.sz().y));
+			g.chcolor();
+		    }
+		} else {
+		    k.seen = 0;
+		}
 	    }
 	    for(Speaking s : speaking) {
 		s.draw(g, s.gob.sc.add(s.off));

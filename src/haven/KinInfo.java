@@ -30,6 +30,7 @@ public class KinInfo extends GAttrib {
     public static final Text.Foundry nfnd = new Text.Foundry("SansSerif", 10);
     public String name;
     public int group;
+    public long seen = 0;
     private Tex rnm = null;
     
     public KinInfo(Gob g, String name, int group) {
