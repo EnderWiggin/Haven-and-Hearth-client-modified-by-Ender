@@ -636,6 +636,7 @@ public class MapView extends Widget implements DTarget {
 	final List<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 	final Map<Sprite.Part,Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
+	ArrayList<KinInfo> kin = new ArrayList<KinInfo>();
 	class GobMapper implements Sprite.Drawer {
 	    Gob cur = null;
 	    Sprite.Part.Effect fx = null;
@@ -677,6 +678,9 @@ public class MapView extends Widget implements DTarget {
 		Speaking s = gob.getattr(Speaking.class);
 		if(s != null)
 		    speaking.add(s);
+		KinInfo k = gob.getattr(KinInfo.class);
+		if(k != null)
+		    kin.add(k);
 	    }
 	    this.clickable = clickable;
 	    Collections.sort(sprites, Sprite.partcmp);
@@ -729,6 +733,10 @@ public class MapView extends Widget implements DTarget {
 	    if(curf != null)
 		curf.tick("draw");
 	    g.image(mask, Coord.z);
+	    for(KinInfo k : kin) {
+		Tex t = k.rendered();
+		g.image(t, k.gob.sc.add(-t.sz().x / 2, -40 - t.sz().y));
+	    }
 	    for(Speaking s : speaking) {
 		s.draw(g, s.gob.sc.add(s.off));
 	    }

@@ -409,6 +409,18 @@ public class Utils {
 	return(Character.toTitleCase(str.charAt(0)) + str.substring(1));
     }
     
+    public static Color contrast(Color col) {
+	int max = Math.max(col.getRed(), Math.max(col.getGreen(), col.getBlue()));
+	if(max > 128) {
+	    return(new Color(col.getRed() / 2, col.getGreen() / 2, col.getBlue() / 2, col.getAlpha()));
+	} else if(max == 0) {
+	    return(Color.WHITE);
+	} else {
+	    int f = 128 / max;
+	    return(new Color(col.getRed() * f, col.getGreen() * f, col.getBlue() * f, col.getAlpha()));
+	}
+    }
+
     public static BufferedImage outline(BufferedImage img, Color col) {
 	Coord sz = imgsz(img).add(2, 2);
 	BufferedImage ol = TexI.mkbuf(sz);
