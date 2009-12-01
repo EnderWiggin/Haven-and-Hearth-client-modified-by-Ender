@@ -31,11 +31,23 @@ import java.util.*;
 
 public class BuddyWnd extends Window {
     private List<Buddy> buddies = new ArrayList<Buddy>();
+    private Map<Integer, Buddy> idmap = new HashMap<Integer, Buddy>();
     private BuddyList bl;
     private BuddyInfo bi;
     public static final Tex online = Resource.loadtex("gfx/hud/online");
     public static final Tex offline = Resource.loadtex("gfx/hud/offline");
-    public static final Text.Foundry nmfnd = new Text.Foundry("Serif", 16);
+    public static final Color[] gc = new Color[] {
+	new Color(255, 255, 255),
+	new Color(0, 255, 0),
+	new Color(255, 0, 0),
+	new Color(0, 0, 255),
+	new Color(0, 255, 255),
+	new Color(255, 255, 0),
+	new Color(255, 0, 255),
+	new Color(128, 255, 0),
+	new Color(255, 0, 128),
+	new Color(0, 128, 255),
+    };
     private Comparator<Buddy> bcmp = new Comparator<Buddy>() {
 	public int compare(Buddy a, Buddy b) {
 	    return(a.name.compareTo(b.name));
@@ -51,16 +63,18 @@ public class BuddyWnd extends Window {
     }
     
     private class Buddy {
+	int id;
 	String name;
-	boolean online;
+	int online;
+	int group;
     }
 
     private class BuddyInfo extends Widget {
 	private Avaview ava = null;
-	private Text nm = null, atime = null;
-	private String id = null;
+	private TextEntry name = null;
+	private Text atime = null;
+	private int id = -1;
 	private Button rmb, invb, chatb;
-	private CheckBox trustbox;
 	
 	public BuddyInfo(Coord c, Coord sz, Widget parent) {
 	    super(c, sz, parent);
@@ -71,8 +85,6 @@ public class BuddyWnd extends Window {
 	    g.frect(Coord.z, sz);
 	    g.chcolor();
 	    super.draw(g);
-	    if(nm != null)
-		g.image(nm.tex(), new Coord(10, 100));
 	    if(atime != null)
 		g.image(atime.tex(), new Coord(10, 125));
 	}
@@ -87,12 +99,10 @@ public class BuddyWnd extends Window {
 		ui.destroy(invb);
 	    if(chatb != null)
 		ui.destroy(chatb);
+	    if(name != null)
+		ui.destroy(name);
 	    rmb = invb = chatb = null;
-	    if(trustbox != null)
-		ui.destroy(trustbox);
-	    trustbox = null;
-	    nm = null;
-	    id = null;
+	    id = -1;
 	    atime = null;
 	}
 	
@@ -119,16 +129,28 @@ public class BuddyWnd extends Window {
 	}
 
 	public void uimsg(String msg, Object... args) {
-	    if(msg == "i-ava") {
+	    if(msg == "i-clear") {
+		clear();
+	    } if(msg == "i-ava") {
 		List<Indir<Resource>> rl = new LinkedList<Indir<Resource>>();
 		for(Object o : args)
 		    rl.add(ui.sess.getres((Integer)o));
 		if(ava != null)
 		    ui.destroy(ava);
 		ava = new Avaview(new Coord((sz.x / 2) - 40, 10), this, rl);
-	    } else if(msg == "i-nm") {
-		nm = nmfnd.render((String)args[0]);
-		id = ((String)args[1]).intern();
+	    } else if(msg == "i-set") {
+		id = (Integer)args[0];
+		String name = (String)args[1];
+		int group = (Integer)args[2];
+		this.name = new TextEntry(new Coord(10, 100), new Coord(150, 20), this, name) {
+			public boolean type(char c, java.awt.event.KeyEvent ev) {
+			    if(c == 10) {
+				BuddyWnd.this.wdgmsg("nick", id, text);
+				return(true);
+			    }
+			    return(super.type(c, ev));
+			}
+		    };
 	    } else if(msg == "i-atime") {
 		setatime((Integer)args[0]);
 	    } else if(msg == "i-act") {
@@ -139,32 +161,29 @@ public class BuddyWnd extends Window {
 		if(chatb != null)
 		    ui.destroy(chatb);
 		rmb = invb = chatb = null;
-		if(trustbox != null)
-		    ui.destroy(trustbox);
-		trustbox = null;
 		int fl = (Integer)args[0];
 		if((fl & 1) != 0)
+		    rmb = new Button(new Coord(10, 165), sz.x - 20, this, "Forget") {
+			    public void click() {
+				BuddyWnd.this.wdgmsg("rm", id);
+			    }
+			};
+		if((fl & 2) != 0)
 		    chatb = new Button(new Coord(10, 140), sz.x - 20, this, "Private chat") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("chat", id);
 			    }
 			};
-		if((fl & 2) != 0)
+		if((fl & 4) != 0)
 		    rmb = new Button(new Coord(10, 165), sz.x - 20, this, "End kinship") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("rm", id);
 			    }
 			};
-		if((fl & 4) != 0)
+		if((fl & 8) != 0)
 		    invb = new Button(new Coord(10, 190), sz.x - 20, this, "Invite to party") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("inv", id);
-			    }
-			};
-		if((fl & 8) != 0)
-		    trustbox = new CheckBox(new Coord(10, 215), this, "Trusted") {
-			    public void changed(boolean val) {
-				BuddyWnd.this.wdgmsg("trust", id, val?1:0);
 			    }
 			};
 	    }
@@ -204,11 +223,13 @@ public class BuddyWnd extends Window {
 			    g.frect(new Coord(0, i * 20), new Coord(sz.x, 20));
 			    g.chcolor();
 			}
-			if(b.online)
+			if(b.online == 1)
 			    g.image(online, new Coord(0, i * 20));
-			else
+			else if(b.online == 0)
 			    g.image(offline, new Coord(0, i * 20));
-			g.atext(b.name.substring(b.name.indexOf('/') + 1), new Coord(25, i * 20 + 10), 0, 0.5);
+			g.chcolor(gc[b.group]);
+			g.atext(b.name, new Coord(25, i * 20 + 10), 0, 0.5);
+			g.chcolor();
 		    }
 		}
 	    }
@@ -254,9 +275,8 @@ public class BuddyWnd extends Window {
 	super(c, new Coord(400, 300), parent, "Kin");
 	bl = new BuddyList(new Coord(10, 10), new Coord(180, 280), this) {
 		public void changed(Buddy b) {
-		    bi.clear();
 		    if(b != null)
-			BuddyWnd.this.wdgmsg("ch", b.name);
+			BuddyWnd.this.wdgmsg("ch", b.id);
 		}
 	    };
 	bi = new BuddyInfo(new Coord(210, 10), new Coord(180, 280), this);
@@ -266,38 +286,45 @@ public class BuddyWnd extends Window {
     public void uimsg(String msg, Object... args) {
 	if(msg == "add") {
 	    Buddy b = new Buddy();
-	    b.name = ((String)args[0]).intern();
-	    b.online = ((Integer)args[1]) != 0;
+	    b.id = (Integer)args[0];
+	    b.name = ((String)args[1]).intern();
+	    b.online = (Integer)args[2];
+	    b.group = (Integer)args[3];
 	    synchronized(buddies) {
 		buddies.add(b);
+		idmap.put(b.id, b);
 		Collections.sort(buddies, bcmp);
 	    }
 	    bl.repop();
 	} else if(msg == "rm") {
-	    String name = ((String)args[0]).intern();
-	    Buddy b = null;
+	    int id = (Integer)args[0];
+	    Buddy b;
 	    synchronized(buddies) {
-		for(Buddy b2 : buddies) {
-		    if(b2.name == name) {
-			b = b2;
-			break;
-		    }
-		}
+		b = idmap.get(id);
 	    }
 	    if(b != null) {
 		buddies.remove(b);
 		bl.repop();
 	    }
-	    if(bi.id == name)
+	    if(bi.id == id)
 		bi.clear();
-	} else if(msg == "ch") {
-	    String name = ((String)args[0]).intern();
-	    boolean online = ((Integer)args[1]) != 0;
+	} else if(msg == "chst") {
+	    int id = (Integer)args[0];
+	    int online = (Integer)args[1];
 	    synchronized(buddies) {
-		for(Buddy b : buddies) {
-		    if(b.name == name)
-			b.online = online;
-		}
+		idmap.get(id).online = online;
+	    }
+	} else if(msg == "chnm") {
+	    int id = (Integer)args[0];
+	    String name = (String)args[1];
+	    synchronized(buddies) {
+		idmap.get(id).name = name;
+	    }
+	} else if(msg == "chgrp") {
+	    int id = (Integer)args[0];
+	    int group = (Integer)args[1];
+	    synchronized(buddies) {
+		idmap.get(id).group = group;
 	    }
 	} else if(msg.substring(0, 2).equals("i-")) {
 	    bi.uimsg(msg, args);
