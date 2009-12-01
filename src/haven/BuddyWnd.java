@@ -44,9 +44,7 @@ public class BuddyWnd extends Window {
 	new Color(0, 255, 255),
 	new Color(255, 255, 0),
 	new Color(255, 0, 255),
-	new Color(128, 255, 0),
 	new Color(255, 0, 128),
-	new Color(0, 128, 255),
     };
     private Comparator<Buddy> bcmp = new Comparator<Buddy>() {
 	public int compare(Buddy a, Buddy b) {
@@ -74,6 +72,7 @@ public class BuddyWnd extends Window {
 	private TextEntry name = null;
 	private Text atime = null;
 	private int id = -1;
+	private int group = -1;
 	private Button rmb, invb, chatb;
 	
 	public BuddyInfo(Coord c, Coord sz, Widget parent) {
@@ -85,8 +84,30 @@ public class BuddyWnd extends Window {
 	    g.frect(Coord.z, sz);
 	    g.chcolor();
 	    super.draw(g);
+	    if(group >= 0) {
+		for(int i = 0; i < gc.length; i++) {
+		    if(i == group) {
+			g.chcolor();
+			g.frect(new Coord(8 + (i * 20), 128), new Coord(19, 19));
+		    }
+		    g.chcolor(gc[i]);
+		    g.frect(new Coord(10 + (i * 20), 130), new Coord(15, 15));
+		}
+		g.chcolor();
+	    }
 	    if(atime != null)
-		g.image(atime.tex(), new Coord(10, 125));
+		g.image(atime.tex(), new Coord(10, 150));
+	}
+	
+	public boolean mousedown(Coord c, int button) {
+	    if((c.y >= 130) && (c.y < 145)) {
+		int g = (c.x - 10) / 20;
+		if((g >= 0) && (g < gc.length) && (c.x >= 10 + (g * 20)) && (c.x < 25 + (g * 20))) {
+		    BuddyWnd.this.wdgmsg("grp", id, g);
+		    return(true);
+		}
+	    }
+	    return(super.mousedown(c, button));
 	}
 	
 	public void clear() {
@@ -103,6 +124,7 @@ public class BuddyWnd extends Window {
 		ui.destroy(name);
 	    rmb = invb = chatb = null;
 	    id = -1;
+	    group = -1;
 	    atime = null;
 	}
 	
@@ -151,6 +173,7 @@ public class BuddyWnd extends Window {
 			    return(super.type(c, ev));
 			}
 		    };
+		this.group = group;
 	    } else if(msg == "i-atime") {
 		setatime((Integer)args[0]);
 	    } else if(msg == "i-act") {
@@ -163,25 +186,25 @@ public class BuddyWnd extends Window {
 		rmb = invb = chatb = null;
 		int fl = (Integer)args[0];
 		if((fl & 1) != 0)
-		    rmb = new Button(new Coord(10, 165), sz.x - 20, this, "Forget") {
+		    rmb = new Button(new Coord(10, 190), sz.x - 20, this, "Forget") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("rm", id);
 			    }
 			};
 		if((fl & 2) != 0)
-		    chatb = new Button(new Coord(10, 140), sz.x - 20, this, "Private chat") {
+		    chatb = new Button(new Coord(10, 165), sz.x - 20, this, "Private chat") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("chat", id);
 			    }
 			};
 		if((fl & 4) != 0)
-		    rmb = new Button(new Coord(10, 165), sz.x - 20, this, "End kinship") {
+		    rmb = new Button(new Coord(10, 190), sz.x - 20, this, "End kinship") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("rm", id);
 			    }
 			};
 		if((fl & 8) != 0)
-		    invb = new Button(new Coord(10, 190), sz.x - 20, this, "Invite to party") {
+		    invb = new Button(new Coord(10, 215), sz.x - 20, this, "Invite to party") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("inv", id);
 			    }
