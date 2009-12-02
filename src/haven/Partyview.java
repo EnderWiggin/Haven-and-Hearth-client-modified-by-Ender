@@ -64,7 +64,7 @@ public class Partyview extends Widget {
 		    w = new Avaview(Coord.z, this, m.gobid, new Coord(27, 27));
 		    avs.put(m, w);
 		} else {
-		    old.remove(w);
+		    old.remove(m);
 		}
 	    }
 	    for(Member m : old) {
