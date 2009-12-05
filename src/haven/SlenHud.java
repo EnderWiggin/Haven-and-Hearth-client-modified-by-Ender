@@ -36,17 +36,25 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
     public static final Tex dispbg = Resource.loadtex("gfx/hud/slen/dispbg");
+    public static final Tex uglow = Resource.loadtex("gfx/hud/slen/sbg");
     public static final Coord fc = new Coord(96, -29);
     public static final Coord mc = new Coord(316, -55);
     public static final Coord dispc = new Coord(0, 4 - dispbg.sz().y);
     public static final Coord bc1 = new Coord(147, -8);
     public static final Coord bc2 = new Coord(485, -8);
     public static final Coord sz;
+    public static final Color urgcols[] = {
+	null,
+	new Color(0, 128, 255),
+	new Color(255, 128, 0),
+	new Color(255, 0, 0),
+    };
     int woff = 0;
     List<HWindow> wnds = new ArrayList<HWindow>();
     HWindow awnd;
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
     IButton hb, invb, equb, chrb, budb;
+    FoldButton fb;
     Button sub, sdb;
     VC vc;
     String cmdline = null;
@@ -68,7 +76,24 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	sz.y = (h - fc.y > sz.y)?(h - fc.y):sz.y;
 	sz.y = (h - mc.y > sz.y)?(h - mc.y):sz.y;
     }
+    
+    static class FoldButton extends IButton {
+	int urgency;
 	
+	public FoldButton(Coord c, Widget parent) {
+	    super(c, parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd"));
+	}
+	
+	public void draw(GOut g) {
+	    super.draw(g);
+	    if(urgcols[urgency] != null) {
+		g.chcolor(urgcols[urgency]);
+		g.image(uglow, Coord.z);
+		g.chcolor();
+	    }
+	}
+    }
+    
     static class VC {
 	static final long ms = 500;
 	SlenHud m;
@@ -123,8 +148,11 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 		    sb.c.y = 600;
 		}
 	    }
-	    if(ct >= ms)
+	    if(ct >= ms) {
 		c = w;
+		if(c && (m.awnd != null))
+		    m.updurgency(m.awnd, -1);
+	    }
 	}
     }
 
@@ -163,7 +191,7 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 		}
 	    };
 	}
-	vc = new VC(this, new IButton(new Coord(380, 600), parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd")) {
+	vc = new VC(this, fb = new FoldButton(new Coord(380, 600), parent) {
 		public void click() {
 		    vc.show();
 		}
@@ -422,6 +450,31 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	woff++;
 	updbtns();
     }
+    
+    public void updurgency(HWindow wnd, int level) {
+	if((wnd == awnd) && vc.c)
+	    level = -1;
+	if(level == -1) {
+	    if(wnd.urgent == 0)
+		return;
+	    wnd.urgent = 0;
+	} else {
+	    if(wnd.urgent >= level)
+		return;
+	    wnd.urgent = level;
+	}
+	Button b = btns.get(wnd);
+	if(urgcols[wnd.urgent] != null)
+	    b.change(wnd.title, urgcols[wnd.urgent]);
+	else
+	    b.change(wnd.title);
+	int max = 0;
+	for(HWindow w : wnds) {
+	    if(w.urgent > max)
+		max = w.urgent;
+	}
+	fb.urgency = max;
+    }
 	
     private void setawnd(HWindow wnd) {
 	awnd = wnd;
@@ -429,6 +482,7 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	    w.visible = false;
 	if(wnd != null)
 	    wnd.visible = true;
+	updurgency(wnd, -1);
     }
 	
     public void addwnd(final HWindow wnd) {
