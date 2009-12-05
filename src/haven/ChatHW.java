@@ -58,6 +58,9 @@ public class ChatHW extends HWindow {
 	    if(args.length > 1)
 		col = (Color)args[1];
 	    out.append((String)args[0], col);
+	} else if(msg == "focusme") {
+	    ((SlenHud)parent).setawnd(this);
+	    setfocus(in);
 	} else {
 	    super.uimsg(msg, args);
 	}
