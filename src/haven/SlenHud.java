@@ -476,7 +476,7 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	fb.urgency = max;
     }
 	
-    private void setawnd(HWindow wnd) {
+    public void setawnd(HWindow wnd) {
 	awnd = wnd;
 	for(HWindow w : wnds)
 	    w.visible = false;
