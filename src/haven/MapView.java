@@ -36,7 +36,7 @@ import java.util.*;
 public class MapView extends Widget implements DTarget {
     public Coord mc, mousepos, pmousepos;
     Camera cam;
-    Map<Sprite.Part, Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
+    Sprite.Part[] clickable = {};
     List<Sprite.Part> obscured = Collections.emptyList();
     private int[] visol = new int[31];
     private long olftimer = 0;
@@ -331,15 +331,14 @@ public class MapView extends Widget implements DTarget {
 	
     private Gob gobatpos(Coord c) {
 	for(Sprite.Part d : obscured) {
-	    Gob gob = clickable.get(d);
+	    Gob gob = (Gob)d.owner;
 	    if(gob == null)
 		continue;
 	    if(d.checkhit(c.add(gob.sc.inv())))
 		return(gob);
 	}
-	for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
-	    Sprite.Part d = e.getKey();
-	    Gob gob = e.getValue();
+	for(Sprite.Part d : clickable) {
+	    Gob gob = (Gob)d.owner;
 	    if(d.checkhit(c.add(gob.sc.inv())))
 		return(gob);
 	}
@@ -582,9 +581,8 @@ public class MapView extends Widget implements DTarget {
 	if(obscgob == null)
 	    return(obsc);
 	boolean adding = false;
-	for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
-	    Sprite.Part p = e.getKey();
-	    Gob gob = e.getValue();
+	for(Sprite.Part p : clickable) {
+	    Gob gob = (Gob)p.owner;
 	    if(gob == obscgob) {
 		adding = true;
 		continue;
@@ -637,7 +635,6 @@ public class MapView extends Widget implements DTarget {
 	    curf.tick("plobeff");
 		
 	final List<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
-	final Map<Sprite.Part,Gob> clickable = new TreeMap<Sprite.Part, Gob>(clickcmp);
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
 	ArrayList<KinInfo> kin = new ArrayList<KinInfo>();
 	class GobMapper implements Sprite.Drawer {
@@ -660,7 +657,7 @@ public class MapView extends Widget implements DTarget {
 		   (p.lr.y < 0))
 		    return;
 		sprites.add(p);
-		clickable.put(p, cur);
+		p.owner = cur;
 	    }
 	}
 	GobMapper drawer = new GobMapper();
@@ -687,8 +684,13 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    if(curf != null)
 		curf.tick("setup");
-	    this.clickable = clickable;
-	    Collections.sort(sprites, Sprite.partcmp);
+	    Collections.sort(sprites, Sprite.partidcmp);
+	    {
+		Sprite.Part[] clickable = new Sprite.Part[sprites.size()];
+		for(int o = 0, u = clickable.length - 1; o < clickable.length; o++, u--)
+		    clickable[u] = sprites.get(o);
+		this.clickable = clickable;
+	    }
 	    if(curf != null)
 		curf.tick("sort");
 	    Gob onmouse = null;
@@ -826,9 +828,8 @@ public class MapView extends Widget implements DTarget {
 		    obscgob = null;
 		}
 	    } else if(now - lastmove > 500) {
-		for(Map.Entry<Sprite.Part, Gob> e : clickable.entrySet()) {
-		    Sprite.Part p = e.getKey();
-		    Gob gob = e.getValue();
+		for(Sprite.Part p : clickable) {
+		    Gob gob = (Gob)p.owner;
 		    if(gob.sc == null)
 			continue;
 		    if(gob == pl)

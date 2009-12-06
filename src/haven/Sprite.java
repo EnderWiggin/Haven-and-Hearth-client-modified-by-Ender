@@ -140,6 +140,7 @@ public abstract class Sprite {
 	public Coord ul = Coord.z, lr = Coord.z;
 	public int z, subz;
 	public Effect effect;
+	public Owner owner;
 	
 	public static interface Effect {
 	    public GOut apply(GOut in);
