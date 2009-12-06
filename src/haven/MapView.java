@@ -685,14 +685,18 @@ public class MapView extends Widget implements DTarget {
 		if(k != null)
 		    kin.add(k);
 	    }
+	    if(curf != null)
+		curf.tick("setup");
 	    this.clickable = clickable;
 	    Collections.sort(sprites, Sprite.partcmp);
+	    if(curf != null)
+		curf.tick("sort");
 	    Gob onmouse = null;
 	    if(pmousepos != null)
 		onmouse = gobatpos(pmousepos);
 	    obscured = findobsc();
 	    if(curf != null)
-		curf.tick("sort");
+		curf.tick("obsc");
 	    for(Sprite.Part part : sprites) {
 		if(part.effect != null)
 		    part.draw(part.effect.apply(g));
