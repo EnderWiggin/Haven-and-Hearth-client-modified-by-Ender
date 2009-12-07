@@ -339,6 +339,8 @@ public class MapView extends Widget implements DTarget {
 	}
 	for(Sprite.Part d : clickable) {
 	    Gob gob = (Gob)d.owner;
+	    if(gob == null)
+		continue;
 	    if(d.checkhit(c.add(gob.sc.inv())))
 		return(gob);
 	}
