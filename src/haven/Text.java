@@ -140,7 +140,10 @@ public class Text {
                 
 	public Text render(String text, Color c) {
 	    Text t = new Text(text);
-	    t.img = TexI.mkbuf(strsize(text));
+	    Coord sz = strsize(text);
+	    if(sz.x < 1)
+		sz = sz.add(1, 0);
+	    t.img = TexI.mkbuf(sz);
 	    Graphics g = t.img.createGraphics();
 	    if(aa)
 		Utils.AA(g);
