@@ -585,6 +585,8 @@ public class MapView extends Widget implements DTarget {
 	boolean adding = false;
 	for(Sprite.Part p : clickable) {
 	    Gob gob = (Gob)p.owner;
+	    if(gob == null)
+		continue;
 	    if(gob == obscgob) {
 		adding = true;
 		continue;
@@ -832,7 +834,7 @@ public class MapView extends Widget implements DTarget {
 	    } else if(now - lastmove > 500) {
 		for(Sprite.Part p : clickable) {
 		    Gob gob = (Gob)p.owner;
-		    if(gob.sc == null)
+		    if((gob == null) || (gob.sc == null))
 			continue;
 		    if(gob == pl)
 			break;
