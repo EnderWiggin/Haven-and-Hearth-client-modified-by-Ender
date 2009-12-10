@@ -28,6 +28,7 @@ package haven;
 
 import java.awt.Color;
 import java.util.*;
+import java.text.Collator;
 
 public class BuddyWnd extends Window {
     private List<Buddy> buddies = new ArrayList<Buddy>();
@@ -47,8 +48,9 @@ public class BuddyWnd extends Window {
 	new Color(255, 0, 128),
     };
     private Comparator<Buddy> bcmp = new Comparator<Buddy>() {
+	private Collator collator = Collator.getInstance();
 	public int compare(Buddy a, Buddy b) {
-	    return(a.name.compareTo(b.name));
+	    return(collator.compare(a.name, b.name));
 	}
     };
     
