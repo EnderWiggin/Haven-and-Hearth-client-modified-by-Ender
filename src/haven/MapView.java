@@ -29,7 +29,6 @@ package haven;
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
 import haven.Resource.Tile;
-import haven.Resource.Tileset;
 import java.awt.Color;
 import java.util.*;
 
@@ -401,7 +400,6 @@ public class MapView extends Widget implements DTarget {
 	
     public void move(Coord mc) {
 	this.mc = mc;
-	Coord cc = mc.div(cmaps.mul(tilesz));
     }
 	
     private static Coord tilify(Coord c) {
@@ -778,14 +776,6 @@ public class MapView extends Widget implements DTarget {
 	    }
 	    //System.out.println(curf);
 	}
-    }
-	
-    private Color mkc(double r, double g, double b, double a) {
-	return(new Color((int)(r * 255), (int)(g * 255), (int)(b * 255), (int)(a * 255)));
-    }
-	
-    private double anorm(double d) {
-	return((d + 1) / 2);
     }
 	
     public void drawarrows(GOut g) {

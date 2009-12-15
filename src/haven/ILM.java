@@ -27,15 +27,7 @@
 package haven;
 
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.nio.ByteBuffer;
-import java.util.Collection;
 import javax.media.opengl.GL;
 
 public class ILM extends TexRT {

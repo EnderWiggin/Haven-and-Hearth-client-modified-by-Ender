@@ -26,7 +26,6 @@
 
 package haven;
 
-import java.io.*;
 import javax.sound.midi.*;
 
 public class Music {

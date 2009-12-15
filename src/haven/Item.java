@@ -27,7 +27,6 @@
 package haven;
 
 import java.awt.image.BufferedImage;
-import java.awt.Graphics;
 import java.awt.Color;
 
 public class Item extends Widget implements DTarget {

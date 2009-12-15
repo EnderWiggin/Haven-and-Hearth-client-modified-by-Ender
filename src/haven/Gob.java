@@ -27,7 +27,6 @@
 package haven;
 
 import java.util.*;
-import java.lang.reflect.*;
 
 public class Gob implements Sprite.Owner {
     public Coord rc, sc;

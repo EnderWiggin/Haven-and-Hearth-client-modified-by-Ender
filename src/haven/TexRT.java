@@ -27,9 +27,7 @@
 package haven;
 
 import java.util.*;
-import java.lang.ref.WeakReference;
 import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
 
 public abstract class TexRT extends TexGL {
     static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();

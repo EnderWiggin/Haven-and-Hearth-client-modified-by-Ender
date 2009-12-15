@@ -27,9 +27,6 @@
 package haven;
 
 import java.util.*;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.Reader;
 
 public class Equipory extends Window implements DTarget {
     List<Inventory> epoints;
