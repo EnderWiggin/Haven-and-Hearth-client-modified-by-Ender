@@ -165,7 +165,6 @@ public class Audio {
 		    e.printStackTrace();
 		    return;
 		}
-		int bufsize = line.getBufferSize();
 		byte[] buf = new byte[1024];
 		while(true) {
 		    if(Thread.interrupted())
@@ -181,14 +180,6 @@ public class Audio {
 			    clips.add(cs);
 			ncl.clear();
 		    }
-		    /*
-		    while(true) {
-			int bufdata = bufsize - line.available();
-			if(bufdata < 1024)
-			    break;
-			Thread.sleep(((bufdata - 1024) / 4) / 44);
-		    }
-		    */
 		    fillbuf(buf, 0, 1024);
 		    for(int off = 0; off < buf.length; off += line.write(buf, off, buf.length - off));
 		}

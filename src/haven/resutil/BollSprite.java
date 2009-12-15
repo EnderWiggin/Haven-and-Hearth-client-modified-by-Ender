@@ -27,7 +27,6 @@
 package haven.resutil;
 
 import haven.*;
-import java.util.*;
 
 public abstract class BollSprite extends Sprite {
     public Boll bollar = null;
