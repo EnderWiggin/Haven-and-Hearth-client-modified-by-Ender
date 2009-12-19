@@ -42,6 +42,7 @@ public class Gob implements Sprite.Owner {
 	public Message sdt;
 	public Sprite spr;
 	public int id;
+	public boolean delign = false;
 	
 	public Overlay(int id, Indir<Resource> res, Message sdt) {
 	    this.id = id;
@@ -86,7 +87,7 @@ public class Gob implements Sprite.Owner {
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 	    } else {
 		boolean done = ol.spr.tick(dt);
-		if(done)
+		if((!ol.delign || (ol.spr instanceof Overlay.CDel)) && done)
 		    i.remove();
 	    }
 	}
