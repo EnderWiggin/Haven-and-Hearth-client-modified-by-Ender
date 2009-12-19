@@ -74,7 +74,6 @@ public class CharWnd extends Window {
 	public void update() {}
 	
 	public void update(Observable attrslen, Object uudata) {
-	    Glob.CAttr attr = (Glob.CAttr)attrslen;
 	    update();
 	}
 	

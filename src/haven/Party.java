@@ -66,7 +66,6 @@ public class Party {
 		    ids.add(id);
 		}
 		Map<Integer, Member> nmemb = new TreeMap<Integer, Member>();
-		int i = 0;
 		for(int id : ids) {
 		    Member m = memb.get(id);
 		    if(m == null) {

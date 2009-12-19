@@ -28,6 +28,7 @@ package haven;
 
 import java.awt.Color;
 import java.util.*;
+import java.text.Collator;
 
 public class BuddyWnd extends Window {
     private List<Buddy> buddies = new ArrayList<Buddy>();
@@ -47,8 +48,9 @@ public class BuddyWnd extends Window {
 	new Color(255, 0, 128),
     };
     private Comparator<Buddy> bcmp = new Comparator<Buddy>() {
+	private Collator collator = Collator.getInstance();
 	public int compare(Buddy a, Buddy b) {
-	    return(a.name.compareTo(b.name));
+	    return(collator.compare(a.name, b.name));
 	}
     };
     
@@ -67,12 +69,48 @@ public class BuddyWnd extends Window {
 	int group;
     }
 
+    public static class GroupSelector extends Widget {
+	public int group;
+	
+	public GroupSelector(Coord c, Widget parent, int group) {
+	    super(c, new Coord((gc.length * 20) + 20, 20), parent);
+	    this.group = group;
+	}
+	
+	public void draw(GOut g) {
+	    for(int i = 0; i < gc.length; i++) {
+		if(i == group) {
+		    g.chcolor();
+		    g.frect(new Coord(i * 20, 0), new Coord(19, 19));
+		}
+		g.chcolor(gc[i]);
+		g.frect(new Coord(2 + (i * 20), 2), new Coord(15, 15));
+	    }
+	    g.chcolor();
+	}
+	
+	public boolean mousedown(Coord c, int button) {
+	    if((c.y >= 2) && (c.y < 17)) {
+		int g = (c.x - 2) / 20;
+		if((g >= 0) && (g < gc.length) && (c.x >= 2 + (g * 20)) && (c.x < 17 + (g * 20))) {
+		    changed(g);
+		    return(true);
+		}
+	    }
+	    return(super.mousedown(c, button));
+	}
+	
+	protected void changed(int group) {
+	    this.group = group;
+	}
+    }
+
     private class BuddyInfo extends Widget {
 	private Avaview ava = null;
 	private TextEntry name = null;
+	private GroupSelector grp = null;
 	private Text atime = null;
 	private int id = -1;
-	private int group = -1;
 	private Button rmb, invb, chatb;
 	
 	public BuddyInfo(Coord c, Coord sz, Widget parent) {
@@ -84,30 +122,8 @@ public class BuddyWnd extends Window {
 	    g.frect(Coord.z, sz);
 	    g.chcolor();
 	    super.draw(g);
-	    if(group >= 0) {
-		for(int i = 0; i < gc.length; i++) {
-		    if(i == group) {
-			g.chcolor();
-			g.frect(new Coord(8 + (i * 20), 128), new Coord(19, 19));
-		    }
-		    g.chcolor(gc[i]);
-		    g.frect(new Coord(10 + (i * 20), 130), new Coord(15, 15));
-		}
-		g.chcolor();
-	    }
 	    if(atime != null)
 		g.image(atime.tex(), new Coord(10, 150));
-	}
-	
-	public boolean mousedown(Coord c, int button) {
-	    if((c.y >= 130) && (c.y < 145)) {
-		int g = (c.x - 10) / 20;
-		if((g >= 0) && (g < gc.length) && (c.x >= 10 + (g * 20)) && (c.x < 25 + (g * 20))) {
-		    BuddyWnd.this.wdgmsg("grp", id, g);
-		    return(true);
-		}
-	    }
-	    return(super.mousedown(c, button));
 	}
 	
 	public void clear() {
@@ -122,9 +138,12 @@ public class BuddyWnd extends Window {
 		ui.destroy(chatb);
 	    if(name != null)
 		ui.destroy(name);
+	    if(grp != null)
+		ui.destroy(grp);
+	    name = null;
+	    grp = null;
 	    rmb = invb = chatb = null;
 	    id = -1;
-	    group = -1;
 	    atime = null;
 	}
 	
@@ -173,7 +192,11 @@ public class BuddyWnd extends Window {
 			    return(super.type(c, ev));
 			}
 		    };
-		this.group = group;
+		this.grp = new GroupSelector(new Coord(8, 128), this, group) {
+			protected void changed(int group) {
+			    BuddyWnd.this.wdgmsg("grp", id, group);
+			}
+		    };
 	    } else if(msg == "i-atime") {
 		setatime((Integer)args[0]);
 	    } else if(msg == "i-act") {

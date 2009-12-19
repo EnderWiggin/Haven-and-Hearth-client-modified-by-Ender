@@ -26,7 +26,6 @@
 
 package haven.test;
 
-import java.util.*;
 import haven.*;
 
 public abstract class BaseTest implements Runnable {

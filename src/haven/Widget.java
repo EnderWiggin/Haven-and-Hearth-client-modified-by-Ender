@@ -30,8 +30,6 @@ import java.util.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
-import java.awt.GraphicsConfiguration;
-
 public class Widget {
     public UI ui;
     public Coord c, sz;

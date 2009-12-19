@@ -30,7 +30,6 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.net.URL;
 import javax.jnlp.*;
-import java.util.*;
 
 public class JnlpCache implements ResCache {
     private PersistenceService back;

@@ -26,11 +26,6 @@
 
 package haven;
 
-import java.awt.Color;
-import java.nio.*;
-import java.util.*;
-import javax.media.opengl.*;
-
 public abstract class Tex {
     protected Coord dim;
     

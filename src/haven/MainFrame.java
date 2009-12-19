@@ -27,7 +27,6 @@
 package haven;
 
 import java.awt.*;
-import java.net.URL;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
