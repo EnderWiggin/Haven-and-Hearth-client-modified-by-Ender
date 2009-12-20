@@ -35,6 +35,9 @@ public class BuddyWnd extends Window {
     private Map<Integer, Buddy> idmap = new HashMap<Integer, Buddy>();
     private BuddyList bl;
     private BuddyInfo bi;
+    private Button sbalpha;
+    private Button sbgroup;
+    private Button sbstatus;
     public static final Tex online = Resource.loadtex("gfx/hud/online");
     public static final Tex offline = Resource.loadtex("gfx/hud/offline");
     public static final Color[] gc = new Color[] {
@@ -47,10 +50,23 @@ public class BuddyWnd extends Window {
 	new Color(255, 0, 255),
 	new Color(255, 0, 128),
     };
-    private Comparator<Buddy> bcmp = new Comparator<Buddy>() {
-	private Collator collator = Collator.getInstance();
+    private Comparator<Buddy> bcmp;
+    private Comparator<Buddy> alphacmp = new Comparator<Buddy>() {
+	private Collator c = Collator.getInstance();
 	public int compare(Buddy a, Buddy b) {
-	    return(collator.compare(a.name, b.name));
+	    return(c.compare(a.name, b.name));
+	}
+    };
+    private Comparator<Buddy> groupcmp = new Comparator<Buddy>() {
+	public int compare(Buddy a, Buddy b) {
+	    if(a.group == b.group) return(alphacmp.compare(a, b));
+	    else                   return(a.group - b.group);
+	}
+    };
+    private Comparator<Buddy> statuscmp = new Comparator<Buddy>() {
+	public int compare(Buddy a, Buddy b) {
+	    if(a.online == b.online) return(alphacmp.compare(a, b));
+	    else                     return(b.online - a.online);
 	}
     };
     
@@ -319,14 +335,37 @@ public class BuddyWnd extends Window {
 
     public BuddyWnd(Coord c, Widget parent) {
 	super(c, new Coord(400, 300), parent, "Kin");
-	bl = new BuddyList(new Coord(10, 10), new Coord(180, 280), this) {
+	bl = new BuddyList(new Coord(10, 5), new Coord(180, 280), this) {
 		public void changed(Buddy b) {
 		    if(b != null)
 			BuddyWnd.this.wdgmsg("ch", b.id);
 		}
 	    };
-	bi = new BuddyInfo(new Coord(210, 10), new Coord(180, 280), this);
+	bi = new BuddyInfo(new Coord(210, 5), new Coord(180, 280), this);
+	sbstatus = new Button(new Coord(5,   290), 120, this, "Sort by status")      { public void click() { setcmp(statuscmp); } };
+	sbgroup  = new Button(new Coord(140, 290), 120, this, "Sort by group")       { public void click() { setcmp(groupcmp); } };
+	sbalpha  = new Button(new Coord(275, 290), 120, this, "Sort alphabetically") { public void click() { setcmp(alphacmp); } };
+	String sort = Utils.getpref("buddysort", "");
+	if(sort.equals("")) {
+	    bcmp = statuscmp;
+	} else {
+	    if(sort.equals("alpha"))  bcmp = alphacmp;
+	    if(sort.equals("group"))  bcmp = groupcmp;
+	    if(sort.equals("status")) bcmp = statuscmp;
+	}
 	bl.repop();
+    }
+
+    private void setcmp(Comparator<Buddy> cmp) {
+	bcmp = cmp;
+	String val = "";
+	if(cmp == alphacmp)  val = "alpha";
+	if(cmp == groupcmp)  val = "group";
+	if(cmp == statuscmp) val = "status";
+	Utils.setpref("buddysort", val);
+	synchronized(buddies) {
+	    Collections.sort(buddies, bcmp);
+	}
     }
     
     public void uimsg(String msg, Object... args) {
