@@ -108,7 +108,16 @@ public class Button extends SSWidget {
     public void click() {
 	wdgmsg("activate");
     }
-	
+    
+    public void uimsg(String msg, Object... args) {
+	if(msg == "ch") {
+	    if(args.length > 1)
+		change((String)args[0], (Color)args[1]);
+	    else
+		change((String)args[0]);
+	}
+    }
+    
     public boolean mousedown(Coord c, int button) {
 	if(button != 1)
 	    return(false);
