@@ -294,6 +294,11 @@ public class BuddyWnd extends Window {
 	    return(true);
 	}
 
+	public void select(Buddy b) {
+	    this.sel = b;
+	    changed(this.sel);
+	}
+
 	public boolean mousedown(Coord c, int button) {
 	    if(super.mousedown(c, button))
 		return(true);
@@ -303,10 +308,9 @@ public class BuddyWnd extends Window {
 		    if(sel >= buddies.size())
 			sel = -1;
 		    if(sel < 0)
-			this.sel = null;
+			select(null);
 		    else
-			this.sel = buddies.get(sel);
-		    changed(this.sel);
+			select(buddies.get(sel));
 		    return(true);
 		}
 	    }
@@ -372,6 +376,13 @@ public class BuddyWnd extends Window {
 	    synchronized(buddies) {
 		idmap.get(id).group = group;
 	    }
+	} else if(msg == "sel") {
+	    int id = (Integer)args[0];
+	    Buddy tgt;
+	    synchronized(buddies) {
+		tgt = idmap.get(id);
+	    }
+	    bl.select(tgt);
 	} else if(msg.substring(0, 2).equals("i-")) {
 	    bi.uimsg(msg, args);
 	} else {
