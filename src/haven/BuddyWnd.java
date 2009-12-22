@@ -248,6 +248,12 @@ public class BuddyWnd extends Window {
 				BuddyWnd.this.wdgmsg("inv", id);
 			    }
 			};
+		if((fl & 16) != 0)
+		    invb = new Button(new Coord(10, 240), sz.x - 20, this, "Describe to...") {
+			    public void click() {
+				BuddyWnd.this.wdgmsg("desc", id);
+			    }
+			};
 	    }
 	}
 
