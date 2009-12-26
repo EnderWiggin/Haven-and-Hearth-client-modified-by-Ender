@@ -108,6 +108,11 @@ public class TextEntry extends SSWidget {
 	setcanfocus(true);
     }
 	
+    public void activate(String text) {
+	if(canactivate)
+	    wdgmsg("activate", text);
+    }
+
     public boolean type(char c, KeyEvent ev) {
 	try {
 	    if(c == 8) {
@@ -120,9 +125,7 @@ public class TextEntry extends SSWidget {
 		}
 		return(true);
 	    } else if(c == 10) {
-		if(!canactivate)
-		    return(false);
-		wdgmsg("activate", text);
+		activate(text);
 		return(true);
 	    } else if(c == 127) {
 		if(pos < text.length())

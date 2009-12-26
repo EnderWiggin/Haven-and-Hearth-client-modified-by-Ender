@@ -38,6 +38,7 @@ public class BuddyWnd extends Window {
     private Button sbalpha;
     private Button sbgroup;
     private Button sbstatus;
+    private TextEntry charpass, opass;
     public static final Tex online = Resource.loadtex("gfx/hud/online");
     public static final Tex offline = Resource.loadtex("gfx/hud/offline");
     public static final Color[] gc = new Color[] {
@@ -344,7 +345,7 @@ public class BuddyWnd extends Window {
     }
 
     public BuddyWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 300), parent, "Kin");
+	super(c, new Coord(400, 370), parent, "Kin");
 	bl = new BuddyList(new Coord(10, 5), new Coord(180, 280), this) {
 		public void changed(Buddy b) {
 		    if(b != null)
@@ -363,7 +364,42 @@ public class BuddyWnd extends Window {
 	    if(sort.equals("group"))  bcmp = groupcmp;
 	    if(sort.equals("status")) bcmp = statuscmp;
 	}
+	new Label(new Coord(0, 310), this, "My hearth secret:");
+	new Label(new Coord(200, 310), this, "Make kin by hearth secret:");
+	charpass = new TextEntry(new Coord(0, 325), new Coord(190, 20), this, "") {
+		public void activate(String text) {
+		    BuddyWnd.this.wdgmsg("pwd", text);
+		}
+	    };
+	opass = new TextEntry(new Coord(200, 325), new Coord(190, 20), this, "") {
+		public void activate(String text) {
+		    BuddyWnd.this.wdgmsg("bypwd", text);
+		    settext("");
+		}
+	    };
+	new Button(new Coord(0  , 350), 50, this, "Set")    { public void click() {sendpwd(charpass.text);} };
+	new Button(new Coord(60 , 350), 50, this, "Clear")  { public void click() {sendpwd("");} };
+	new Button(new Coord(120, 350), 50, this, "Random") { public void click() {sendpwd(randpwd());} };
+	new Button(new Coord(200, 350), 50, this, "Add kin") {
+	    public void click() {
+		BuddyWnd.this.wdgmsg("bypwd", opass.text);
+		opass.settext("");
+	    }
+	};
 	bl.repop();
+    }
+    
+    private String randpwd() {
+	String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	StringBuilder buf = new StringBuilder();
+	for(int i = 0; i < 8; i++)
+	    buf.append(charset.charAt((int)(Math.random() * charset.length())));
+	return(buf.toString());
+    }
+    
+    private void sendpwd(String pass) {
+	wdgmsg("pwd", pass);
+	charpass.settext(pass);
     }
 
     private void setcmp(Comparator<Buddy> cmp) {
@@ -428,6 +464,8 @@ public class BuddyWnd extends Window {
 		tgt = idmap.get(id);
 	    }
 	    bl.select(tgt);
+	} else if(msg == "pwd") {
+	    charpass.settext((String)args[0]);
 	} else if(msg.substring(0, 2).equals("i-")) {
 	    bi.uimsg(msg, args);
 	} else {
