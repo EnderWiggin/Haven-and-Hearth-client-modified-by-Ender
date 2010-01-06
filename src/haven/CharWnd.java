@@ -158,12 +158,16 @@ public class CharWnd extends Window {
 	
 	public void update() {
 	    lbl.settext(Integer.toString(attr.comp));
-	    if(attr.comp < attr.base)
+	    if(attr.comp < attr.base) {
 		lbl.setcolor(debuff);
-	    else if(attr.comp > attr.base)
+		lbl.tooltip = String.format("%d - %d", attr.base, attr.base - attr.comp);
+	    } else if(attr.comp > attr.base) {
 		lbl.setcolor(buff);
-	    else
+		lbl.tooltip = String.format("%d + %d", attr.base, attr.comp - attr.base);
+	    } else {
 		lbl.setcolor(Color.WHITE);
+		lbl.tooltip = null;
+	    }
 	}
     }
     
@@ -333,7 +337,15 @@ public class CharWnd extends Window {
 		    sum += amount;
 		}
 	    }
-	    tooltip = String.format("%d / %d", sum, cap);
+	    if(els.size() == 0) {
+		tooltip = String.format("0 of %d", cap);
+	    } else {
+		String tt = "";
+		for(El el : els)
+		    tt += String.format("%d %s + ", el.amount, el.id);
+		tt = tt.substring(0, tt.length() - 3);
+		tooltip = String.format("(%s) = %d of %d", tt, sum, cap);
+	    }
 	}
     }
     
