@@ -26,38 +26,57 @@
 
 package haven;
 
+import java.awt.Color;
+
 public class ComMeter extends Widget {
-    static Tex sword = Resource.loadtex("gfx/hud/combat/com/sword");
+    static Tex sword = Resource.loadtex("gfx/hud/combat/com/offdeff");
+    static Text.Foundry intf = new Text.Foundry("Serif", 16);
+    static Coord
+	moc = new Coord(53, 61),
+	mdc = new Coord(53, 71),
+	ooc = new Coord(80, 61),
+	odc = new Coord(80, 71);
+    static Coord intc = new Coord(66, 33);
+    static Color offcol = new Color(255, 0, 0), defcol = new Color(0, 0, 255);
     static Tex scales[];
-    int bal, intns;
+    Fightview fv;
     
     static {
         scales = new Tex[11];
         for(int i = 0; i <= 10; i++)
             scales[i] = Resource.loadtex(String.format("gfx/hud/combat/com/%02d", i));
-        Widget.addtype("com", new WidgetFactory() {
-            public Widget create(Coord c, Widget parent, Object[] args) {
-                return(new ComMeter(c, parent));
-            }
-        });
     }
     
-    public ComMeter(Coord c, Widget parent) {
+    public ComMeter(Coord c, Widget parent, Fightview fv) {
         super(c, sword.sz(), parent);
+	this.fv = fv;
     }
     
     public void draw(GOut g) {
+	Fightview.Relation rel = fv.current;
+	if(rel != null)
+	    g.image(scales[(-rel.bal) + 5], Coord.z);
         g.image(sword, Coord.z);
-        g.image(scales[(-bal) + 5], Coord.z);
-	g.atext(String.format("%d", intns), sword.sz().div(new Coord(2, 1)), 0.5, 1);
-    }
-    
-    public void uimsg(String msg, Object... args) {
-        if(msg == "upd") {
-            bal = (Integer)args[0];
-            intns = (Integer)args[1];
-            return;
-        }
-        super.uimsg(msg, args);
+	if(fv.off >= 200) {
+	    g.chcolor(offcol);
+	    g.frect(moc, new Coord(-fv.off / 200, 5));
+	}
+	if(fv.def >= 200) {
+	    g.chcolor(defcol);
+	    g.frect(mdc, new Coord(-fv.def / 200, 5));
+	}
+	g.chcolor();
+	if(rel != null) {
+	    g.aimage(intf.render(String.format("%d", rel.intns)).tex(), intc, 0.5, 0.5);
+	    if(rel.off >= 200) {
+		g.chcolor(offcol);
+		g.frect(ooc, new Coord(rel.off / 200, 5));
+	    }
+	    if(rel.def >= 200) {
+		g.chcolor(defcol);
+		g.frect(odc, new Coord(rel.def / 200, 5));
+	    }
+	    g.chcolor();
+	}
     }
 }

@@ -432,7 +432,8 @@ public class Widget {
 	    link();
 	}
     }
-	
+    
+    @Deprecated
     public <T extends Widget> T findchild(Class<T> cl) {
 	for(Widget wdg = child; wdg != null; wdg = wdg.next) {
 	    if(cl.isInstance(wdg))
