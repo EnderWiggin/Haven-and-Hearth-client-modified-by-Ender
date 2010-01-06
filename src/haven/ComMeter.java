@@ -32,8 +32,8 @@ public class ComMeter extends Widget {
     static Tex sword = Resource.loadtex("gfx/hud/combat/com/offdeff");
     static Text.Foundry intf = new Text.Foundry("Serif", 16);
     static Coord
-	moc = new Coord(53, 61),
-	mdc = new Coord(53, 71),
+	moc = new Coord(54, 61),
+	mdc = new Coord(54, 71),
 	ooc = new Coord(80, 61),
 	odc = new Coord(80, 71);
     static Coord intc = new Coord(66, 33);
