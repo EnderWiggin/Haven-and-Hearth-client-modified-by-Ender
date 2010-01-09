@@ -30,7 +30,6 @@ import java.awt.Color;
 
 public class ComWin extends HWindow {
     static Tex iptex = Resource.loadtex("gfx/hud/combat/ip");
-    Text iptext = Text.render("Initiative: ", Color.BLACK);
     Fightview fv;
     
     public ComWin(Widget parent, Fightview fv) {
@@ -72,11 +71,12 @@ public class ComWin extends HWindow {
 	    g.atext(res.layer(Resource.action).name, new Coord(50, 85), 0, 0.5);
 	    g.chcolor();
 	}
-	g.image(iptext.tex(), new Coord(200, 30));
+	g.image(iptex, new Coord(200, 32));
 	Fightview.Relation rel = fv.current;
 	if(rel != null) {
-	    for(int i = 0; i < rel.ip; i++)
-		g.image(iptex, new Coord(200 + iptext.sz().x + (i * 4), 32));
+	    g.chcolor(0, 0, 0, 255);
+	    g.text(Integer.toString(rel.ip), new Coord(205 + iptex.sz().x, 30));
+	    g.chcolor();
 	}
 	long now = System.currentTimeMillis();
 	if(now < fv.atkc) {
