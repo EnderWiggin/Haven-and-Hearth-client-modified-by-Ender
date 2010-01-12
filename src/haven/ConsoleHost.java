@@ -61,7 +61,7 @@ public abstract class ConsoleHost extends Widget {
 	    cancel();
 	}
 	
-	public void key(char c, int code, int mod) {
+	public boolean key(char c, int code, int mod) {
 	    if(c == 27) {
 		cancel();
 	    } else if((c == 8) && (mod == 0) && (line.length() == 0) && (point == 0)) {
@@ -80,8 +80,9 @@ public abstract class ConsoleHost extends Widget {
 			cmdline = new CommandLine(history.get(hpos));
 		}
 	    } else {
-		super.key(c, code, mod);
+		return(super.key(c, code, mod));
 	    }
+	    return(true);
 	}
     }
 
