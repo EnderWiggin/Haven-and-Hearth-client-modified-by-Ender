@@ -243,6 +243,12 @@ public class LineEdit {
 	    this.mode = new PCMode();
 	}
     }
+    
+    public LineEdit(String line) {
+	this();
+	this.line = line;
+	this.point = line.length();
+    }
 
     public void key(char c, int code, int mod) {
 	mode.key(c, code, mod);

@@ -31,7 +31,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import static haven.Inventory.invsq;
 
-public class SlenHud extends Widget implements DTarget, DropTarget, Console.Directory {
+public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory {
     public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
@@ -57,10 +57,8 @@ public class SlenHud extends Widget implements DTarget, DropTarget, Console.Dire
     FoldButton fb;
     Button sub, sdb;
     VC vc;
-    LineEdit cmdline = null;
     static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14), new Color(192, 0, 0));
-    static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12), new Color(245, 222, 179));
-    Text cmdtext, lasterr;
+    Text lasterr;
     long errtime;
     @SuppressWarnings("unchecked")
     Indir<Resource>[] belt = new Indir[10];
@@ -269,12 +267,8 @@ public class SlenHud extends Widget implements DTarget, DropTarget, Console.Dire
 	}
 	
 	if(cmdline != null) {
+	    drawcmd(g.reclip(new Coord(0, -20), new Coord(sz.x, 20)), new Coord(15, 0));
 	    GOut eg = g.reclip(new Coord(0, -20), new Coord(sz.x, 20));
-	    if((cmdtext == null) || (cmdtext.text != cmdline.line))
-		cmdtext = cmdfoundry.render(":" + cmdline.line);
-	    eg.image(cmdtext.tex(), new Coord(15, 0));
-	    int lx = cmdtext.advance(cmdline.point + 1);
-	    eg.line(new Coord(lx + 16, 2), new Coord(lx + 16, 14), 1);
 	} else if(lasterr != null) {
 	    if((System.currentTimeMillis() - errtime) > 3000) {
 		lasterr = null;
@@ -457,39 +451,12 @@ public class SlenHud extends Widget implements DTarget, DropTarget, Console.Dire
 	return(false);
     }
 	
-    private class CommandLine extends LineEdit {
-	private void cancel() {
-	    cmdline = null;
-	    ui.grabkeys(null);
-	}
-	
-	protected void done(String line) {
-	    try {
-		ui.cons.run(line);
-	    } catch(Exception e) {
-		error(e.getMessage());
-	    }
-	    cancel();
-	}
-	
-	public void key(char c, int code, int mod) {
-	    if(c == 27) {
-		cancel();
-	    } else if((c == 8) && (mod == 0) && (line.length() == 0) && (point == 0)) {
-		cancel();
-	    } else {
-		super.key(c, code, mod);
-	    }
-	}
-    }
-
     public boolean globtype(char ch, KeyEvent ev) {
 	if(ch == ' ') {
 	    vc.toggle();
 	    return(true);
 	} else if(ch == ':') {
-	    ui.grabkeys(this);
-	    cmdline = new CommandLine();
+	    entercmd();
 	    return(true);
 	} else if(ch == '0') {
 	    wdgmsg("belt", 9, 1, 0);
@@ -501,23 +468,6 @@ public class SlenHud extends Widget implements DTarget, DropTarget, Console.Dire
 	return(super.globtype(ch, ev));
     }
 	
-    public boolean type(char ch, KeyEvent ev) {
-	if(cmdline == null) {
-	    return(super.type(ch, ev));
-	} else {
-	    cmdline.key(ev);
-	    return(true);
-	}
-    }
-    
-    public boolean keydown(KeyEvent ev) {
-	if(cmdline != null) {
-	    cmdline.key(ev);
-	    return(true);
-	}
-	return(super.keydown(ev));
-    }
-    
     public int foldheight() {
 	return(600 - c.y);
     }
