@@ -150,4 +150,12 @@ public abstract class TexGL extends Tex {
 	    gl.glDeleteTextures(da.length, da, 0);
 	}
     }
+    
+    static {
+	Console.setscmd("texdis", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    disableall = (Integer.parseInt(args[1]) != 0);
+		}
+	    });
+    }
 }

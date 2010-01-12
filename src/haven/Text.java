@@ -175,6 +175,10 @@ public class Text {
     public Coord base() {
 	return(new Coord(0, m.getAscent()));
     }
+    
+    public int advance(int pos) {
+	return(m.stringWidth(text.substring(0, pos)));
+    }
 	
     public static Text render(String text, Color c) {
 	return(std.render(text, c));
