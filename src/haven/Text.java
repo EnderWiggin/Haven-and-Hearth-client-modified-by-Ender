@@ -58,7 +58,6 @@ public class Text {
     }
         
     public static class Foundry {
-	private Graphics tmpl;
 	private FontMetrics m;
 	Font font;
 	Color defcol;
@@ -68,7 +67,7 @@ public class Text {
 	    font = f;
 	    this.defcol = defcol;
 	    BufferedImage junk = TexI.mkbuf(new Coord(10, 10));
-	    tmpl = junk.getGraphics();
+	    Graphics tmpl = junk.getGraphics();
 	    tmpl.setFont(f);
 	    m = tmpl.getFontMetrics();
 	}
@@ -82,8 +81,8 @@ public class Text {
 	}
 		
 	private Coord strsize(String text) {
-	    Rectangle2D b = m.getStringBounds(text, tmpl);
-	    return(new Coord((int)b.getWidth(), (int)b.getHeight()));
+	    int h = m.getAscent() + m.getDescent();
+	    return(new Coord(m.stringWidth(text), h));
 	}
                 
 	public Text renderwrap(String text, Color c, int width) {
