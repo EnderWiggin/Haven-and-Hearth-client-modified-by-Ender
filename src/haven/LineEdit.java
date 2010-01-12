@@ -35,7 +35,7 @@ public class LineEdit {
     private static Text tcache = null;
     private static final int C = 1;
     private static final int M = 2;
-    public KeyHandler mode = new PCMode();
+    public KeyHandler mode;
 
     public abstract class KeyHandler {
 	public abstract void key(char c, int code, int mod);
@@ -180,7 +180,7 @@ public class LineEdit {
 		mode("");
 		kill(line.substring(point));
 		line = line.substring(0, point);
-	    } else if((c == 'w') && (mod == C)) {
+	    } else if((c == 'w') && (mod == M)) {
 		mode("");
 		if(mark < point) {
 		    kill(line.substring(mark, point));
@@ -232,6 +232,15 @@ public class LineEdit {
 		line = line.substring(0, point) + c + line.substring(point);
 		point++;
 	    }
+	}
+    }
+
+    public LineEdit() {
+	String mode = Utils.getpref("editmode", "pc");
+	if(mode.equals("emacs")) {
+	    this.mode = new EmacsMode();
+	} else {
+	    this.mode = new PCMode();
 	}
     }
 
@@ -287,5 +296,13 @@ public class LineEdit {
 	if((tcache == null) || (tcache.text != line))
 	    tcache = f.render(line);
 	return(tcache);
+    }
+    
+    static {
+	Console.setscmd("editmode", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    Utils.setpref("editmode", args[1]);
+		}
+	    });
     }
 }
