@@ -38,11 +38,11 @@ public class LineEdit {
     public KeyHandler mode;
 
     public abstract class KeyHandler {
-	public abstract void key(char c, int code, int mod);
+	public abstract boolean key(char c, int code, int mod);
     }
 
     public class PCMode extends KeyHandler {
-	public void key(char c, int code, int mod) {
+	public boolean key(char c, int code, int mod) {
 	    if((c == 8) && (mod == 0)) {
 		if(point > 0) {
 		    line = line.substring(0, point - 1) + line.substring(point);
@@ -77,7 +77,10 @@ public class LineEdit {
 		point = 0;
 	    } else if((code == KeyEvent.VK_END) && (mod == 0)) {
 		point = line.length();
+	    } else {
+		return(false);
 	    }
+	    return(true);
 	}
     }
     
@@ -113,7 +116,9 @@ public class LineEdit {
 	    yanklist.add(text);
 	}
 	
-	public void key(char c, int code, int mod) {
+	public boolean key(char c, int code, int mod) {
+	    if(mark > line.length())
+		mark = line.length();
 	    String last = this.last;
 	    if((c == 8) && (mod == 0)) {
 		mode("erase");
@@ -231,7 +236,10 @@ public class LineEdit {
 		mode("type");
 		line = line.substring(0, point) + c + line.substring(point);
 		point++;
+	    } else {
+		return(false);
 	    }
+	    return(true);
 	}
     }
 
@@ -249,12 +257,25 @@ public class LineEdit {
 	this.line = line;
 	this.point = line.length();
     }
-
-    public void key(char c, int code, int mod) {
-	mode.key(c, code, mod);
+    
+    public void setline(String line) {
+	String prev = this.line;
+	this.line = line;
+	if(point > line.length())
+	    point = line.length();
+	if(!prev.equals(line))
+	    changed();
     }
 
-    public void key(KeyEvent ev) {
+    public boolean key(char c, int code, int mod) {
+	String prev = line;
+	boolean ret = mode.key(c, code, mod);
+	if(!prev.equals(line))
+	    changed();
+	return(ret);
+    }
+
+    public boolean key(KeyEvent ev) {
 	int mod = 0;
 	if((ev.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) mod |= C;
 	if((ev.getModifiersEx() & (InputEvent.META_DOWN_MASK | InputEvent.ALT_DOWN_MASK)) != 0) mod |= M;
@@ -273,11 +294,12 @@ public class LineEdit {
 			c = (char)(c + 'a' - 1);
 		}
 	    }
-	    key(c, ev.getKeyCode(), mod);
+	    return(key(c, ev.getKeyCode(), mod));
 	} else if(ev.getID() == KeyEvent.KEY_PRESSED) {
 	    if(ev.getKeyChar() == KeyEvent.CHAR_UNDEFINED)
-		key('\0', ev.getKeyCode(), mod);
+		return(key('\0', ev.getKeyCode(), mod));
 	}
+	return(false);
     }
     
     private static boolean wordchar(char c) {
@@ -297,6 +319,7 @@ public class LineEdit {
     }
 
     protected void done(String line) {}
+    protected void changed() {}
     
     public Text render(Text.Foundry f) {
 	if((tcache == null) || (tcache.text != line))
