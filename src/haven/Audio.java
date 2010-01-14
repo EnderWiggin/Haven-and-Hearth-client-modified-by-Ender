@@ -299,4 +299,17 @@ public class Audio {
 	for(DataClip c : clips)
 	    c.finwait();
     }
+    
+    static {
+	Console.setscmd("sfx", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    play(Resource.load(args[1]));
+		}
+	    });
+	Console.setscmd("sfxvol", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    setvolume(Double.parseDouble(args[1]));
+		}
+	    });
+    }
 }

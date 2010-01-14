@@ -45,6 +45,7 @@ public class UI {
     public Widget mouseon;
     public Object tooltip = null;
     public FSMan fsm;
+    public Console cons = new WidgetConsole();
     private Collection<AfterDraw> afterdraws = null;
 	
     public interface Receiver {
@@ -55,6 +56,48 @@ public class UI {
 	public void draw(GOut g);
     }
 	
+    private class WidgetConsole extends Console {
+	{
+	    setcmd("q", new Command() {
+		    public void run(Console cons, String[] args) {
+			Utils.tg().interrupt();
+		    }
+		});
+	    setcmd("lo", new Command() {
+		    public void run(Console cons, String[] args) {
+			sess.close();
+		    }
+		});
+	    setcmd("fs", new Command() {
+		    public void run(Console cons, String[] args) {
+			if((args.length >= 2) && (fsm != null)) {
+			    if(Utils.atoi(args[1]) != 0)
+				fsm.setfs();
+			    else
+				fsm.setwnd();
+			}
+		    }
+		});
+	}
+	
+	private void findcmds(Map<String, Command> map, Widget wdg) {
+	    if(wdg instanceof Directory) {
+		Map<String, Command> cmds = ((Directory)wdg).findcmds();
+		synchronized(cmds) {
+		    map.putAll(cmds);
+		}
+	    }
+	    for(Widget ch = wdg.child; ch != null; ch = ch.next)
+		findcmds(map, ch);
+	}
+
+	public Map<String, Command> findcmds() {
+	    Map<String, Command> ret = super.findcmds();
+	    findcmds(ret, root);
+	    return(ret);
+	}
+    }
+
     @SuppressWarnings("serial")
     public static class UIException extends RuntimeException {
 	public String mname;

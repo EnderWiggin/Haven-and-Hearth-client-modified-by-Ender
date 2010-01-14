@@ -28,7 +28,7 @@ package haven;
 
 import java.awt.event.KeyEvent;
 
-public class RootWidget extends Widget {
+public class RootWidget extends ConsoleHost {
     Logout logout = null;
     Profile gprof;
     boolean afk = false;
@@ -41,27 +41,14 @@ public class RootWidget extends Widget {
 	
     public boolean globtype(char key, KeyEvent ev) {
 	if(!super.globtype(key, ev)) {
-	    /*
-	      if(key == 27) {
-	      if(logout == null) {
-	      if(ui.sess != null)
-	      logout = new Logout(new Coord(338, 275), this) {
-	      public void destroy() { 
-	      super.destroy();
-	      logout = null;
-	      }
-	      };
-	      } else {
-	      ui.destroy(logout);
-	      logout = null;
-	      }
-	      } else */
 	    if(Config.profile && (key == '`')) {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
 	    } else if(Config.profile && (key == '~')) {
 		new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
 	    } else if(Config.profile && (key == '!')) {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).mask.prof, "ILM prof");
+	    } else if(key == ':') {
+		entercmd();
 	    } else if(key != 0) {
 		wdgmsg("gk", (int)key);
 	    }
@@ -71,6 +58,7 @@ public class RootWidget extends Widget {
 
     public void draw(GOut g) {
 	super.draw(g);
+	drawcmd(g, new Coord(20, 580));
 	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
 	    afk = true;
 	    Widget slen = findchild(SlenHud.class);
@@ -79,5 +67,8 @@ public class RootWidget extends Widget {
 	} else if(afk && (System.currentTimeMillis() - ui.lastevent < 300000)) {
 	    afk = false;
 	}
+    }
+    
+    public void error(String msg) {
     }
 }

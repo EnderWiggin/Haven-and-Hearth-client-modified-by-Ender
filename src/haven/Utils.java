@@ -469,4 +469,17 @@ public class Utils {
 			 ((in.getBlue() * f2) + (bl.getBlue() * f1)) / 255,
 			 in.getAlpha()));
     }
+    
+    static {
+	Console.setscmd("die", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    throw(new Error("Triggered death"));
+		}
+	    });
+	Console.setscmd("threads", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    Utils.dumptg(null, cons.out);
+		}
+	    });
+    }
 }

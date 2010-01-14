@@ -31,7 +31,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import static haven.Inventory.invsq;
 
-public class SlenHud extends Widget implements DTarget, DropTarget {
+public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory {
     public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
@@ -57,10 +57,8 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
     FoldButton fb;
     Button sub, sdb;
     VC vc;
-    String cmdline = null;
     static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14), new Color(192, 0, 0));
-    static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12), new Color(245, 222, 179));
-    Text cmdtext, lasterr;
+    Text lasterr;
     long errtime;
     @SuppressWarnings("unchecked")
     Indir<Resource>[] belt = new Indir[10];
@@ -218,100 +216,6 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	    return(c.add(bgc.inv()));
     }
 	
-    public void runcmd(String[] argv) {
-	String cmd = argv[0].intern();
-	boolean die = false;
-	try {
-	    if(cmd == "q") {
-		Utils.tg().interrupt();
-	    } else if(cmd == "lo") {
-		ui.sess.close();
-	    } else if(cmd == "afk") {
-		wdgmsg("afk");
-	    } else if(cmd == "fs") {
-		if((argv.length >= 2) && (ui.fsm != null)) {
-		    if(Utils.atoi(argv[1]) != 0)
-			ui.fsm.setfs();
-		    else
-			ui.fsm.setwnd();
-		}
-	    } else if(cmd == "sfx") {
-		Audio.play(Resource.load(argv[1]));
-	    } else if(cmd == "bgm") {
-		int i = 1;
-		String opt;
-		boolean loop = false;
-		if(i < argv.length) {
-		    while((opt = argv[i]).charAt(0) == '-') {
-			i++;
-			if(opt.equals("-l"))
-			    loop = true;
-		    }
-		    String resnm = argv[i++];
-		    int ver = -1;
-		    if(i < argv.length)
-			ver = Integer.parseInt(argv[i++]);
-		    Music.play(Resource.load(resnm, ver), loop);
-		} else {
-		    Music.play(null, false);
-		}		
-	    } else if(cmd == "texdis") {
-		TexGL.disableall = (Integer.parseInt(argv[1]) != 0);
-	    } else if(cmd == "die") {
-		die = true;
-	    } else if(cmd == "browse") {
-		if(WebBrowser.self != null) {
-		    WebBrowser.self.show(new java.net.URL(argv[1]));
-		} else {
-		    error("No web browser available");
-		}
-	    } else if(cmd == "threads") {
-		java.io.StringWriter out = new java.io.StringWriter();
-		Utils.dumptg(null, new java.io.PrintWriter(out));
-		for(HWindow w : wnds) {
-		    if(w.title.equals("Messages")) {
-			for(String line : Utils.splitlines(out.toString()))
-			    ((Logwindow)w).log.append(line);
-		    }
-		}
-	    } else if(cmd == "cam") {
-		if(argv.length >= 2) {
-		    MapView mv = ui.root.findchild(MapView.class);
-		    if(argv[1].equals("orig")) {
-			mv.cam = new MapView.OrigCam();
-		    } else if(argv[1].equals("kingsquest")) {
-			mv.cam = new MapView.WrapCam();
-		    } else if(argv[1].equals("border")) {
-			mv.cam = new MapView.BorderCam();
-		    } else if(argv[1].equals("predict")) {
-			mv.cam = new MapView.PredictCam();
-		    } else if(argv[1].equals("fixed")) {
-			mv.cam = new MapView.FixedCam();
-		    }
-		}
-	    } else if(cmd == "plol") {
-		MapView mv = ui.root.findchild(MapView.class);
-		Indir<Resource> res = Resource.load(argv[1]).indir();
-		Message sdt;
-		if(argv.length > 2)
-		    sdt = new Message(0, Utils.hex2byte(argv[2]));
-		else
-		    sdt = new Message(0);
-		Gob pl;
-		if((mv.playergob >= 0) && ((pl = ui.sess.glob.oc.getgob(mv.playergob)) != null))
-		    pl.ols.add(new Gob.Overlay(-1, res, sdt));
-	    } else if(cmd == "sfxvol") {
-		Audio.setvolume(Double.parseDouble(argv[1]));
-	    } else {
-		error(cmd + ": no such command");
-	    }
-	} catch(Exception e) {
-	    error(e.getMessage());
-	}
-	if(die)
-	    throw(new RuntimeException("Triggered death"));
-    }
-	
     public void error(String err) {
 	lasterr = errfoundry.render(err);
 	errtime = System.currentTimeMillis();
@@ -363,11 +267,8 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	}
 	
 	if(cmdline != null) {
+	    drawcmd(g.reclip(new Coord(0, -20), new Coord(sz.x, 20)), new Coord(15, 0));
 	    GOut eg = g.reclip(new Coord(0, -20), new Coord(sz.x, 20));
-	    if((cmdtext == null) || !cmdtext.text.equals(cmdline))
-		cmdtext = cmdfoundry.render(":" + cmdline);
-	    eg.image(cmdtext.tex(), new Coord(15, 0));
-	    eg.line(new Coord(cmdtext.sz().x + 16, 2), new Coord(cmdtext.sz().x + 16, 14), 1);
 	} else if(lasterr != null) {
 	    if((System.currentTimeMillis() - errtime) > 3000) {
 		lasterr = null;
@@ -494,6 +395,23 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 		}
 	    });
 	updbtns();
+	if(wnd.title.equals("Messages")) {
+	    ui.cons.out = new java.io.PrintWriter(new java.io.Writer() {
+		    StringBuilder buf = new StringBuilder();
+		    
+		    public void write(char[] src, int off, int len) {
+			buf.append(src, off, len);
+			int p;
+			while((p = buf.indexOf("\n")) >= 0) {
+			    ((Logwindow)wnd).log.append(buf.substring(0, p));
+			    buf.delete(0, p + 1);
+			}
+		    }
+		    
+		    public void close() {}
+		    public void flush() {}
+		});
+	}
     }
 	
     public void remwnd(HWindow wnd) {
@@ -538,8 +456,7 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	    vc.toggle();
 	    return(true);
 	} else if(ch == ':') {
-	    ui.grabkeys(this);
-	    cmdline = "";
+	    entercmd();
 	    return(true);
 	} else if(ch == '0') {
 	    wdgmsg("belt", 9, 1, 0);
@@ -551,35 +468,6 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	return(super.globtype(ch, ev));
     }
 	
-    public boolean type(char ch, KeyEvent ev) {
-	if(cmdline == null) {
-	    return(super.type(ch, ev));
-	} else {
-	    if(ch >= 32) {
-		cmdline += ch;
-	    } else if(ch == 8) {
-		if(cmdline.length() > 0) {
-		    cmdline = cmdline.substring(0, cmdline.length() - 1);
-		} else {
-		    cmdline = null;
-		    ui.grabkeys(null);
-		}
-	    } else if(ch == 27) {
-		cmdline = null;
-		ui.grabkeys(null);
-	    } else if(ch == 10) {
-		String[] argv = Utils.splitwords(cmdline);
-		if(argv != null) {
-		    if(argv.length > 0)
-			runcmd(argv);
-		    cmdline = null;
-		    ui.grabkeys(null);
-		}
-	    }
-	    return(true);
-	}
-    }
-    
     public int foldheight() {
 	return(600 - c.y);
     }
@@ -609,5 +497,17 @@ public class SlenHud extends Widget implements DTarget, DropTarget {
 	    }
 	}
 	return(false);
+    }
+
+    private Map<String, Console.Command> cmdmap = new TreeMap<String, Console.Command>();
+    {
+	cmdmap.put("afk", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    wdgmsg("afk");
+		}
+	    });
+    }
+    public Map<String, Console.Command> findcmds() {
+	return(cmdmap);
     }
 }

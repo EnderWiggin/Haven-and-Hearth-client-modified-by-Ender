@@ -32,7 +32,7 @@ import haven.Resource.Tile;
 import java.awt.Color;
 import java.util.*;
 
-public class MapView extends Widget implements DTarget {
+public class MapView extends Widget implements DTarget, Console.Directory {
     public Coord mc, mousepos, pmousepos;
     Camera cam;
     Sprite.Part[] clickable = {};
@@ -896,5 +896,42 @@ public class MapView extends Widget implements DTarget {
 	else
 	    wdgmsg("itemact", cc, mc, ui.modflags(), hit.id, hit.getc());
 	return(true);
+    }
+    
+    private Map<String, Console.Command> cmdmap = new TreeMap<String, Console.Command>();
+    {
+	cmdmap.put("cam", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    if(args.length >= 2) {
+			if(args[1].equals("orig")) {
+			    cam = new OrigCam();
+			} else if(args[1].equals("kingsquest")) {
+			    cam = new WrapCam();
+			} else if(args[1].equals("border")) {
+			    cam = new BorderCam();
+			} else if(args[1].equals("predict")) {
+			    cam = new PredictCam();
+			} else if(args[1].equals("fixed")) {
+			    cam = new FixedCam();
+			}
+		    }
+		}
+	    });
+	cmdmap.put("plol", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    Indir<Resource> res = Resource.load(args[1]).indir();
+		    Message sdt;
+		    if(args.length > 2)
+			sdt = new Message(0, Utils.hex2byte(args[2]));
+		    else
+			sdt = new Message(0);
+		    Gob pl;
+		    if((playergob >= 0) && ((pl = glob.oc.getgob(playergob)) != null))
+			pl.ols.add(new Gob.Overlay(-1, res, sdt));
+		}
+	    });
+    }
+    public Map<String, Console.Command> findcmds() {
+	return(cmdmap);
     }
 }
