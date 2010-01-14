@@ -205,7 +205,6 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     private static void main2(String[] args) {
 	Config.cmdline(args);
 	ThreadGroup g = Utils.tg();
-	Resource.loadergroup = g;
 	setupres();
 	MainFrame f = new MainFrame(800, 600);
 	if(Config.fullscreen)
