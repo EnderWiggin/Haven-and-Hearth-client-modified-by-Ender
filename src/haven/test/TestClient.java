@@ -50,7 +50,7 @@ public class TestClient implements Runnable {
 	}
 	this.user = user;
 	this.cookie = new byte[64];
-	tg = new ThreadGroup(Utils.tg(), "Test client") {
+	tg = new ThreadGroup(HackThread.tg(), "Test client") {
 		public void uncaughtException(Thread t, Throwable e) {
 		    synchronized(errsync) {
 			System.err.println("Exception in test client: " + TestClient.this.user);
@@ -138,7 +138,7 @@ public class TestClient implements Runnable {
     }
     
     public void start() {
-	me = new Thread(tg, this, "Main thread");
+	me = new HackThread(tg, this, "Main thread");
 	me.start();
     }
     

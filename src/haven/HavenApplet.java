@@ -141,9 +141,9 @@ public class HavenApplet extends Applet {
 	synchronized(applets) {
 	    applets.put(p, this);
 	}
-	Thread main = new Thread(p, new Runnable() {
+	Thread main = new HackThread(p, new Runnable() {
 		public void run() {
-		    Thread ui = new Thread(Utils.tg(), h, "Haven UI thread");
+		    Thread ui = new HackThread(h, "Haven UI thread");
 		    ui.start();
 		    try {
 			while(true) {
@@ -160,7 +160,7 @@ public class HavenApplet extends Applet {
 			ui.interrupt();
 		    }
 		}
-	    });
+	    }, "Haven main thread");
 	main.start();
 	running = true;
     }
@@ -189,7 +189,7 @@ public class HavenApplet extends Applet {
 		public void show(URL url) {
 		    HavenApplet a;
 		    synchronized(applets) {
-			a = applets.get(Utils.tg());
+			a = applets.get(HackThread.tg());
 		    }
 		    if(a != null)
 			a.getAppletContext().showDocument(url);

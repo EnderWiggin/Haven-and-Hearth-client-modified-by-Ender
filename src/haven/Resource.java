@@ -356,10 +356,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	    synchronized(Loader.this) {
 		if(th == null) {
-		    ThreadGroup tg = loadergroup;
-		    if(tg == null)
-			tg = Utils.tg();
-		    th = new Thread(tg, Loader.this, "Haven resource loader");
+		    th = new HackThread(loadergroup, Loader.this, "Haven resource loader");
 		    th.setDaemon(true);
 		    th.start();
 		}

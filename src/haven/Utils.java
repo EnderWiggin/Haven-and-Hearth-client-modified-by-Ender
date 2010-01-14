@@ -43,11 +43,11 @@ public class Utils {
 	return(new Coord(img.getWidth(), img.getHeight()));
     }
 	
-    public static class Background extends Thread {
+    public static class Background extends HackThread {
 	Queue<Runnable> q = new LinkedList<Runnable>();
 		
 	public Background() {
-	    super(tg(), "Haven deferred procedure thread");
+	    super("Haven deferred procedure thread");
 	    setDaemon(true);
 	    start();
 	}
@@ -115,10 +115,6 @@ public class Utils {
 	g.drawString(text, (int)(c.x - ts.getWidth() * ax), (int)(c.y + m.getAscent() - ts.getHeight() * ay));
     }
 	
-    public static ThreadGroup tg() {
-	return(Thread.currentThread().getThreadGroup());
-    }
-
     static void line(Graphics g, Coord c1, Coord c2) {
 	g.drawLine(c1.x, c1.y, c2.x, c2.y);
     }
@@ -388,7 +384,7 @@ public class Utils {
 
     public static void dumptg(ThreadGroup tg, PrintWriter out) {
 	if(tg == null) {
-	    tg = tg();
+	    tg = Thread.currentThread().getThreadGroup();
 	    while(tg.getParent() != null)
 		tg = tg.getParent();
 	}
