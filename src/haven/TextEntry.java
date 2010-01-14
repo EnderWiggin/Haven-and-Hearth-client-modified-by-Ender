@@ -31,6 +31,7 @@ import java.awt.event.KeyEvent;
 
 public class TextEntry extends Widget {
     LineEdit buf;
+    int sx;
     boolean pw = false;
     static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12), Color.BLACK);
     Text tcache = null;
@@ -73,9 +74,12 @@ public class TextEntry extends Widget {
 	g.frect(Coord.z, sz);
 	if((tcache == null) || !tcache.text.equals(dtext))
 	    tcache = fnd.render(dtext);
-	g.image(tcache.tex(), Coord.z);
+	int cx = tcache.advance(buf.point);
+	if(cx < sx) sx = cx;
+	if(cx > sx + (sz.x - 1)) sx = cx - (sz.x - 1);
+	g.image(tcache.tex(), new Coord(-sx, 0));
 	if(hasfocus && ((System.currentTimeMillis() % 1000) > 500)) {
-	    int lx = tcache.advance(buf.point) + 1;
+	    int lx = cx - sx + 1;
 	    g.chcolor(0, 0, 0, 255);
 	    g.line(new Coord(lx, 1), new Coord(lx, tcache.sz().y - 1), 1);
 	    g.chcolor();
