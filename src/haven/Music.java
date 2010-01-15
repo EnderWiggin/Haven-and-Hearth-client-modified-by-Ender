@@ -37,7 +37,7 @@ public class Music {
 	    System.out.println(str);
     }
 
-    private static class Player extends Thread {
+    private static class Player extends HackThread {
 	private Resource res;
 	private Thread waitfor;
 	private Sequencer seq;
@@ -46,7 +46,7 @@ public class Music {
 	private boolean loop = false;
 	
 	private Player(Resource res, Thread waitfor) {
-	    super(Utils.tg(), "Music player");
+	    super("Music player");
 	    setDaemon(true);
 	    this.res = res;
 	    this.waitfor = waitfor;

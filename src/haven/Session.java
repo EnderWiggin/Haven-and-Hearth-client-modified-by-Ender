@@ -151,9 +151,9 @@ public class Session {
 	}
     }
     
-    private class Ticker extends Thread {
+    private class Ticker extends HackThread {
 	public Ticker() {
-	    super(Utils.tg(), "Server time ticker");
+	    super("Server time ticker");
 	    setDaemon(true);
 	}
 		
@@ -171,11 +171,11 @@ public class Session {
 	}
     }
 	
-    private class RWorker extends Thread {
+    private class RWorker extends HackThread {
 	boolean alive;
 		
 	public RWorker() {
-	    super(Utils.tg(), "Session reader");
+	    super("Session reader");
 	    setDaemon(true);
 	}
 		
@@ -490,10 +490,10 @@ public class Session {
 	}
     }
 	
-    private class SWorker extends Thread {
+    private class SWorker extends HackThread {
 		
 	public SWorker() {
-	    super(Utils.tg(), "Session writer");
+	    super("Session writer");
 	    setDaemon(true);
 	}
 		
