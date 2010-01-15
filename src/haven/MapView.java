@@ -784,9 +784,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	double ca = -Coord.z.angle(hsz);
 	for(Party.Member m : glob.party.memb.values()) {
 	    //Gob gob = glob.oc.getgob(id);
-	    if(m.getc() == null)
+	    Coord mc = m.getc();
+	    if(mc == null)
 		continue;
-	    Coord sc = m2s(m.getc()).add(oc);
+	    Coord sc = m2s(mc).add(oc);
 	    if(!sc.isect(Coord.z, sz)) {
 		double a = -hsz.angle(sc);
 		Coord ac;
