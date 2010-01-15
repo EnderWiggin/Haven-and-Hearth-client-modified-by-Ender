@@ -422,22 +422,26 @@ public class MCache {
     }
 	
     public void trim(Coord ul, Coord lr) {
-	for(Iterator<Map.Entry<Coord, Grid>> i = grids.entrySet().iterator(); i.hasNext();) {
-	    Map.Entry<Coord, Grid> e = i.next();
-	    Coord gc = e.getKey();
-	    Grid g = e.getValue();
-	    if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
-		i.remove();
-		g.remove();
+	synchronized(grids) {
+	    for(Iterator<Map.Entry<Coord, Grid>> i = grids.entrySet().iterator(); i.hasNext();) {
+		Map.Entry<Coord, Grid> e = i.next();
+		Coord gc = e.getKey();
+		Grid g = e.getValue();
+		if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
+		    i.remove();
+		    g.remove();
+		}
 	    }
 	}
-	for(Iterator<Map.Entry<Coord, Grid>> i = req.entrySet().iterator(); i.hasNext();) {
-	    Map.Entry<Coord, Grid> e = i.next();
-	    Coord gc = e.getKey();
-	    Grid g = e.getValue();
-	    if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
-		i.remove();
-		g.remove();
+	synchronized(req) {
+	    for(Iterator<Map.Entry<Coord, Grid>> i = req.entrySet().iterator(); i.hasNext();) {
+		Map.Entry<Coord, Grid> e = i.next();
+		Coord gc = e.getKey();
+		Grid g = e.getValue();
+		if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y)) {
+		    i.remove();
+		    g.remove();
+		}
 	    }
 	}
     }
