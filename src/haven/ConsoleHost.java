@@ -32,7 +32,7 @@ import java.awt.event.KeyEvent;
 public abstract class ConsoleHost extends Widget {
     public static Text.Foundry cmdfoundry = new Text.Foundry(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12), new java.awt.Color(245, 222, 179));
     LineEdit cmdline = null;
-    private Text cmdtext = null;
+    private Text.Line cmdtext = null;
     private List<String> history = new ArrayList<String>();
     private int hpos = history.size();
     private String hcurrent;

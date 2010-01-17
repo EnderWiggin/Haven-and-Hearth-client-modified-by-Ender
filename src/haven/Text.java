@@ -35,7 +35,6 @@ public class Text {
     public static final Foundry std;
     public BufferedImage img;
     public final String text;
-    private FontMetrics m;
     private Tex tex;
     public static final Color black = Color.BLACK;
     public static final Color white = Color.WHITE;
@@ -44,6 +43,22 @@ public class Text {
 	std = new Foundry(new Font("SansSerif", Font.PLAIN, 10));
     }
 	
+    public static class Line extends Text {
+	private FontMetrics m;
+
+	private Line(String text) {
+	    super(text);
+	}
+
+	public Coord base() {
+	    return(new Coord(0, m.getAscent()));
+	}
+    
+	public int advance(int pos) {
+	    return(m.stringWidth(text.substring(0, pos)));
+	}
+    }
+
     public static int[] findspaces(String text) {
 	java.util.List<Integer> l = new ArrayList<Integer>();
 	for(int i = 0; i < text.length(); i++) {
@@ -86,7 +101,7 @@ public class Text {
 	}
                 
 	public Text renderwrap(String text, Color c, int width) {
-	    Text t = new Text(text);
+	    Line t = new Line(text);
 	    int y = 0;
 	    int[] sl = findspaces(text);
 	    int s = 0, e = 0, i = 0;
@@ -137,8 +152,8 @@ public class Text {
 	    return(renderwrap(text, defcol, width));
 	}
                 
-	public Text render(String text, Color c) {
-	    Text t = new Text(text);
+	public Line render(String text, Color c) {
+	    Line t = new Line(text);
 	    Coord sz = strsize(text);
 	    if(sz.x < 1)
 		sz = sz.add(1, 0);
@@ -154,16 +169,16 @@ public class Text {
 	    return(t);
 	}
 		
-	public Text render(String text) {
+	public Line render(String text) {
 	    return(render(text, defcol));
 	}
                 
-	public Text renderf(String fmt, Object... args) {
+	public Line renderf(String fmt, Object... args) {
 	    return(render(String.format(fmt, args)));
 	}
     }
 	
-    private Text(String text) {
+    protected Text(String text) {
 	this.text = text;
     }
 	
@@ -171,23 +186,15 @@ public class Text {
 	return(Utils.imgsz(img));
     }
 	
-    public Coord base() {
-	return(new Coord(0, m.getAscent()));
-    }
-    
-    public int advance(int pos) {
-	return(m.stringWidth(text.substring(0, pos)));
-    }
-	
-    public static Text render(String text, Color c) {
+    public static Line render(String text, Color c) {
 	return(std.render(text, c));
     }
 	
-    public static Text renderf(Color c, String text, Object... args) {
+    public static Line renderf(Color c, String text, Object... args) {
 	return(std.render(String.format(text, args), c));
     }
 	
-    public static Text render(String text) {
+    public static Line render(String text) {
 	return(render(text, Color.WHITE));
     }
 	
