@@ -90,6 +90,7 @@ public class RichText extends Text {
 	
 	public int width() {return(0);}
 	public int height() {return(0);}
+	public int baseline() {return(0);}
 	public void render(Graphics2D g) {}
 	public Part split(int w) {
 	    return(this);
@@ -117,6 +118,7 @@ public class RichText extends Text {
 	
 	public int width() {return(img.getWidth());}
 	public int height() {return(img.getHeight());}
+	public int baseline() {return(img.getHeight());}
 
 	public void render(Graphics2D g) {
 	    g.drawImage(img, x, y, null);
@@ -186,6 +188,11 @@ public class RichText extends Text {
 	public int height() {
 	    if(start == end) return(0);
 	    return((int)(tl().getAscent() + tl().getDescent() + tl().getLeading()));
+	}
+	
+	public int baseline() {
+	    if(start == end) return(0);
+	    return((int)tl().getAscent());
 	}
 	
 	private Part split2(int e1, int s2) {
@@ -400,15 +407,27 @@ public class RichText extends Text {
 	    this(new Parser(attrs));
 	}
 	
+	private static void aline/* Hurrhurr, pun intended*/(List<Part> line, int y) {
+	    int mb = 0;
+	    for(Part p : line) {
+		int cb = p.baseline();
+		if(cb > mb) mb = cb;
+	    }
+	    for(Part p : line) {
+		p.y = y + mb - p.baseline();
+	    }
+	}
+
 	private static List<Part> layout(Part fp, int w) {
 	    List<Part> ret = new LinkedList<Part>();
+	    List<Part> line = new LinkedList<Part>();
 	    int x = 0, y = 0;
 	    int mw = 0, lh = 0;
 	    for(Part p = fp; p != null; p = p.next) {
 		boolean lb = p instanceof Newline;
 		int pw, ph;
 		while(true) {
-		    p.x = x; p.y = y;
+		    p.x = x;
 		    pw = p.width();
 		    ph = p.height();
 		    if(w > 0) {
@@ -421,15 +440,19 @@ public class RichText extends Text {
 		    break;
 		}
 		ret.add(p);
+		line.add(p);
 		if(ph > lh) lh = ph;
 		x += pw;
 		if(x > mw) mw = x;
 		if(lb) {
+		    aline(line, y);
 		    x = 0;
 		    y += lh;
 		    lh = 0;
+		    line = new LinkedList<Part>();
 		}
 	    }
+	    aline(line, y);
 	    return(ret);
 	}
 
