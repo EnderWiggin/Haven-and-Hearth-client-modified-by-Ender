@@ -110,6 +110,8 @@ public class Text {
 			break;
 		    }
 		} while(i <= sl.length);
+		if(e < s)
+		    return(Text.render("Text rendering failure", Color.RED));
 		String line = text.substring(s, e);
 		lines.add(line);
 		Coord b = strsize(line);
