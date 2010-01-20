@@ -33,6 +33,8 @@ import java.awt.Color;
 import java.util.*;
 
 public class MapView extends Widget implements DTarget, Console.Directory {
+    static Color[] olc = new Color[31];
+    static Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
     public Coord mc, mousepos, pmousepos;
     Camera cam;
     Sprite.Part[] clickable = {};
@@ -40,7 +42,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
-    static Color[] olc = new Color[31];
     public boolean authdraw = Utils.getpref("authdraw", "on").equals("on");
     Grabber grab = null;
     ILM mask;
@@ -177,6 +178,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    return(false);
 	}
     }
+    static {camtypes.put("orig", OrigCam.class);}
 
     static class WrapCam extends Camera {
 	public final Coord region = new Coord(200, 150);
@@ -193,6 +195,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		mv.mc = mv.mc.add(s2m(new Coord(0, region.y * 2)));
 	}
     }
+    static {camtypes.put("kingsquest", WrapCam.class);}
 
     static class BorderCam extends DragCam {
 	public final Coord border = new Coord(250, 150);
@@ -201,6 +204,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    borderize(mv, player, sz, border);
 	}
     }
+    static {camtypes.put("border", BorderCam.class);}
     
     static class PredictCam extends DragCam {
 	private double xa = 0, ya = 0;
@@ -274,6 +278,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    reset = true;
 	}
     }
+    static {camtypes.put("predict", PredictCam.class);}
     
     static class FixedCam extends DragCam {
 	public final Coord border = new Coord(250, 150);
@@ -293,6 +298,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    setoff = true;
 	}
     }
+    static {camtypes.put("fixed", FixedCam.class);}
     
     private class Loading extends RuntimeException {}
     
@@ -904,16 +910,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	cmdmap.put("cam", new Console.Command() {
 		public void run(Console cons, String[] args) {
 		    if(args.length >= 2) {
-			if(args[1].equals("orig")) {
-			    cam = new OrigCam();
-			} else if(args[1].equals("kingsquest")) {
-			    cam = new WrapCam();
-			} else if(args[1].equals("border")) {
-			    cam = new BorderCam();
-			} else if(args[1].equals("predict")) {
-			    cam = new PredictCam();
-			} else if(args[1].equals("fixed")) {
-			    cam = new FixedCam();
+			Class<? extends Camera> ct = camtypes.get(args[1]);
+			if(ct != null) {
+			    try {
+				cam = ct.newInstance();
+			    } catch(Exception e) {
+				throw(new Error(e));
+			    }
+			} else {
+			    throw(new RuntimeException("no such camera: " + args[1]));
 			}
 		    }
 		}
