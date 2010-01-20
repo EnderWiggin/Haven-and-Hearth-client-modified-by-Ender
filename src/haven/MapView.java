@@ -306,7 +306,16 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	super(c, sz, parent);
 	this.mc = mc;
 	this.playergob = playergob;
-	cam = new BorderCam();
+	{
+	    Class<? extends Camera> ct = camtypes.get(Utils.getpref("defcam", "border"));
+	    if(ct == null)
+		ct = BorderCam.class;
+	    try {
+		this.cam = ct.newInstance();
+	    } catch(Exception e) {
+		throw(new Error(e));
+	    }
+	}
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
@@ -917,6 +926,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			    } catch(Exception e) {
 				throw(new Error(e));
 			    }
+			    Utils.setpref("defcam", args[1]);
 			} else {
 			    throw(new RuntimeException("no such camera: " + args[1]));
 			}
