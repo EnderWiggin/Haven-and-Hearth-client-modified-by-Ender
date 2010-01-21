@@ -228,7 +228,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		    if(res.prio >= 0)
 			used.add(res);
 		}
-		dumplist(used, new PrintWriter(ResCache.global.store("tmp/allused")));
+		Resource.dumplist(used, new OutputStreamWriter(ResCache.global.store("tmp/allused"), "UTF-8"));
 	    } catch(IOException e) {}
 	}
     }
@@ -269,22 +269,15 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	
     private static void dumplist(Collection<Resource> list, String fn) {
 	try {
-	    if(fn != null)
-		dumplist(list, new PrintWriter(fn));
-	} catch(Exception e) {
-	    throw(new RuntimeException(e));
-	}
-    }
-    
-    private static void dumplist(Collection<Resource> list, PrintWriter out) {
-	try {
-	    for(Resource res : list) {
-		if(res.loading)
-		    continue;
-		out.println(res.name + ":" + res.ver);
+	    if(fn != null) {
+		Writer w = new OutputStreamWriter(new FileOutputStream(fn), "UTF-8");
+		try {
+		    Resource.dumplist(list, w);
+		} finally {
+		    w.close();
+		}
 	    }
-	    out.close();
-	} catch(Exception e) {
+	} catch(IOException e) {
 	    throw(new RuntimeException(e));
 	}
     }
