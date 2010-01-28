@@ -533,9 +533,8 @@ public class Session {
 			synchronized(this) {
 			    if(acktime > 0)
 				to = acktime + ackthresh - now;
-			    if(to < 0)
-				to = 0;
-			    this.wait(to);
+			    if(to > 0)
+				this.wait(to);
 			}
 			now = System.currentTimeMillis();
 			boolean beat = true;
