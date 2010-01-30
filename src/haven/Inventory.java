@@ -53,7 +53,15 @@ public class Inventory extends Widget implements DTarget {
 	super(c, invsq.sz().add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
 	isz = sz;
     }
-	
+    
+    public boolean mousewheel(Coord c, int amount) {
+	if(amount < 0)
+	    wdgmsg("xfer", -1, ui.modflags());
+	if(amount > 0)
+	    wdgmsg("xfer", 1, ui.modflags());
+	return(true);
+    }
+    
     public boolean drop(Coord cc, Coord ul) {
 	wdgmsg("drop", ul.add(new Coord(15, 15)).div(invsq.sz()));
 	return(true);
