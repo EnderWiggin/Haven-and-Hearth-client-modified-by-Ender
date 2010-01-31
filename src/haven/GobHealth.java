@@ -54,4 +54,8 @@ public class GobHealth extends GAttrib {
 	    return(null);
 	return(fx);
     }
+    
+    public double asfloat() {
+	return(((double)hp) / 4.0);
+    }
 }
