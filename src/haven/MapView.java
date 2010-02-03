@@ -189,7 +189,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		if(mv.mc.dist(tgt) < 10) {
 		    tgt = null;
 		} else {
-		    mv.mc = mv.mc.add(tgt.add(mv.mc.inv()).mul(0.9));
+		    mv.mc = mv.mc.add(tgt.add(mv.mc.inv()).mul(0.1));
 		}
 	    }
 	    borderize(mv, player, sz, border);
@@ -199,7 +199,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(button == 1) {
 		tgt = mc;
 	    }
-	    return(false);
+	    return(super.click(mv, sc, mc, button));
 	}
 	
 	public void moved(MapView mv) {
