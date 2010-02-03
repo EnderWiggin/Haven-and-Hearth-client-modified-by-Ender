@@ -29,6 +29,7 @@ package haven;
 import java.awt.event.KeyEvent;
 
 public class RootWidget extends ConsoleHost {
+    public static Resource defcurs = Resource.load("gfx/hud/curs/arw");
     Logout logout = null;
     Profile gprof;
     boolean afk = false;
@@ -36,7 +37,7 @@ public class RootWidget extends ConsoleHost {
     public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
 	setfocusctl(true);
-	cursor = Resource.load("gfx/hud/curs/arw");
+	cursor = defcurs;
     }
 	
     public boolean globtype(char key, KeyEvent ev) {

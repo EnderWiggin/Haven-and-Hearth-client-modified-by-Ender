@@ -181,7 +181,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     static {camtypes.put("orig", OrigCam.class);}
 
     static class OrigCam2 extends DragCam {
-	public final Coord border = new Coord(250, 150);
+	public final Coord border = new Coord(250, 125);
 	private final double v = -5.268; /* ln(0.9) / 0.02 (1 / 50 FPS = 0.02 s) */
 	private Coord tgt = null;
 	private long lmv;
@@ -201,7 +201,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
-	    if(button == 1) {
+	    if((button == 1) && (mv.ui.root.cursor == RootWidget.defcurs)) {
 		tgt = mc;
 		lmv = System.currentTimeMillis();
 	    }
