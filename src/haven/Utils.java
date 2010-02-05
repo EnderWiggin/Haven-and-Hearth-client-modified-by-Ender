@@ -143,6 +143,25 @@ public class Utils {
 	}
     }
     
+    static synchronized byte[] getprefb(String prefname, byte[] def) {
+	try {
+	    if(prefs == null)
+		prefs = Preferences.userNodeForPackage(Utils.class);
+	    return(prefs.getByteArray(prefname, def));
+	} catch(SecurityException e) {
+	    return(def);
+	}
+    }
+	
+    static synchronized void setprefb(String prefname, byte[] val) {
+	try {
+	    if(prefs == null)
+		prefs = Preferences.userNodeForPackage(Utils.class);
+	    prefs.putByteArray(prefname, val);
+	} catch(SecurityException e) {
+	}
+    }
+    
     public static String getprop(String propname, String def) {
 	try {
 	    return(System.getProperty(propname, def));
@@ -464,6 +483,42 @@ public class Utils {
 			 ((in.getGreen() * f2) + (bl.getGreen() * f1)) / 255,
 			 ((in.getBlue() * f2) + (bl.getBlue() * f1)) / 255,
 			 in.getAlpha()));
+    }
+    
+    public static void serialize(Object obj, OutputStream out) throws IOException {
+	ObjectOutputStream oout = new ObjectOutputStream(out);
+	oout.writeObject(obj);
+	oout.flush();
+    }
+    
+    public static byte[] serialize(Object obj) {
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	try {
+	    serialize(obj, out);
+	} catch(IOException e) {
+	    throw(new RuntimeException(e));
+	}
+	return(out.toByteArray());
+    }
+    
+    public static Object deserialize(InputStream in) throws IOException {
+	ObjectInputStream oin = new ObjectInputStream(in);
+	try {
+	    return(oin.readObject());
+	} catch(ClassNotFoundException e) {
+	    return(null);
+	}
+    }
+    
+    public static Object deserialize(byte[] buf) {
+	if(buf == null)
+	    return(null);
+	InputStream in = new ByteArrayInputStream(buf);
+	try {
+	    return(deserialize(in));
+	} catch(IOException e) {
+	    return(null);
+	}
     }
     
     static {
