@@ -1090,6 +1090,17 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	in.close();
     }
 
+    public static void dumplist(Collection<Resource> list, Writer dest) {
+	PrintWriter out = new PrintWriter(dest);
+	List<Resource> sorted = new ArrayList<Resource>(list);
+	Collections.sort(sorted);
+	for(Resource res : sorted) {
+	    if(res.loading)
+		continue;
+	    out.println(res.name + ":" + res.ver);
+	}
+    }
+
     public static void updateloadlist(File file) throws Exception {
 	BufferedReader r = new BufferedReader(new FileReader(file));
 	Map<String, Integer> orig = new HashMap<String, Integer>();
@@ -1115,7 +1126,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    Thread.sleep(500);
 	}
 	System.out.println();
-	PrintWriter w = new PrintWriter(file);
+	Collection<Resource> cur = new LinkedList<Resource>();
 	for(Map.Entry<String, Integer> e : orig.entrySet()) {
 	    String nm = e.getKey();
 	    int ver = e.getValue();
@@ -1124,9 +1135,14 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    res.checkerr();
 	    if(res.ver != ver)
 		System.out.println(nm + ": " + ver + " -> " + res.ver);
-	    w.println(nm + ":" + res.ver);
+	    cur.add(res);
 	}
-	w.close();
+	Writer w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+	try {
+	    dumplist(cur, w);
+	} finally {
+	    w.close();
+	}
     }
 
     public static void main(String[] args) throws Exception {

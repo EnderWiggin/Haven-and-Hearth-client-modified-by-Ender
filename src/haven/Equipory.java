@@ -111,6 +111,8 @@ public class Equipory extends Window implements DTarget {
 	    if(msg == "drop") {
 		wdgmsg("drop", ep);
 		return;
+	    } else if(msg == "xfer") {
+		return;
 	    }
 	}
 	if((ep = equed.indexOf(sender)) != -1) {

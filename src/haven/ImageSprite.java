@@ -58,7 +58,7 @@ public abstract class ImageSprite extends Sprite {
 	
 	public void drawol(GOut g) {
 	    if(ol == null)
-		ol = new TexI(Utils.outline(img.img, java.awt.Color.YELLOW));
+		ol = new TexI(Utils.outline(img.img, java.awt.Color.WHITE));
 	    g.image(ol, sc().add(img.o).add(-1, -1));
 	}
 	

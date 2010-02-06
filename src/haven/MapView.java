@@ -31,8 +31,11 @@ import static haven.MCache.tilesz;
 import haven.Resource.Tile;
 import java.awt.Color;
 import java.util.*;
+import java.lang.reflect.*;
 
 public class MapView extends Widget implements DTarget, Console.Directory {
+    static Color[] olc = new Color[31];
+    static Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
     public Coord mc, mousepos, pmousepos;
     Camera cam;
     Sprite.Part[] clickable = {};
@@ -40,7 +43,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
-    static Color[] olc = new Color[31];
     public boolean authdraw = Utils.getpref("authdraw", "on").equals("on");
     Grabber grab = null;
     ILM mask;
@@ -177,6 +179,54 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    return(false);
 	}
     }
+    static {camtypes.put("orig", OrigCam.class);}
+
+    static class OrigCam2 extends DragCam {
+	public final Coord border = new Coord(250, 125);
+	private final double v;
+	private Coord tgt = null;
+	private long lmv;
+	
+	public OrigCam2(double v) {
+	    this.v = Math.log(v) / 0.02; /* 1 / 50 FPS = 0.02 s */
+	    System.err.println(this.v);
+	}
+	
+	public OrigCam2() {
+	    this(0.9);
+	}
+	
+	public OrigCam2(String... args) {
+	    this((args.length < 1)?0.9:Double.parseDouble(args[0]));
+	}
+	
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    if(tgt != null) {
+		if(mv.mc.dist(tgt) < 10) {
+		    tgt = null;
+		} else {
+		    long now = System.currentTimeMillis();
+		    double dt = (now - lmv) / 1000.0;
+		    lmv = now;
+		    mv.mc = tgt.add(mv.mc.add(tgt.inv()).mul(Math.exp(v * dt)));
+		}
+	    }
+	    borderize(mv, player, sz, border);
+	}
+	
+	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
+	    if((button == 1) && (mv.ui.root.cursor == RootWidget.defcurs)) {
+		tgt = mc;
+		lmv = System.currentTimeMillis();
+	    }
+	    return(super.click(mv, sc, mc, button));
+	}
+	
+	public void moved(MapView mv) {
+	    tgt = null;
+	}
+    }
+    static {camtypes.put("clicktgt", OrigCam2.class);}
 
     static class WrapCam extends Camera {
 	public final Coord region = new Coord(200, 150);
@@ -193,6 +243,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		mv.mc = mv.mc.add(s2m(new Coord(0, region.y * 2)));
 	}
     }
+    static {camtypes.put("kingsquest", WrapCam.class);}
 
     static class BorderCam extends DragCam {
 	public final Coord border = new Coord(250, 150);
@@ -201,6 +252,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    borderize(mv, player, sz, border);
 	}
     }
+    static {camtypes.put("border", BorderCam.class);}
     
     static class PredictCam extends DragCam {
 	private double xa = 0, ya = 0;
@@ -274,6 +326,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    reset = true;
 	}
     }
+    static {camtypes.put("predict", PredictCam.class);}
     
     static class FixedCam extends DragCam {
 	public final Coord border = new Coord(250, 150);
@@ -293,14 +346,50 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    setoff = true;
 	}
     }
+    static {camtypes.put("fixed", FixedCam.class);}
     
     private class Loading extends RuntimeException {}
     
+    private static Camera makecam(Class<? extends Camera> ct, String... args) throws ClassNotFoundException {
+	try {
+	    try {
+		Constructor<? extends Camera> cons = ct.getConstructor(String [].class);
+		return(cons.newInstance(new Object[] {args}));
+	    } catch(IllegalAccessException e) {
+	    } catch(NoSuchMethodException e) {
+	    }
+	    try {
+		return(ct.newInstance());
+	    } catch(IllegalAccessException e) {
+	    }
+	} catch(InstantiationException e) {
+	    throw(new Error(e));
+	} catch(InvocationTargetException e) {
+	    if(e.getCause() instanceof RuntimeException)
+		throw((RuntimeException)e.getCause());
+	    throw(new RuntimeException(e));
+	}
+	throw(new ClassNotFoundException("No valid constructor found for camera " + ct.getName()));
+    }
+
+    private static Camera restorecam() {
+	Class<? extends Camera> ct = camtypes.get(Utils.getpref("defcam", "border"));
+	if(ct == null)
+	    return(new BorderCam());
+	String[] args = (String [])Utils.deserialize(Utils.getprefb("camargs", null));
+	if(args == null) args = new String[0];
+	try {
+	    return(makecam(ct, args));
+	} catch(ClassNotFoundException e) {
+	    return(new BorderCam());
+	}
+    }
+
     public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
 	super(c, sz, parent);
 	this.mc = mc;
 	this.playergob = playergob;
-	cam = new BorderCam();
+	this.cam = restorecam();
 	setcanfocus(true);
 	glob = ui.sess.glob;
 	map = glob.map;
@@ -707,8 +796,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		else
 		    part.draw(g);
 	    }
-	    for(Sprite.Part part : obscured)
-		part.drawol(g);
+	    for(Sprite.Part part : obscured) {
+		GOut g2 = new GOut(g);
+		GobHealth hlt;
+		if((part.owner != null) && (part.owner instanceof Gob) && ((hlt = ((Gob)part.owner).getattr(GobHealth.class)) != null))
+		    g2.chcolor(255, (int)(hlt.asfloat() * 255), 0, 255);
+		else
+		    g2.chcolor(255, 255, 0, 255);
+		part.drawol(g2);
+	    }
 	    
 	    if(Config.bounddb && ui.modshift) {
 		g.chcolor(255, 0, 0, 128);
@@ -904,16 +1000,19 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	cmdmap.put("cam", new Console.Command() {
 		public void run(Console cons, String[] args) {
 		    if(args.length >= 2) {
-			if(args[1].equals("orig")) {
-			    cam = new OrigCam();
-			} else if(args[1].equals("kingsquest")) {
-			    cam = new WrapCam();
-			} else if(args[1].equals("border")) {
-			    cam = new BorderCam();
-			} else if(args[1].equals("predict")) {
-			    cam = new PredictCam();
-			} else if(args[1].equals("fixed")) {
-			    cam = new FixedCam();
+			Class<? extends Camera> ct = camtypes.get(args[1]);
+			String[] cargs = new String[args.length - 2];
+			System.arraycopy(args, 2, cargs, 0, cargs.length);
+			if(ct != null) {
+			    try {
+				MapView.this.cam = makecam(ct, cargs);
+				Utils.setpref("defcam", args[1]);
+				Utils.setprefb("camargs", Utils.serialize(cargs));
+			    } catch(ClassNotFoundException e) {
+				throw(new RuntimeException("no such camera: " + args[1]));
+			    }
+			} else {
+			    throw(new RuntimeException("no such camera: " + args[1]));
 			}
 		    }
 		}
