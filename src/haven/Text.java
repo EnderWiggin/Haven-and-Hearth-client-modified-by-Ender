@@ -77,6 +77,7 @@ public class Text {
 	Font font;
 	Color defcol;
 	public boolean aa = false;
+	private RichText.Foundry wfnd = null;
 		
 	public Foundry(Font f, Color defcol) {
 	    font = f;
@@ -101,55 +102,15 @@ public class Text {
 	}
                 
 	public Text renderwrap(String text, Color c, int width) {
-	    Line t = new Line(text);
-	    int y = 0;
-	    int[] sl = findspaces(text);
-	    int s = 0, e = 0, i = 0;
-	    java.util.List<String> lines = new LinkedList<String>();
-	    while(s < text.length()) {
-		do {
-		    int te;
-		    if(i < sl.length)
-			te = sl[i];
-		    else
-			te = text.length();
-		    Coord b = strsize(text.substring(s, te));
-		    if(b.x > width) {
-			break;
-		    } else {
-			e = te;
-			i++;
-		    }
-		    if((te < text.length()) && (text.charAt(te) == '\n')) {
-			e = te;
-			break;
-		    }
-		} while(i <= sl.length);
-		String line = text.substring(s, e);
-		lines.add(line);
-		Coord b = strsize(line);
-		y += b.y;
-		s = e + 1;
-	    }
-	    t.img = TexI.mkbuf(new Coord(width, y));
-	    Graphics g = t.img.createGraphics();
-	    if(aa)
-		Utils.AA(g);
-	    g.setFont(font);
-	    g.setColor(c);
-	    t.m = g.getFontMetrics();
-	    y = 0;
-	    for(String line : lines) {
-		g.drawString(line, 0, y + t.m.getAscent());
-		Coord b = strsize(line);
-		y += b.y;
-	    }
-	    g.dispose();
-	    return(t);
+	    if(wfnd == null)
+		wfnd = new RichText.Foundry(font, defcol);
+	    if(c != null)
+		text = String.format("$col[%i,%i,%i,%i]{%s}", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha(), text);
+	    return(wfnd.render(text, width));
 	}
                 
 	public Text renderwrap(String text, int width) {
-	    return(renderwrap(text, defcol, width));
+	    return(renderwrap(text, null, width));
 	}
                 
 	public Line render(String text, Color c) {

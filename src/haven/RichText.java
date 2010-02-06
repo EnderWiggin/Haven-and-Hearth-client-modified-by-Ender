@@ -32,6 +32,7 @@ import java.text.*;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Font;
+import java.awt.Color;
 import java.awt.font.*;
 import static java.text.AttributedCharacterIterator.Attribute;
 
@@ -287,14 +288,14 @@ public class RichText extends Text {
 	    return(buf.toString());
 	}
     
-	private static java.awt.Color a2col(String[] args) {
+	private static Color a2col(String[] args) {
 	    int r = Integer.parseInt(args[0]);
 	    int g = Integer.parseInt(args[1]);
 	    int b = Integer.parseInt(args[2]);
 	    int a = 255;
 	    if(args.length > 3)
 		a = Integer.parseInt(args[3]);
-	    return(new java.awt.Color(r, g, b, a));
+	    return(new Color(r, g, b, a));
 	}
 
 	private static Part tag(PState s, Map<? extends Attribute, ?> attrs) throws IOException {
@@ -424,6 +425,17 @@ public class RichText extends Text {
 	    this(new Parser(attrs));
 	}
 	
+	private static Map<? extends Attribute, ?> xlate(Font f, Color defcol) {
+	    Map<Attribute, Object> attrs = new HashMap<Attribute, Object>();
+	    attrs.put(TextAttribute.FONT, f);
+	    attrs.put(TextAttribute.FOREGROUND, defcol);
+	    return(attrs);
+	}
+
+	public Foundry(Font f, Color defcol) {
+	    this(xlate(f, defcol));
+	}
+
 	private static void aline/* Hurrhurr, pun intended*/(List<Part> line, int y) {
 	    int mb = 0;
 	    for(Part p : line) {
