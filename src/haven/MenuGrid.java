@@ -28,6 +28,7 @@ package haven;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.awt.font.TextAttribute;
 import haven.Resource.AButton;
 import java.util.*;
 
@@ -36,6 +37,7 @@ public class MenuGrid extends Widget {
     public final static Coord bgsz = bg.sz().add(-1, -1);
     public final static Resource next = Resource.load("gfx/hud/sc-next");
     public final static Resource bk = Resource.load("gfx/hud/sc-back");
+    public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     private static Coord gsz = new Coord(4, 4);
     private Resource cur, pressed, dragging, layout[][] = new Resource[gsz.x][gsz.y];
     private int curoff = 0;
@@ -129,6 +131,21 @@ public class MenuGrid extends Widget {
 	}
     }
 	
+    private static Text rendertt(Resource res) {
+	Resource.AButton ad = res.layer(Resource.action);
+	Resource.Pagina pg = res.layer(Resource.pagina);
+	String tt = ad.name;
+	int pos = tt.toUpperCase().indexOf(Character.toUpperCase(ad.hk));
+	if(pos >= 0)
+	    tt = tt.substring(0, pos) + "$col[255,255,0]{" + tt.charAt(pos) + "}" + tt.substring(pos + 1);
+	else if(ad.hk != 0)
+	    tt += " [" + ad.hk + "]";
+	if(pg != null) {
+	    tt += "\n\n" + pg.text;
+	}
+	return(ttfnd.render(tt, 0));
+    }
+
     public void draw(GOut g) {
 	updlayout();
 	for(int y = 0; y < gsz.y; y++) {
@@ -148,11 +165,7 @@ public class MenuGrid extends Widget {
 	    }
 	}
 	if(pressed == null && hover != null) {
-	    Resource.AButton ad = hover.layer(Resource.action);
-	    String tt = ad.name;
-	    if(ad.hk != 0)
-		tt += " [" + ad.hk + "]";
-	    ui.tooltip = tt;
+	    ui.tooltip = rendertt(hover);
 	}
 	if(dragging != null) {
 	    final Tex dt = dragging.layer(Resource.imgc).tex();
