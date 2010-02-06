@@ -43,11 +43,11 @@ public class Utils {
 	return(new Coord(img.getWidth(), img.getHeight()));
     }
 	
-    public static class Background extends Thread {
+    public static class Background extends HackThread {
 	Queue<Runnable> q = new LinkedList<Runnable>();
 		
 	public Background() {
-	    super(tg(), "Haven deferred procedure thread");
+	    super("Haven deferred procedure thread");
 	    setDaemon(true);
 	    start();
 	}
@@ -115,10 +115,6 @@ public class Utils {
 	g.drawString(text, (int)(c.x - ts.getWidth() * ax), (int)(c.y + m.getAscent() - ts.getHeight() * ay));
     }
 	
-    public static ThreadGroup tg() {
-	return(Thread.currentThread().getThreadGroup());
-    }
-
     static void line(Graphics g, Coord c1, Coord c2) {
 	g.drawLine(c1.x, c1.y, c2.x, c2.y);
     }
@@ -143,6 +139,25 @@ public class Utils {
 	    if(prefs == null)
 		prefs = Preferences.userNodeForPackage(Utils.class);
 	    prefs.put(prefname, val);
+	} catch(SecurityException e) {
+	}
+    }
+    
+    static synchronized byte[] getprefb(String prefname, byte[] def) {
+	try {
+	    if(prefs == null)
+		prefs = Preferences.userNodeForPackage(Utils.class);
+	    return(prefs.getByteArray(prefname, def));
+	} catch(SecurityException e) {
+	    return(def);
+	}
+    }
+	
+    static synchronized void setprefb(String prefname, byte[] val) {
+	try {
+	    if(prefs == null)
+		prefs = Preferences.userNodeForPackage(Utils.class);
+	    prefs.putByteArray(prefname, val);
 	} catch(SecurityException e) {
 	}
     }
@@ -388,7 +403,7 @@ public class Utils {
 
     public static void dumptg(ThreadGroup tg, PrintWriter out) {
 	if(tg == null) {
-	    tg = tg();
+	    tg = Thread.currentThread().getThreadGroup();
 	    while(tg.getParent() != null)
 		tg = tg.getParent();
 	}
@@ -468,6 +483,42 @@ public class Utils {
 			 ((in.getGreen() * f2) + (bl.getGreen() * f1)) / 255,
 			 ((in.getBlue() * f2) + (bl.getBlue() * f1)) / 255,
 			 in.getAlpha()));
+    }
+    
+    public static void serialize(Object obj, OutputStream out) throws IOException {
+	ObjectOutputStream oout = new ObjectOutputStream(out);
+	oout.writeObject(obj);
+	oout.flush();
+    }
+    
+    public static byte[] serialize(Object obj) {
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	try {
+	    serialize(obj, out);
+	} catch(IOException e) {
+	    throw(new RuntimeException(e));
+	}
+	return(out.toByteArray());
+    }
+    
+    public static Object deserialize(InputStream in) throws IOException {
+	ObjectInputStream oin = new ObjectInputStream(in);
+	try {
+	    return(oin.readObject());
+	} catch(ClassNotFoundException e) {
+	    return(null);
+	}
+    }
+    
+    public static Object deserialize(byte[] buf) {
+	if(buf == null)
+	    return(null);
+	InputStream in = new ByteArrayInputStream(buf);
+	try {
+	    return(deserialize(in));
+	} catch(IOException e) {
+	    return(null);
+	}
     }
     
     static {
