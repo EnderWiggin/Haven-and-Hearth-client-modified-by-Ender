@@ -493,7 +493,7 @@ public class RichText extends Text {
 	    Map<Attribute, Object> a = new HashMap<Attribute, Object>(std.defattrs);
 	    PosixArgs opt = PosixArgs.getopt(args, 1, "aw:f:s:");
 	    boolean aa = false;
-	    int width = 100;
+	    int width = 0;
 	    for(char c : opt.parsed()) {
 		if(c == 'a') {
 		    aa = true;
