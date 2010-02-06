@@ -104,6 +104,7 @@ public class Text {
 	public Text renderwrap(String text, Color c, int width) {
 	    if(wfnd == null)
 		wfnd = new RichText.Foundry(font, defcol);
+	    wfnd.aa = aa;
 	    text = RichText.Parser.quote(text);
 	    if(c != null)
 		text = String.format("$col[%d,%d,%d,%d]{%s}", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha(), text);
