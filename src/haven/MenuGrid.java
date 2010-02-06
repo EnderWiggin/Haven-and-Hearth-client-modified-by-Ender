@@ -42,7 +42,10 @@ public class MenuGrid extends Widget {
     private Resource cur, pressed, dragging, layout[][] = new Resource[gsz.x][gsz.y];
     private int curoff = 0;
     private Map<Character, Resource> hotmap = new TreeMap<Character, Resource>();
-    private Resource hover = null;
+    private Resource hover = null, prevhover = null;
+    private Text curtt = null;
+    private long hoverstart = 0;
+    private boolean withpg;
 	
     static {
 	Widget.addtype("scm", new WidgetFactory() {
@@ -131,7 +134,7 @@ public class MenuGrid extends Widget {
 	}
     }
 	
-    private static Text rendertt(Resource res) {
+    private static Text rendertt(Resource res, boolean withpg) {
 	Resource.AButton ad = res.layer(Resource.action);
 	Resource.Pagina pg = res.layer(Resource.pagina);
 	String tt = ad.name;
@@ -140,7 +143,7 @@ public class MenuGrid extends Widget {
 	    tt = tt.substring(0, pos) + "$col[255,255,0]{" + tt.charAt(pos) + "}" + tt.substring(pos + 1);
 	else if(ad.hk != 0)
 	    tt += " [" + ad.hk + "]";
-	if(pg != null) {
+	if(withpg && (pg != null)) {
 	    tt += "\n\n" + pg.text;
 	}
 	return(ttfnd.render(tt, 0));
@@ -165,8 +168,20 @@ public class MenuGrid extends Widget {
 	    }
 	}
 	if(pressed == null && hover != null) {
-	    ui.tooltip = rendertt(hover);
+	    long now = System.currentTimeMillis();
+	    if(hover != prevhover) {
+		curtt = rendertt(hover, withpg);
+		if(!withpg)
+		    hoverstart = now;
+	    } else {
+		if(!withpg && ((now - hoverstart) > 500))
+		    withpg = true;
+	    }
+	    ui.tooltip = curtt;
+	} else {
+	    hoverstart = 0;
 	}
+	prevhover = hover;
 	if(dragging != null) {
 	    final Tex dt = dragging.layer(Resource.imgc).tex();
 	    ui.drawafter(new UI.AfterDraw() {
