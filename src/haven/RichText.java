@@ -391,6 +391,7 @@ public class RichText extends Text {
     public static class Foundry {
 	private Parser parser;
 	private RState rs;
+	public boolean aa = false;
 	
 	private Foundry(Parser parser) {
 	    this.parser = parser;
@@ -474,7 +475,8 @@ public class RichText extends Text {
 	    Coord sz = bounds(parts);
 	    BufferedImage img = TexI.mkbuf(sz);
 	    Graphics2D g = img.createGraphics();
-	    Utils.AA(g);
+	    if(aa)
+		Utils.AA(g);
 	    RichText rt = new RichText(text);
 	    rt.img = img;
 	    for(Part p : parts)
@@ -506,7 +508,30 @@ public class RichText extends Text {
 		}
 	    }
 	    Foundry fnd = new Foundry(a);
+	    fnd.aa = aa;
 	    RichText t = fnd.render(opt.rest[0], width);
+	    java.io.OutputStream out = new java.io.FileOutputStream(opt.rest[1]);
+	    javax.imageio.ImageIO.write(t.img, "PNG", out);
+	    out.close();
+	} else if(cmd == "pagina") {
+	    PosixArgs opt = PosixArgs.getopt(args, 1, "aw:");
+	    boolean aa = false;
+	    int width = 0;
+	    for(char c : opt.parsed()) {
+		if(c == 'a') {
+		    aa = true;
+		} else if(c == 'w') {
+		    width = Integer.parseInt(opt.arg);
+		}
+	    }
+	    Foundry fnd = new Foundry();
+	    fnd.aa = aa;
+	    Resource res = Resource.load(opt.rest[0]);
+	    res.loadwaitint();
+	    Resource.Pagina p = res.layer(Resource.pagina);
+	    if(p == null)
+		throw(new Exception("No pagina in " + res + ", loaded from " + res.source));
+	    RichText t = fnd.render(p.text, width);
 	    java.io.OutputStream out = new java.io.FileOutputStream(opt.rest[1]);
 	    javax.imageio.ImageIO.write(t.img, "PNG", out);
 	    out.close();
