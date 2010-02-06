@@ -120,7 +120,7 @@ public class RichText extends Text {
 	
 	public int width() {return(img.getWidth());}
 	public int height() {return(img.getHeight());}
-	public int baseline() {return(img.getHeight());}
+	public int baseline() {return(img.getHeight() - 1);}
 
 	public void render(Graphics2D g) {
 	    g.drawImage(img, x, y, null);
