@@ -129,19 +129,30 @@ public class RichText extends Text {
 
     public static class Newline extends Part {
 	private Map<? extends Attribute, ?> attrs;
+	private LineMetrics lm;
 	
 	public Newline(Map<? extends Attribute, ?> attrs) {
 	    this.attrs = attrs;
 	}
 	
-	public int height() {
-	    Font f;
-	    if((f = (Font)attrs.get(TextAttribute.FONT)) != null) {
-	    } else {
-		f = new Font(attrs);
+	private LineMetrics lm() {
+	    if(lm == null) {
+		Font f;
+		if((f = (Font)attrs.get(TextAttribute.FONT)) != null) {
+		} else {
+		    f = new Font(attrs);
+		}
+		lm = f.getLineMetrics("", rs.frc);
 	    }
-	    LineMetrics m = f.getLineMetrics("", rs.frc);
-	    return((int)m.getHeight());
+	    return(lm);
+	}
+	
+	public int height() {
+	    return((int)lm().getHeight());
+	}
+	
+	public int baseline() {
+	    return((int)lm().getAscent());
 	}
     }
     
