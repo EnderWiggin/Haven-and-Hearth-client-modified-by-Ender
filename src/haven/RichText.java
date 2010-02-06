@@ -403,6 +403,20 @@ public class RichText extends Text {
 		throw(new Error(e));
 	    }
 	}
+	
+	public static String quote(String in) {
+	    StringBuilder buf = new StringBuilder();
+	    for(int i = 0; i < in.length(); i++) {
+		char c = in.charAt(i);
+		if((c == '$') || (c == '{') || (c == '}')) {
+		    buf.append('$');
+		    buf.append(c);
+		} else {
+		    buf.append(c);
+		}
+	    }
+	    return(buf.toString());
+	}
     }
     
     public static class Foundry {
