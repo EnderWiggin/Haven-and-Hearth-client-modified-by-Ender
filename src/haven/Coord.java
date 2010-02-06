@@ -76,6 +76,14 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	return(add(b.x, b.y));
     }
 	
+    public Coord sub(int ax, int ay) {
+	return(new Coord(x - ax, y - ay));
+    }
+	
+    public Coord sub(Coord b) {
+	return(sub(b.x, b.y));
+    }
+	
     public Coord mul(int f) {
 	return(new Coord(x * f, y * f));
     }

@@ -348,6 +348,22 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
     static {camtypes.put("fixed", FixedCam.class);}
     
+    static class CakeCam extends Camera {
+	private Coord border = new Coord(250, 150);
+	private Coord size, center, diff;
+
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    if(size == null || !size.equals(sz)) {
+		size = new Coord(sz);
+		center = size.div(2);
+		diff = center.sub(border);
+	    }
+	    if(player != null && mv.pmousepos != null)
+		mv.mc = player.getc().sub(s2m(center.sub(mv.pmousepos).mul(diff).div(center)));
+	}
+    }
+    static {camtypes.put("cake", CakeCam.class);}
+
     private class Loading extends RuntimeException {}
     
     private static Camera makecam(Class<? extends Camera> ct, String... args) throws ClassNotFoundException {
