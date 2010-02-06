@@ -175,11 +175,12 @@ public class MenuGrid extends Widget {
 		    hoverstart = now;
 	    } else {
 		if(!withpg && ((now - hoverstart) > 500))
-		    withpg = true;
+		    curtt = rendertt(hover, withpg = true);
 	    }
 	    ui.tooltip = curtt;
 	} else {
 	    hoverstart = 0;
+	    withpg = false;
 	}
 	prevhover = hover;
 	if(dragging != null) {
