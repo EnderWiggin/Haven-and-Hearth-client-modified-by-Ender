@@ -31,6 +31,7 @@ import java.util.*;
 import java.text.*;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.Font;
 import java.awt.font.*;
 import static java.text.AttributedCharacterIterator.Attribute;
 
@@ -126,6 +127,21 @@ public class RichText extends Text {
     }
 
     public static class Newline extends Part {
+	private Map<? extends Attribute, ?> attrs;
+	
+	public Newline(Map<? extends Attribute, ?> attrs) {
+	    this.attrs = attrs;
+	}
+	
+	public int height() {
+	    Font f;
+	    if((f = (Font)attrs.get(TextAttribute.FONT)) != null) {
+	    } else {
+		f = new Font(attrs);
+	    }
+	    LineMetrics m = f.getLineMetrics("", rs.frc);
+	    return((int)m.getHeight());
+	}
     }
     
     public static class TextPart extends Part {
@@ -346,7 +362,7 @@ public class RichText extends Text {
 		} else if(c == '\n') {
 		    buf.append(new TextPart(tbuf.toString(), attrs));
 		    tbuf = new StringBuilder();
-		    buf.append(new Newline());
+		    buf.append(new Newline(attrs));
 		} else if(c == '}') {
 		    buf.append(new TextPart(tbuf.toString(), attrs));
 		    break;
