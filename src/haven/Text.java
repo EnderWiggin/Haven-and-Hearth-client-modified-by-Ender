@@ -106,7 +106,7 @@ public class Text {
 		wfnd = new RichText.Foundry(font, defcol);
 	    text = RichText.Parser.quote(text);
 	    if(c != null)
-		text = String.format("$col[%i,%i,%i,%i]{%s}", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha(), text);
+		text = String.format("$col[%d,%d,%d,%d]{%s}", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha(), text);
 	    return(wfnd.render(text, width));
 	}
                 
