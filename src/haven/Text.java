@@ -63,11 +63,9 @@ public class Text {
 	    while(true) {
 		int p = (l + r) / 2;
 		int a = advance(p);
-		if(a < x) {
-		    if(l == p)
-			return(l);
+		if((a < x) && (l < p)) {
 		    l = p;
-		} else if(a > x) {
+		} else if((a > x) && (r > p)) {
 		    r = p;
 		} else {
 		    return(p);
