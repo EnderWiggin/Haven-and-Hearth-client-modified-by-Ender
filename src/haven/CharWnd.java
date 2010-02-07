@@ -349,48 +349,28 @@ public class CharWnd extends Window {
 	}
     }
     
-    private class SkillInfo extends Widget {
+    private class SkillInfo extends RichTextBox {
 	Resource cur = null;
-	Tex img;
-	Text body;
-	Scrollbar sb;
 	
 	public SkillInfo(Coord c, Coord sz, Widget parent) {
-	    super(c, sz, parent);
-	    sb = new Scrollbar(new Coord(sz.x, 0), sz.y, this, 0, 0);
+	    super(c, sz, parent, "", skbodfnd);
 	}
 	
 	public void draw(GOut g) {
-	    g.chcolor(Color.BLACK);
-	    g.frect(Coord.z, sz);
-	    g.chcolor();
 	    if((cur != null) && !cur.loading) {
-		img = cur.layer(Resource.imgc).tex();
-		String text = cur.layer(Resource.pagina).text;
-		text = "$font[serif,16]{" + cur.layer(Resource.tooltip).t + "}\n\n" + text;
-		body = skbodfnd.render(text, sz.x - 20);
-		sb.max = (img.sz().y + body.sz().y + 50) - sz.y;
-		sb.val = 0;
+		StringBuilder text = new StringBuilder();
+		text.append("$img[" + cur.name + "]\n\n");
+		text.append("$font[serif,16]{" + cur.layer(Resource.tooltip).t + "}\n\n");
+		text.append(cur.layer(Resource.pagina).text);
+		settext(text.toString());
 		cur = null;
-	    }
-	    if(img != null) {
-		int y = 10;
-		g.image(img, new Coord(10, y - sb.val));
-		y += img.sz().y + 10;
-		g.image(body.tex(), new Coord(10, y - sb.val));
 	    }
 	    super.draw(g);
 	}
 	
 	public void setsk(Resource sk) {
 	    cur = sk;
-	    img = null;
-	    sb.min = sb.max = 0;
-	}
-	
-	public boolean mousewheel(Coord c, int amount) {
-	    sb.ch(amount * 20);
-	    return(true);
+	    settext("");
 	}
     }
 
