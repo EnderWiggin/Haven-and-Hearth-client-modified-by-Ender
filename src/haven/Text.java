@@ -182,7 +182,7 @@ public class Text {
     }
     
     public int charat(int x) {
-	int l = 0, r = text.length();
+	int l = 0, r = text.length() + 1;
 	while(true) {
 	    int p = (l + r) / 2;
 	    int a = advance(p);
