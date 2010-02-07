@@ -180,6 +180,23 @@ public class Text {
     public int advance(int pos) {
 	return(m.stringWidth(text.substring(0, pos)));
     }
+    
+    public int charat(int x) {
+	int l = 0, r = text.length();
+	while(true) {
+	    int p = (l + r) / 2;
+	    int a = advance(p);
+	    if(a < x) {
+		if(l == p)
+		    return(l);
+		l = p;
+	    } else if(a > x) {
+		r = p;
+	    } else {
+		return(p);
+	    }
+	}
+    }
 	
     public static Text render(String text, Color c) {
 	return(std.render(text, c));
