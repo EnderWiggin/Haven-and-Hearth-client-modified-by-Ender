@@ -116,6 +116,9 @@ public class TextEntry extends Widget {
 	
     public boolean mousedown(Coord c, int button) {
 	parent.setfocus(this);
+	if(tcache != null) {
+	    buf.point = tcache.charat(c.x + sx);
+	}
 	return(true);
     }
 }
