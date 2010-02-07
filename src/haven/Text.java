@@ -111,9 +111,14 @@ public class Text {
 	    this(new Font(font, Font.PLAIN, psz));
 	}
 		
+	public int height() {
+	    /* XXX: Should leading go into this, when it's mostly
+	     * supposed to be used for one-liners? */
+	    return(m.getAscent() + m.getDescent());
+	}
+
 	private Coord strsize(String text) {
-	    int h = m.getAscent() + m.getDescent();
-	    return(new Coord(m.stringWidth(text), h));
+	    return(new Coord(m.stringWidth(text), height()));
 	}
                 
 	public Text renderwrap(String text, Color c, int width) {
