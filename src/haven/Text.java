@@ -45,17 +45,34 @@ public class Text {
 	
     public static class Line extends Text {
 	private FontMetrics m;
-
+	
 	private Line(String text) {
 	    super(text);
 	}
-
+	
 	public Coord base() {
 	    return(new Coord(0, m.getAscent()));
 	}
-    
+	
 	public int advance(int pos) {
 	    return(m.stringWidth(text.substring(0, pos)));
+	}
+	
+	public int charat(int x) {
+	    int l = 0, r = text.length() + 1;
+	    while(true) {
+		int p = (l + r) / 2;
+		int a = advance(p);
+		if(a < x) {
+		    if(l == p)
+			return(l);
+		    l = p;
+		} else if(a > x) {
+		    r = p;
+		} else {
+		    return(p);
+		}
+	    }
 	}
     }
 
