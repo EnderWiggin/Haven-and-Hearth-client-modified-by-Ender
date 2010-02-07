@@ -526,6 +526,8 @@ public class RichText extends Text {
 	    fp.prepare(rs);
 	    List<Part> parts = layout(fp, width);
 	    Coord sz = bounds(parts);
+	    if(sz.x < 1) sz = sz.add(1, 0);
+	    if(sz.y < 1) sz = sz.add(0, 1);
 	    BufferedImage img = TexI.mkbuf(sz);
 	    Graphics2D g = img.createGraphics();
 	    if(aa)
