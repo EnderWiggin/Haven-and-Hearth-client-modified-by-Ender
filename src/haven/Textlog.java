@@ -28,13 +28,13 @@ package haven;
 
 import java.util.*;
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.font.TextAttribute;
 
 public class Textlog extends Widget {
     static Tex texpap = Resource.loadtex("gfx/hud/texpap");
     static Tex schain = Resource.loadtex("gfx/hud/schain");
     static Tex sflarp = Resource.loadtex("gfx/hud/sflarp");
-    static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 9), Color.BLACK);
+    static RichText.Foundry fnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 9, TextAttribute.FOREGROUND, Color.BLACK);
     List<Text> lines;
     int maxy, cury;
     int margin = 3;
@@ -86,9 +86,9 @@ public class Textlog extends Widget {
     public void append(String line, Color col) {
 	Text rl;
 	if(col == null)
-	    rl = fnd.renderwrap(line, sz.x - (margin * 2) - sflarp.sz().x);
+	    rl = fnd.render(RichText.Parser.quote(line), sz.x - (margin * 2) - sflarp.sz().x);
 	else
-	    rl = fnd.renderwrap(line, col, sz.x - (margin * 2) - sflarp.sz().x);
+	    rl = fnd.render(RichText.Parser.quote(line), sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col);
 	synchronized(lines) {
 	    lines.add(rl);
 	}
