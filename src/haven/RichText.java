@@ -264,6 +264,13 @@ public class RichText extends Text {
 	}
     }
     
+    private static Map<? extends Attribute, ?> fillattrs(Object... attrs) {
+	Map<Attribute, Object> a = new HashMap<Attribute, Object>(std.defattrs);
+	for(int i = 0; i < attrs.length; i += 2)
+	    a.put((Attribute)attrs[i], attrs[i + 1]);
+	return(a);
+    }
+
     public static class Parser {
 	private final Map<? extends Attribute, ?> defattrs;
 	
@@ -272,10 +279,7 @@ public class RichText extends Text {
 	}
 	
 	public Parser(Object... attrs) {
-	    Map<Attribute, Object> a = new HashMap<Attribute, Object>(std.defattrs);
-	    for(int i = 0; i < attrs.length; i += 2)
-		a.put((Attribute)attrs[i], attrs[i + 1]);
-	    this.defattrs = a;
+	    this.defattrs = fillattrs(attrs);
 	}
 	
 	private static boolean namechar(char c) {
@@ -402,17 +406,32 @@ public class RichText extends Text {
 	    return(res);
 	}
 	
-	public Part parse(Reader in) throws IOException {
+	public Part parse(Reader in, Map<? extends Attribute, ?> extra) throws IOException {
 	    PState s = new PState(new PeekReader(in));
-	    return(parse(s, defattrs));
+	    if(extra != null) {
+		Map<Attribute, Object> attrs = new HashMap<Attribute, Object>();
+		attrs.putAll(defattrs);
+		attrs.putAll(extra);
+		return(parse(s, attrs));
+	    } else {
+		return(parse(s, defattrs));
+	    }
+	}
+
+	public Part parse(Reader in) throws IOException {
+	    return(parse(in, null));
 	}
 	
-	public Part parse(String text) {
+	public Part parse(String text, Map<? extends Attribute, ?> extra) {
 	    try {
-		return(parse(new StringReader(text)));
+		return(parse(new StringReader(text), extra));
 	    } catch(IOException e) {
 		throw(new Error(e));
 	    }
+	}
+
+	public Part parse(String text) {
+	    return(parse(text, null));
 	}
 	
 	public static String quote(String in) {
@@ -521,8 +540,12 @@ public class RichText extends Text {
 	    return(sz);
 	}
 
-	public RichText render(String text, int width) {
-	    Part fp = parser.parse(text);
+	public RichText render(String text, int width, Object... extra) {
+	    Map<? extends Attribute, ?> extram = null;
+	    if(extra.length > 0) {
+		extram = fillattrs(extra);
+	    }
+	    Part fp = parser.parse(text, extram);
 	    fp.prepare(rs);
 	    List<Part> parts = layout(fp, width);
 	    Coord sz = bounds(parts);
