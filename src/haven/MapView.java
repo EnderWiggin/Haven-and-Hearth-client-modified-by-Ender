@@ -364,6 +364,50 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
     static {camtypes.put("cake", CakeCam.class);}
 
+    static class FixedCakeCam extends DragCam {
+	public final Coord border = new Coord(250, 150);
+	private Coord size, center, diff;
+	private boolean setoff = false;
+	private Coord off = Coord.z;
+	private Coord tgt = null;
+	private Coord cur = off;
+	private double vel = 0.2;
+
+	public FixedCakeCam(double vel) {
+	    this.vel = Math.min(1.0, Math.max(0.1, vel));
+	}
+
+	public FixedCakeCam(String... args) {
+	    this(args.length < 1 ? 0.2 : Double.parseDouble(args[0]));
+	}
+
+	public void setpos(MapView mv, Gob player, Coord sz) {
+	    if(setoff) {
+		borderize(mv, player, sz, border);
+		off = mv.mc.add(player.getc().inv());
+		setoff = false;
+	    }
+	    if(mv.pmousepos != null && (mv.pmousepos.x == 0 || mv.pmousepos.x == sz.x - 1 || mv.pmousepos.y == 0 || mv.pmousepos.y == sz.y - 1)) {
+		if(size == null || !size.equals(sz)) {
+		    size = new Coord(sz);
+		    center = size.div(2);
+		    diff = center.sub(border);
+		}
+		if(player != null && mv.pmousepos != null)
+		    tgt = player.getc().sub(s2m(center.sub(mv.pmousepos).mul(diff).div(center))).sub(player.getc());
+	    } else {
+		tgt = off;
+	    }
+ 	    cur = cur.add(tgt.sub(cur).mul(vel));
+ 	    mv.mc = player.getc().add(cur);
+	}
+
+	public void moved(MapView mv) {
+	    setoff = true;
+	}
+    }
+    static {camtypes.put("fixedcake", FixedCakeCam.class);}
+    
     private class Loading extends RuntimeException {}
     
     private static Camera makecam(Class<? extends Camera> ct, String... args) throws ClassNotFoundException {
