@@ -49,7 +49,7 @@ public class Fightview extends Widget {
         int gobid;
         int bal, intns;
 	int off, def;
-	int ip;
+	int ip, oip;
         Avaview ava;
 	GiveButton give;
         
@@ -176,8 +176,9 @@ public class Fightview extends Widget {
             rel.intns = (Integer)args[2];
 	    rel.give((Integer)args[3]);
             rel.ip = (Integer)args[4];
-            rel.off = (Integer)args[5];
-            rel.def = (Integer)args[6];
+            rel.oip = (Integer)args[5];
+            rel.off = (Integer)args[6];
+            rel.def = (Integer)args[7];
             lsrel.addFirst(rel);
             return;
         } else if(msg == "del") {
@@ -191,6 +192,7 @@ public class Fightview extends Widget {
             rel.intns = (Integer)args[2];
 	    rel.give((Integer)args[3]);
 	    rel.ip = (Integer)args[4];
+	    rel.oip = (Integer)args[5];
             return;
 	} else if(msg == "updod") {
 	    Relation rel = getrel((Integer)args[0]);
