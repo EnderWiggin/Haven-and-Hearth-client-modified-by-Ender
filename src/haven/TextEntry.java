@@ -34,7 +34,7 @@ public class TextEntry extends Widget {
     int sx;
     boolean pw = false;
     static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12), Color.BLACK);
-    Text tcache = null;
+    Text.Line tcache = null;
     public String text;
 	
     static {

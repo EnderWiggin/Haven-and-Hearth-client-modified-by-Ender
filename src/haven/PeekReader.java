@@ -26,36 +26,60 @@
 
 package haven;
 
-import java.awt.Color;
+import java.io.*;
 
-public class GobHealth extends GAttrib {
-    int hp;
-    HpFx fx = new HpFx();
-    
-    public GobHealth(Gob g, int hp) {
-	super(g);
-	this.hp = hp;
+public class PeekReader extends Reader {
+    private final Reader back;
+    private boolean p = false;
+    private int la;
+	
+    public PeekReader(Reader back) {
+	this.back = back;
     }
-    
-    private class HpFx implements Sprite.Part.Effect {
-	public GOut apply(GOut in) {
-	    return(new GOut(in) {
-		    {chcolor();}
-		    
-		    public void chcolor(Color col) {
-			super.chcolor(Utils.blendcol(col, new Color(255, 0, 0, 128 - ((hp * 128) / 4))));
-		    }
-		});
+	
+    public void close() throws IOException {
+	back.close();
+    }
+	
+    public int read() throws IOException {
+	if(p) {
+	    p = false;
+	    return(la);
+	} else {
+	    return(back.read());
 	}
     }
-
-    public Sprite.Part.Effect getfx() {
-	if(hp >= 4)
-	    return(null);
-	return(fx);
+	
+    public int read(char[] b, int off, int len) throws IOException {
+	int r = 0;
+	while(r < len) {
+	    int c = read();
+	    if(c < 0)
+		return(r);
+	    b[off + r++] = (char)c;
+	}
+	return(r);
+    }
+	
+    public boolean ready() throws IOException {
+	if(p)
+	    return(true);
+	return(back.ready());
     }
     
-    public double asfloat() {
-	return(((double)hp) / 4.0);
+    protected boolean whitespace(char c) {
+	return(Character.isWhitespace(c));
+    }
+
+    public int peek(boolean skipws) throws IOException {
+	while(!p || (skipws && (la >= 0) && whitespace((char)la))) {
+	    la = back.read();
+	    p = true;
+	}
+	return(la);
+    }
+    
+    public int peek() throws IOException {
+	return(peek(false));
     }
 }

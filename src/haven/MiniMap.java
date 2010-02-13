@@ -123,7 +123,7 @@ public class MiniMap extends Widget {
 	void start() {
 	    synchronized(this) {
 		if(me == null) {
-		    me = new Thread(Utils.tg(), this, "Minimap loader");
+		    me = new HackThread(this, "Minimap loader");
 		    me.setDaemon(true);
 		    me.start();
 		}

@@ -191,6 +191,7 @@ public class FlowerMenu extends Widget {
 	}
 	organize(opts);
 	ui.grabmouse(this);
+	ui.grabkeys(this);
 	anim = new Opening();
     }
 	
@@ -206,9 +207,11 @@ public class FlowerMenu extends Widget {
 	if(msg == "cancel") {
 	    anim = new Cancel();
 	    ui.grabmouse(null);
+	    ui.grabkeys(null);
 	} else if(msg == "act") {
 	    anim = new Chosen(opts[(Integer)args[0]]);
 	    ui.grabmouse(null);
+	    ui.grabkeys(null);
 	}
     }
 	
@@ -223,9 +226,11 @@ public class FlowerMenu extends Widget {
 	    int opt = (key == '0')?10:(key - '1');
 	    if(opt < opts.length)
 		wdgmsg("cl", opt);
+	    ui.grabkeys(null);
 	    return(true);
 	} else if(key == 27) {
 	    wdgmsg("cl", -1);
+	    ui.grabkeys(null);
 	    return(true);
 	}
 	return(false);

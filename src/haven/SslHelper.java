@@ -150,18 +150,9 @@ public class SslHelper {
 	return((SSLSocket)sfac().createSocket(sk, host, port, autoclose));
     }
     
-    private static Socket j2seIsStupid(String host, int port) throws IOException {
-	SocketChannel chn;
-	try {
-	    chn = SocketChannel.open(new InetSocketAddress(host, port));
-	} catch(UnresolvedAddressException e) {
-	    throw((UnknownHostException)new UnknownHostException().initCause(e));
-	}
-	return(chn.socket());
-    }
-
     public SSLSocket connect(String host, int port) throws IOException {
-	Socket sk = j2seIsStupid(host, port);
+	Socket sk = new HackSocket();
+	sk.connect(new InetSocketAddress(host, port));
 	return(connect(sk, host, port, true));
     }
     

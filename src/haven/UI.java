@@ -60,7 +60,7 @@ public class UI {
 	{
 	    setcmd("q", new Command() {
 		    public void run(Console cons, String[] args) {
-			Utils.tg().interrupt();
+			HackThread.tg().interrupt();
 		    }
 		});
 	    setcmd("lo", new Command() {

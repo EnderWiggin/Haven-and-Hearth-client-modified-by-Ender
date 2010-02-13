@@ -26,36 +26,50 @@
 
 package haven;
 
-import java.awt.Color;
+import java.util.*;
 
-public class GobHealth extends GAttrib {
-    int hp;
-    HpFx fx = new HpFx();
-    
-    public GobHealth(Gob g, int hp) {
-	super(g);
-	this.hp = hp;
+public class HackThread extends Thread {
+    public HackThread(ThreadGroup tg, Runnable target, String name) {
+	/* Hack #1: Override stupid security-managers' whims to move
+	 * threads into whimsical thread-groups. */
+	super((tg == null)?tg():tg, target, name);
+    }
+
+    public HackThread(Runnable target, String name) {
+	this(null, target, name);
+    }
+
+    public HackThread(String name) {
+	this(null, name);
     }
     
-    private class HpFx implements Sprite.Part.Effect {
-	public GOut apply(GOut in) {
-	    return(new GOut(in) {
-		    {chcolor();}
-		    
-		    public void chcolor(Color col) {
-			super.chcolor(Utils.blendcol(col, new Color(255, 0, 0, 128 - ((hp * 128) / 4))));
-		    }
-		});
+    public static ThreadGroup tg() {
+	return(Thread.currentThread().getThreadGroup());
+    }
+    
+    /* Hack #2: Allow hooking into thread interruptions to as to
+     * interrupt normally uninterruptible stuff like Sockets. For a
+     * more thorough explanation why this is necessary, see
+     * HackSocket. */
+    private Set<Runnable> ils = new HashSet<Runnable>();
+    
+    public void addil(Runnable r) {
+	synchronized(ils) {
+	    ils.add(r);
 	}
     }
-
-    public Sprite.Part.Effect getfx() {
-	if(hp >= 4)
-	    return(null);
-	return(fx);
+    
+    public void remil(Runnable r) {
+	synchronized(ils) {
+	    ils.remove(r);
+	}
     }
     
-    public double asfloat() {
-	return(((double)hp) / 4.0);
+    public void interrupt() {
+	super.interrupt();
+	synchronized(ils) {
+	    for(Runnable r : ils)
+		r.run();
+	}
     }
 }
