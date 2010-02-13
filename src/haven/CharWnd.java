@@ -28,6 +28,7 @@ package haven;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.font.TextAttribute;
 import java.util.*;
 
 public class CharWnd extends Window {
@@ -45,8 +46,7 @@ public class CharWnd extends Window {
     public static final Tex foodmimg = Resource.loadtex("gfx/hud/charsh/foodm");
     public static final Color debuff = new Color(255, 128, 128);
     public static final Color buff = new Color(128, 255, 128);
-    public static final Text.Foundry sktitfnd = new Text.Foundry("Serif", 16);
-    public static final Text.Foundry skbodfnd = new Text.Foundry("SansSerif", 9);
+    public static final RichText.Foundry skbodfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 9);
     public static final Tex btimeoff = Resource.loadtex("gfx/hud/charsh/shieldgray");
     public static final Tex btimeon = Resource.loadtex("gfx/hud/charsh/shield");
     public static final Tex nmeter = Resource.loadtex("gfx/hud/charsh/numenmeter");
@@ -349,50 +349,28 @@ public class CharWnd extends Window {
 	}
     }
     
-    private class SkillInfo extends Widget {
+    private class SkillInfo extends RichTextBox {
 	Resource cur = null;
-	Tex img;
-	Text tit;
-	Text body;
-	Scrollbar sb;
 	
 	public SkillInfo(Coord c, Coord sz, Widget parent) {
-	    super(c, sz, parent);
-	    sb = new Scrollbar(new Coord(sz.x, 0), sz.y, this, 0, 0);
+	    super(c, sz, parent, "", skbodfnd);
 	}
 	
 	public void draw(GOut g) {
-	    g.chcolor(Color.BLACK);
-	    g.frect(Coord.z, sz);
-	    g.chcolor();
 	    if((cur != null) && !cur.loading) {
-		img = cur.layer(Resource.imgc).tex();
-		tit = sktitfnd.render(cur.layer(Resource.tooltip).t);
-		body = skbodfnd.renderwrap(cur.layer(Resource.pagina).text, sz.x - 20);
-		sb.max = (img.sz().y + tit.sz().y + body.sz().y + 50) - sz.y;
-		sb.val = 0;
+		StringBuilder text = new StringBuilder();
+		text.append("$img[" + cur.name + "]\n\n");
+		text.append("$font[serif,16]{" + cur.layer(Resource.tooltip).t + "}\n\n");
+		text.append(cur.layer(Resource.pagina).text);
+		settext(text.toString());
 		cur = null;
-	    }
-	    if(img != null) {
-		int y = 10;
-		g.image(img, new Coord(10, y - sb.val));
-		y += img.sz().y + 10;
-		g.image(tit.tex(), new Coord(10, y - sb.val));
-		y += tit.sz().y + 20;
-		g.image(body.tex(), new Coord(10, y - sb.val));
 	    }
 	    super.draw(g);
 	}
 	
 	public void setsk(Resource sk) {
 	    cur = sk;
-	    img = null;
-	    sb.min = sb.max = 0;
-	}
-	
-	public boolean mousewheel(Coord c, int amount) {
-	    sb.ch(amount * 20);
-	    return(true);
+	    settext("");
 	}
     }
 
