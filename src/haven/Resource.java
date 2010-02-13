@@ -685,8 +685,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	@SuppressWarnings("unchecked")
 	public void init() {
 	    flavobjs = new WeightList<Resource>();
-	    for(int i = 0; i < flw.length; i++)
-		flavobjs.add(load(fln[i], flv[i]), flw[i]);
+	    for(int i = 0; i < flw.length; i++) {
+		try {
+		    flavobjs.add(load(fln[i], flv[i]), flw[i]);
+		} catch(RuntimeException e) {
+		    throw(new LoadException("Illegal resource dependency", e, Resource.this));
+		}
+	    }
 	    Collection<Tile> tiles = new LinkedList<Tile>();
 	    ground = new WeightList<Tile>();
 	    boolean hastrans = (fl & 1) != 0;
@@ -747,10 +752,15 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    String pr = Utils.strd(buf, off);
 	    int pver = Utils.uint16d(buf, off[0]);
 	    off[0] += 2;
-	    if(pr.length() == 0)
+	    if(pr.length() == 0) {
 		parent = null;
-	    else
-		parent = load(pr, pver);
+	    } else {
+		try {
+		    parent = load(pr, pver);
+		} catch(RuntimeException e) {
+		    throw(new LoadException("Illegal resource dependency", e, Resource.this));
+		}
+	    }
 	    name = Utils.strd(buf, off);
 	    Utils.strd(buf, off); /* Prerequisite skill */
 	    hk = (char)Utils.uint16d(buf, off[0]);
