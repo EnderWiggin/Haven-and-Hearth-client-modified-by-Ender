@@ -270,16 +270,38 @@ public class RichText extends Text {
 	    a.put((Attribute)attrs[i], attrs[i + 1]);
 	return(a);
     }
+    
+    /*
+     * This fix exists for Java 1.5. Apparently, before Java 1.6,
+     * TextAttribute.SIZE had to be specified with a Float, and not a
+     * general Number; however, Java 1.6 fails to mention that in the
+     * documentation (which rather explicitly says that any
+     * java.lang.Number is perfectly OK and accepted
+     * practice). However, specifying ints for font size looks nicer
+     * in the rest of the code, so this function gets to collect all
+     * the ugliness of conversion in itself.
+     */
+    private static Map<? extends Attribute, ?> fixattrs(Map<? extends Attribute, ?> attrs) {
+	Map<Attribute, Object> ret = new HashMap<Attribute, Object>();
+	for(Map.Entry<? extends Attribute, ?> e : attrs.entrySet()) {
+	    if(e.getKey() == TextAttribute.SIZE) {
+		ret.put(e.getKey(), ((Number)e.getValue()).floatValue());
+	    } else {
+		ret.put(e.getKey(), e.getValue());
+	    }
+	}
+	return(ret);
+    }
 
     public static class Parser {
 	private final Map<? extends Attribute, ?> defattrs;
 	
 	public Parser(Map<? extends Attribute, ?> defattrs) {
-	    this.defattrs = defattrs;
+	    this.defattrs = fixattrs(defattrs);
 	}
 	
 	public Parser(Object... attrs) {
-	    this.defattrs = fillattrs(attrs);
+	    this(fillattrs(attrs));
 	}
 	
 	private static boolean namechar(char c) {
@@ -346,9 +368,9 @@ public class RichText extends Text {
 		if(tn == "font") {
 		    na.put(TextAttribute.FAMILY, args[0]);
 		    if(args.length > 1)
-			na.put(TextAttribute.SIZE, Integer.parseInt(args[1]));
+			na.put(TextAttribute.SIZE, Float.parseFloat(args[1]));
 		} else if(tn == "size") {
-		    na.put(TextAttribute.SIZE, Integer.parseInt(args[0]));
+		    na.put(TextAttribute.SIZE, Float.parseFloat(args[0]));
 		} else if(tn == "b") {
 		    na.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
 		} else if(tn == "i") {
