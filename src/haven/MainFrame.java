@@ -228,7 +228,12 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		    if(res.prio >= 0)
 			used.add(res);
 		}
-		Resource.dumplist(used, new OutputStreamWriter(ResCache.global.store("tmp/allused"), "UTF-8"));
+		Writer w = new OutputStreamWriter(ResCache.global.store("tmp/allused"), "UTF-8");
+		try {
+		    Resource.dumplist(used, w);
+		} finally {
+		    w.close();
+		}
 	    } catch(IOException e) {}
 	}
     }
