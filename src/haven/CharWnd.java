@@ -338,13 +338,13 @@ public class CharWnd extends Window {
 		}
 	    }
 	    if(els.size() == 0) {
-		tooltip = String.format("0 of %d", cap);
+		tooltip = String.format("0 of %.1f", cap / 10.0);
 	    } else {
 		String tt = "";
 		for(El el : els)
-		    tt += String.format("%d %s + ", el.amount, el.id);
+		    tt += String.format("%.1f %s + ", el.amount / 10.0, el.id);
 		tt = tt.substring(0, tt.length() - 3);
-		tooltip = String.format("(%s) = %d of %d", tt, sum, cap);
+		tooltip = String.format("(%s) = %.1f of %.1f", tt, sum / 10.0, cap / 10.0);
 	    }
 	}
     }
