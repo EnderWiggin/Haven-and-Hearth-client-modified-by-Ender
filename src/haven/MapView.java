@@ -189,7 +189,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	
 	public OrigCam2(double v) {
 	    this.v = Math.log(v) / 0.02; /* 1 / 50 FPS = 0.02 s */
-	    System.err.println(this.v);
 	}
 	
 	public OrigCam2() {
