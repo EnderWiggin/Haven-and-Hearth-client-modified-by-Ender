@@ -82,7 +82,7 @@ public class Gob implements Sprite.Owner {
 	for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
-		if((getneg() != null) && (ol.res.get() != null))
+		if(((getattr(Drawable.class) == null) || (getneg() != null)) && (ol.res.get() != null))
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 	    } else {
 		boolean done = ol.spr.tick(dt);
@@ -159,13 +159,12 @@ public class Gob implements Sprite.Owner {
     public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
 	Drawable d = getattr(Drawable.class);
 	Coord dro = drawoff();
-	if(d != null) {
-	    for(Overlay ol : ols) {
-		if(ol.spr != null)
-		    ol.spr.setup(drawer, dc, dro);
-	    }
-	    d.setup(drawer, dc, dro);
+	for(Overlay ol : ols) {
+	    if(ol.spr != null)
+		ol.spr.setup(drawer, dc, dro);
 	}
+	if(d != null)
+	    d.setup(drawer, dc, dro);
     }
     
     public Random mkrandoom() {
