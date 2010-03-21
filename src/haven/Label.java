@@ -37,7 +37,10 @@ public class Label extends Widget {
     static {
 	Widget.addtype("lbl", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new Label(c, parent, (String)args[0]));
+		    if(args.length > 1)
+			return(new Label(c, parent, (String)args[0], (Integer)args[1]));
+		    else
+			return(new Label(c, parent, (String)args[0]));
 		}
 	    });
     }
@@ -46,6 +49,13 @@ public class Label extends Widget {
 	g.image(text.tex(), Coord.z);
     }
 	
+    public Label(Coord c, Widget parent, String text, int w, Text.Foundry f) {
+	super(c, Coord.z, parent);
+	this.f = f;
+	this.text = f.renderwrap(texts = text, this.col, w);
+	sz = this.text.sz();
+    }
+
     public Label(Coord c, Widget parent, String text, Text.Foundry f) {
 	super(c, Coord.z, parent);
 	this.f = f;
@@ -53,6 +63,10 @@ public class Label extends Widget {
 	sz = this.text.sz();
     }
 
+    public Label(Coord c, Widget parent, String text, int w) {
+	this(c, parent, text, w, Text.std);
+    }
+	
     public Label(Coord c, Widget parent, String text) {
 	this(c, parent, text, Text.std);
     }
