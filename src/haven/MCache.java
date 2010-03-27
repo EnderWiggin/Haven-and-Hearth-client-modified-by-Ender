@@ -319,22 +319,30 @@ public class MCache {
 	String mmname = msg.string().intern();
 	if(mmname.equals(""))
 	    mmname = null;
-	boolean[] mine = new boolean[256];
+	int[] pfl = new int[256];
 	while(true) {
 	    int pidx = msg.uint8();
 	    if(pidx == 255)
 		break;
-	    mine[pidx] = true;
+	    pfl[pidx] = msg.uint8();
 	}
-	byte[] blob = new byte[cmaps.x * cmaps.y * 2];
+	Message blob = new Message(0);
 	{
 	    Inflater z = new Inflater();
 	    z.setInput(msg.blob, msg.off, msg.blob.length - msg.off);
-	    try {
-		if(z.inflate(blob) != blob.length)
-		    throw(new RuntimeException("Got incorrectly sized map blob"));
-	    } catch(java.util.zip.DataFormatException e) {
-		throw(new RuntimeException("Got malformed map blob", e));
+	    byte[] buf = new byte[10000];
+	    while(true) {
+		try {
+		    int len;
+		    if((len = z.inflate(buf)) == 0) {
+			if(!z.finished())
+			    throw(new RuntimeException("Got unterminated map blob"));
+			break;
+		    }
+		    blob.addbytes(buf, 0, len);
+		} catch(java.util.zip.DataFormatException e) {
+		    throw(new RuntimeException("Got malformed map blob", e));
+		}
 	    }
 	}
 	synchronized(req) {
@@ -345,18 +353,39 @@ public class MCache {
 		    g.mnm = mmname;
 		    for(int y = 0; y < cmaps.y; y++) {
 			for(int x = 0; x < cmaps.x; x++) {
-			    g.tiles[x][y] = Utils.ub(blob[i++]);
+			    g.tiles[x][y] = blob.uint8();
 			}
 		    }
 		    for(int y = 0; y < cmaps.y; y++) {
-			for(int x = 0; x < cmaps.x; x++) {
-			    int pidx = Utils.ub(blob[i++]);
-			    if(pidx == 255)
-				g.ol[x][y] = 0;
-			    else if(mine[pidx])
-				g.ol[x][y] = 2;
+			for(int x = 0; x < cmaps.x; x++)
+			    g.ol[x][y] = 0;
+		    }
+		    while(true) {
+			int pidx = blob.uint8();
+			if(pidx == 255)
+			    break;
+			int fl = pfl[pidx];
+			int type = blob.uint8();
+			Coord c1 = new Coord(blob.uint8(), blob.uint8());
+			Coord c2 = new Coord(blob.uint8(), blob.uint8());
+			int ol;
+			if(type == 0) {
+			    if((fl & 1) == 1)
+				ol = 2;
 			    else
-				g.ol[x][y] = 1;
+				ol = 1;
+			} else if(type == 1) {
+			    if((fl & 1) == 1)
+				ol = 8;
+			    else
+				ol = 4;
+			} else {
+			    throw(new RuntimeException("Unknown plot type " + type));
+			}
+			for(int y = c1.y; y <= c2.y; y++) {
+			    for(int x = c1.x; x <= c2.x; x++) {
+				g.ol[x][y] |= ol;
+			    }
 			}
 		    }
 		    req.remove(c);
