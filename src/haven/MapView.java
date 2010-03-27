@@ -58,6 +58,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     long lastmove = 0;
     Sprite.Part obscpart = null;
     Gob obscgob = null;
+    static Text.Foundry polownertf = new Text.Foundry("serif", 20);
+    public Text polowner = null;
+    long polchtm = 0;
     
     public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 	public int compare(Sprite.Part a, Sprite.Part b) {
@@ -601,6 +604,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		glob.oc.lrem(plob);
 	    plob = null;
 	    plrad = 0;
+	} else if(msg == "polowner") {
+	    String o = (String)args[0];
+	    if(o.length() == 0)
+		this.polowner = null;
+	    else
+		this.polowner = polownertf.render(o);
+	    this.polchtm = System.currentTimeMillis();
 	} else {
 	    super.uimsg(msg, args);
 	}
@@ -1018,7 +1028,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    map.request(new Coord(cgc));
 	    }
 	}
-	if((olftimer != 0) && (olftimer < System.currentTimeMillis()))
+	long now = System.currentTimeMillis();
+	if((olftimer != 0) && (olftimer < now))
 	    unflashol();
 	map.sendreqs();
 	checkplmove();
@@ -1036,6 +1047,16 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.frect(Coord.z, sz);
 	    g.chcolor(Color.WHITE);
 	    g.atext(text, sz.div(2), 0.5, 0.5);
+	}
+	if((polowner != null) && (now - polchtm < 5000)) {
+	    int a;
+	    if(now - polchtm < 3000)
+		a = 255;
+	    else
+		a = (int)((255 * ((now - polchtm) - 3000)) / 2000);
+	    g.chcolor(255, 255, 255, a);
+	    g.aimage(polowner.tex(), sz.div(2), 0.5, 0.5);
+	    g.chcolor();
 	}
 	super.draw(g);
     }
