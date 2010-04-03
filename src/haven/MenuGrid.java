@@ -126,7 +126,8 @@ public class MenuGrid extends Widget {
 		    btn = next;
 		} else if(i < cur.length) {
 		    Resource.AButton ad = cur[i].layer(Resource.action);
-		    hotmap.put(Character.toUpperCase(ad.hk), cur[i]);
+		    if(ad.hk != 0)
+			hotmap.put(Character.toUpperCase(ad.hk), cur[i]);
 		    btn = cur[i++];
 		}
 		layout[x][y] = btn;
