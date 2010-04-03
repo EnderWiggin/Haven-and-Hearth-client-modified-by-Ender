@@ -53,6 +53,7 @@ public class Message implements java.io.Serializable {
     public int type;
     public byte[] blob;
     public long last = 0;
+    public int retx = 0;
     public int seq;
     int off = 0;
 	

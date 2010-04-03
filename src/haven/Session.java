@@ -550,8 +550,20 @@ public class Session {
 			synchronized(pending) {
 			    if(pending.size() > 0) {
 				for(Message msg : pending) {
-				    if(now - msg.last > 60) { /* XXX */
+				    int txtime;
+				    if(msg.retx == 0)
+					txtime = 0;
+				    else if(msg.retx == 1)
+					txtime = 80;
+				    else if(msg.retx < 4)
+					txtime = 200;
+				    else if(msg.retx < 10)
+					txtime = 620;
+				    else
+					txtime = 2000;
+				    if(now - msg.last > txtime) { /* XXX */
 					msg.last = now;
+					msg.retx++;
 					Message rmsg = new Message(MSG_REL);
 					rmsg.adduint16(msg.seq);
 					rmsg.adduint8(msg.type);
