@@ -43,7 +43,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
-    public boolean authdraw = Utils.getpref("authdraw", "on").equals("on");
     Grabber grab = null;
     ILM mask;
     final MCache map;
@@ -59,7 +58,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     Sprite.Part obscpart = null;
     Gob obscgob = null;
     static Text.Foundry polownertf = new Text.Foundry("serif", 20);
-    public Text polowner = null;
+    public Text polownert = null;
+    public String polowner = null;
     long polchtm = 0;
     
     public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
@@ -605,12 +605,18 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    plob = null;
 	    plrad = 0;
 	} else if(msg == "polowner") {
-	    String o = (String)args[0];
-	    if(o.length() == 0)
-		this.polowner = null;
-	    else
-		this.polowner = polownertf.render(o);
-	    this.polchtm = System.currentTimeMillis();
+	    String o = ((String)args[0]).intern();
+	    if(o != polowner) {
+		if(o.length() == 0) {
+		    if(this.polowner != null)
+			this.polownert = polownertf.render("Leaving " + this.polowner);
+		    this.polowner = null;
+		} else {
+		    this.polowner = o;
+		    this.polownert = polownertf.render("Entering " + o);
+		}
+		this.polchtm = System.currentTimeMillis();
+	    }
 	} else {
 	    super.uimsg(msg, args);
 	}
@@ -828,14 +834,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		Coord dc = m2s(gob.getc()).add(oc);
 		gob.sc = dc;
 		gob.drawsetup(drawer, dc, sz);
-		if(authdraw) {
-		    Authority a = gob.getattr(Authority.class);
-		    if(a != null) {
-			Sprite.Part p = a.mkpart();
-			p.setup(dc, Coord.z);
-			sprites.add(p);
-		    }
-		}
 		Speaking s = gob.getattr(Speaking.class);
 		if(s != null)
 		    speaking.add(s);
@@ -1048,14 +1046,16 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor(Color.WHITE);
 	    g.atext(text, sz.div(2), 0.5, 0.5);
 	}
-	if((polowner != null) && (now - polchtm < 5000)) {
+	if((polownert != null) && (now - polchtm < 6000)) {
 	    int a;
-	    if(now - polchtm < 3000)
+	    if(now - polchtm < 1000)
+		a = (int)((255 * (now - polchtm)) / 1000);
+	    else if(now - polchtm < 4000)
 		a = 255;
 	    else
-		a = (int)((255 * ((now - polchtm) - 3000)) / 2000);
+		a = (int)((255 * (2000 - ((now - polchtm) - 4000))) / 2000);
 	    g.chcolor(255, 255, 255, a);
-	    g.aimage(polowner.tex(), sz.div(2), 0.5, 0.5);
+	    g.aimage(polownert.tex(), sz.div(2), 0.5, 0.5);
 	    g.chcolor();
 	}
 	super.draw(g);

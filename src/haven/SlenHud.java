@@ -166,10 +166,17 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	budb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/budu"), Resource.loadimg("gfx/hud/slen/budd"));
 	{
 	    new IButton(dispc, this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
+		private boolean v = false;
+		
 		public void click() {
 		    MapView mv = ui.root.findchild(MapView.class);
-		    mv.authdraw = !mv.authdraw;
-		    Utils.setpref("authdraw", mv.authdraw?"on":"off");
+		    if(v) {
+			mv.disol(2, 3);
+			v = false;
+		    } else {
+			mv.enol(2, 3);
+			v = true;
+		    }
 		}
 	    };
 	}
