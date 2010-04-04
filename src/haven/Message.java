@@ -53,6 +53,7 @@ public class Message implements java.io.Serializable {
     public int type;
     public byte[] blob;
     public long last = 0;
+    public int retx = 0;
     public int seq;
     int off = 0;
 	
@@ -95,11 +96,15 @@ public class Message implements java.io.Serializable {
 	return(new Message(type, blob, ooff, len));
     }
 	
-    public void addbytes(byte[] src) {
-	byte[] n = new byte[blob.length + src.length];
+    public void addbytes(byte[] src, int off, int len) {
+	byte[] n = new byte[blob.length + len];
 	System.arraycopy(blob, 0, n, 0, blob.length);
-	System.arraycopy(src, 0, n, blob.length, src.length);
+	System.arraycopy(src, off, n, blob.length, len);
 	blob = n;
+    }
+
+    public void addbytes(byte[] src) {
+	addbytes(src, 0, src.length);
     }
 	
     public void adduint8(int num) {
