@@ -1046,14 +1046,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor(Color.WHITE);
 	    g.atext(text, sz.div(2), 0.5, 0.5);
 	}
-	if((polownert != null) && (now - polchtm < 6000)) {
+	long poldt = now - polchtm;
+	if((polownert != null) && (poldt < 6000)) {
 	    int a;
-	    if(now - polchtm < 1000)
-		a = (int)((255 * (now - polchtm)) / 1000);
-	    else if(now - polchtm < 4000)
+	    if(poldt < 1000)
+		a = (int)((255 * poldt) / 1000);
+	    else if(poldt < 4000)
 		a = 255;
 	    else
-		a = (int)((255 * (2000 - ((now - polchtm) - 4000))) / 2000);
+		a = (int)((255 * (2000 - (poldt - 4000))) / 2000);
 	    g.chcolor(255, 255, 255, a);
 	    g.aimage(polownert.tex(), sz.div(2), 0.5, 0.5);
 	    g.chcolor();
