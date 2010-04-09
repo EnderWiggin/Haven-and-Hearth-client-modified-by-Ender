@@ -280,13 +280,6 @@ public class OCache implements Iterable<Gob> {
 	}
     }
 
-    public synchronized void authority(int id, int frame, int er, int ir, boolean my) {
-	Gob g = getgob(id, frame);
-	if(g == null)
-	    return;
-	g.setattr(new Authority(g, er, ir, my));
-    }
-	
     public synchronized void health(int id, int frame, int hp) {
 	Gob g = getgob(id, frame);
 	if(g == null)

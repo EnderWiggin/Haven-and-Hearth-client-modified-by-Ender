@@ -106,9 +106,6 @@ public class MCache {
 	    Coord tc = gc.mul(cmaps);
 	    for(c.y = 0; c.y < cmaps.x; c.y++) {
 		for(c.x = 0; c.x < cmaps.y; c.x++) {
-		    if(sets[tiles[c.x][c.y]] == null) {
-			System.err.println(tiles[c.x][c.y]);
-		    }
 		    Tileset set = sets[tiles[c.x][c.y]];
 		    if(set.flavobjs.size() > 0) {
 			Random rnd = mkrandoom(c);
