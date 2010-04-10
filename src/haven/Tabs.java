@@ -29,121 +29,56 @@ package haven;
 import java.util.*;
 
 public class Tabs {
-    Coord c, sz;
-    Widget parent;
-    ArrayList<Widget> tabs;
-    ArrayList<Button> btns;
-    HashMap<String, Widget> tabmap;
-    Widget curtab;
+    private Coord c, sz;
+    private Widget parent;
+    public Tab curtab = null;
+    public Collection<Tab> tabs = new LinkedList<Tab>();
 
     public Tabs(Coord c, Coord sz, Widget parent) {
 	this.c = c;
 	this.sz = sz;
 	this.parent = parent;
-	tabs   = new ArrayList<Widget>();
-	btns   = new ArrayList<Button>();
-	tabmap = new HashMap<String, Widget>();
+    }
+
+    public class Tab extends Widget {
+	public TabButton btn;
+	
+	public Tab() {
+	    super(Tabs.this.c, Tabs.this.sz, Tabs.this.parent);
+	    if(curtab == null)
+		curtab = this;
+	    else
+		hide();
+	    tabs.add(this);
+	}
+	
+	public Tab(Coord bc, int bw, String text) {
+	    this();
+	    this.btn = new TabButton(bc, bw, text, this);
+	}
     }
 
     public class TabButton extends Button {
-	public Widget tab;
+	public final Tab tab;
 
-	public TabButton(Coord c, Integer w, String text) {
+	private TabButton(Coord c, Integer w, String text, Tab tab) {
 	    super(c, w, Tabs.this.parent, text);
+	    this.tab = tab;
 	}
 
 	public void click() {
-	    changed(tabs.indexOf(curtab), tabs.indexOf(tab));
 	    showtab(tab);
 	}
     }
 
-    private void addentry(Widget tab, Button btn) {
-	tabs.add(tab);
-	btns.add(btn);
-	tab.hide();
-	if(curtab == null)
-	    showtab(tab);
-	setupbutton(tab, btn);
-    }
-
-    private void setupbutton(Widget tab, Button btn) {
-	if(btn != null && btn instanceof TabButton)
-	    ((TabButton)btn).tab = tab;
-    }
-
-    private Widget createtab(Button btn) {
-	Widget tab = new Widget(c, sz, this.parent);
-	addentry(tab, btn);
-	return(tab);
-    }
-
-    public Widget newtab(Button btn) {
-	return(createtab(btn));
-    }
-    public Widget newtab(String name, Button btn) {
-	tabmap.put(name, newtab(btn));
-	return(tabmap.get(name));
-    }
-    public Widget newtab() {
-	return(createtab(null));
-    }
-    public Widget newtab(String name) {
-	tabmap.put(name, newtab());
-	return(tabmap.get(name));
-    }
-
-    public void addtab(String name, Widget tab, Button btn) {
-	addentry(tab, btn);
-	tabmap.put(name, tab);
-    }
-    public void addtab(String name, Widget tab) {
-	addentry(tab, null);
-	tabmap.put(name, tab);
-    }
-    public void addtab(Widget tab, Button btn) {
-	addentry(tab, btn);
-    }
-    public void addtab(Widget tab) {
-	addentry(tab, null);
-    }
-
-    public void showtab(Widget tab) {
-	if(curtab != null)
-	    curtab.hide();
-	curtab = tab;
-	if(curtab != null)
+    public void showtab(Tab tab) {
+	Tab old = curtab;
+	if(old != null)
+	    old.hide();
+	if((curtab = tab) != null)
 	    curtab.show();
+	changed(old, tab);
     }
-    public void showtab(int tab) {
-	showtab(tabs.get(tab));
-    }
-    public void showtab(String name) {
-	showtab(tabmap.get(name));
-    }
-
-    public void setbutton(Widget tab, Button btn) {
-	if(tabs.contains(tab)) {
-	    btns.set(tabs.indexOf(tab), btn);
-	    setupbutton(tab, btn);
-	}
-    }
-    public void setbutton(int tab, Button btn) {
-	if(tab > 0 && tab < tabs.size())
-	    setbutton(tabs.get(tab), btn);
-    }
-    public void setbutton(String name, Button btn) {
-	if(tabmap.containsKey(name))
-	    setbutton(tabmap.get(name), btn);
-    }
-
-    public Widget get(String name) {
-	return(tabmap.get(name));
-    }
-
-    public Button getbutton(int tab) {
-	return(btns.get(tab));
-    }
-
-    public void changed(int from, int to) {}
+    
+    public void changed(Tab from, Tab to) {}
 }

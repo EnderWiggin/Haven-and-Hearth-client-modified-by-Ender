@@ -26,13 +26,14 @@
 
 package haven;
 
+import java.util.*;
 import java.awt.font.TextAttribute;
 
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     private Tabs body;
     private String curcam;
-    private java.util.HashMap<String, String> caminfomap = new java.util.HashMap<String, String>();
+    private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
 
     static {
 	Widget.addtype("opt", new WidgetFactory() {
@@ -41,19 +42,30 @@ public class OptWnd extends Window {
 		}
 	    });
     }
+    
+    private static class CamInfo {
+	String name, desc;
+	Tabs.Tab args;
+	
+	public CamInfo(String name, String desc, Tabs.Tab args) {
+	    this.name = name;
+	    this.desc = desc;
+	    this.args = args;
+	}
+    }
 
     public OptWnd(Coord c, Widget parent) {
 	super(c, new Coord(400, 340), parent, "Options");
 
 	body = new Tabs(Coord.z, new Coord(400, 300), this) {
-		public void changed(int from, int to) {
-		    Utils.setpref("optwndtab", String.valueOf(to));
-		    getbutton(from).c.y = 0;
-		    getbutton(to).c.y = -2;
+		public void changed(Tab from, Tab to) {
+		    Utils.setpref("optwndtab", to.btn.text.text);
+		    from.btn.c.y = 0;
+		    to.btn.c.y = -2;
 		}};
 
 	/* GENERAL TAB */
-	Widget general = body.newtab(body.new TabButton(new Coord(0, 0), 60, "General"));
+	Widget general = body.new Tab(new Coord(0, 0), 60, "General");
 
 	new Button(new Coord(10, 40), 125, general, "Quit") {
 	    public void click() {
@@ -73,21 +85,22 @@ public class OptWnd extends Window {
 
 	/* CAMERA TAB */
 	getcamera();
-	Widget cam = body.newtab(body.new TabButton(new Coord(70, 0), 60, "Camera")); // är det här verkligen nödvändigt?
+	Widget cam = body.new Tab(new Coord(70, 0), 60, "Camera"); // är det här verkligen nödvändigt?
 
 	new Label(new Coord(10, 40), cam, "Camera type:");
 	final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), cam, "", foundry);
 	caminfo.bg = new java.awt.Color(0, 0, 0, 64);
-	addinfo("orig",    "The Original Camera", "This camera centers where you left-click.");
-	addinfo("border",  "The Borderizer", "");
-	addinfo("predict", "The Predictor", "");
+	addinfo("orig",    "Original Camera", "This camera centers where you left-click.", null);
+	addinfo("border",  "The Borderizer", "", null);
+	addinfo("predict", "The Predictor", "", null);
 
 	final Tabs cambox = new Tabs(new Coord(100, 60), new Coord(300, 200), cam);
+	Tabs.Tab ctab;
 	/* clicktgt arg */
-	cambox.newtab("clicktgt");
-	new Label(new Coord(10, 10),  cambox.get("clicktgt"), "Fast");
-	new Label(new Coord(10, 180), cambox.get("clicktgt"), "Slow");
-	new Scrollbar(new Coord(25, 20), 160, cambox.get("clicktgt"), 0, 20) {{ val = Integer.parseInt(Utils.getpref("clicktgtarg1", "10")); }
+	ctab = cambox.new Tab();
+	new Label(new Coord(10, 10),  ctab, "Fast");
+	new Label(new Coord(10, 180), ctab, "Slow");
+	new Scrollbar(new Coord(25, 20), 160, ctab, 0, 20) {{ val = Integer.parseInt(Utils.getpref("clicktgtarg1", "10")); }
 	    public boolean mouseup(Coord c, int button) {
 		if(super.mouseup(c, button)) {
 		    setcamera(curcam, String.valueOf(Math.cbrt(Math.cbrt(val / 24.0))));
@@ -96,11 +109,12 @@ public class OptWnd extends Window {
 		}
 		return(false);
 	    }};
+	addinfo("clicktgt", "Target Seeker", "", ctab);
 	/* fixedcake arg */
-	cambox.newtab("fixedcake");
-	new Label(new Coord(10, 10),  cambox.get("fixedcake"), "Fast");
-	new Label(new Coord(10, 180), cambox.get("fixedcake"), "Slow");
-	new Scrollbar(new Coord(25, 20), 160, cambox.get("fixedcake"), 0, 20) {{ val = Integer.parseInt(Utils.getpref("fixedcakearg1", "10")); }
+	ctab = cambox.new Tab();
+	new Label(new Coord(10, 10),  ctab, "Fast");
+	new Label(new Coord(10, 180), ctab, "Slow");
+	new Scrollbar(new Coord(25, 20), 160, ctab, 0, 20) {{ val = Integer.parseInt(Utils.getpref("fixedcakearg1", "10")); }
 	    public boolean mouseup(Coord c, int button) {
 		if(super.mouseup(c, button)) {
 		    setcamera(curcam, String.valueOf(Math.pow(1 - (val / 20.0), 2)));
@@ -109,14 +123,19 @@ public class OptWnd extends Window {
 		}
 		return(false);
 	    }};
+	addinfo("fixedcake", "Fixcake", "", ctab);
 
 	final RadioGroup cameras = new RadioGroup(cam) {
 		public void changed(int btn, String lbl) {
 		    if(!lbl.equals(curcam))
 			setcamera(lbl, "0.2");
-		    cambox.showtab(lbl);
-		    if(caminfomap.containsKey(lbl)) caminfo.settext(caminfomap.get(lbl));
-		    else                            caminfo.settext("");
+		    CamInfo inf = caminfomap.get(lbl);
+		    if(inf == null) {
+			cambox.showtab(null);
+		    } else {
+			cambox.showtab(inf.args);
+			caminfo.settext(String.format("$size[12]{%s}\n\n%s", inf.name, inf.desc));
+		    }
 		}};
 	String[] camlist = new String[] {"orig", "clicktgt", "kingsquest", "border", "predict", "fixed", "cake", "fixedcake"};
 	for(int i = 0; i < camlist.length; i++)
@@ -124,7 +143,7 @@ public class OptWnd extends Window {
 	cameras.check(curcam);
 
 	/* SOUND TAB */
-	Widget snd = body.newtab(body.new TabButton(new Coord(140, 0), 60, "Sound"));
+	Widget snd = body.new Tab(new Coord(140, 0), 60, "Sound");
 
 	new Label(new Coord(10, 40), snd, "Sound volume:");
 	new Frame(new Coord(10, 65), new Coord(20, 206), snd);
@@ -137,8 +156,11 @@ public class OptWnd extends Window {
 	    }};
 
 	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
-	body.showtab(Integer.parseInt(Utils.getpref("optwndtab", "0")));
-	body.getbutton(Integer.parseInt(Utils.getpref("optwndtab", "0"))).c.y = -2;
+	String last = Utils.getpref("optwndtab", "");
+	for(Tabs.Tab tab : body.tabs) {
+	    if(tab.btn.text.text.equals(last))
+		body.showtab(tab);
+	}
     }
 
     private void getcamera() {
@@ -169,8 +191,8 @@ public class OptWnd extends Window {
 	Audio.setvolume((100 - vol) / 100.0);
     }
 
-    private void addinfo(String camtype, String title, String text) {
-	caminfomap.put(camtype, String.format("$size[12]{%s}\n\n%s", title, text));
+    private void addinfo(String camtype, String title, String text, Tabs.Tab args) {
+	caminfomap.put(camtype, new CamInfo(title, text, args));
     }
 
     public class Frame extends Widget {
