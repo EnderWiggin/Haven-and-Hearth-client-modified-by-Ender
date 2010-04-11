@@ -52,6 +52,10 @@ public class RootWidget extends ConsoleHost {
 		entercmd();
 	    } else if(key != 0) {
 		wdgmsg("gk", (int)key);
+	    } else if(ev.getKeyCode() == KeyEvent.VK_F1) {
+		new OptWnd(new Coord(100, 100), this) {
+		    public void wdgmsg(Widget sender, String msg, Object... args) { if(msg.equals("close")) ui.destroy(this); }
+		};
 	    }
 	}
 	return(true);
