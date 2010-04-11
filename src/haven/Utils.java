@@ -476,6 +476,14 @@ public class Utils {
 	return(d);
     }
     
+    public static int clip(int i, int min, int max) {
+	if(i < min)
+	    return(min);
+	if(i > max)
+	    return(max);
+	return(i);
+    }
+    
     public static Color blendcol(Color in, Color bl) {
 	int f1 = bl.getAlpha();
 	int f2 = 255 - bl.getAlpha();

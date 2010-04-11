@@ -85,7 +85,7 @@ public class OptWnd extends Window {
 
 	/* CAMERA TAB */
 	getcamera();
-	Widget cam = body.new Tab(new Coord(70, 0), 60, "Camera"); // är det här verkligen nödvändigt?
+	Widget cam = body.new Tab(new Coord(70, 0), 60, "Camera");
 
 	new Label(new Coord(10, 40), cam, "Camera type:");
 	final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), cam, "", foundry);
@@ -153,6 +153,11 @@ public class OptWnd extends Window {
 		setsfxvol(val);
 		sfxvol.c.y = 69 + (int)(val * 1.86);
 		sfxvol.settext(String.valueOf(100 - val) + " %");
+	    }
+	    public boolean mousewheel(Coord c, int amount) {
+		val = Utils.clip(val + amount, min, max);
+		changed();
+		return(true);
 	    }};
 
 	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
