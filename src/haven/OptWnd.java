@@ -85,6 +85,17 @@ public class OptWnd extends Window {
 			else               ui.fsm.setfs();
 		    }
 		}};
+
+	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
+	    new Label(new Coord(20, 10), editbox, "Edit mode:");
+	    RadioGroup editmode = new RadioGroup(editbox) {
+		    public void changed(int btn, String lbl) {
+			Utils.setpref("editmode", lbl.toLowerCase());
+		    }};
+	    editmode.add("Emacs", new Coord(10, 25));
+	    editmode.add("PC",    new Coord(10, 50));
+	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
+	    else                                                editmode.check("PC");
 	}
 
 	{ /* CAMERA TAB */
