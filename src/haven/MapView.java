@@ -926,7 +926,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			    show = new Color(255, 255, 255, 255 - ((255 * tm) / 7500));
 			}
 		    } else if(k.type == 1) {
-			show = Color.WHITE;
+			if(k.gob == onmouse)
+			    show = Color.WHITE;
 		    }
 		    if(show != null) {
 			g.chcolor(show);
