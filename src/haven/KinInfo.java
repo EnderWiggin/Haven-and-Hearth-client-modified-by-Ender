@@ -37,11 +37,13 @@ public class KinInfo extends GAttrib {
 	super(g);
 	this.name = name;
 	this.group = group;
+	this.type = type;
     }
     
     public void update(String name, int group, int type) {
 	this.name = name;
 	this.group = group;
+	this.type = type;
 	rnm = null;
     }
     
