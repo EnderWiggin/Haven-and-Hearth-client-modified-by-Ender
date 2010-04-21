@@ -287,7 +287,7 @@ public class OCache implements Iterable<Gob> {
 	g.setattr(new GobHealth(g, hp));
     }
 	
-    public synchronized void buddy(int id, int frame, String name, int group) {
+    public synchronized void buddy(int id, int frame, String name, int group, int type) {
 	Gob g = getgob(id, frame);
 	if(g == null)
 	    return;
@@ -296,9 +296,9 @@ public class OCache implements Iterable<Gob> {
 	} else {
 	    KinInfo b = g.getattr(KinInfo.class);
 	    if(b == null) {
-		g.setattr(new KinInfo(g, name, group));
+		g.setattr(new KinInfo(g, name, group, type));
 	    } else {
-		b.update(name, group);
+		b.update(name, group, type);
 	    }
 	}
     }
