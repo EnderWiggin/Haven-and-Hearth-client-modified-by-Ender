@@ -101,6 +101,12 @@ public class GOut {
 	tex.dispose();
     }
 	
+    public void image(Resource.Image img, Coord c) {
+	if(img == null)
+	    return;
+	image(img.tex(), c.add(img.o));
+    }
+
     public void image(Tex tex, Coord c) {
 	if(tex == null)
 	    return;
