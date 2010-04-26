@@ -195,8 +195,8 @@ public class OptWnd extends Window {
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
 	}
 
-	{ /* SOUND TAB */
-	    tab = body.new Tab(new Coord(140, 0), 60, "Sound");
+	{ /* AUDIO TAB */
+	    tab = body.new Tab(new Coord(140, 0), 60, "Audio");
 
 	    new Label(new Coord(10, 40), tab, "Sound volume:");
 	    new Frame(new Coord(10, 65), new Coord(20, 206), tab);
