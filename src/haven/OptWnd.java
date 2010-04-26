@@ -36,6 +36,13 @@ public class OptWnd extends Window {
     private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
     private Map<String, String> camname2type = new HashMap<String, String>();
     private Map<String, String[]> camargs = new HashMap<String, String[]>();
+    private Comparator<String> camcomp = new Comparator<String>() {
+	public int compare(String a, String b) {
+	    if(a.startsWith("The ")) a = a.substring(4);
+	    if(b.startsWith("The ")) b = b.substring(4);
+	    return(a.compareTo(b));
+	}
+    };
 
     static {
 	Widget.addtype("opt", new WidgetFactory() {
@@ -105,8 +112,13 @@ public class OptWnd extends Window {
 	    new Label(new Coord(10, 40), tab, "Camera type:");
 	    final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), tab, "", foundry);
 	    caminfo.bg = new java.awt.Color(0, 0, 0, 64);
-	    addinfo("orig",    "Original", "This camera centers where you left-click.", null);
-	    addinfo("predict", "Predictor", "", null);
+	    String dragcam = "\n\n$col[225,200,100,255]{You can drag and recenter with the middle mouse button.}";
+	    addinfo("orig",       "The Original",  "The camera centers where you left-click.", null);
+	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character." + dragcam, null);
+	    addinfo("border",     "Freestyle",     "Boom chakalak" + dragcam, null);
+	    addinfo("fixed",      "The Fixator",   "The camera is fixed, relative to your character." + dragcam, null);
+	    addinfo("kingsquest", "King's Quest",  "The camera is static until your character comes close enough to the edge of the screen, at which point the camera changes viewport.", null);
+	    addinfo("cake",       "Pan-O-Rama",    "The camera centers at the point between your character and the mouse cursor.", null);
 
 	    final Tabs cambox = new Tabs(new Coord(100, 60), new Coord(300, 200), tab);
 	    Tabs.Tab ctab;
@@ -131,7 +143,7 @@ public class OptWnd extends Window {
 		private String calcarg() {
 		    return(String.valueOf(Math.cbrt(Math.cbrt(val / 24.0))));
 		}};
-	    addinfo("clicktgt", "Target Seeker", "", ctab);
+	    addinfo("clicktgt", "The Target Seeker", "The camera centers where you left-click through a smooth transition." + dragcam, ctab);
 	    /* fixedcake arg */
 	    ctab = cambox.new Tab();
 	    new Label(new Coord(45, 10),  ctab, "Fast");
@@ -153,7 +165,7 @@ public class OptWnd extends Window {
 		private String calcarg() {
 		    return(String.valueOf(Math.pow(1 - (val / 20.0), 2)));
 		}};
-	    addinfo("fixedcake", "Borderizer", "", ctab);
+	    addinfo("fixedcake", "The Borderizer", "The camera is fixed, relative to your character, but when the mouse cursor reaches an edge of the screen, the camera peeks in that direction." + dragcam, ctab);
 
 	    final RadioGroup cameras = new RadioGroup(tab) {
 		    public void changed(int btn, String lbl) {
@@ -170,12 +182,16 @@ public class OptWnd extends Window {
 			    caminfo.settext("");
 			} else {
 			    cambox.showtab(inf.args);
-			    caminfo.settext(String.format("$size[12]{%s}\n\n%s", inf.name, inf.desc));
+			    caminfo.settext(String.format("$size[12]{%s}\n\n$col[200,175,150,255]{%s}", inf.name, inf.desc));
 			}
 		    }};
-	    int y = 25;
+	    List<String> clist = new ArrayList<String>();
 	    for(String camtype : MapView.camtypes.keySet())
-		cameras.add(caminfomap.containsKey(camtype) ? caminfomap.get(camtype).name : camtype, new Coord(10, y += 25));
+		clist.add(caminfomap.containsKey(camtype) ? caminfomap.get(camtype).name : camtype);
+	    Collections.sort(clist, camcomp);
+	    int y = 25;
+	    for(String camname : clist)
+		cameras.add(camname, new Coord(10, y += 25));
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
 	}
 
@@ -187,7 +203,7 @@ public class OptWnd extends Window {
 	    final Label sfxvol = new Label(new Coord(35, 69 + (int)(getsfxvol() * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
 	    new Scrollbar(new Coord(25, 70), 196, tab, 0, 100) {{ val = getsfxvol(); }
 		public void changed() {
-		    setsfxvol(val);
+		    Audio.setvolume((100 - val) / 100.0);
 		    sfxvol.c.y = 69 + (int)(val * 1.86);
 		    sfxvol.settext(String.valueOf(100 - val) + " %");
 		}
@@ -233,9 +249,6 @@ public class OptWnd extends Window {
 
     private int getsfxvol() {
 	return((int)(100 - Double.parseDouble(Utils.getpref("sfxvol", "1.0")) * 100));
-    }
-    private void setsfxvol(int vol) {
-	Audio.setvolume((100 - vol) / 100.0);
     }
 
     private void addinfo(String camtype, String title, String text, Tabs.Tab args) {
