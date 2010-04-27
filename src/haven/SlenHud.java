@@ -476,7 +476,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    if(optwnd != null) {
 		optwnd.wdgmsg("close");
 	    } else {
-		optwnd = new OptWnd(new Coord(100, 100), this) {
+		optwnd = new OptWnd(new Coord(100, 100), parent) {
 			public void wdgmsg(Widget sender, String msg, Object... args) {
 			    if(msg.equals("close")) {
 				ui.destroy(this);
