@@ -105,6 +105,7 @@ public class OptWnd extends Window {
 	    final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), tab, "", foundry);
 	    caminfo.bg = new java.awt.Color(0, 0, 0, 64);
 	    String dragcam = "\n\n$col[225,200,100,255]{You can drag and recenter with the middle mouse button.}";
+	    String fscam = "\n\n$col[225,200,100,255]{Should be used in full-screen mode.}";
 	    addinfo("orig",       "The Original",  "The camera centers where you left-click.", null);
 	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
 	    addinfo("border",     "Freestyle",     "You can move around freely within the larger area of the window; the camera only moves along to ensure the character does not reach the edge of the window. Boom chakalak!" + dragcam, null);
@@ -157,7 +158,7 @@ public class OptWnd extends Window {
 		private String calcarg() {
 		    return(String.valueOf(Math.pow(1 - (val / 20.0), 2)));
 		}};
-	    addinfo("fixedcake", "The Borderizer", "The camera is fixed, relative to your character unless you touch one of the screen's edges with the mouse, in which case the camera peeks in that direction. Should be used in full-screen mode." + dragcam, ctab);
+	    addinfo("fixedcake", "The Borderizer", "The camera is fixed, relative to your character unless you touch one of the screen's edges with the mouse, in which case the camera peeks in that direction." + dragcam + fscam, ctab);
 
 	    final RadioGroup cameras = new RadioGroup(tab) {
 		    public void changed(int btn, String lbl) {
