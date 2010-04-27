@@ -60,6 +60,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     static Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 14), new Color(192, 0, 0));
     Text lasterr;
     long errtime;
+    OptWnd optwnd = null;
     @SuppressWarnings("unchecked")
     Indir<Resource>[] belt = new Indir[10];
 	
@@ -471,6 +472,21 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	} else if((ch >= '1') && (ch <= '9')) {
 	    wdgmsg("belt", ch - '1', 1, 0);
 	    return(true);
+	} else if(ch == 15) {
+	    if(optwnd != null) {
+		optwnd.wdgmsg("close");
+	    } else {
+		optwnd = new OptWnd(new Coord(100, 100), this) {
+			public void wdgmsg(Widget sender, String msg, Object... args) {
+			    if(msg.equals("close")) {
+				ui.destroy(this);
+				optwnd = null;
+			    } else {
+				super.wdgmsg(sender, msg, args);
+			    }
+			}
+		    };
+	    }
 	}
 	return(super.globtype(ch, ev));
     }
