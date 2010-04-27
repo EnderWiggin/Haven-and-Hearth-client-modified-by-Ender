@@ -236,6 +236,8 @@ public class HtmlReporter {
 		vals = ifmt.format((Number)val);
 	    } else if(val instanceof Date) {
 		vals = dfmt.format((Number)val);
+	    } else if(val == null) {
+		vals = "(null)";
 	    } else {
 		vals = val.toString();
 	    }
