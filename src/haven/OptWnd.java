@@ -44,14 +44,6 @@ public class OptWnd extends Window {
 	}
     };
 
-    static {
-	Widget.addtype("opt", new WidgetFactory() {
-		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new OptWnd(c, parent));
-		}
-	    });
-    }
-    
     private static class CamInfo {
 	String name, desc;
 	Tabs.Tab args;
