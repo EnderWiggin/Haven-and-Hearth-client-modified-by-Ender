@@ -526,7 +526,7 @@ public class RichText extends Text {
 		    pw = p.width();
 		    ph = p.height();
 		    if(w > 0) {
-			if(p.x + pw >= w) {
+			if(p.x + pw > w) {
 			    p = p.split(w - x);
 			    lb = true;
 			    continue;
