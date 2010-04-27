@@ -29,19 +29,21 @@ package haven;
 public class KinInfo extends GAttrib {
     public static final Text.Foundry nfnd = new Text.Foundry("SansSerif", 10);
     public String name;
-    public int group;
+    public int group, type;
     public long seen = 0;
     private Tex rnm = null;
     
-    public KinInfo(Gob g, String name, int group) {
+    public KinInfo(Gob g, String name, int group, int type) {
 	super(g);
 	this.name = name;
 	this.group = group;
+	this.type = type;
     }
     
-    public void update(String name, int group) {
+    public void update(String name, int group, int type) {
 	this.name = name;
 	this.group = group;
+	this.type = type;
 	rnm = null;
     }
     

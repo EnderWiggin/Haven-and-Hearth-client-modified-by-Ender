@@ -918,10 +918,19 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    if(k.seen == 0)
 			k.seen = now;
 		    int tm = (int)(now - k.seen);
-		    if(k.gob == onmouse) {
-			g.image(t, gc.add(-t.sz().x / 2, -40 - t.sz().y));
-		    } else if(tm < 7500) {
-			g.chcolor(255, 255, 255, 255 - ((255 * tm) / 7500));
+		    Color show = null;
+		    if(k.type == 0) {
+			if(k.gob == onmouse) {
+			    show = Color.WHITE;
+			} else if(tm < 7500) {
+			    show = new Color(255, 255, 255, 255 - ((255 * tm) / 7500));
+			}
+		    } else if(k.type == 1) {
+			if(k.gob == onmouse)
+			    show = Color.WHITE;
+		    }
+		    if(show != null) {
+			g.chcolor(show);
 			g.image(t, gc.add(-t.sz().x / 2, -40 - t.sz().y));
 			g.chcolor();
 		    }
