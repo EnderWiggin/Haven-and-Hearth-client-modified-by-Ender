@@ -106,10 +106,10 @@ public class OptWnd extends Window {
 	    caminfo.bg = new java.awt.Color(0, 0, 0, 64);
 	    String dragcam = "\n\n$col[225,200,100,255]{You can drag and recenter with the middle mouse button.}";
 	    addinfo("orig",       "The Original",  "The camera centers where you left-click.", null);
-	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character." + dragcam, null);
+	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
 	    addinfo("border",     "Freestyle",     "Boom chakalak" + dragcam, null);
 	    addinfo("fixed",      "The Fixator",   "The camera is fixed, relative to your character." + dragcam, null);
-	    addinfo("kingsquest", "King's Quest",  "The camera is static until your character comes close enough to the edge of the screen, at which point the camera changes viewport.", null);
+	    addinfo("kingsquest", "King's Quest",  "The camera is static until your character comes close enough to the edge of the screen, at which point the camera snaps around the edge.", null);
 	    addinfo("cake",       "Pan-O-Rama",    "The camera centers at the point between your character and the mouse cursor.", null);
 
 	    final Tabs cambox = new Tabs(new Coord(100, 60), new Coord(300, 200), tab);
@@ -135,7 +135,7 @@ public class OptWnd extends Window {
 		private String calcarg() {
 		    return(String.valueOf(Math.cbrt(Math.cbrt(val / 24.0))));
 		}};
-	    addinfo("clicktgt", "The Target Seeker", "The camera centers where you left-click through a smooth transition." + dragcam, ctab);
+	    addinfo("clicktgt", "The Target Seeker", "The camera recenters smoothly where you left-click." + dragcam, ctab);
 	    /* fixedcake arg */
 	    ctab = cambox.new Tab();
 	    new Label(new Coord(45, 10),  ctab, "Fast");
@@ -157,7 +157,7 @@ public class OptWnd extends Window {
 		private String calcarg() {
 		    return(String.valueOf(Math.pow(1 - (val / 20.0), 2)));
 		}};
-	    addinfo("fixedcake", "The Borderizer", "The camera is fixed, relative to your character, but when the mouse cursor reaches an edge of the screen, the camera peeks in that direction." + dragcam, ctab);
+	    addinfo("fixedcake", "The Borderizer", "The camera is fixed, relative to your character unless you touch one of the screen's edges with the mouse, in which case the camera peeks in that direction. Should be used in full-screen mode." + dragcam, ctab);
 
 	    final RadioGroup cameras = new RadioGroup(tab) {
 		    public void changed(int btn, String lbl) {
