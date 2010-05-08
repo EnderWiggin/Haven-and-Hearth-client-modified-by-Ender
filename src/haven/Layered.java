@@ -37,6 +37,7 @@ public class Layered extends Drawable {
     final Indir<Resource> base;
     boolean loading;
     static LayerCache cache = new LayerCache(1000);
+    Map<Layer, Sprite.Part> pcache = new WeakHashMap<Layer, Sprite.Part>();
 	
     public static class Layer {
 	BufferedImage img;
@@ -243,29 +244,36 @@ public class Layered extends Drawable {
 		l = ll;
 	    }
 	}
-	return(new Sprite.Part(z) {
-		public void draw(BufferedImage buf, Graphics g) {
-		    g.drawImage(l.img, -l.cc.x, -l.cc.y, null);
-		}
+	synchronized(pcache) {
+	    Sprite.Part p = pcache.get(l);
+	    if(p == null) {
+		p = new Sprite.Part(z) {
+			public void draw(BufferedImage buf, Graphics g) {
+			    g.drawImage(l.img, -l.cc.x, -l.cc.y, null);
+			}
 				
-		public void draw(GOut g) {
-		    g.image(l.tex(), cc.add(l.cc.inv()).add(off));
-		}
+			public void draw(GOut g) {
+			    g.image(l.tex(), cc.add(l.cc.inv()).add(off));
+			}
 		
-		public void drawol(GOut g) {
-		    g.image(l.ol(), cc.add(l.cc.inv()).add(off).add(-1, -1));
-		}
+			public void drawol(GOut g) {
+			    g.image(l.ol(), cc.add(l.cc.inv()).add(off).add(-1, -1));
+			}
 		
-		public void setup(Coord cc, Coord off) {
-		    super.setup(cc, off);
-		    ul = cc.add(l.cc.inv());
-		    lr = ul.add(l.tex().sz());
-		}
+			public void setup(Coord cc, Coord off) {
+			    super.setup(cc, off);
+			    ul = cc.add(l.cc.inv());
+			    lr = ul.add(l.tex().sz());
+			}
 		
-		public boolean checkhit(Coord c) {
-		    return(Layered.this.checkhit(c));
-		}
-	    });
+			public boolean checkhit(Coord c) {
+			    return(Layered.this.checkhit(c));
+			}
+		    };
+		pcache.put(l, p);
+	    }
+	    return(p);
+	}
     }
 
     public synchronized void ctick(int dt) {

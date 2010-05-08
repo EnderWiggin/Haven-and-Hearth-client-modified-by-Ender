@@ -806,6 +806,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	class GobMapper implements Sprite.Drawer {
 	    Gob cur = null;
 	    Sprite.Part.Effect fx = null;
+	    int szo = 0;
 	    
 	    public void chcur(Gob cur) {
 		this.cur = cur;
@@ -813,6 +814,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		fx = null;
 		if(hlt != null)
 		    fx = hlt.getfx();
+		Following flw = cur.getattr(Following.class);
+		szo = 0;
+		if(flw != null)
+		    szo = flw.szo;
 	    }
 
 	    public void addpart(Sprite.Part p) {
@@ -824,6 +829,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    return;
 		sprites.add(p);
 		p.owner = cur;
+		p.szo = szo;
 	    }
 	}
 	GobMapper drawer = new GobMapper();

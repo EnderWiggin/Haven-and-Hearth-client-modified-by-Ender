@@ -46,7 +46,7 @@ public abstract class Sprite {
 		return(a.z - b.z);
 	    if(a.cc.y != b.cc.y)
 		return(a.cc.y - b.cc.y);
-	    return(a.subz - b.subz);
+	    return((a.subz + a.szo) - (b.subz + b.szo));
 	}
     };
     
@@ -138,7 +138,7 @@ public abstract class Sprite {
     public static abstract class Part {
 	public Coord cc, off;
 	public Coord ul = Coord.z, lr = Coord.z;
-	public int z, subz;
+	public int z, subz, szo;
 	public Effect effect;
 	public Owner owner;
 	
