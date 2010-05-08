@@ -31,7 +31,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 33;
+    public static final int PVER = 34;
     
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -251,14 +251,12 @@ public class Session {
 			} else if(type == OD_FOLLOW) {
 			    int oid = msg.int32();
 			    Coord off = Coord.z;
-			    boolean add1 = false;
+			    int szo = 0;
 			    if(oid != -1) {
-				int ffl = msg.uint8();
-				if((ffl & 1) != 0)
-				    add1 = true;
+				szo = msg.int8();
 				off = msg.coord();
 			    }
-			    oc.follow(id, frame, oid, off, add1);
+			    oc.follow(id, frame, oid, off, szo);
 			} else if(type == OD_HOMING) {
 			    int oid = msg.int32();
 			    if(oid == -1) {

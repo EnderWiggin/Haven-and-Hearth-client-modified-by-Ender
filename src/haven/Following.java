@@ -29,13 +29,13 @@ package haven;
 public class Following extends Moving {
     int tgt;
     Coord doff;
-    boolean add1;
+    int szo;
 	
-    public Following(Gob gob, int tgt, Coord doff, boolean add1) {
+    public Following(Gob gob, int tgt, Coord doff, int szo) {
 	super(gob);
 	this.tgt = tgt;
 	this.doff = doff;
-	this.add1 = add1;
+	this.szo = szo;
     }
 	
     public Coord getc() {
@@ -43,8 +43,6 @@ public class Following extends Moving {
 	if(tgt == null)
 	    return(gob.rc);
 	Coord c = tgt.getc();
-	if(add1)
-	    c = c.add(1, 1);
 	return(c);
     }
     

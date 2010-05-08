@@ -215,7 +215,7 @@ public class OCache implements Iterable<Gob> {
 	g.setattr(new Lumin(g, off, sz, str));
     }
 	
-    public synchronized void follow(int id, int frame, int oid, Coord off, boolean add1) {
+    public synchronized void follow(int id, int frame, int oid, Coord off, int szo) {
 	Gob g = getgob(id, frame);
 	if(g == null)
 	    return;
@@ -224,12 +224,12 @@ public class OCache implements Iterable<Gob> {
 	} else {
 	    Following flw = g.getattr(Following.class);
 	    if(flw == null) {
-		flw = new Following(g, oid, off, add1);
+		flw = new Following(g, oid, off, szo);
 		g.setattr(flw);
 	    } else {
 		flw.tgt = oid;
 		flw.doff = off;
-		flw.add1 = add1;
+		flw.szo = szo;
 	    }
 	}
     }
