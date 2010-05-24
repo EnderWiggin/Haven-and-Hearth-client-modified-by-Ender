@@ -133,7 +133,7 @@ public class Item extends Widget implements DTarget {
 	return(new TexI(sh));
     }
 	
-    public Object tooltip(Coord c, boolean again) {
+    public String shorttip() {
 	if(this.tooltip != null)
 	    return(this.tooltip);
 	Resource res = this.res.get();
@@ -149,6 +149,29 @@ public class Item extends Widget implements DTarget {
 	    }
 	}
 	return(null);
+    }
+    
+    long hoverstart;
+    Text shorttip = null, longtip = null;
+    public Object tooltip(Coord c, boolean again) {
+	long now = System.currentTimeMillis();
+	if(!again)
+	    hoverstart = now;
+	if((now - hoverstart) < 500) {
+	    if(shorttip == null)
+		shorttip = Text.render(shorttip());
+	    return(shorttip);
+	} else {
+	    Resource res = this.res.get();
+	    if((longtip == null) && (res != null)) {
+		Resource.Pagina pg = res.layer(Resource.pagina);
+		String tt = RichText.Parser.quote(shorttip());
+		if(pg != null)
+		    tt += "\n\n" + pg.text;
+		longtip = RichText.render(tt, 200);
+	    }
+	    return(longtip);
+	}
     }
 
     private void decq(int q)

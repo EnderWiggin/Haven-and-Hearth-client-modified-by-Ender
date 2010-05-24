@@ -38,12 +38,14 @@ import static java.text.AttributedCharacterIterator.Attribute;
 
 public class RichText extends Text {
     public static final Parser std;
+    public static final Foundry stdf;
 
     static {
 	Map<Attribute, Object> a = new HashMap<Attribute, Object>();
 	a.put(TextAttribute.FAMILY, "SansSerif");
 	a.put(TextAttribute.SIZE, 10);
 	std = new Parser(a);
+	stdf = new Foundry(std);
     }
     
     private RichText(String text) {
@@ -588,7 +590,11 @@ public class RichText extends Text {
 	    return(render(text, 0));
 	}
     }
-
+    
+    public static RichText render(String text, int width, Object... extra) {
+	return(stdf.render(text, width, extra));
+    }
+    
     public static void main(String[] args) throws Exception {
 	String cmd = args[0].intern();
 	if(cmd == "render") {
