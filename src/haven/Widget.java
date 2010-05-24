@@ -40,6 +40,7 @@ public class Widget {
     Widget focused;
     public Resource cursor = null;
     public Object tooltip = null;
+    private Widget prevtt;
     static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
     static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 			       Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
@@ -458,6 +459,27 @@ public class Widget {
 	    }
 	}
 	return(cursor);
+    }
+
+    public Object tooltip(Coord c, boolean again) {
+	if(tooltip != null) {
+	    prevtt = null;
+	    return(tooltip);
+	}
+	for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+	    if(!wdg.visible)
+		continue;
+	    Coord cc = xlate(wdg.c, true);
+	    if(c.isect(cc, wdg.sz)) {
+		Object ret = wdg.tooltip(c.add(cc.inv()), again && (wdg == prevtt));
+		if(ret != null) {
+		    prevtt = wdg;
+		    return(ret);
+		}
+	    }
+	}
+	prevtt = null;
+	return(null);
     }
 
     public void hide() {

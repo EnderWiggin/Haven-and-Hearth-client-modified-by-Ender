@@ -43,7 +43,6 @@ public class UI {
     public boolean modshift, modctrl, modmeta, modsuper;
     long lastevent = System.currentTimeMillis();
     public Widget mouseon;
-    public Object tooltip = null;
     public FSMan fsm;
     public Console cons = new WidgetConsole();
     private Collection<AfterDraw> afterdraws = null;
@@ -318,24 +317,6 @@ public class UI {
 	    root.mousewheel(c, amount);
 	else
 	    mousegrab.mousewheel(wdgxlate(c, mousegrab), amount);
-    }
-    
-    private Object tooltipat(Widget w, Coord c) {
-        for(Widget ch = w.lchild; ch != null; ch = ch.prev) {
-	    if(!ch.visible)
-		continue;
-	    Coord cc = w.xlate(ch.c, true);
-	    Object tt = tooltipat(ch, c.add(cc.inv()));
-            if(tt != null)
-                return(tt);
-        }
-        if(c.isect(Coord.z, w.sz))
-            return(w.tooltip);
-        return(null);
-    }
-    
-    public Object tooltipat(Coord c) {
-        return(tooltipat(root, c));
     }
     
     public int modflags() {

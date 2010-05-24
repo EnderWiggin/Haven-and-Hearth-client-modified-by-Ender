@@ -40,7 +40,6 @@ public class Item extends Widget implements DTarget {
     int num = -1;
     Indir<Resource> res;
     Tex sh;
-    boolean h;
     Color olcol = null;
     Tex mask = null;
     int meter = 0;
@@ -118,19 +117,6 @@ public class Item extends Widget implements DTarget {
 		g.chcolor();
 	    }
 	}
-	if(h) {
-	    if(tooltip != null) {
-		ui.tooltip = tooltip;
-	    } else if((ttres != null) && (ttres.layer(Resource.tooltip) != null)) {
-		String tt = ttres.layer(Resource.tooltip).t;
-		if(q > 0) {
-		    tt = tt + ", quality " + q;
-		    if(hq)
-			tt = tt + "+";
-		}
-		ui.tooltip = tt;
-	    }
-	}
     }
 
     static Tex makesh(Resource res) {
@@ -147,6 +133,24 @@ public class Item extends Widget implements DTarget {
 	return(new TexI(sh));
     }
 	
+    public Object tooltip(Coord c, boolean again) {
+	if(this.tooltip != null)
+	    return(this.tooltip);
+	Resource res = this.res.get();
+	if(res != null) {
+	    String tt = res.layer(Resource.tooltip).t;
+	    if(tt != null) {
+		if(q > 0) {
+		    tt = tt + ", quality " + q;
+		    if(hq)
+			tt = tt + "+";
+		}
+		return(tt);
+	    }
+	}
+	return(null);
+    }
+
     private void decq(int q)
     {
 	if(q < 0) {
@@ -270,10 +274,8 @@ public class Item extends Widget implements DTarget {
     }
 
     public void mousemove(Coord c) {
-	h = c.isect(Coord.z, sz);
-	if(dm) {
+	if(dm)
 	    this.c = this.c.add(c.add(doff.inv()));
-	}
     }
 	
     public boolean drop(Coord cc, Coord ul) {

@@ -93,10 +93,9 @@ public class Bufflist extends Widget {
 	}
     }
     
-    public void mousemove(Coord c) {
+    public Object tooltip(Coord c, boolean again) {
 	int i = 0;
 	int w = frame.sz().x + margin;
-	tooltip = null;
 	synchronized(ui.sess.glob.buffs) {
 	    for(Buff b : ui.sess.glob.buffs.values()) {
 		if(!b.major)
@@ -105,13 +104,14 @@ public class Bufflist extends Widget {
 		if(c.isect(bc, frame.sz())) {
 		    Resource.Tooltip tt;
 		    if(b.tt != null)
-			tooltip = b.tt;
+			return(b.tt);
 		    else if((b.res.get() != null) && ((tt = b.res.get().layer(Resource.tooltip)) != null))
-			tooltip = tt.t;
+			return(tt.t);
 		}
 		if(++i >= 5)
 		    break;
 	    }
 	}
+	return(null);
     }
 }
