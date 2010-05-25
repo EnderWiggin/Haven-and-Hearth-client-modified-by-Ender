@@ -137,7 +137,7 @@ public class Item extends Widget implements DTarget {
 	if(this.tooltip != null)
 	    return(this.tooltip);
 	Resource res = this.res.get();
-	if(res != null) {
+	if((res != null) && (res.layer(Resource.tooltip) != null)) {
 	    String tt = res.layer(Resource.tooltip).t;
 	    if(tt != null) {
 		if(q > 0) {
@@ -158,8 +158,11 @@ public class Item extends Widget implements DTarget {
 	if(!again)
 	    hoverstart = now;
 	if((now - hoverstart) < 500) {
-	    if(shorttip == null)
-		shorttip = Text.render(shorttip());
+	    if(shorttip == null) {
+		String tt = shorttip();
+		if(tt != null)
+		    shorttip = Text.render(tt);
+	    }
 	    return(shorttip);
 	} else {
 	    Resource res = this.res.get();
