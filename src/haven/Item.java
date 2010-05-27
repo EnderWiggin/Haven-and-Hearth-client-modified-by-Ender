@@ -176,6 +176,11 @@ public class Item extends Widget implements DTarget {
 	    return(longtip);
 	}
     }
+    
+    private void resettt() {
+	shorttip = null;
+	longtip = null;
+    }
 
     private void decq(int q)
     {
@@ -262,6 +267,7 @@ public class Item extends Widget implements DTarget {
 	    num = (Integer)args[0];
 	} else if(name == "chres") {
 	    chres(ui.sess.getres((Integer)args[0]), (Integer)args[1]);
+	    resettt();
 	} else if(name == "color") {
 	    olcol = (Color)args[0];
 	} else if(name == "tt") {
@@ -269,6 +275,7 @@ public class Item extends Widget implements DTarget {
 		tooltip = (String)args[0];
 	    else
 		tooltip = null;
+	    resettt();
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
 	}
