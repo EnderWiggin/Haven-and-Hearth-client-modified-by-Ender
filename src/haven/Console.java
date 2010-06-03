@@ -34,6 +34,10 @@ public class Console {
     private Map<String, Command> commands = new TreeMap<String, Command>();
     public PrintWriter out;
     
+    {
+	clearout();
+    }
+
     public static interface Command {
 	public void run(Console cons, String[] args) throws Exception;
     }

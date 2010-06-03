@@ -205,6 +205,10 @@ public class OptWnd extends Window {
 		    changed();
 		    return(true);
 		}};
+	    new CheckBox(new Coord(10, 280), tab, "Music enabled") {
+		public void changed(boolean val) {
+		    Music.enable(val);
+		}};
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
