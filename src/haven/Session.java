@@ -366,10 +366,12 @@ public class Session {
 		String resnm = msg.string();
 		int resver = msg.uint16();
 		boolean loop = !msg.eom() && (msg.uint8() != 0);
-		if(resnm.equals(""))
-		    Music.play(null, false);
-		else
-		    Music.play(Resource.load(resnm, resver), loop);
+		if(Music.enabled) {
+		    if(resnm.equals(""))
+			Music.play(null, false);
+		    else
+			Music.play(Resource.load(resnm, resver), loop);
+		}
 	    } else if(msg.type == Message.RMSG_TILES) {
 		glob.map.tilemap(msg);
 	    } else if(msg.type == Message.RMSG_BUFF) {

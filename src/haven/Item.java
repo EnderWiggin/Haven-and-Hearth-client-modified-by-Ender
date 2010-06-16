@@ -40,7 +40,6 @@ public class Item extends Widget implements DTarget {
     int num = -1;
     Indir<Resource> res;
     Tex sh;
-    boolean h;
     Color olcol = null;
     Tex mask = null;
     int meter = 0;
@@ -119,19 +118,6 @@ public class Item extends Widget implements DTarget {
 		g.chcolor();
 	    }
 	}
-	if(h) {
-	    if(tooltip != null) {
-		ui.tooltip = tooltip;
-	    } else if((ttres != null) && (ttres.layer(Resource.tooltip) != null)) {
-		String tt = ttres.layer(Resource.tooltip).t;
-		if(q > 0) {
-		    tt = tt + ", quality " + q;
-		    if(hq)
-			tt = tt + "+";
-		}
-		ui.tooltip = tt;
-	    }
-	}
     }
 
     static Tex makesh(Resource res) {
@@ -148,6 +134,55 @@ public class Item extends Widget implements DTarget {
 	return(new TexI(sh));
     }
 	
+    public String shorttip() {
+	if(this.tooltip != null)
+	    return(this.tooltip);
+	Resource res = this.res.get();
+	if((res != null) && (res.layer(Resource.tooltip) != null)) {
+	    String tt = res.layer(Resource.tooltip).t;
+	    if(tt != null) {
+		if(q > 0) {
+		    tt = tt + ", quality " + q;
+		    if(hq)
+			tt = tt + "+";
+		}
+		return(tt);
+	    }
+	}
+	return(null);
+    }
+    
+    long hoverstart;
+    Text shorttip = null, longtip = null;
+    public Object tooltip(Coord c, boolean again) {
+	long now = System.currentTimeMillis();
+	if(!again)
+	    hoverstart = now;
+	if((now - hoverstart) < 500) {
+	    if(shorttip == null) {
+		String tt = shorttip();
+		if(tt != null)
+		    shorttip = Text.render(tt);
+	    }
+	    return(shorttip);
+	} else {
+	    Resource res = this.res.get();
+	    if((longtip == null) && (res != null)) {
+		Resource.Pagina pg = res.layer(Resource.pagina);
+		String tt = RichText.Parser.quote(shorttip());
+		if(pg != null)
+		    tt += "\n\n" + pg.text;
+		longtip = RichText.render(tt, 200);
+	    }
+	    return(longtip);
+	}
+    }
+    
+    private void resettt() {
+	shorttip = null;
+	longtip = null;
+    }
+
     private void decq(int q)
     {
 	if(q < 0) {
@@ -233,6 +268,7 @@ public class Item extends Widget implements DTarget {
 	    num = (Integer)args[0];
 	} else if(name == "chres") {
 	    chres(ui.sess.getres((Integer)args[0]), (Integer)args[1]);
+	    resettt();
 	} else if(name == "color") {
 	    olcol = (Color)args[0];
 	} else if(name == "tt") {
@@ -240,6 +276,7 @@ public class Item extends Widget implements DTarget {
 		tooltip = (String)args[0];
 	    else
 		tooltip = null;
+	    resettt();
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
 	}
@@ -271,10 +308,8 @@ public class Item extends Widget implements DTarget {
     }
 
     public void mousemove(Coord c) {
-	h = c.isect(Coord.z, sz);
-	if(dm) {
+	if(dm)
 	    this.c = this.c.add(c.add(doff.inv()));
-	}
     }
 	
     public boolean drop(Coord cc, Coord ul) {

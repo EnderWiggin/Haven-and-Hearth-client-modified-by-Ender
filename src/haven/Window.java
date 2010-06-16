@@ -206,4 +206,12 @@ public class Window extends Widget implements DTarget {
     public boolean iteminteract(Coord cc, Coord ul) {
 	return(false);
     }
+    
+    public Object tooltip(Coord c, boolean again) {
+	Object ret = super.tooltip(c, again);
+	if(ret != null)
+	    return(ret);
+	else
+	    return("");
+    }
 }

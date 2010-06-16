@@ -82,17 +82,19 @@ public class Button extends SSWidget {
     }
 	
     public void render() {
-	Graphics g = graphics();
-	g.drawImage(a?dt:ut, 3, 3, sz.x - 6, 13, null);
-	g.drawImage(bl, 0, 0, null);
-	g.drawImage(br, sz.x - br.getWidth(), 0, null);
-	g.drawImage(bt, 3, 0, sz.x - 6, bt.getHeight(), null);
-	g.drawImage(bb, 3, sz.y - bb.getHeight(), sz.x - 6, bb.getHeight(), null);
-	Coord tc = sz.div(2).add(Utils.imgsz(cont).div(2).inv());
-	if(a)
-	    tc = tc.add(1, 1);
-	g.drawImage(cont, tc.x, tc.y, null);
-	update();
+	synchronized(this) {
+	    Graphics g = graphics();
+	    g.drawImage(a?dt:ut, 3, 3, sz.x - 6, 13, null);
+	    g.drawImage(bl, 0, 0, null);
+	    g.drawImage(br, sz.x - br.getWidth(), 0, null);
+	    g.drawImage(bt, 3, 0, sz.x - 6, bt.getHeight(), null);
+	    g.drawImage(bb, 3, sz.y - bb.getHeight(), sz.x - 6, bb.getHeight(), null);
+	    Coord tc = sz.div(2).add(Utils.imgsz(cont).div(2).inv());
+	    if(a)
+		tc = tc.add(1, 1);
+	    g.drawImage(cont, tc.x, tc.y, null);
+	    update();
+	}
     }
 	
     public void change(String text, Color col) {

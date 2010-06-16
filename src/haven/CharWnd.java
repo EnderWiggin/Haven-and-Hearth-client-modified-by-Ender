@@ -269,16 +269,19 @@ public class CharWnd extends Window {
 	}
 	
 	public void draw(GOut g) {
-	    if(btime > 0) {
+	    if(btime > 0)
 		g.image(btimeoff, Coord.z);
-		if(btime < 3600)
-		    tooltip = "Less than one hour left";
-		else
-		    tooltip = String.format("%d hours left", ((btime - 1) / 3600) + 1);
-	    } else {
+	    else
 		g.image(btimeon, Coord.z);
-		tooltip = null;
-	    }
+	}
+	
+	public Object tooltip(Coord c, boolean again) {
+	    if(btime == 0)
+		return(null);
+	    else if(btime < 3600)
+		return("Less than one hour left");
+	    else
+		return(String.format("%d hours left", ((btime - 1) / 3600) + 1));
 	}
     }
     

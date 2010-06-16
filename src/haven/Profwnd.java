@@ -30,7 +30,6 @@ import java.util.*;
 
 public class Profwnd extends HWindow {
     public final Profile prof;
-    public String hover;
     public long mt = 50000000;
     private static final int h = 80;
     
@@ -58,12 +57,9 @@ public class Profwnd extends HWindow {
 	else
 	    mt = 50000000;
 	g.image(prof.draw(h, mt / h), new Coord(10, 10));
-	if(hover != null)
-	    ui.tooltip = hover;
     }
     
-    public void mousemove(Coord c) {
-	hover = null;
+    public String tooltip(Coord c, boolean again) {
 	if((c.x >= 10) && (c.x < 10 + prof.hist.length) && (c.y >= 10) && (c.y < 10 + h)) {
 	    int x = c.x - 10;
 	    int y = c.y - 10;
@@ -71,13 +67,12 @@ public class Profwnd extends HWindow {
 	    Profile.Frame f = prof.hist[x];
 	    if(f != null) {
 		for(int i = 0; i < f.prt.length; i++) {
-		    if((t -= f.prt[i]) < 0) {
-			hover = String.format("%.2f ms, %s: %.2f ms", (((double)f.total) / 1000000), f.nm[i], (((double)f.prt[i]) / 1000000));
-			break;
-		    }
+		    if((t -= f.prt[i]) < 0)
+			return(String.format("%.2f ms, %s: %.2f ms", (((double)f.total) / 1000000), f.nm[i], (((double)f.prt[i]) / 1000000)));
 		}
 	    }
 	}
+	return("");
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {

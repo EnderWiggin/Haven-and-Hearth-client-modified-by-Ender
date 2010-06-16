@@ -234,7 +234,6 @@ public class HavenPanel extends GLCanvas implements Runnable {
     }
 
     void redraw(GL gl) {
-	ui.tooltip = null;
 	GOut g = new GOut(gl, getContext(), new Coord(800, 600));
 
 	gl.glMatrixMode(GL.GL_PROJECTION);
@@ -269,9 +268,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	    if(Resource.qdepth() > 0)
 		g.atext(String.format("RQ depth: %d (%d)", Resource.qdepth(), Resource.numloaded()), new Coord(10, 455), 0, 1);
 	}
-        Object tooltip = ui.tooltip;
-        if(tooltip == null)
-            tooltip = ui.tooltipat(mousepos);
+        Object tooltip = ui.root.tooltip(mousepos, true);
 	Tex tt = null;
 	if(tooltip != null) {
 	    if(tooltip instanceof Text) {

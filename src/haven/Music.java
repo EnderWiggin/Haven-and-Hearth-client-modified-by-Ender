@@ -30,8 +30,13 @@ import javax.sound.midi.*;
 
 public class Music {
     private static Player player;
+    public static boolean enabled = true;
     private static boolean debug = false;
     
+    static {
+	enabled = Utils.parsebool(Utils.getpref("bgmen", "true"), true);
+    }
+
     private static void debug(String str) {
 	if(debug)
 	    System.out.println(str);
@@ -149,6 +154,13 @@ public class Music {
 	player.join();
     }
     
+    public static void enable(boolean enabled) {
+	if(!enabled)
+	    play(null, false);
+	Music.enabled = enabled;
+	Utils.setpref("bgmen", Boolean.toString(enabled));
+    }
+
     static {
 	Console.setscmd("bgm", new Console.Command() {
 		public void run(Console cons, String[] args) {
@@ -169,6 +181,14 @@ public class Music {
 		    } else {
 			Music.play(null, false);
 		    }		
+		}
+	    });
+	Console.setscmd("bgmsw", new Console.Command() {
+		public void run(Console cons, String[] args) {
+		    if(args.length < 2)
+			enable(!enabled);
+		    else
+			enable(Utils.parsebool(args[1], true));
 		}
 	    });
     }

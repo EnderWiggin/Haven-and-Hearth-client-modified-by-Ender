@@ -529,6 +529,16 @@ public class Utils {
 	}
     }
     
+    public static boolean parsebool(String s, boolean def) {
+	if(s == null)
+	    return(def);
+	else if(s.equalsIgnoreCase("1") || s.equalsIgnoreCase("on") || s.equalsIgnoreCase("true") || s.equalsIgnoreCase("yes"))
+	    return(true);
+	else if(s.equalsIgnoreCase("0") || s.equalsIgnoreCase("off") || s.equalsIgnoreCase("false") || s.equalsIgnoreCase("no"))
+	    return(false);
+	return(def);
+    }
+    
     static {
 	Console.setscmd("die", new Console.Command() {
 		public void run(Console cons, String[] args) {

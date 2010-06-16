@@ -200,6 +200,8 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	    /* Oh, how I love Swing! */
 	    throw(new Error(e));
 	}
+	/* Work around another deadl bug in Sun's JNLP client. */
+	javax.imageio.spi.IIORegistry.getDefaultInstance();
     }
 
     private static void main2(String[] args) {
