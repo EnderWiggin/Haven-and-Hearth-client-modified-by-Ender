@@ -90,11 +90,12 @@ public class Item extends Widget implements DTarget {
 	    Tex tex = res.get().layer(Resource.imgc).tex();
 	    fixsize();
 	    if(dm) {
-		if(sh == null)
-		    sh = makesh(res.get());
-		g.image(sh, shoff);
+		g.chcolor(255, 255, 255, 128);
+		g.image(tex, Coord.z);
+		g.chcolor();
+	    } else {
+		g.image(tex, Coord.z);
 	    }
-	    g.image(tex, Coord.z);
 	    if(num >= 0) {
 		g.chcolor(Color.WHITE);
 		g.atext(Integer.toString(num), tex.sz(), 1, 1);
