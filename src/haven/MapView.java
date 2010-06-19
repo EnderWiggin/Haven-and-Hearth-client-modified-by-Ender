@@ -929,7 +929,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			if(k.gob == onmouse) {
 			    show = Color.WHITE;
 			} else if(tm < 7500) {
-			    show = new Color(255, 255, 255, 255 - ((255 * tm) / 7500));
+			    show = Utils.clipcol(255, 255, 255, 255 - ((255 * tm) / 7500));
 			}
 		    } else if(k.type == 1) {
 			if(k.gob == onmouse)
