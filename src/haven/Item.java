@@ -169,7 +169,10 @@ public class Item extends Widget implements DTarget {
 	    Resource res = this.res.get();
 	    if((longtip == null) && (res != null)) {
 		Resource.Pagina pg = res.layer(Resource.pagina);
-		String tt = RichText.Parser.quote(shorttip());
+		String tip = shorttip();
+		if(tip == null)
+		    return(null);
+		String tt = RichText.Parser.quote(tip);
 		if(pg != null)
 		    tt += "\n\n" + pg.text;
 		longtip = RichText.render(tt, 200);
