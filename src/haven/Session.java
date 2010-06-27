@@ -465,6 +465,7 @@ public class Session {
 			} else if(msg.type == MSG_CLOSE) {
 			    synchronized(Session.this) {
 				state = "fin";
+				Session.this.notifyAll();
 			    }
 			    Session.this.close();
 			} else {
@@ -613,19 +614,20 @@ public class Session {
 		}
 	    } catch(InterruptedException e) {
 		for(int i = 0; i < 5; i++) {
-		    synchronized(Session.this) {
-			if((state == "conn") || (state == "fin"))
-			    break;
-		    }
 		    sendmsg(new Message(MSG_CLOSE));
 		    long f = System.currentTimeMillis();
 		    while(true) {
-			long now = System.currentTimeMillis();
-			if(now - f > 500)
-			    break;
-			try {
-			    Thread.sleep(500 - (now - f));
-			} catch(InterruptedException e2) {}
+			synchronized(Session.this) {
+			    if((state == "conn") || (state == "fin") || (state == "dead"))
+				break;
+			    state = "close";
+			    long now = System.currentTimeMillis();
+			    if(now - f > 500)
+				break;
+			    try {
+				Session.this.wait(500 - (now - f));
+			    } catch(InterruptedException e2) {}
+			}
 		    }
 		}
 	    } finally {
