@@ -72,11 +72,11 @@ public class Config {
     }
     
     private static void usage(PrintStream out) {
-	out.println("usage: haven.jar [-hdf] [-r RESDIR] [-U RESURL] [-A AUTHSERV] [SERVER]");
+	out.println("usage: haven.jar [-hdf] [-u USER] [-C HEXCOOKIE] [-r RESDIR] [-U RESURL] [-A AUTHSERV] [SERVER]");
     }
 
     public static void cmdline(String[] args) {
-	PosixArgs opt = PosixArgs.getopt(args, "hdU:fr:A:");
+	PosixArgs opt = PosixArgs.getopt(args, "hdU:fr:A:u:C:");
 	if(opt == null) {
 	    usage(System.err);
 	    System.exit(1);
@@ -106,6 +106,12 @@ public class Config {
 		    System.err.println(e);
 		    System.exit(1);
 		}
+		break;
+	    case 'u':
+		authuser = opt.arg;
+		break;
+	    case 'C':
+		authck = Utils.hex2byte(opt.arg);
 		break;
 	    }
 	}
