@@ -198,6 +198,7 @@ public class Fightview extends Widget {
 	    Relation rel = getrel((Integer)args[0]);
 	    rel.off = (Integer)args[1];
 	    rel.def = (Integer)args[2];
+	    return;
         } else if(msg == "cur") {
             try {
                 Relation rel = getrel((Integer)args[0]);
