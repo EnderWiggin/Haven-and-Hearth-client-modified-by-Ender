@@ -28,7 +28,7 @@ package haven;
 
 import java.util.*;
 
-class RadioGroup {
+public class RadioGroup {
     private Widget parent;
     private ArrayList<RadioButton> btns;
     private HashMap<String, RadioButton> map;
