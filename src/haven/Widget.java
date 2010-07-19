@@ -36,7 +36,7 @@ public class Widget {
     public Widget next, prev, child, lchild, parent;
     boolean focustab = false, focusctl = false, hasfocus = false, visible = true;
     private boolean canfocus = false, autofocus = false;
-    boolean canactivate = false, cancancel = false;
+    public boolean canactivate = false, cancancel = false;
     Widget focused;
     public Resource cursor = null;
     public Object tooltip = null;
