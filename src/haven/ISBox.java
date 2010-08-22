@@ -81,6 +81,14 @@ public class ISBox extends Widget implements DTarget {
         return(false);
     }
     
+    public boolean mousewheel(Coord c, int amount) {
+	if(amount < 0)
+	    wdgmsg("xfer2", -1, ui.modflags());
+	if(amount > 0)
+	    wdgmsg("xfer2", 1, ui.modflags());
+	return(true);
+    }
+    
     public boolean drop(Coord cc, Coord ul) {
         wdgmsg("drop");
         return(true);
