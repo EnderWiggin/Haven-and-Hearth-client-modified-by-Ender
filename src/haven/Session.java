@@ -321,9 +321,9 @@ public class Session {
 			objacks.put(id, new ObjAck(id, frame, System.currentTimeMillis()));
 		    }
 		}
-		synchronized(sworker) {
-		    sworker.notifyAll();
-		}
+	    }
+	    synchronized(sworker) {
+		sworker.notifyAll();
 	    }
 	}
 		
