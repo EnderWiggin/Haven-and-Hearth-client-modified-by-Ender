@@ -46,9 +46,13 @@ public class Party {
 	private Coord c = null;
 	Color col = Color.BLACK;
 	
+	public Gob getgob() {
+	    return(glob.oc.getgob(gobid));
+	}
+	
 	public Coord getc() {
 	    Gob gob;
-	    if((gob = glob.oc.getgob(gobid)) != null)
+	    if((gob = getgob()) != null)
 		return(gob.getc());
 	    return(c);
 	}

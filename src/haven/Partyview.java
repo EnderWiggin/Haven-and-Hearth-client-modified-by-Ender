@@ -56,12 +56,24 @@ public class Partyview extends Widget {
     private void update() {
 	if(party.memb != om) {
 	    Collection<Member> old = new HashSet<Member>(avs.keySet());
-	    for(Member m : (om = party.memb).values()) {
+	    for(final Member m : (om = party.memb).values()) {
 		if(m.gobid == ign)
 		    continue;
 		Avaview w = avs.get(m);
 		if(w == null) {
-		    w = new Avaview(Coord.z, this, m.gobid, new Coord(27, 27));
+		    w = new Avaview(Coord.z, this, m.gobid, new Coord(27, 27)) {
+			    private Tex tooltip = null;
+			    
+			    public Object tooltip(Coord c, boolean again) {
+				Gob gob = m.getgob();
+				if(gob == null)
+				    return(tooltip);
+				KinInfo ki = gob.getattr(KinInfo.class);
+				if(ki == null)
+				    return(null);
+				return(tooltip = ki.rendered());
+			    }
+			};
 		    avs.put(m, w);
 		} else {
 		    old.remove(m);
