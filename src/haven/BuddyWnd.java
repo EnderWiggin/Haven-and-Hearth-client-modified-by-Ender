@@ -230,7 +230,7 @@ public class BuddyWnd extends Window {
 		rmb = invb = chatb = null;
 		int fl = (Integer)args[0];
 		if((fl & 1) != 0)
-		    rmb = new Button(new Coord(10, 190), sz.x - 20, this, "Forget") {
+		    rmb = new Button(new Coord(10, 188), sz.x - 20, this, "Forget") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("rm", id);
 			    }
@@ -242,25 +242,25 @@ public class BuddyWnd extends Window {
 			    }
 			};
 		if((fl & 4) != 0)
-		    rmb = new Button(new Coord(10, 190), sz.x - 20, this, "End kinship") {
+		    rmb = new Button(new Coord(10, 188), sz.x - 20, this, "End kinship") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("rm", id);
 			    }
 			};
 		if((fl & 8) != 0)
-		    invb = new Button(new Coord(10, 215), sz.x - 20, this, "Invite to party") {
+		    invb = new Button(new Coord(10, 211), sz.x - 20, this, "Invite to party") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("inv", id);
 			    }
 			};
 		if((fl & 16) != 0)
-		    descb = new Button(new Coord(10, 240), sz.x - 20, this, "Describe to...") {
+		    descb = new Button(new Coord(10, 234), sz.x - 20, this, "Describe to...") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("desc", id);
 			    }
 			};
 		if((fl & 32) != 0)
-		    exb = new Button(new Coord(10, 265), sz.x - 20, this, "Exile") {
+		    exb = new Button(new Coord(10, 257), sz.x - 20, this, "Exile") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("exile", id);
 			    }

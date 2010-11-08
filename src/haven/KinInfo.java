@@ -72,11 +72,11 @@ public class KinInfo extends GAttrib {
 	    Graphics g = buf.getGraphics();
 	    int x = 0;
 	    if(hv) {
-		g.drawImage(vlg, x, 0, null);
+		g.drawImage(vlg, x, (h / 2) - (vlg.getHeight() / 2), null);
 		x += vlg.getWidth() + 1;
 	    }
 	    if(nm != null) {
-		g.drawImage(nm, x, 0, null);
+		g.drawImage(nm, x, (h / 2) - (nm.getHeight() / 2), null);
 		x += nm.getWidth();
 	    }
 	    g.dispose();
