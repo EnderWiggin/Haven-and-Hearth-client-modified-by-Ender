@@ -31,7 +31,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 35;
+    public static final int PVER = 1;
     
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -506,6 +506,8 @@ public class Session {
 				}
 			    }
 			    Message msg = new Message(MSG_SESS);
+			    msg.adduint16(1);
+			    msg.addstring("Haven");
 			    msg.adduint16(PVER);
 			    msg.addstring(username);
 			    msg.addbytes(cookie);
