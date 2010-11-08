@@ -128,7 +128,7 @@ public class BuddyWnd extends Window {
 	private GroupSelector grp = null;
 	private Text atime = null;
 	private int id = -1;
-	private Button rmb, invb, chatb;
+	private Button rmb, invb, chatb, descb, exb;
 	
 	public BuddyInfo(Coord c, Coord sz, Widget parent) {
 	    super(c, sz, parent);
@@ -223,6 +223,10 @@ public class BuddyWnd extends Window {
 		    ui.destroy(invb);
 		if(chatb != null)
 		    ui.destroy(chatb);
+		if(descb != null)
+		    ui.destroy(descb);
+		if(exb != null)
+		    ui.destroy(exb);
 		rmb = invb = chatb = null;
 		int fl = (Integer)args[0];
 		if((fl & 1) != 0)
@@ -250,9 +254,15 @@ public class BuddyWnd extends Window {
 			    }
 			};
 		if((fl & 16) != 0)
-		    invb = new Button(new Coord(10, 240), sz.x - 20, this, "Describe to...") {
+		    descb = new Button(new Coord(10, 240), sz.x - 20, this, "Describe to...") {
 			    public void click() {
 				BuddyWnd.this.wdgmsg("desc", id);
+			    }
+			};
+		if((fl & 32) != 0)
+		    exb = new Button(new Coord(10, 265), sz.x - 20, this, "Exile") {
+			    public void click() {
+				BuddyWnd.this.wdgmsg("exile", id);
 			    }
 			};
 	    }
