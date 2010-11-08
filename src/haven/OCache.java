@@ -291,7 +291,7 @@ public class OCache implements Iterable<Gob> {
 	Gob g = getgob(id, frame);
 	if(g == null)
 	    return;
-	if(name == null) {
+	if((name.length() == 0) && (group == 0) && (type == 0)) {
 	    g.delattr(KinInfo.class);
 	} else {
 	    KinInfo b = g.getattr(KinInfo.class);

@@ -31,7 +31,7 @@ import java.util.*;
 import java.io.*;
 
 public class Session {
-    public static final int PVER = 34;
+    public static final int PVER = 35;
     
     public static final int MSG_SESS = 0;
     public static final int MSG_REL = 1;
@@ -295,13 +295,9 @@ public class Session {
 			    oc.health(id, frame, hp);
 			} else if(type == OD_BUDDY) {
 			    String name = msg.string();
-			    if(name.length() > 0) {
-				int group = msg.uint8();
-				int btype = msg.uint8();
-				oc.buddy(id, frame, name, group, btype);
-			    } else {
-				oc.buddy(id, frame, null, 0, 0);
-			    }
+			    int group = msg.uint8();
+			    int btype = msg.uint8();
+			    oc.buddy(id, frame, name, group, btype);
 			} else if(type == OD_END) {
 			    break;
 			} else {
