@@ -256,6 +256,14 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	return(-1);
     }
 
+    /* Text rendering is slow, so pre-cache the hotbar numbers. */
+    public static final Tex[] nums;
+    static {
+	nums = new Tex[10];
+	for(int i = 0; i < 10; i++)
+	    nums[i] = Text.render(Integer.toString(i)).tex();
+    }
+    
     public void draw(GOut g) {
 	vc.tick();
 	Coord bgc = sz.add(bg.sz().inv());
@@ -266,7 +274,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    Coord c = xlate(beltc(i), true);
 	    g.image(invsq, c);
 	    g.chcolor(156, 180, 158, 255);
-	    g.atext(Integer.toString((i + 1) % 10), c.add(invsq.sz()), 1, 1);
+	    g.aimage(nums[(i + 1) % 10], c.add(invsq.sz()), 1, 1);
 	    g.chcolor();
 	    Resource res = null;
 	    if(belt[i] != null)
