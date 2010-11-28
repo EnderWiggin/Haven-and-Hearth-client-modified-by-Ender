@@ -55,7 +55,7 @@ public class BuddyWnd extends Window {
     private Comparator<Buddy> alphacmp = new Comparator<Buddy>() {
 	private Collator c = Collator.getInstance();
 	public int compare(Buddy a, Buddy b) {
-	    return(c.compare(a.name, b.name));
+	    return(c.compare(a.name.text, b.name.text));
 	}
     };
     private Comparator<Buddy> groupcmp = new Comparator<Buddy>() {
@@ -81,7 +81,7 @@ public class BuddyWnd extends Window {
     
     private class Buddy {
 	int id;
-	String name;
+	Text name;
 	int online;
 	int group;
     }
@@ -307,7 +307,7 @@ public class BuddyWnd extends Window {
 			else if(b.online == 0)
 			    g.image(offline, new Coord(0, i * 20));
 			g.chcolor(gc[b.group]);
-			g.atext(b.name, new Coord(25, i * 20 + 10), 0, 0.5);
+			g.aimage(b.name.tex(), new Coord(25, i * 20 + 10), 0, 0.5);
 			g.chcolor();
 		    }
 		}
@@ -428,7 +428,7 @@ public class BuddyWnd extends Window {
 	if(msg == "add") {
 	    Buddy b = new Buddy();
 	    b.id = (Integer)args[0];
-	    b.name = ((String)args[1]).intern();
+	    b.name = Text.render(((String)args[1]));
 	    b.online = (Integer)args[2];
 	    b.group = (Integer)args[3];
 	    synchronized(buddies) {
@@ -459,7 +459,7 @@ public class BuddyWnd extends Window {
 	    int id = (Integer)args[0];
 	    String name = (String)args[1];
 	    synchronized(buddies) {
-		idmap.get(id).name = name;
+		idmap.get(id).name = Text.render(name);
 	    }
 	} else if(msg == "chgrp") {
 	    int id = (Integer)args[0];
