@@ -26,6 +26,7 @@
 
 package haven;
 
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 public class RootWidget extends ConsoleHost {
@@ -42,12 +43,19 @@ public class RootWidget extends ConsoleHost {
 	
     public boolean globtype(char key, KeyEvent ev) {
 	if(!super.globtype(key, ev)) {
+	    int code = ev.getKeyCode();
+	    boolean ctrl = (((ev.getModifiers() & InputEvent.CTRL_MASK) != 0));
+	    
 	    if(Config.profile && (key == '`')) {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
 	    } else if(Config.profile && (key == '~')) {
 		new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
 	    } else if(Config.profile && (key == '!')) {
 		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).mask.prof, "ILM prof");
+	    } else if((code == KeyEvent.VK_N)&&ctrl) {
+		Config.nightvision = !Config.nightvision;
+	    } else if((code == KeyEvent.VK_X)&&ctrl) {
+		Config.xray = !Config.xray;
 	    } else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {
