@@ -29,6 +29,8 @@ package haven;
 import java.util.*;
 import java.awt.font.TextAttribute;
 
+import ender.GoogleTranslator;
+
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     private Tabs body;
@@ -210,6 +212,28 @@ public class OptWnd extends Window {
 		    Music.enable(val);
 		}};
 	}
+	
+	{ /* TRANSLATE OPTIONS TAB */
+	    tab = body.new Tab(new Coord(210, 0), 80, "Translation");
+	    (new CheckBox(new Coord(10,30),tab,"Turn on") {
+		public void changed(boolean val) {
+		    GoogleTranslator.turnedon = val;
+		}
+	    }).a = GoogleTranslator.turnedon;
+	    
+	    new Label(new Coord(150, 35), tab, "Target Language:");
+	    
+	    final RadioGroup langs = new RadioGroup(tab) {
+		    public void changed(int btn, String lbl) {
+			GoogleTranslator.lang = lbl;
+		    }
+	    };
+	    langs.add("en", new Coord(150, 45));
+	    langs.add("ru", new Coord(150, 70));
+	    langs.check(GoogleTranslator.lang);
+	    
+	    new Label(new Coord(100, 120), tab, "Powered by Google Translate");
+        }
 
 	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
 	String last = Utils.getpref("optwndtab", "");

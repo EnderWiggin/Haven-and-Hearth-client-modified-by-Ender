@@ -72,8 +72,9 @@ public class Config {
 	    nopreload = getprop("haven.nopreload", "no").equals("yes");
 	    xray = false;
 	    nightvision = false;
-	    GoogleTranslator.apikey = "AIzaSyDLqphpdmbi9WBn8julJ7K9KvYZH7259EI";
+	    GoogleTranslator.apikey = "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0";
 	    GoogleTranslator.lang = "en";
+	    GoogleTranslator.turnedon = false;
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
