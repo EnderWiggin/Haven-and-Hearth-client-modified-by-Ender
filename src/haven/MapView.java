@@ -1042,7 +1042,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	map.sendreqs();
 	checkplmove();
 	try {
-	    if((mask.amb = glob.amblight) == null)
+	    if(((mask.amb = glob.amblight) == null) || Config.nightvision)
 		mask.amb = new Color(0, 0, 0, 0);
 	    drawmap(g);
 	    drawarrows(g);
