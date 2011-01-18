@@ -139,6 +139,8 @@ public class Equipory extends Window implements DTarget {
     }
 	
     public void cdraw(GOut g) {
+	if(folded)
+	    return;
 	Coord avac = new Coord(32, 0);
 	g.image(bg, avac);
 	if(avagob != -1) {
