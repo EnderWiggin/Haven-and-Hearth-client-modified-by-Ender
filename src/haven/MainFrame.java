@@ -116,7 +116,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     }
 
     public MainFrame(int w, int h) {
-	super("Haven and Hearth");
+	super("Haven and Hearth (modified by Ender)");
 	p = new HavenPanel(w, h);
 	fsmode = findmode(w, h);
 	add(p);
