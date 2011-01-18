@@ -83,6 +83,7 @@ public class Window extends Widget implements DTarget {
 	this.rbo = rbo;
 	cbtn = new IButton(Coord.z, this, cbtni[0], cbtni[1], cbtni[2]);
 	fbtn = new IButton(Coord.z, this, fbtni[0], fbtni[1], fbtni[2]);
+	fbtn.hide();
 	folded = false;
 	wfolded = new ArrayList<Widget>();
 	if(cap != null)
