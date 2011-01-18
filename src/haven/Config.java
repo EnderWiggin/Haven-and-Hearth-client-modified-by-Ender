@@ -28,6 +28,8 @@ package haven;
 
 import java.net.URL;
 import java.io.PrintStream;
+
+import ender.GoogleTranslator;
 import static haven.Utils.getprop;
 
 public class Config {
@@ -70,6 +72,8 @@ public class Config {
 	    nopreload = getprop("haven.nopreload", "no").equals("yes");
 	    xray = false;
 	    nightvision = false;
+	    GoogleTranslator.apikey = "AIzaSyDLqphpdmbi9WBn8julJ7K9KvYZH7259EI";
+	    GoogleTranslator.lang = "en";
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}

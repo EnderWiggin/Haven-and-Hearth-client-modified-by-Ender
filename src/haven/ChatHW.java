@@ -28,6 +28,8 @@ package haven;
 
 import java.awt.Color;
 
+import ender.GoogleTranslator;
+
 public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
@@ -59,7 +61,9 @@ public class ChatHW extends HWindow {
 		col = (Color)args[1];
 	    if(args.length > 2)
 		makeurgent((Integer)args[2]);
-	    out.append((String)args[0], col);
+	    String str = (String)args[0];
+	    str = GoogleTranslator.translate(str);
+	    out.append(str, col);
 	} else if(msg == "focusme") {
 	    shp.setawnd(this);
 	    shp.vc.show();
