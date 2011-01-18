@@ -29,6 +29,7 @@ package haven;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class Window extends Widget implements DTarget {
     static Tex bg = Resource.loadtex("gfx/hud/bgtex");
@@ -56,6 +57,7 @@ public class Window extends Widget implements DTarget {
     public IButton cbtn;
     public IButton fbtn;
     public boolean folded;
+    ArrayList<Widget> wfolded;
     Coord ssz;
 	
     static {
@@ -82,6 +84,7 @@ public class Window extends Widget implements DTarget {
 	cbtn = new IButton(Coord.z, this, cbtni[0], cbtni[1], cbtni[2]);
 	fbtn = new IButton(Coord.z, this, fbtni[0], fbtni[1], fbtni[2]);
 	folded = false;
+	wfolded = new ArrayList<Widget>();
 	if(cap != null)
 	    this.cap = cf.render(cap, cc);
 	ssz = new Coord(sz);
@@ -128,15 +131,21 @@ public class Window extends Widget implements DTarget {
 	    if((wdg == cbtn)||(wdg == fbtn))
 		continue;
 		if(folded) {
+		    if(wdg.visible) {
 			wdg.hide();
-		} else {
-			wdg.show();
+			wfolded.add(wdg);
+		    }
+		} else if (wfolded.contains(wdg)){
+		    wdg.show();
 		}
 	}
 	Coord max = new Coord(ssz);
 	if(folded) {
-		max.y = 0;
+	    max.y = 0;
+	} else {
+	    wfolded.clear();
 	}
+	
 	sz = max.add(wbox.bsz().add(mrgn.mul(2)).add(tlo).add(rbo)).add(-1, -1);
 	wsz = sz.sub(tlo).sub(rbo);
 	if(folded)
