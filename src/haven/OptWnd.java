@@ -213,6 +213,33 @@ public class OptWnd extends Window {
 		}};
 	}
 	
+	{ /* HIDE OBJECTS TAB */
+	    tab = body.new Tab(new Coord(210, 0), 80, "Hide Objects");
+
+	    String[][] checkboxesList = { { "Walls", "gfx/arch/walls" },
+		    { "Gates", "gfx/arch/gates" },
+		    { "Stone Mansions", "gfx/arch/inn" },
+		    { "Plants", "gfx/terobjs/plants" },
+		    { "Trees", "gfx/terobjs/trees" },
+		    { "Bushes", "gfx/tiles/wald" } };
+	    int y = 0;
+	    for (final String[] checkbox : checkboxesList) {
+		CheckBox chkbox = new CheckBox(new Coord(10, y += 30), tab,
+			checkbox[0]) {
+
+		    public void changed(boolean val) {
+			if (val) {
+			    Config.hideObjectList.add(checkbox[1]);
+			} else {
+			    Config.hideObjectList.remove(checkbox[1]);
+			}
+			Config.saveOptions();
+		    }
+		};
+		chkbox.a = Config.hideObjectList.contains(checkbox[1]);
+	    }
+	}
+	
 	{ /* TRANSLATE OPTIONS TAB */
 	    tab = body.new Tab(new Coord(210, 0), 80, "Translation");
 	    (new CheckBox(new Coord(10,30),tab,"Turn on") {

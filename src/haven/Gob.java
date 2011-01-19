@@ -158,13 +158,25 @@ public class Gob implements Sprite.Owner {
 	
     public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
 	Drawable d = getattr(Drawable.class);
+        ResDrawable dw = getattr(ResDrawable.class);
+        String resourceName = (dw != null && dw.res.get() != null ? dw.res.get().name : "");
+        boolean hide = false;
 	Coord dro = drawoff();
 	for(Overlay ol : ols) {
-	    if(ol.spr != null)
+            if (ol.spr != null) {
 		ol.spr.setup(drawer, dc, dro);
 	}
-	if(d != null)
+        }
+        if (Config.hide) {
+            for (String objectName : Config.hideObjectList) {
+                if (resourceName.indexOf(objectName) != -1) {
+                    hide = true;
+                }
+            }
+        }
+        if (d != null && !hide) {
 	    d.setup(drawer, dc, dro);
+    }
     }
     
     public Random mkrandoom() {

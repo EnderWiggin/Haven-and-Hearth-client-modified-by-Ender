@@ -76,6 +76,7 @@ public class Cal extends SSWidget {
     }
 	
     public void draw(GOut g) {
+        c.x = MainFrame.centerPoint.x - (Utils.imgsz(bg).x / 2);
 	if(!current.equals(ui.sess.glob.ast))
 	    render();
 	super.draw(g);
