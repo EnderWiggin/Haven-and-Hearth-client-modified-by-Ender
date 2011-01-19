@@ -33,9 +33,9 @@ public class Fightview extends Widget {
     static int height = 5;
     static int ymarg = 5;
     static Coord avasz = new Coord(27, 27);
-    static Coord cavac = new Coord(700, 10);
-    static Coord cgivec = new Coord(665, 10);
-    static Coord meterc = new Coord(333, 10);
+    static Coord cavac = new Coord(MainFrame.innerSize.width - 100, 10);
+    static Coord cgivec = new Coord(MainFrame.innerSize.width - 135, 10);
+    static Coord meterc = new Coord(MainFrame.centerPoint.x - 85, 10);
     LinkedList<Relation> lsrel = new LinkedList<Relation>();
     public Relation current = null;
     public Indir<Resource> blk, batk, iatk;
@@ -79,7 +79,7 @@ public class Fightview extends Widget {
     static {
         Widget.addtype("frv", new WidgetFactory() {
             public Widget create(Coord c, Widget parent, Object[] args) {
-                return(new Fightview(c, parent));
+                return(new Fightview(new Coord(MainFrame.innerSize.width - 10, c.y), parent));
             }
         });
     }
@@ -112,6 +112,10 @@ public class Fightview extends Widget {
     }
     
     public void draw(GOut g) {
+        curava.c.x = MainFrame.innerSize.width - 100;
+        curgive.c.x = MainFrame.innerSize.width - 135;
+        comwdg.c.x = MainFrame.centerPoint.x - 85;
+        c.x = MainFrame.innerSize.width - 10 - bg.sz().x;
         int y = 0;
         for(Relation rel : lsrel) {
             if(rel == current) {
