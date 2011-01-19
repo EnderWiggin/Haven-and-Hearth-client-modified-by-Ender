@@ -35,6 +35,9 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
+    Dimension insetsSize;
+    public static Dimension innerSize;
+    public static Point centerPoint;
 	
     static {
 	try {
@@ -117,15 +120,33 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 
     public MainFrame(int w, int h) {
 	super("Haven and Hearth (modified by Ender)");
+    innerSize = new Dimension(w, h);
+    centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
 	p = new HavenPanel(w, h);
 	fsmode = findmode(w, h);
 	add(p);
 	pack();
-	setResizable(false);
+    Insets insets = getInsets();
+    insetsSize = new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+	setResizable(true);
+    setMinimumSize(new Dimension(800 + insetsSize.width, 600 + insetsSize.height));
 	p.requestFocus();
 	seticon();
 	setVisible(true);
 	p.init();
+    setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+    }
+
+    public static Coord getScreenSize() {
+        return new Coord(Toolkit.getDefaultToolkit().getScreenSize());
+    }
+
+    public static Coord getInnerSize() {
+        return new Coord(innerSize.width, innerSize.height);
+    }
+
+    public static Coord getCenterPoint() {
+        return new Coord(centerPoint.x, centerPoint.y);
     }
 	
     public void run() {
@@ -134,6 +155,12 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 		    g.interrupt();
 		}
 	    });
+    addComponentListener(new ComponentAdapter() {
+        public void componentResized(ComponentEvent evt) {
+            innerSize.setSize(getWidth() - insetsSize.width, getHeight() - insetsSize.height);
+            centerPoint.setLocation(innerSize.width / 2, innerSize.height / 2);
+        }
+    });
 	Thread ui = new HackThread(p, "Haven UI thread");
 	p.setfsm(this);
 	ui.start();

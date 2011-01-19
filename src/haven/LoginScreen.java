@@ -194,6 +194,7 @@ public class LoginScreen extends Widget {
     }
 	
     public void draw(GOut g) {
+        c = MainFrame.getCenterPoint().sub(400, 300);
 	super.draw(g);
 	if(error != null)
 	    g.image(error.tex(), new Coord(420 - (error.sz().x / 2), 500));

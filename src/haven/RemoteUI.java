@@ -55,6 +55,22 @@ public class RemoteUI implements UI.Receiver {
 		    Coord c = msg.coord();
 		    int parent = msg.uint16();
 		    Object[] args = msg.list();
+            if(type.equals("cnt")){
+		    	args[0] = MainFrame.getInnerSize();
+		    }else if(type.equals("img") && args.length >= 1){
+		    	if(((String)args[0]).equals("gfx/ccscr"))
+		    		c = MainFrame.getCenterPoint().add(-400, -300);
+		    	if(((String)args[0]).equals("gfx/logo2"))
+		    		c = MainFrame.getCenterPoint().add(-415, -300);
+		    }else if(type.equals("charlist") && args.length >= 1){
+		    	c = MainFrame.getCenterPoint().add(-380, -50);
+		    }else if(type.equals("ibtn") && args.length >= 2){
+		    	if(((String)args[0]).equals("gfx/hud/buttons/ncu") && ((String)args[1]).equals("gfx/hud/buttons/ncd")){
+		    		c = MainFrame.getCenterPoint().add(86, 214);
+		    	}
+		    }else if(type.equals("wnd") && c.x == 400 && c.y == 200){
+		    	c = MainFrame.getCenterPoint().add(0,-100);
+		    }
 		    ui.newwidget(id, type, c, parent, args);
 		} else if(msg.type == Message.RMSG_WDGMSG) {
 		    int id = msg.uint16();

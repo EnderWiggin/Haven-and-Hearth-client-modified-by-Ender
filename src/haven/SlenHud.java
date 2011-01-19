@@ -50,6 +50,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	new Color(255, 0, 0),
     };
     int woff = 0;
+    int dy;
     List<HWindow> wnds = new ArrayList<HWindow>();
     HWindow awnd;
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
@@ -78,12 +79,16 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     
     static class FoldButton extends IButton {
 	int urgency;
+    int dy;
 	
 	public FoldButton(Coord c, Widget parent) {
 	    super(c, parent, Resource.loadimg("gfx/hud/slen/sbu"), Resource.loadimg("gfx/hud/slen/sbd"));
+        dy = sz.y;
 	}
 	
 	public void draw(GOut g) {
+        c.x = (MainFrame.innerSize.width - sz.x) / 2;
+        c.y = MainFrame.innerSize.height + dy;
 	    super.draw(g);
 	    if(urgcols[urgency] != null) {
 		g.chcolor(urgcols[urgency]);
@@ -96,11 +101,11 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     static class VC {
 	static final long ms = 500;
 	SlenHud m;
-	IButton sb;
+	FoldButton sb;
 	long st;
 	boolean w, c;
 		
-	VC(SlenHud m, IButton sb) {
+	VC(SlenHud m, FoldButton sb) {
 	    this.m = m;
 	    this.sb = sb;
 	    w = c = true;
@@ -132,19 +137,19 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    }
 	    if(!w && c) {
 		if(ca < 0.6) {
-		    m.c.y = 600 - (int)(sz.y * (1 - (ca / 0.6)));
+		    m.dy = (int)(-sz.y * (1 - (ca / 0.6)));
 		} else {
-		    m.c.y = 600;
-		    sb.c.y = 600 - (int)(sb.sz.y * ((ca - 0.6) / 0.4));
+		    m.dy = 0;
+		    sb.dy = (int)(-sb.sz.y * ((ca - 0.6) / 0.4));
 		}
 	    }
 	    if(w && !c) {
 		if(ca < 0.6) {
-		    m.c.y = 600 - (int)(sz.y * (ca / 0.6));
-		    sb.c.y = 600 - (int)(sb.sz.y * (1 - (ca / 0.6)));
+		    m.dy = (int)(-sz.y * (ca / 0.6));
+		    sb.dy = (int)(-sb.sz.y * (1 - (ca / 0.6)));
 		} else {
-		    m.c.y = 600 - sz.y;
-		    sb.c.y = 600;
+		    m.dy = -sz.y;
+		    sb.dy = 0;
 		}
 	    }
 	    if(ct >= ms) {
@@ -156,7 +161,8 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
 
     public SlenHud(Coord c, Widget parent) {
-	super(new Coord(800, 600).add(sz.inv()), sz, parent);
+	super(new Coord((MainFrame.innerSize.width - sz.x) / 2, MainFrame.innerSize.height - sz.y), sz, parent);
+    dy = -sz.y;
 	new Img(fc, flarps, this);
 	new Img(mc, mbg, this);
 	new Img(dispc, dispbg, this);
@@ -198,7 +204,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		}
 	    };
 	}
-	vc = new VC(this, fb = new FoldButton(new Coord(380, 600), parent) {
+	vc = new VC(this, fb = new FoldButton(new Coord((MainFrame.innerSize.width - 40) / 2, MainFrame.innerSize.height), parent) {
 		public void click() {
 		    vc.show();
 		}
@@ -266,6 +272,8 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     
     public void draw(GOut g) {
 	vc.tick();
+        c.x = (MainFrame.innerSize.width - sz.x) / 2;
+        c.y = MainFrame.innerSize.height + dy;
 	Coord bgc = sz.add(bg.sz().inv());
 	g.image(bg, bgc);
 	super.draw(g);
@@ -508,7 +516,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
 	
     public int foldheight() {
-	return(600 - c.y);
+	return(MainFrame.innerSize.height - c.y);
     }
     
     public boolean drop(Coord cc, Coord ul) {
