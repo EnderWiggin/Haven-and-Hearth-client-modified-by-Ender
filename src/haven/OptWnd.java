@@ -241,7 +241,7 @@ public class OptWnd extends Window {
 	}
 	
 	{ /* TRANSLATE OPTIONS TAB */
-	    tab = body.new Tab(new Coord(210, 0), 80, "Translation");
+	    tab = body.new Tab(new Coord(300, 0), 80, "Translation");
 	    (new CheckBox(new Coord(10,30),tab,"Turn on") {
 		public void changed(boolean val) {
 		    GoogleTranslator.turnedon = val;

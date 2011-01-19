@@ -56,6 +56,8 @@ public class RootWidget extends ConsoleHost {
 		Config.nightvision = !Config.nightvision;
 	    } else if((code == KeyEvent.VK_X)&&ctrl) {
 		Config.xray = !Config.xray;
+	    } else if((code == KeyEvent.VK_H)&&ctrl) {
+		Config.hide = !Config.hide;
 	    } else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {
