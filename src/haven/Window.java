@@ -36,14 +36,14 @@ public class Window extends Widget implements DTarget {
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
     static Tex cm = Resource.loadtex("gfx/hud/cmain");
     static Tex cr = Resource.loadtex("gfx/hud/cright");
-    static BufferedImage[] cbtni = new BufferedImage[] {
+    protected static BufferedImage[] cbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/cbtn"),
 	Resource.loadimg("gfx/hud/cbtnd"),
 	Resource.loadimg("gfx/hud/cbtnh")}; 
-	static BufferedImage[] fbtni = new BufferedImage[] {
-	Resource.loadimg("gfx/hud/cbtn"),
-	Resource.loadimg("gfx/hud/cbtnd"),
-	Resource.loadimg("gfx/hud/cbtnh")}; 
+    protected static BufferedImage[] fbtni = new BufferedImage[] {
+	Resource.loadimg("gfx/hud/fbtn"),
+	Resource.loadimg("gfx/hud/fbtnd"),
+	Resource.loadimg("gfx/hud/fbtnh")}; 
     static Color cc = Color.YELLOW;
     static Text.Foundry cf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
     static IBox wbox;
@@ -58,7 +58,7 @@ public class Window extends Widget implements DTarget {
     public IButton fbtn;
     public boolean folded;
     ArrayList<Widget> wfolded;
-    Coord ssz;
+    protected Coord ssz;
 	
     static {
 	Widget.addtype("wnd", new WidgetFactory() {
@@ -72,7 +72,7 @@ public class Window extends Widget implements DTarget {
 	wbox = new IBox("gfx/hud", "tl", "tr", "bl", "br", "extvl", "extvr", "extht", "exthb");
     }
 
-    private void placecbtn() {
+    protected void placecbtn() {
 	cbtn.c = new Coord(wsz.x - 3 - Utils.imgsz(cbtni[0]).x, 3).add(mrgn.inv().add(wbox.tloff().inv()));
 	fbtn.c = new Coord(cbtn.c.x - 1 - Utils.imgsz(fbtni[0]).x, cbtn.c.y);
     }

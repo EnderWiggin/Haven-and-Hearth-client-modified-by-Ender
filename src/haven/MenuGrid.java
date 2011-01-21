@@ -95,6 +95,7 @@ public class MenuGrid extends Widget {
     public MenuGrid(Coord c, Widget parent) {
 	super(c, bgsz.mul(gsz).add(1, 1), parent);
 	cons(null);
+	new ToolbarWnd(new Coord(0,300), parent.parent, this);
     }
 	
     private static Comparator<Resource> sorter = new Comparator<Resource>() {
@@ -222,7 +223,7 @@ public class MenuGrid extends Widget {
 	}
     }
 	
-    private void use(Resource r) {
+    public void use(Resource r) {
 	if(cons(r).length > 0) {
 	    cur = r;
 	    curoff = 0;
