@@ -66,6 +66,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     OptWnd optwnd = null;
     @SuppressWarnings("unchecked")
     Indir<Resource>[][] belt = new Indir[10][10];
+    static int dh;
 	
     static {
 	Widget.addtype("slen", new WidgetFactory() {
@@ -77,6 +78,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	sz = new Coord(800, h);
 	sz.y = (h - fc.y > sz.y)?(h - fc.y):sz.y;
 	sz.y = (h - mc.y > sz.y)?(h - mc.y):sz.y;
+	dh = h - sz.y;
     }
     
     static class FoldButton extends IButton {
@@ -270,6 +272,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	if(in)
 	    return(c.add(bgc));
 	else
+	    bgc.y += dh;
 	    return(c.add(bgc.inv()));
     }
 	
@@ -528,7 +531,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    updbtns();
 	    return(true);
 	}
-	return(false);
+	return(super.mousewheel(c, amount));
     }
     
     private void toggleopts() {

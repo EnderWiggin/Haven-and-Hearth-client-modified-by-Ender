@@ -83,4 +83,8 @@ public class ChatHW extends HWindow {
 	}
 	super.wdgmsg(sender, msg, args);
     }
+    public boolean mousewheel(Coord c, int amount)
+    {
+    	return(out.mousewheel(c, amount));
+    }
 }
