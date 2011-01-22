@@ -147,13 +147,18 @@ public class Window extends Widget implements DTarget {
 	    wfolded.clear();
 	}
 	
+	recalcsz(max);
+    }
+    
+    protected void recalcsz(Coord max)
+    {
 	sz = max.add(wbox.bsz().add(mrgn.mul(2)).add(tlo).add(rbo)).add(-1, -1);
 	wsz = sz.sub(tlo).sub(rbo);
 	if(folded)
 	    wsz.y = wsz.y/2;
 	asz = wsz.sub(wbox.bl.sz()).sub(wbox.br.sz()).sub(mrgn.mul(2));
     }
-	
+    
     public void pack() {
 	Coord max = new Coord(0, 0);
 	for(Widget wdg = child; wdg != null; wdg = wdg.next) {

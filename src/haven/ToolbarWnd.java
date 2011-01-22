@@ -26,6 +26,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	loadBelt(2);
 	mnu = (MenuGrid)args[0];
 	pack();
+	//flip();
     }
     
     private void loadBelt(int beltNr) {
@@ -86,6 +87,28 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	}
     } 
     
+    public void checkfold() {
+	super.checkfold();
+	Coord max = new Coord(ssz);
+	if((folded)&&(flipped)) {
+	    max.x = 0;
+	    recalcsz(max);
+	}
+	placecbtn();
+    }
+    
+    protected void recalcsz(Coord max)
+    {
+	sz = max.add(wbox.bsz().add(mrgn.mul(2)).add(tlo).add(rbo)).add(-1, -1);
+	wsz = sz.sub(tlo).sub(rbo);
+	if(folded)
+	    if (flipped)
+		wsz.x = wsz.x/2;
+	    else
+		wsz.y = wsz.y/2;
+	asz = wsz.sub(wbox.bl.sz()).sub(wbox.br.sz()).sub(mrgn.mul(2));
+    }
+    
     public void flip() {
 	flipped = !flipped;
 	gsz = new Coord(gsz.y, gsz.x);
@@ -94,12 +117,10 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     protected void placecbtn() {
+	cbtn.c = new Coord(wsz.x - 3 - Utils.imgsz(cbtni[0]).x, 3).sub(mrgn).sub(wbox.tloff());
 	if(flipped) {
-	    cbtn.c = new Coord(3, 3).sub(mrgn).sub(wbox.tloff());
-	    cbtn.c.x -= wbox.tloff().x;
 	    fbtn.c = new Coord(cbtn.c.x, wsz.y - 3 - Utils.imgsz(fbtni[0]).y - mrgn.y - wbox.tloff().y);
 	} else {
-	    cbtn.c = new Coord(wsz.x - 3 - Utils.imgsz(cbtni[0]).x, 3).sub(mrgn).sub(wbox.tloff());
 	    fbtn.c = new Coord(3 - wbox.tloff().x, cbtn.c.y);
 	}
     }
