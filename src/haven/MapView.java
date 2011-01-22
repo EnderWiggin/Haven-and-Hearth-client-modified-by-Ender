@@ -723,6 +723,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	if(plrad > 0) {
 	    g.chcolor(0, 255, 0, 32);
 	    g.fellipse(gob.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
+	    for(Gob tg : glob.oc)
+		if((tg.resname() == gob.resname())&&(tg.sc != null))
+		    g.fellipse(tg.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
 	    g.chcolor();
 	}
     }
@@ -1026,7 +1029,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 
     public void draw(GOut g) {
-    sz = MainFrame.getInnerSize();
+	sz = MainFrame.getInnerSize();
 	checkmappos();
 	Coord requl = mc.add(-500, -500).div(tilesz).div(cmaps);
 	Coord reqbr = mc.add(500, 500).div(tilesz).div(cmaps);
