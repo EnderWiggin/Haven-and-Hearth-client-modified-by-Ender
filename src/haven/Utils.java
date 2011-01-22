@@ -28,6 +28,7 @@ package haven;
 
 import java.awt.RenderingHints;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.prefs.*;
 import java.util.*;
 import java.awt.Graphics;
@@ -73,7 +74,11 @@ public class Utils {
 	    }
 	}
     }
-	
+    
+    public static String sessdate(long sess) {
+	    return (new SimpleDateFormat("yyyy-MM-dd HH.mm.ss")).format(new Date(sess));
+	}
+    
     public static void defer(Runnable r) {
 	synchronized(Utils.class) {
 	    if(bgworker == null)
