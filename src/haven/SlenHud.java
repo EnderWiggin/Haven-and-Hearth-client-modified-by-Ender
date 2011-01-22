@@ -291,6 +291,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     
     private int beltslot(Coord c) {
 	c = xlate(c, false);
+	c.y += dh;
 	int sw = invsq.sz().x + 2;
 	if((c.x >= bc1.x) && (c.y >= bc1.y) && (c.y < bc1.y + invsq.sz().y)) {
 	    if((c.x - bc1.x) / sw < 5) {
