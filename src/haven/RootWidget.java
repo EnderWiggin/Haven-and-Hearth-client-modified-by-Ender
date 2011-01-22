@@ -58,6 +58,8 @@ public class RootWidget extends ConsoleHost {
 		Config.xray = !Config.xray;
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
+	    } else if((code == KeyEvent.VK_G)&&ctrl) {
+		Config.grid = !Config.grid;
 	    } else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {

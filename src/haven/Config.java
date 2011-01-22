@@ -51,6 +51,7 @@ public class Config {
     public static String loadwaited, allused;
     public static boolean xray;
     public static boolean hide;
+    public static boolean grid;
     public static HashSet<String> hideObjectList;
     public static boolean nightvision;
     public static String currentCharName;
@@ -79,6 +80,7 @@ public class Config {
 	    nopreload = getprop("haven.nopreload", "no").equals("yes");
 	    xray = false;
 	    hide = false;
+	    grid = false;
 	    nightvision = false;
 	    GoogleTranslator.apikey = "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0";
 	    GoogleTranslator.lang = "en";

@@ -763,7 +763,18 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	return(obsc);
     }
+    
+    private void drawgrid(GOut g, Coord c) {
+	Coord cy = c.add(m2s(new Coord(0, tilesz.y)));
+	Coord cx = c.add(m2s(new Coord(tilesz.x, 0)));
+	Color cl = g.getcolor();
+	g.chcolor(new Color(0, 0, 0));
+	g.line(cy, c, 1);
+        g.line(c, cx, 1);
+        g.chcolor(cl);
 
+    }
+    
     public void drawmap(GOut g) {
 	int x, y, i;
 	int stw, sth;
@@ -784,14 +795,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    sc = m2s(ctc.mul(tilesz)).add(oc);
 		    sc.x -= tilesz.x * 2;
 		    drawtile(g, ctc, sc);
-		}
-	    }
-	}
-	for(y = 0; y < (sz.y / sth) + 2; y++) {
-	    for(x = 0; x < (sz.x / stw) + 3; x++) {
-		for(i = 0; i < 2; i++) {
-		    ctc = tc.add(new Coord(x + y, -x + y + i));
-		    sc = m2s(ctc.mul(tilesz)).add(oc);
+		    sc.x += tilesz.x * 2;
+		    if(Config.grid)
+			drawgrid(g, sc);
 		    drawol(g, ctc, sc);
 		}
 	    }
