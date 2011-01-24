@@ -35,7 +35,7 @@ public class HWindow extends Widget {
 	Resource.loadimg("gfx/hud/cbtn"),
 	Resource.loadimg("gfx/hud/cbtnd"),
 	Resource.loadimg("gfx/hud/cbtnh")}; 
-    SlenHud shp;
+    IHWindowParent shp;
     int urgent;
 	
     static {
@@ -53,7 +53,7 @@ public class HWindow extends Widget {
     public HWindow(Widget parent, String title, boolean closable) {
 	super(new Coord(234, 29), new Coord(430, 100), parent);
 	this.title = title;
-	shp = (SlenHud)parent;
+	shp = (IHWindowParent)parent;
 	shp.addwnd(this);
 	if(closable)
 	    cbtn = new IButton(new Coord(sz.x - cbtni[0].getWidth(), 0), this, cbtni[0], cbtni[1], cbtni[2]);

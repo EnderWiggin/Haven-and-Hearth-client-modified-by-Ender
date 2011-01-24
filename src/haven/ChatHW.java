@@ -47,11 +47,16 @@ public class ChatHW extends HWindow {
     }
 	
     public ChatHW(Widget parent, String title, boolean closable) {
-	super(parent, title, closable);
+	super(ChatHWPanel.instance, title, closable);
 	in = new TextEntry(new Coord(0, sz.y - 20), new Coord(sz.x, 20), this, "");
 	in.canactivate = true;
 	out = new Textlog(Coord.z, new Coord(sz.x, sz.y - 20), this);
-	cbtn.raise();
+	out.drawbg = false;
+	if(cbtn != null) {
+	    cbtn.raise();
+	    if (title.equals("Area Chat"))
+		cbtn.hide();
+	}
     }
 	
     public void uimsg(String msg, Object... args) {
@@ -65,8 +70,7 @@ public class ChatHW extends HWindow {
 	    str = GoogleTranslator.translate(str);
 	    out.append(str, col);
 	} else if(msg == "focusme") {
-	    shp.setawnd(this);
-	    shp.vc.show();
+	    shp.setawnd(this, true);
 	    setfocus(in);
 	} else {
 	    super.uimsg(msg, args);

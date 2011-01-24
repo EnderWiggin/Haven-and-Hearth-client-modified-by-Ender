@@ -98,13 +98,15 @@ public class Button extends SSWidget {
     }
 	
     public void change(String text, Color col) {
+	if(col == null)
+	    col = Color.YELLOW;
 	this.text = tf.render(text, col);
 	this.cont = this.text.img;
 	render();
     }
     
     public void change(String text) {
-	change(text, Color.YELLOW);
+	change(text, null);
     }
 
     public void click() {

@@ -32,7 +32,7 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import static haven.Inventory.invsq;
 
-public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory {
+public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory, IHWindowParent {
     public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
@@ -166,6 +166,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 
     public SlenHud(Coord c, Widget parent) {
 	super(new Coord((MainFrame.innerSize.width - sz.x) / 2, MainFrame.innerSize.height - sz.y), sz, parent);
+	new ChatHWPanel(new Coord(0,MainFrame.getInnerSize().y-300), new Coord(350,300), ui.root);
     dy = -sz.y;
 	new Img(fc, flarps, this);
 	new Img(mc, mbg, this);
@@ -459,15 +460,21 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	fb.urgency = max;
     }
 	
-    public void setawnd(HWindow wnd) {
+    public void setawnd(HWindow wnd, boolean focus) {
 	awnd = wnd;
 	for(HWindow w : wnds)
 	    w.visible = false;
 	if(wnd != null)
 	    wnd.visible = true;
 	updurgency(wnd, -1);
+	if(focus)
+	    vc.show();
     }
-	
+    
+    public void setawnd(HWindow wnd) {
+	setawnd(wnd, false);
+    }
+    
     public void addwnd(final HWindow wnd) {
 	wnds.add(wnd);
 	setawnd(wnd);

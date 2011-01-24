@@ -39,6 +39,8 @@ public class Textlog extends Widget {
     int maxy, cury;
     int margin = 3;
     boolean sdrag = false;
+    public boolean drawbg = true;
+    public Color defcolor = Color.BLACK;
 	
     static {
 	Widget.addtype("log", new WidgetFactory() {
@@ -50,11 +52,12 @@ public class Textlog extends Widget {
 	
     public void draw(GOut g) {
 	Coord dc = new Coord();
-	for(dc.y = 0; dc.y < sz.y; dc.y += texpap.sz().y) {
-	    for(dc.x = 0; dc.x < sz.x; dc.x += texpap.sz().x) {
-		g.image(texpap, dc);
+	if (drawbg)
+	    for (dc.y = 0; dc.y < sz.y; dc.y += texpap.sz().y) {
+		for (dc.x = 0; dc.x < sz.x; dc.x += texpap.sz().x) {
+		    g.image(texpap, dc);
+		}
 	    }
-	}
 	g.chcolor();
 	int y = -cury;
 	synchronized(lines) {
@@ -86,9 +89,8 @@ public class Textlog extends Widget {
     public void append(String line, Color col) {
 	Text rl;
 	if(col == null)
-	    rl = fnd.render(RichText.Parser.quote(line), sz.x - (margin * 2) - sflarp.sz().x);
-	else
-	    rl = fnd.render(RichText.Parser.quote(line), sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col);
+	    col = defcolor;
+	rl = fnd.render(RichText.Parser.quote(line), sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col);
 	synchronized(lines) {
 	    lines.add(rl);
 	}
