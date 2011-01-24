@@ -11,20 +11,21 @@ import java.util.Properties;
 public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
     public final static Coord bgsz = bg.sz().add(-1, -1);
-    private static Coord gsz = new Coord(1, 10);
+    public static MenuGrid mnu;
+    private Coord gsz, off;
     Resource pressed, dragging, layout[];
-    MenuGrid mnu;
     public boolean flipped = false;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     
-    public ToolbarWnd(Coord c, Widget parent, Object... args) {
+    public ToolbarWnd(Coord c, Coord sz, Widget parent) {
 	super( c, Coord.z,  parent, null);
+	gsz = new Coord(1, 10);
+	off = new Coord(5, 10);
 	fbtn.show();
-	mrgn = new Coord(0,13);
+	mrgn = new Coord(2,16);
 	layout = new Resource[gsz.x*gsz.y];
 	loadBelt(2);
-	mnu = (MenuGrid)args[0];
 	pack();
 	//flip();
     }
@@ -63,7 +64,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    return;
 	for(int y = 0; y < gsz.y; y++) {
 	    for(int x = 0; x < gsz.x; x++) {
-		Coord p = xlate(bgsz.mul(new Coord(x, y)),true);
+		Coord p = getcoord(x, y);
 		g.image(bg, p);
 		Resource btn = layout[x+y];
 		if(btn != null) {
@@ -77,6 +78,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		}
 	    }
 	}
+	g.chcolor();
 	if(dragging != null) {
 	    final Tex dt = dragging.layer(Resource.imgc).tex();
 	    ui.drawafter(new UI.AfterDraw() {
@@ -86,6 +88,17 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		});
 	}
     } 
+    
+    private Coord getcoord(int x, int y) {
+	Coord p = xlate(bgsz.mul(new Coord(x, y)),true);
+	if (off.x > 0)
+	    if (flipped) {
+		p.x += off.y*(x/off.x);
+	    } else {
+		p.y += off.y*(y/off.x);
+	    }
+	return p;
+    }
     
     public void checkfold() {
 	super.checkfold();
@@ -127,6 +140,12 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     
     public void pack() {
 	ssz = bgsz.mul(gsz);
+	if (off.x > 0)
+	    if (flipped) {
+		ssz.x += off.y*((gsz.x/off.x) - ((gsz.x%off.x == 0)?1:0));
+	    } else {
+		ssz.y += off.y*((gsz.y/off.x) - ((gsz.y%off.x == 0)?1:0));
+	    }
 	checkfold();
 	placecbtn();
     }
@@ -140,11 +159,13 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
 
     private int index(Coord c) {
-	Coord bc = xlate(c, false).div(bgsz);
-	if ((bc.x >= 0) && (bc.y >= 0) && (bc.x < gsz.x) && (bc.y < gsz.y))
-	    return bc.x + bc.y;
-	else
-	    return -1;
+	for(int y = 0; y < gsz.y; y++) {
+	    for(int x = 0; x < gsz.x; x++) {
+		if (c.isect(getcoord(x, y), bgsz))
+		    return x+y;
+	    }
+	}
+	return -1;
     }
     
     public boolean mousedown(Coord c, int button) {
@@ -168,7 +189,8 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		dragging = pressed = null;
 	    } else if (pressed != null) {
 		if (pressed == h)
-		    mnu.use(h);
+		    if(mnu != null)
+			mnu.use(h);
 		pressed = null;
 	    }
 	    ui.grabmouse(null);
