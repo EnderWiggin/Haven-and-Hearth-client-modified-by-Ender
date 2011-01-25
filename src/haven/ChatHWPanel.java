@@ -14,24 +14,31 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    Resource.loadimg("gfx/hud/fbtn"),
 	    Resource.loadimg("gfx/hud/fbtnd"),
 	    Resource.loadimg("gfx/hud/fbtnh") };
+    static final int minbtnw = 90;
+    static final int maxbtnw = 120;
+    static final int sbtnw = 50;
+    static final int btnh = 40;
+    static final Coord minsz = new Coord(125, 125);
     HWindow awnd;
     List<HWindow> wnds = new ArrayList<HWindow>();
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
     Button sub, sdb;
     IButton fbtn;
-    int urgency, woff = 0, bpp = 6;
-    boolean folded = false;
+    int urgency, woff = 0;
+    boolean folded = false, dm = false;
+    Coord btnc, doff;
 
     public ChatHWPanel(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent);
 	instance = this;
-	sub = new Button(new Coord(300, 260), 50, this,
+	btnc = sz.sub(new Coord(sz.x, btnh));
+	sub = new Button(new Coord(300, 260), sbtnw, this,
 		Resource.loadimg("gfx/hud/slen/sau")) {
 	    public void click() {
 		sup();
 	    }
 	};
-	sdb = new Button(new Coord(300, 280), 50, this,
+	sdb = new Button(new Coord(300, 280), sbtnw, this,
 		Resource.loadimg("gfx/hud/slen/sad")) {
 	    public void click() {
 		sdn();
@@ -72,6 +79,15 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     private void updbtns() {
+	int k = (sz.x - sbtnw)/minbtnw;
+	if(k > wnds.size()/2) {
+	    k = Math.max(wnds.size()/2, 1);
+	    if ((wnds.size()%2) != 0) 
+		k++;
+	}
+	int bw = Math.min((sz.x - sbtnw)/k, maxbtnw);
+	int bpp = 2*k;
+	
 	if (wnds.size() <= bpp) {
 	    woff = 0;
 	} else {
@@ -83,20 +99,26 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	for (Button b : btns.values())
 	    b.visible = false;
 	sub.visible = sdb.visible = false;
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < bpp; i++) {
 	    int wi = i + woff;
 	    if (wi >= wnds.size())
 		continue;
-	    if (woff > 0)
+	    if (woff > 0) {
 		sub.visible = true;
-	    if (woff < wnds.size() - bpp)
+		sub.c = btnc.add(new Coord(sz.x - sbtnw, 0));
+	    }
+	    if (woff < wnds.size() - bpp) {
 		sdb.visible = true;
+		sdb.c = btnc.add(new Coord(sz.x - sbtnw, 20));
+	    }
 	    HWindow w = wnds.get(wi);
 	    Button b = btns.get(w);
+	    w.sz = sz.sub(0, btnh);
 	    b.change(w.title, w.visible ? Color.WHITE
 		    : SlenHud.urgcols[w.urgent]);
 	    b.visible = true;
-	    b.c = new Coord(100 * (i % 3), 260 + ((int) i / 3) * 20);
+	    b.sz.x = bw;
+	    b.c = btnc.add(new Coord(bw * (i % k), ((int) i / k) * 20));
 	}
     }
 
@@ -109,7 +131,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    super.wdgmsg(sender, msg, args);
 	}
     }
-
+    
     @Override
     public void addwnd(final HWindow wnd) {
 	fbtn.raise();
@@ -187,5 +209,38 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    updurgency(wnd, -1);
 	}
 	updbtns();
+    }
+    
+    public boolean mousedown(Coord c, int button) {
+	parent.setfocus(this);
+	raise();
+	if(super.mousedown(c, button))
+	    return(true);
+	if(!c.isect(Coord.z, sz))
+	    return(false);
+	if(button == 1) {
+	    ui.grabmouse(this);
+	    dm = true;
+	    doff = c;
+	}
+	return(true);
+    }
+	
+    public boolean mouseup(Coord c, int button) {
+	if(dm) {
+	    ui.grabmouse(null);
+	    dm = false;
+	} else {
+	    super.mouseup(c, button);
+	}
+	return(true);
+    }
+	
+    public void mousemove(Coord c) {
+	if(dm) {
+	    this.c = this.c.add(c.add(doff.inv()));
+	} else {
+	    super.mousemove(c);
+	}
     }
 }
