@@ -112,6 +112,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 
     @Override
     public void addwnd(final HWindow wnd) {
+	fbtn.raise();
 	wnd.sz = sz.sub(new Coord(0, 40));
 	wnd.c = Coord.z;
 	wnds.add(wnd);
