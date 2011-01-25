@@ -1,6 +1,7 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,8 +15,14 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    Resource.loadimg("gfx/hud/fbtn"),
 	    Resource.loadimg("gfx/hud/fbtnd"),
 	    Resource.loadimg("gfx/hud/fbtnh") };
-    static BufferedImage icon = Resource
-	    .loadimg("gfx/invobjs/parchment-written");
+    static BufferedImage icon = Resource.loadimg("gfx/invobjs/parchment-written");
+    static Coord isz = new Coord(30,30);
+    static Tex cl = Resource.loadtex("gfx/hud/cleft");
+    static Tex cm = Resource.loadtex("gfx/hud/cmain");
+    static Tex cr = Resource.loadtex("gfx/hud/cright");
+    static Text.Foundry cf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
+    static Text cap;
+    
     static final int minbtnw = 90;
     static final int maxbtnw = 120;
     static final int sbtnw = 50;
@@ -28,8 +35,12 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     IButton fbtn;
     int urgency, woff = 0;
     boolean folded = false, dm = false;
-    Coord btnc, doff;
+    Coord btnc, doff, sc;
 
+    static {
+	cap = cf.render("Chat", Color.YELLOW);
+    }
+    
     public ChatHWPanel(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent);
 	instance = this;
@@ -64,8 +75,14 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	if (folded) {
 	    if (SlenHud.urgcols[urgency] != null)
 		g.chcolor(SlenHud.urgcols[urgency]);
-	    g.image(icon, sz.sub(sz.x, icon.getHeight()));
+	    g.image(icon, Coord.z.add(cl.sz()));
 	    g.chcolor();
+	    int w = cap.tex().sz().x;
+	    int x0 = (isz.x / 2) - (w / 2) + cl.sz().x;
+	    g.image(cl, new Coord(x0 - cl.sz().x, 0));
+	    g.image(cm, new Coord(x0, 0), new Coord(w, cm.sz().y));
+	    g.image(cr, new Coord(x0 + w, 0));
+	    g.image(cap.tex(), new Coord(x0, 0));
 	} else {
 	    g.chcolor(220, 220, 200, 200);
 	    g.frect(Coord.z, sz);
@@ -122,15 +139,27 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if (sender == fbtn) {
-	    folded = !folded;
-	    if (awnd != null)
-		awnd.visible = !folded;
+	if ((sender == fbtn)) {
+	    setfold(true);
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
     }
-
+    
+    public void setfold(Boolean value) {
+	if(folded != value) {
+	    if(sc == null) 
+		sc = c;
+	    Coord tc = c;
+	    c = sc;
+	    sc = tc;
+	}
+	folded = value;
+	fbtn.visible = !folded;
+	if (awnd != null)
+	    awnd.visible = !folded;
+    }
+    
     @Override
     public void addwnd(final HWindow wnd) {
 	fbtn.raise();
@@ -198,8 +227,9 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 
     @Override
     public void setawnd(HWindow wnd, boolean focus) {
-	if (focus)
-	    folded = false;
+	if (focus) {
+	    setfold(false);
+	}
 	awnd = wnd;
 	for (HWindow w : wnds)
 	    w.visible = false;
@@ -211,8 +241,12 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     public boolean mousedown(Coord c, int button) {
-	if(folded)
-	    return false;
+	if(folded) {
+	    if(!c.isect(Coord.z, isz.add(cl.sz())))
+		return false;
+	    if(c.isect(Coord.z.add(cl.sz()), isz))
+		return true;
+	}
 	parent.setfocus(this);
 	raise();
 	if (super.mousedown(c, button))
@@ -228,8 +262,8 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     public boolean mouseup(Coord c, int button) {
-	if((folded)&&(c.isect(sz.sub(sz.x, icon.getHeight()), new Coord(icon.getWidth(), icon.getHeight())))) {
-	    folded = false;
+	if((folded)&&(c.isect(Coord.z.add(cl.sz()), isz))) {
+	    setfold(false);
 	    return true;
 	}
 		
