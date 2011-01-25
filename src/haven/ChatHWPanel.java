@@ -2,6 +2,7 @@ package haven;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -275,12 +276,26 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	}
 	return (true);
     }
-
+    
     public void mousemove(Coord c) {
 	if (dm) {
 	    this.c = this.c.add(c.add(doff.inv()));
 	} else {
 	    super.mousemove(c);
 	}
+    }
+    
+    public boolean type(char key, KeyEvent ev) {
+	if(!folded) {
+	    if (key == KeyEvent.VK_ESCAPE) {
+		setfold(true);
+		return true;
+	    }
+//	    if ((key == KeyEvent.VK_ENTER)&&(awnd != null)) {
+//		parent.setfocus(((ChatHW)awnd).in);
+//		return true;
+//	    }
+	}
+	return false;
     }
 }
