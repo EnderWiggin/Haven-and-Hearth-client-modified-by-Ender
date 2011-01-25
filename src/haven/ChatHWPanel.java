@@ -118,7 +118,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	wnds.add(wnd);
 	btns.put(wnd, new Button(new Coord(0, 260), 100, this, wnd.title) {
 	    public void click() {
-		setawnd(wnd);
+		setawnd(wnd, true);
 	    }
 	});
 	if(!folded)
@@ -177,16 +177,15 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 
     @Override
     public void setawnd(HWindow wnd, boolean focus) {
+	if (focus)
+	    folded = false;
 	awnd = wnd;
 	for (HWindow w : wnds)
 	    w.visible = false;
 	if (wnd != null) {
-	    wnd.visible = true;
-	    folded = false;
+	    wnd.visible = !folded;
 	    updurgency(wnd, -1);
 	}
 	updbtns();
-	if (focus)
-	    folded = false;
     }
 }
