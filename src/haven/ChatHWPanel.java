@@ -14,6 +14,8 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    Resource.loadimg("gfx/hud/fbtn"),
 	    Resource.loadimg("gfx/hud/fbtnd"),
 	    Resource.loadimg("gfx/hud/fbtnh") };
+    static BufferedImage icon = Resource
+	    .loadimg("gfx/invobjs/parchment-written");
     static final int minbtnw = 90;
     static final int maxbtnw = 120;
     static final int sbtnw = 50;
@@ -59,35 +61,32 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     public void draw(GOut g) {
-	Coord c = folded ? new Coord(0, 245) : Coord.z;
-	fbtn.c = c;
-	g.chcolor(220, 220, 200, folded?32:200);
-	g.frect(c, sz.sub(c));
-	if(folded)
-	    g.chcolor(255,255,255,160);
-	else
+	if (folded) {
+	    if (SlenHud.urgcols[urgency] != null)
+		g.chcolor(SlenHud.urgcols[urgency]);
+	    g.image(icon, sz.sub(sz.x, icon.getHeight()));
 	    g.chcolor();
-	super.draw(g);
-	g.chcolor(64, 64, 64, folded?32:255);
-	g.rect(c, sz.add(new Coord(1, 1).sub(c)));
-	g.chcolor();
-	if ((folded) && (SlenHud.urgcols[urgency] != null)) {
-	    g.chcolor(SlenHud.urgcols[urgency]);
-	    g.image(fbtni[0], c);
+	} else {
+	    g.chcolor(220, 220, 200, 200);
+	    g.frect(Coord.z, sz);
+	    g.chcolor();
+	    super.draw(g);
+	    g.chcolor(64, 64, 64, 255);
+	    g.rect(Coord.z, sz.add(new Coord(1, 1)));
 	    g.chcolor();
 	}
     }
 
     private void updbtns() {
-	int k = (sz.x - sbtnw)/minbtnw;
-	if(k > wnds.size()/2) {
-	    k = Math.max(wnds.size()/2, 1);
-	    if ((wnds.size()%2) != 0) 
+	int k = (sz.x - sbtnw) / minbtnw;
+	if (k > wnds.size() / 2) {
+	    k = Math.max(wnds.size() / 2, 1);
+	    if ((wnds.size() % 2) != 0)
 		k++;
 	}
-	int bw = Math.min((sz.x - sbtnw)/k, maxbtnw);
-	int bpp = 2*k;
-	
+	int bw = Math.min((sz.x - sbtnw) / k, maxbtnw);
+	int bpp = 2 * k;
+
 	if (wnds.size() <= bpp) {
 	    woff = 0;
 	} else {
@@ -125,13 +124,13 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if (sender == fbtn) {
 	    folded = !folded;
-	    if(awnd != null)
+	    if (awnd != null)
 		awnd.visible = !folded;
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
     }
-    
+
     @Override
     public void addwnd(final HWindow wnd) {
 	fbtn.raise();
@@ -143,11 +142,11 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 		setawnd(wnd, true);
 	    }
 	});
-	if(!folded)
+	if (!folded)
 	    setawnd(wnd);
 	else
 	    wnd.visible = false;
-	    updbtns();
+	updbtns();
     }
 
     @Override
@@ -189,7 +188,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    if (w.urgent > max)
 		max = w.urgent;
 	}
-	urgency = (level>0)?level:0;
+	urgency = (level > 0) ? level : 0;
     }
 
     @Override
@@ -210,34 +209,41 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	}
 	updbtns();
     }
-    
+
     public boolean mousedown(Coord c, int button) {
+	if(folded)
+	    return false;
 	parent.setfocus(this);
 	raise();
-	if(super.mousedown(c, button))
-	    return(true);
-	if(!c.isect(Coord.z, sz))
-	    return(false);
-	if(button == 1) {
+	if (super.mousedown(c, button))
+	    return (true);
+	if (!c.isect(Coord.z, sz))
+	    return (false);
+	if (button == 1) {
 	    ui.grabmouse(this);
 	    dm = true;
 	    doff = c;
 	}
-	return(true);
+	return (true);
     }
-	
+
     public boolean mouseup(Coord c, int button) {
-	if(dm) {
+	if((folded)&&(c.isect(sz.sub(sz.x, icon.getHeight()), new Coord(icon.getWidth(), icon.getHeight())))) {
+	    folded = false;
+	    return true;
+	}
+		
+	if (dm) {
 	    ui.grabmouse(null);
 	    dm = false;
 	} else {
 	    super.mouseup(c, button);
 	}
-	return(true);
+	return (true);
     }
-	
+
     public void mousemove(Coord c) {
-	if(dm) {
+	if (dm) {
 	    this.c = this.c.add(c.add(doff.inv()));
 	} else {
 	    super.mousemove(c);
