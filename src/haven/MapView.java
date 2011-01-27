@@ -62,9 +62,19 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     public String polowner = null;
     long polchtm = 0;
     int si = 4;
-    double scale = 1;
+    double _scale = 1;
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
     
+    public double getScale() {
+        return Config.zoom?_scale:1;
+    }
+    
+    public void setScale(double value) {
+	_scale = value;
+	//mask.dispose();
+	//mask = new ILM(MainFrame.getScreenSize().div(_scale), glob.oc);
+    }
+
     public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 	public int compare(Sprite.Part a, Sprite.Part b) {
 	    return(-Sprite.partidcmp.compare(a, b));
@@ -502,7 +512,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
     public boolean mousedown(Coord c, int button) {
 	setfocus(this);
-	c = new Coord((int)(c.x/scale), (int)(c.y/scale));
+	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Gob hit = gobatpos(c);
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
@@ -524,7 +534,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
     public boolean mouseup(Coord c, int button) {
-	c = new Coord((int)(c.x/scale), (int)(c.y/scale));
+	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
 	    grab.mmouseup(mc, button);
@@ -537,7 +547,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
     public void mousemove(Coord c) {
-	c = new Coord((int)(c.x/scale), (int)(c.y/scale));
+	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	this.pmousepos = c;
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	this.mousepos = mc;
@@ -556,8 +566,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
     
     public boolean mousewheel(Coord c, int amount) {
+	if(!Config.zoom)
+	    return false;
 	si = Math.min(8, Math.max(0, si - amount));
-	scale = scales[si];
+	setScale(scales[si]);
 	return(true);
     }
 	
@@ -1049,10 +1061,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
     public void draw(GOut og) {
 	hsz = MainFrame.getInnerSize();
-	sz = hsz.mul(1/scale);
+	sz = hsz.mul(1/getScale());
 	GOut g = og.reclip(Coord.z, sz);
 	g.gl.glPushMatrix();
-	g.scale(scale);
+	g.scale(getScale());
 	checkmappos();
 	Coord requl = mc.add(-500, -500).div(tilesz).div(cmaps);
 	Coord reqbr = mc.add(500, 500).div(tilesz).div(cmaps);

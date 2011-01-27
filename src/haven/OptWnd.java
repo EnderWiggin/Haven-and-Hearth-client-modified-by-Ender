@@ -195,6 +195,12 @@ public class OptWnd extends Window {
 	    for (String camname : clist)
 		cameras.add(camname, new Coord(10, y += 25));
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
+	    (new CheckBox(new Coord(50, 270), tab, "Allow zooming with mouse wheel") {
+		public void changed(boolean val) {
+		    Config.zoom = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.zoom;
 	}
 
 	{ /* AUDIO TAB */
