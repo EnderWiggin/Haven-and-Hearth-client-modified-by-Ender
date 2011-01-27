@@ -167,6 +167,7 @@ public class Config {
                 }
             }
         }
+        timestamp = options.getProperty("timestamp","false").equals("true");
     }
 
     public static void saveOptions() {
@@ -175,6 +176,7 @@ public class Config {
             hideObjects += objectName+",";
         }
         options.setProperty("hideObjects", hideObjects);
+        options.setProperty("timestamp", (timestamp)?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
