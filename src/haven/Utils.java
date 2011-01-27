@@ -33,6 +33,10 @@ import java.util.prefs.*;
 import java.util.*;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 
 public class Utils {
@@ -81,6 +85,19 @@ public class Utils {
     
     public static String timestamp() {
 	return (new SimpleDateFormat("[HH:mm] ")).format(new Date());
+    }
+    
+    public static String getClipboard() {
+	Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+	try {
+	    if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+		String text = (String)t.getTransferData(DataFlavor.stringFlavor);
+		return text;
+	    }
+	} catch (UnsupportedFlavorException e) {
+	} catch (IOException e) {
+	}
+	return "";
     }
     
     public static void defer(Runnable r) {

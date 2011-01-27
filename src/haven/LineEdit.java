@@ -63,6 +63,10 @@ public class LineEdit {
 	    } else if((c >= 32) && (mod == 0)) {
 		line = line.substring(0, point) + c + line.substring(point);
 		point++;
+	    } else if(((c == 'v')||(c == 'V')) && (mod == C)) {
+		String str = Utils.getClipboard();
+		line = line.substring(0, point) + str + line.substring(point);
+		point += str.length();
 	    } else if((code == KeyEvent.VK_LEFT) && (mod == 0)) {
 		if(point > 0)
 		    point--;
