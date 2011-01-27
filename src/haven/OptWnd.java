@@ -42,14 +42,14 @@ public class OptWnd extends Window {
 	public int compare(String a, String b) {
 	    if(a.startsWith("The ")) a = a.substring(4);
 	    if(b.startsWith("The ")) b = b.substring(4);
-	    return(a.compareTo(b));
+	    return (a.compareTo(b));
 	}
     };
 
     private static class CamInfo {
 	String name, desc;
 	Tabs.Tab args;
-	
+
 	public CamInfo(String name, String desc, Tabs.Tab args) {
 	    this.name = name;
 	    this.desc = desc;
@@ -61,10 +61,10 @@ public class OptWnd extends Window {
 	super(c, new Coord(400, 340), parent, "Options");
 
 	body = new Tabs(Coord.z, new Coord(400, 300), this) {
-		public void changed(Tab from, Tab to) {
-		    Utils.setpref("optwndtab", to.btn.text.text);
-		    from.btn.c.y = 0;
-		    to.btn.c.y = -2;
+	    public void changed(Tab from, Tab to) {
+		Utils.setpref("optwndtab", to.btn.text.text);
+		from.btn.c.y = 0;
+		to.btn.c.y = -2;
 		}};
 	Widget tab;
 
@@ -81,20 +81,27 @@ public class OptWnd extends Window {
 		}};
 	    new Button(new Coord(10, 100), 125, tab, "Toggle fullscreen") {
 		public void click() {
-		    if(ui.fsm != null) {
+		    if (ui.fsm != null) {
 			if(ui.fsm.hasfs()) ui.fsm.setwnd();
 			else               ui.fsm.setfs();
 		    }
 		}};
 
+	    (new CheckBox(new Coord(10, 130), tab, "Add timestamp in chat") {
+		public void changed(boolean val) {
+		    Config.timestamp = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.timestamp;
+
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
-		    public void changed(int btn, String lbl) {
-			Utils.setpref("editmode", lbl.toLowerCase());
+		public void changed(int btn, String lbl) {
+		    Utils.setpref("editmode", lbl.toLowerCase());
 		    }};
 	    editmode.add("Emacs", new Coord(10, 25));
-	    editmode.add("PC",    new Coord(10, 50));
+	    editmode.add("PC", new Coord(10, 50));
 	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
 	    else                                                editmode.check("PC");
 	}
@@ -119,73 +126,73 @@ public class OptWnd extends Window {
 	    Tabs.Tab ctab;
 	    /* clicktgt arg */
 	    ctab = cambox.new Tab();
-	    new Label(new Coord(45, 10),  ctab, "Fast");
+	    new Label(new Coord(45, 10), ctab, "Fast");
 	    new Label(new Coord(45, 180), ctab, "Slow");
 	    new Scrollbar(new Coord(60, 20), 160, ctab, 0, 20) {
-		    {
-			val = Integer.parseInt(Utils.getpref("clicktgtarg1", "10"));
-			setcamargs("clicktgt", calcarg());
-		    }
+		{
+		    val = Integer.parseInt(Utils.getpref("clicktgtarg1", "10"));
+		    setcamargs("clicktgt", calcarg());
+		}
 		public boolean mouseup(Coord c, int button) {
-		    if(super.mouseup(c, button)) {
+		    if (super.mouseup(c, button)) {
 			setcamargs(curcam, calcarg());
 			setcamera(curcam);
 			Utils.setpref("clicktgtarg1", String.valueOf(val));
-			return(true);
+			return (true);
 		    }
-		    return(false);
+		    return (false);
 		}
 		private String calcarg() {
-		    return(String.valueOf(Math.cbrt(Math.cbrt(val / 24.0))));
+		    return (String.valueOf(Math.cbrt(Math.cbrt(val / 24.0))));
 		}};
 	    addinfo("clicktgt", "The Target Seeker", "The camera recenters smoothly where you left-click." + dragcam, ctab);
 	    /* fixedcake arg */
 	    ctab = cambox.new Tab();
-	    new Label(new Coord(45, 10),  ctab, "Fast");
+	    new Label(new Coord(45, 10), ctab, "Fast");
 	    new Label(new Coord(45, 180), ctab, "Slow");
 	    new Scrollbar(new Coord(60, 20), 160, ctab, 0, 20) {
-		    {
+		{
 			val = Integer.parseInt(Utils.getpref("fixedcakearg1", "10"));
-			setcamargs("fixedcake", calcarg());
-		    }
+		    setcamargs("fixedcake", calcarg());
+		}
 		public boolean mouseup(Coord c, int button) {
-		    if(super.mouseup(c, button)) {
+		    if (super.mouseup(c, button)) {
 			setcamargs(curcam, calcarg());
 			setcamera(curcam);
 			Utils.setpref("fixedcakearg1", String.valueOf(val));
-			return(true);
+			return (true);
 		    }
-		    return(false);
+		    return (false);
 		}
 		private String calcarg() {
-		    return(String.valueOf(Math.pow(1 - (val / 20.0), 2)));
+		    return (String.valueOf(Math.pow(1 - (val / 20.0), 2)));
 		}};
 	    addinfo("fixedcake", "The Borderizer", "The camera is fixed, relative to your character unless you touch one of the screen's edges with the mouse, in which case the camera peeks in that direction." + dragcam + fscam, ctab);
 
 	    final RadioGroup cameras = new RadioGroup(tab) {
-		    public void changed(int btn, String lbl) {
-			if(camname2type.containsKey(lbl))
-			    lbl = camname2type.get(lbl);
-			if(!lbl.equals(curcam)) {
-			    if(camargs.containsKey(lbl))
-				setcamargs(lbl, camargs.get(lbl));
-			    setcamera(lbl);
-			}
-			CamInfo inf = caminfomap.get(lbl);
-			if(inf == null) {
-			    cambox.showtab(null);
-			    caminfo.settext("");
-			} else {
-			    cambox.showtab(inf.args);
+		public void changed(int btn, String lbl) {
+		    if (camname2type.containsKey(lbl))
+			lbl = camname2type.get(lbl);
+		    if (!lbl.equals(curcam)) {
+			if (camargs.containsKey(lbl))
+			    setcamargs(lbl, camargs.get(lbl));
+			setcamera(lbl);
+		    }
+		    CamInfo inf = caminfomap.get(lbl);
+		    if (inf == null) {
+			cambox.showtab(null);
+			caminfo.settext("");
+		    } else {
+			cambox.showtab(inf.args);
 			    caminfo.settext(String.format("$size[12]{%s}\n\n$col[200,175,150,255]{%s}", inf.name, inf.desc));
-			}
+		    }
 		    }};
 	    List<String> clist = new ArrayList<String>();
-	    for(String camtype : MapView.camtypes.keySet())
+	    for (String camtype : MapView.camtypes.keySet())
 		clist.add(caminfomap.containsKey(camtype) ? caminfomap.get(camtype).name : camtype);
 	    Collections.sort(clist, camcomp);
 	    int y = 25;
-	    for(String camname : clist)
+	    for (String camname : clist)
 		cameras.add(camname, new Coord(10, y += 25));
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
 	}
@@ -199,20 +206,20 @@ public class OptWnd extends Window {
 	    new Scrollbar(new Coord(25, 70), 196, tab, 0, 100) {{ val = getsfxvol(); }
 		public void changed() {
 		    Audio.setvolume((100 - val) / 100.0);
-		    sfxvol.c.y = 69 + (int)(val * 1.86);
+		    sfxvol.c.y = 69 + (int) (val * 1.86);
 		    sfxvol.settext(String.valueOf(100 - val) + " %");
 		}
 		public boolean mousewheel(Coord c, int amount) {
 		    val = Utils.clip(val + amount, min, max);
 		    changed();
-		    return(true);
+		    return (true);
 		}};
 	    new CheckBox(new Coord(10, 280), tab, "Music enabled") {
 		public void changed(boolean val) {
 		    Music.enable(val);
 		}};
 	}
-	
+
 	{ /* HIDE OBJECTS TAB */
 	    tab = body.new Tab(new Coord(210, 0), 80, "Hide Objects");
 
@@ -239,33 +246,33 @@ public class OptWnd extends Window {
 		chkbox.a = Config.hideObjectList.contains(checkbox[1]);
 	    }
 	}
-	
+
 	{ /* TRANSLATE OPTIONS TAB */
 	    tab = body.new Tab(new Coord(300, 0), 80, "Translation");
-	    (new CheckBox(new Coord(10,30),tab,"Turn on") {
+	    (new CheckBox(new Coord(10, 30), tab, "Turn on") {
 		public void changed(boolean val) {
 		    GoogleTranslator.turnedon = val;
 		}
 	    }).a = GoogleTranslator.turnedon;
-	    
+
 	    new Label(new Coord(150, 35), tab, "Target Language:");
-	    
+
 	    final RadioGroup langs = new RadioGroup(tab) {
-		    public void changed(int btn, String lbl) {
-			GoogleTranslator.lang = lbl;
-		    }
+		public void changed(int btn, String lbl) {
+		    GoogleTranslator.lang = lbl;
+		}
 	    };
 	    langs.add("en", new Coord(150, 45));
 	    langs.add("ru", new Coord(150, 70));
 	    langs.check(GoogleTranslator.lang);
-	    
+
 	    new Label(new Coord(100, 120), tab, "Powered by Google Translate");
-        }
+	}
 
 	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
 	String last = Utils.getpref("optwndtab", "");
-	for(Tabs.Tab t : body.tabs) {
-	    if(t.btn.text.text.equals(last))
+	for (Tabs.Tab t : body.tabs) {
+	    if (t.btn.text.text.equals(last))
 		body.showtab(t);
 	}
     }
@@ -277,13 +284,13 @@ public class OptWnd extends Window {
 	if(args == null) args = new String[0];
 
 	MapView mv = ui.root.findchild(MapView.class);
-	if(mv != null) {
+	if (mv != null) {
 	    if     (curcam.equals("clicktgt"))   mv.cam = new MapView.OrigCam2(args);
 	    else if(curcam.equals("fixedcake"))  mv.cam = new MapView.FixedCakeCam(args);
 	    else {
 		try {
 		    mv.cam = MapView.camtypes.get(curcam).newInstance();
-		} catch(InstantiationException e) {
+		} catch (InstantiationException e) {
 		} catch(IllegalAccessException e) {}
 	    }
 	}
@@ -291,12 +298,12 @@ public class OptWnd extends Window {
 
     private void setcamargs(String camtype, String... args) {
 	camargs.put(camtype, args);
-	if(args.length > 0 && curcam.equals(camtype))
+	if (args.length > 0 && curcam.equals(camtype))
 	    Utils.setprefb("camargs", Utils.serialize(args));
     }
 
     private int getsfxvol() {
-	return((int)(100 - Double.parseDouble(Utils.getpref("sfxvol", "1.0")) * 100));
+	return ((int) (100 - Double.parseDouble(Utils.getpref("sfxvol", "1.0")) * 100));
     }
 
     private void addinfo(String camtype, String title, String text, Tabs.Tab args) {
@@ -305,7 +312,7 @@ public class OptWnd extends Window {
     }
 
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if((sender == cbtn)||(sender == fbtn))
+	if ((sender == cbtn) || (sender == fbtn))
 	    super.wdgmsg(sender, msg, args);
     }
 

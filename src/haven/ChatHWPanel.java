@@ -85,7 +85,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    g.image(cr, new Coord(x0 + w, 0));
 	    g.image(cap.tex(), new Coord(x0, 0));
 	} else {
-	    g.chcolor(220, 220, 200, 200);
+	    g.chcolor(230, 230, 255, 235);
 	    g.frect(Coord.z, sz);
 	    g.chcolor();
 	    super.draw(g);

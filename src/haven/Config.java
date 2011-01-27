@@ -52,6 +52,7 @@ public class Config {
     public static boolean xray;
     public static boolean hide;
     public static boolean grid;
+    public static boolean timestamp;
     public static HashSet<String> hideObjectList;
     public static boolean nightvision;
     public static String currentCharName;
@@ -81,6 +82,7 @@ public class Config {
 	    xray = false;
 	    hide = false;
 	    grid = false;
+	    timestamp = false;
 	    nightvision = false;
 	    GoogleTranslator.apikey = "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0";
 	    GoogleTranslator.lang = "en";
