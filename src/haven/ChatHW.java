@@ -27,13 +27,16 @@
 package haven;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import ender.GoogleTranslator;
 
 public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
-	
+    static final Collection<Integer> todarken = new ArrayList<Integer>();
+    
     static {
 	Widget.addtype("slenchat", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
@@ -44,6 +47,9 @@ public class ChatHW extends HWindow {
 		    return(new ChatHW(parent, t, cl));
 		}
 	    });
+	todarken.add(Color.GREEN.getRGB());
+	todarken.add(Color.CYAN.getRGB());
+	todarken.add(Color.YELLOW.getRGB());
     }
 	
     public ChatHW(Widget parent, String title, boolean closable) {
@@ -67,7 +73,11 @@ public class ChatHW extends HWindow {
 	    if(args.length > 2)
 		makeurgent((Integer)args[2]);
 	    String str = (String)args[0];
+	    if((col != null)&&(todarken.contains(col.getRGB())))
+		col = col.darker();
 	    str = GoogleTranslator.translate(str);
+	    if(Config.timestamp)
+		str = Utils.timestamp() + str;
 	    out.append(str, col);
 	} else if(msg == "focusme") {
 	    shp.setawnd(this, true);
@@ -76,7 +86,7 @@ public class ChatHW extends HWindow {
 	    super.uimsg(msg, args);
 	}
     }
-	
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == in) {
 	    if(msg == "activate") {

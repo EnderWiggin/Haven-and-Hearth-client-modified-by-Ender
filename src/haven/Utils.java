@@ -76,8 +76,12 @@ public class Utils {
     }
     
     public static String sessdate(long sess) {
-	    return (new SimpleDateFormat("yyyy-MM-dd HH.mm.ss")).format(new Date(sess));
-	}
+	return (new SimpleDateFormat("yyyy-MM-dd HH.mm.ss")).format(new Date(sess));
+    }
+    
+    public static String timestamp() {
+	return (new SimpleDateFormat("[HH:mm] ")).format(new Date());
+    }
     
     public static void defer(Runnable r) {
 	synchronized(Utils.class) {
