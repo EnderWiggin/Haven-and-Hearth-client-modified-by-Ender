@@ -42,7 +42,9 @@ public class GoogleTranslator {
 		}
 		JSONObject o = new JSONObject(result);
 		res = o.getJSONObject("data").getJSONArray("translations").getJSONObject(0).getString("translatedText");
-		
+		str = res;
+		res = o.getJSONObject("data").getJSONArray("translations").getJSONObject(0).getString("detectedSourceLanguage");
+		res = "[" + res + "] " + str;
 	    } catch (JSONException e) {
 		return str;
 	    } finally { // http://java.sun.com/j2se/1.5.0/docs/guide/net/http-keepalive.html

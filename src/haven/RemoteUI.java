@@ -55,7 +55,7 @@ public class RemoteUI implements UI.Receiver {
 		    Coord c = msg.coord();
 		    int parent = msg.uint16();
 		    Object[] args = msg.list();
-            if(type.equals("cnt")){
+		    if(type.equals("cnt")){
 		    	args[0] = MainFrame.getInnerSize();
 		    }else if(type.equals("img") && args.length >= 1){
 		    	if(((String)args[0]).equals("gfx/ccscr"))
