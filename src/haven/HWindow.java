@@ -49,7 +49,14 @@ public class HWindow extends Widget {
 		}
 	    });
     }
+    
+    public void setsz(Coord s) {
+	sz = s;
+	if(cbtn != null)
+	    cbtn.c = new Coord(sz.x - cbtni[0].getWidth(), 0);
 	
+    }
+    
     public HWindow(Widget parent, String title, boolean closable) {
 	super(new Coord(234, 29), new Coord(430, 100), parent);
 	this.title = title;

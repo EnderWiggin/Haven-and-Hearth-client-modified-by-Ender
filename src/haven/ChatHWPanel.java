@@ -17,7 +17,9 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    Resource.loadimg("gfx/hud/fbtnd"),
 	    Resource.loadimg("gfx/hud/fbtnh") };
     static BufferedImage icon = Resource.loadimg("gfx/invobjs/parchment-written");
+    static BufferedImage grip = Resource.loadimg("gfx/hud/grip");
     static Coord isz = new Coord(30,30);
+    static Coord gzsz = new Coord(16,17);
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
     static Tex cm = Resource.loadtex("gfx/hud/cmain");
     static Tex cr = Resource.loadtex("gfx/hud/cright");
@@ -28,14 +30,14 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     static final int maxbtnw = 120;
     static final int sbtnw = 50;
     static final int btnh = 40;
-    static final Coord minsz = new Coord(125, 125);
+    static final Coord minsz = new Coord(126, 126);
     HWindow awnd;
     List<HWindow> wnds = new ArrayList<HWindow>();
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
     Button sub, sdb;
     IButton fbtn;
     int urgency, woff = 0;
-    boolean folded = false, dm = false;
+    boolean folded = false, dm = false, rsm = false;
     Coord btnc, doff, sc;
 
     static {
@@ -45,7 +47,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     public ChatHWPanel(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent);
 	instance = this;
-	btnc = sz.sub(new Coord(sz.x, btnh));
+	btnc = sz.sub(sz.x, btnh);
 	sub = new Button(new Coord(300, 260), sbtnw, this,
 		Resource.loadimg("gfx/hud/slen/sau")) {
 	    public void click() {
@@ -88,6 +90,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    g.chcolor(230, 230, 255, 235);
 	    g.frect(Coord.z, sz);
 	    g.chcolor();
+	    g.image(grip, new Coord(sz.x - gzsz.x, 0));
 	    super.draw(g);
 	    g.chcolor(64, 64, 64, 255);
 	    g.rect(Coord.z, sz.add(new Coord(1, 1)));
@@ -96,7 +99,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     private void updbtns() {
-	int k = (sz.x - sbtnw) / minbtnw;
+	int k = Math.max((sz.x - sbtnw) / minbtnw, 1);
 	if (k > wnds.size() / 2) {
 	    k = Math.max(wnds.size() / 2, 1);
 	    if ((wnds.size() % 2) != 0)
@@ -164,8 +167,8 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     @Override
     public void addwnd(final HWindow wnd) {
 	fbtn.raise();
-	wnd.sz = sz.sub(new Coord(0, 40));
-	wnd.c = Coord.z;
+	wnd.sz = sz.sub(0, btnh + gzsz.y);
+	wnd.c = new Coord(0, gzsz.y);
 	wnds.add(wnd);
 	btns.put(wnd, new Button(new Coord(0, 260), 100, this, wnd.title) {
 	    public void click() {
@@ -256,8 +259,11 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    return (false);
 	if (button == 1) {
 	    ui.grabmouse(this);
-	    dm = true;
 	    doff = c;
+	    if(c.isect(new Coord(sz.x - gzsz.x, 0), gzsz))
+		rsm = true;
+	    else
+		dm = true;
 	}
 	return (true);
     }
@@ -271,6 +277,9 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	if (dm) {
 	    ui.grabmouse(null);
 	    dm = false;
+	} else if (rsm){
+	    ui.grabmouse(null);
+	    rsm = false;
 	} else {
 	    super.mouseup(c, button);
 	}
@@ -280,9 +289,31 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     public void mousemove(Coord c) {
 	if (dm) {
 	    this.c = this.c.add(c.add(doff.inv()));
+	} else if (rsm){
+	    Coord d = c.sub(doff);
+	    deltasz(d);
+	    doff = c.add(0, d.y);
 	} else {
 	    super.mousemove(c);
 	}
+    }
+    
+    private void deltasz(Coord d) {
+	d.y = -d.y;
+	sz = sz.add(d);
+	if(sz.x < minsz.x)
+	    sz.x = minsz.x;
+	if(sz.y < minsz.y)
+	    sz.y = minsz.y;
+	else
+	    this.c.y -= d.y;
+	btnc = sz.sub(sz.x, btnh);
+	Coord s = sz.sub(0, btnh + gzsz.y);
+	for (int i = 0; i < wnds.size(); i++) {
+	    HWindow wnd = wnds.get(i);
+	    wnd.setsz(s);
+	}
+	updbtns();
     }
     
     public boolean type(char key, KeyEvent ev) {

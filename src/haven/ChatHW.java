@@ -64,7 +64,14 @@ public class ChatHW extends HWindow {
 		cbtn.hide();
 	}
     }
-	
+
+    public void setsz(Coord s) {
+	super.setsz(s);
+	in.c = new Coord(0, sz.y - 20);
+	in.sz = new Coord(sz.x, 20);
+	out.sz = new Coord(sz.x, sz.y - 20);
+    }
+    
     public void uimsg(String msg, Object... args) {
 	if(msg == "log") {
 	    Color col = null;
