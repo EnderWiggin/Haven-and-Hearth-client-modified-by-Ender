@@ -32,7 +32,7 @@ import java.awt.event.KeyEvent;
 
 public class Widget {
     public UI ui;
-    public Coord c, sz;
+    public Coord c, sz, hsz;
     public Widget next, prev, child, lchild, parent;
     boolean focustab = false, focusctl = false, hasfocus = false, visible = true;
     private boolean canfocus = false, autofocus = false;
@@ -289,7 +289,7 @@ public class Widget {
 	    if(!wdg.visible)
 		continue;
 	    Coord cc = xlate(wdg.c, true);
-	    if(c.isect(cc, wdg.sz)) {
+	    if(c.isect(cc, (wdg.hsz == null)?wdg.sz:wdg.hsz)) {
 		if(wdg.mousedown(c.add(cc.inv()), button)) {
 		    return(true);
 		}
@@ -303,7 +303,7 @@ public class Widget {
 	    if(!wdg.visible)
 		continue;
 	    Coord cc = xlate(wdg.c, true);
-	    if(c.isect(cc, wdg.sz)) {
+	    if(c.isect(cc, (wdg.hsz == null)?wdg.sz:wdg.hsz)) {
 		if(wdg.mouseup(c.add(cc.inv()), button)) {
 		    return(true);
 		}
@@ -317,7 +317,7 @@ public class Widget {
 	    if(!wdg.visible)
 		continue;
 	    Coord cc = xlate(wdg.c, true);
-	    if(c.isect(cc, wdg.sz)) {
+	    if(c.isect(cc, (wdg.hsz == null)?wdg.sz:wdg.hsz)) {
 		if(wdg.mousewheel(c.add(cc.inv()), amount)) {
 		    return(true);
 		}

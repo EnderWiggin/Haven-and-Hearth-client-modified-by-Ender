@@ -31,6 +31,8 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import ender.GoogleTranslator;
+
 public class Window extends Widget implements DTarget {
     static Tex bg = Resource.loadtex("gfx/hud/bgtex");
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
@@ -160,10 +162,15 @@ public class Window extends Widget implements DTarget {
     }
     
     public void pack() {
+	boolean isrunestone = cap.text.equals("Runestone"); 
 	Coord max = new Coord(0, 0);
 	for(Widget wdg = child; wdg != null; wdg = wdg.next) {
 	    if((wdg == cbtn)||(wdg == fbtn))
 		continue;
+	    if((isrunestone)&&(wdg instanceof Label)) {
+		Label lbl = (Label)wdg;
+		lbl.settext(GoogleTranslator.translate(lbl.texts));
+	    }
 	    Coord br = wdg.c.add(wdg.sz);
 	    if(br.x > max.x)
 		max.x = br.x;

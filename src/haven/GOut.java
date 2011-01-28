@@ -250,4 +250,8 @@ public class GOut {
 	g.sz = sz;
 	return(g);
     }
+    
+    public void scale(double d) {
+	gl.glScaled(d, d, d);
+    }
 }

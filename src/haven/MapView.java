@@ -61,7 +61,20 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     public Text polownert = null;
     public String polowner = null;
     long polchtm = 0;
+    int si = 4;
+    double _scale = 1;
+    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
     
+    public double getScale() {
+        return Config.zoom?_scale:1;
+    }
+    
+    public void setScale(double value) {
+	_scale = value;
+	//mask.dispose();
+	//mask = new ILM(MainFrame.getScreenSize().div(_scale), glob.oc);
+    }
+
     public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 	public int compare(Sprite.Part a, Sprite.Part b) {
 	    return(-Sprite.partidcmp.compare(a, b));
@@ -499,6 +512,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
     public boolean mousedown(Coord c, int button) {
 	setfocus(this);
+	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Gob hit = gobatpos(c);
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
@@ -520,6 +534,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
     public boolean mouseup(Coord c, int button) {
+	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
 	    grab.mmouseup(mc, button);
@@ -532,6 +547,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
     public void mousemove(Coord c) {
+	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	this.pmousepos = c;
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	this.mousepos = mc;
@@ -547,6 +563,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    boolean plontile = this.plontile ^ ui.modshift;
 	    gob.move(plontile?tilify(mc):mc);
 	}
+    }
+    
+    public boolean mousewheel(Coord c, int amount) {
+	if(!Config.zoom)
+	    return false;
+	si = Math.min(8, Math.max(0, si - amount));
+	setScale(scales[si]);
+	return(true);
     }
 	
     public void move(Coord mc) {
@@ -924,6 +948,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    
 	    if(curf != null)
 		curf.tick("draw");
+//	    g.gl.gl//
 	    g.image(mask, Coord.z);
 	    long now = System.currentTimeMillis();
 	    for(KinInfo k : kin) {
@@ -1034,8 +1059,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    cam.setpos(this, player, sz);
     }
 
-    public void draw(GOut g) {
-	sz = MainFrame.getInnerSize();
+    public void draw(GOut og) {
+	hsz = MainFrame.getInnerSize();
+	sz = hsz.mul(1/getScale());
+	GOut g = og.reclip(Coord.z, sz);
+	g.gl.glPushMatrix();
+	g.scale(getScale());
 	checkmappos();
 	Coord requl = mc.add(-500, -500).div(tilesz).div(cmaps);
 	Coord reqbr = mc.add(500, 500).div(tilesz).div(cmaps);
@@ -1064,7 +1093,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor(Color.BLACK);
 	    g.frect(Coord.z, sz);
 	    g.chcolor(Color.WHITE);
-	    g.atext(text, sz.div(2), 0.5, 0.5);
+	    g.atext(text, sz, 0.5, 0.5);
 	}
 	long poldt = now - polchtm;
 	if((polownert != null) && (poldt < 6000)) {
@@ -1079,7 +1108,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.aimage(polownert.tex(), sz.div(2), 0.5, 0.5);
 	    g.chcolor();
 	}
-	super.draw(g);
+	g.gl.glPopMatrix();
+	super.draw(og);
     }
 	
     public boolean drop(Coord cc, Coord ul) {
