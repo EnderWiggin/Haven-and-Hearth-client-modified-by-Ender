@@ -46,29 +46,6 @@ public class LoginScreen extends Widget {
 	parent.setfocus(this);
 	new Img(Coord.z, bg, this);
 	new Img(new Coord(420, 215).add(logo.sz().div(2).inv()), logo, this);
-	//TEST LINES  - DO NOT COMMIT!!!
-	new ToolbarWnd(new Coord(100,100),Coord.z, parent);
-	new OptWnd(Coord.z, this);
-	new ChatHWPanel(new Coord(0,300), new Coord(500,360), ui.root);
-	(new ChatHW(this, "Area Chat",true)).uimsg("log", "hello, world's Area Chat!");
-	new ChatHW(this, "ReDll",true);
-	new ChatHW(this, "Ariel Pink",true);
-	new ChatHW(this, "chat 3",true);
-//	new ChatHW(this, "chat 4",true);
-//	new ChatHW(this, "chat 5",true);
-//	new ChatHW(this, "chat 6",true);
-//	new ChatHW(this, "chat 7",true);
-//	new ChatHW(this, "chat 3",true);
-//	new ChatHW(this, "chat 4",true);
-//	new ChatHW(this, "chat 5",true);
-//	new ChatHW(this, "chat 6",true);
-//	new ChatHW(this, "chat 7",true);
-//	new ChatHW(this, "chat 3",true);
-//	new ChatHW(this, "chat 4",true);
-//	new ChatHW(this, "chat 5",true);
-//	new ChatHW(this, "chat 6",true);
-//	new ChatHW(this, "chat 7",true);
-	//END OF TEST LINES
     }
 
     private static abstract class Login extends Widget {
