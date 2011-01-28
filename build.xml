@@ -86,7 +86,8 @@
   </target>
   
   <target name="clean">
-    <delete dir="build" />
+    <delete dir="build/classes" />
+    <delete dir="build/classes-lib" />
   </target>
   
   <target name="profile" depends="jars">
