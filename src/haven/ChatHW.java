@@ -63,6 +63,7 @@ public class ChatHW extends HWindow {
 	    if (title.equals("Area Chat"))
 		cbtn.hide();
 	}
+	setsz(sz);
     }
 
     public void setsz(Coord s) {

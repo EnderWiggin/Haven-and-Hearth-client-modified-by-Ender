@@ -29,7 +29,6 @@ package haven;
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
 import java.security.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -43,9 +42,11 @@ public class MiniMap extends Widget {
     static Coord mappingStartPoint = null;
     static long mappingSession = 0;
     static Map<String, Coord> gridsHashes = new TreeMap<String, Coord>();
+    static Map<Coord, String> coordHashes = new TreeMap<Coord, String>();
     public static final Tex bg = Resource.loadtex("gfx/hud/mmap/ptex");
     public static final Tex nomap = Resource.loadtex("gfx/hud/mmap/nomap");
     public static final Resource plx = Resource.load("gfx/hud/mmap/x");
+    boolean hidden = false;
     MapView mv;
     
     static class Loader implements Runnable {
@@ -73,9 +74,28 @@ public class MiniMap extends Widget {
 	}
 	
 	private InputStream getcached(String nm) throws IOException {
-	    if(ResCache.global == null)
+	    /*if(ResCache.global == null)
 		throw(new FileNotFoundException("No resource cache installed"));
-	    return(ResCache.global.fetch("mm/" + nm));
+	    return(ResCache.global.fetch("mm/" + nm));*/
+	    if (mappingSession > 0) {
+		String fileName;
+		if (gridsHashes.containsKey(nm)) {
+		    Coord coordinates = gridsHashes.get(nm);
+		    fileName = "tile_" + coordinates.x + "_"
+			    + coordinates.y;
+		} else {
+		    fileName = nm;
+		}
+		
+		File inputfile = new File("map/"
+			+ Utils.sessdate(mappingSession) + "/" + fileName
+			+ ".png");
+		if(!inputfile.exists())
+		    throw(new FileNotFoundException("Minimap cache not found"));
+		System.out.print(inputfile.toString()+"\n");
+		return new FileInputStream(inputfile);
+	    }
+	    throw(new FileNotFoundException("No resource cache installed"));
 	}
 
 	public void run() {
@@ -93,15 +113,18 @@ public class MiniMap extends Widget {
 			break;
 		    try {
 			InputStream in;
+			boolean cached;
 			try {
 			    in = getcached(grid);
+			    cached = true;
 			} catch(FileNotFoundException e) {
 			    in = getreal(grid);
+			    cached = false;
 			}
 			BufferedImage img;
 			try {
 			    img = ImageIO.read(in);
-			    if (mappingSession > 0) {
+			    if ((!cached)&(mappingSession > 0)) {
 				String fileName;
 				if (gridsHashes.containsKey(grid)) {
 				    Coord coordinates = gridsHashes.get(grid);
@@ -169,6 +192,7 @@ public class MiniMap extends Widget {
 	    currentSessionFile.close();
 	    mappingSession = newSession;
 	    gridsHashes.clear();
+	    coordHashes.clear();
 	} catch (IOException ex) {
 	}
     }
@@ -202,7 +226,13 @@ public class MiniMap extends Widget {
 	while((ulg.y * cmaps.y) - tc.y + (sz.y / 2) > 0)
 	    ulg.y--;
 	boolean missing = false;
-	g.image(bg, Coord.z);
+	if(!hidden) {
+	    for(int y = 0; (y * bg.sz().y) < sz.y; y++) {
+		    for(int x = 0; (x * bg.sz().x) < sz.x; x++) {
+			g.image(bg, new Coord(x*bg.sz().x, y*bg.sz().y));
+		    }
+	    }
+	}
 	outer:
 	for(int y = ulg.y; (y * cmaps.y) - tc.y + (sz.y / 2) < sz.y; y++) {
 	    for(int x = ulg.x; (x * cmaps.x) - tc.x + (sz.x / 2) < sz.x; x++) {
@@ -218,38 +248,47 @@ public class MiniMap extends Widget {
 			    ui.sess.glob.map.request(cg);
 		    }
 		}
-		if(grid == null)
-		    continue;
-		if(grid.mnm == null) {
-		    missing = true;
-		    break outer;
-		}
 		Coord relativeCoordinates = cg.sub(mappingStartPoint);
-		if (!gridsHashes.containsKey(grid.mnm)) {
+		String mnm = null;
+		if(grid == null) {
+		    if(coordHashes.containsKey(relativeCoordinates))
+			mnm = coordHashes.get(relativeCoordinates);
+		    else
+			continue;
+		}
+		if (mnm == null) {
+		    if (grid.mnm == null) {
+			missing = true;
+			break outer;
+		    }
+		    mnm = grid.mnm;
+		}
+		if (!gridsHashes.containsKey(mnm)) {
 		    if ((Math.abs(relativeCoordinates.x) > 450)
 			    || (Math.abs(relativeCoordinates.y) > 450)) {
 			newMappingSession();
 			mappingStartPoint = cg;
 			relativeCoordinates = new Coord(0, 0);
 		    }
-			gridsHashes.put(grid.mnm, relativeCoordinates);
+			gridsHashes.put(mnm, relativeCoordinates);
+			coordHashes.put(relativeCoordinates, mnm);
 		}
 		else {
-		    Coord coordinates = gridsHashes.get(grid.mnm);
+		    Coord coordinates = gridsHashes.get(mnm);
 		    if (!coordinates.equals(relativeCoordinates)) {
 			mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
 		    }
 		}
-		Tex tex = getgrid(grid.mnm);
+		Tex tex = getgrid(mnm);
 		if (tex == null)
 		    continue;
-		g.image(tex, cg.mul(cmaps).add(tc.inv()).add(sz.div(2)));
+		if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(sz.div(2)));
 	    }
 	}
 	if(missing) {
-	    g.image(nomap, Coord.z);
+	    if(!hidden) g.image(nomap, Coord.z);
 	} else {
-	    if(!plx.loading) {
+	    if((!plx.loading)&&(!hidden)) {
 		synchronized(ui.sess.glob.party.memb) {
 		    for(Party.Member m : ui.sess.glob.party.memb.values()) {
 			Coord ptc = m.getc();
@@ -264,5 +303,13 @@ public class MiniMap extends Widget {
 	    }
 	}
 	super.draw(g);
+    }
+    
+    public void hide() {
+	hidden = true;
+    }
+    
+    public void show() {
+	hidden = false;
     }
 }

@@ -224,7 +224,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    sdn();
 		}
 	    };
-	new MiniMap(new Coord(5, 5), new Coord(125, 125), this, ui.mainview);
+	new MinimapPanel(Coord.z, Coord.z, ui.root);
 	sub.visible = sdb.visible = false;
     loadBelts();
     }
