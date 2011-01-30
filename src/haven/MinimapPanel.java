@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 public class MinimapPanel extends Window {
 
-    static final BufferedImage grip = Resource.loadimg("gfx/hud/grip");
+    static final BufferedImage grip = Resource.loadimg("gfx/hud/gripbr");
     static final Coord gzsz = new Coord(16,17);
     static final Coord minsz = new Coord(100, 100);
     

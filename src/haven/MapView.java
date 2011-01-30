@@ -948,7 +948,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    
 	    if(curf != null)
 		curf.tick("draw");
-//	    g.gl.gl//
 	    g.image(mask, Coord.z);
 	    long now = System.currentTimeMillis();
 	    for(KinInfo k : kin) {

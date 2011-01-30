@@ -17,7 +17,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    Resource.loadimg("gfx/hud/fbtnd"),
 	    Resource.loadimg("gfx/hud/fbtnh") };
     static BufferedImage icon = Resource.loadimg("gfx/invobjs/parchment-written");
-    static BufferedImage grip = Resource.loadimg("gfx/hud/grip");
+    static BufferedImage grip = Resource.loadimg("gfx/hud/griptr");
     static Coord isz = new Coord(30,30);
     static Coord gzsz = new Coord(16,17);
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
