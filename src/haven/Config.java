@@ -54,6 +54,7 @@ public class Config {
     public static boolean grid;
     public static boolean timestamp;
     public static boolean zoom;
+    public static boolean new_minimap;
     public static HashSet<String> hideObjectList;
     public static boolean nightvision;
     public static String currentCharName;
@@ -86,6 +87,7 @@ public class Config {
 	    timestamp = false;
 	    nightvision = false;
 	    zoom = false;
+	    new_minimap = true;
 	    GoogleTranslator.apikey = "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0";
 	    GoogleTranslator.lang = "en";
 	    GoogleTranslator.turnedon = false;
@@ -162,6 +164,7 @@ public class Config {
         }
         String hideObjects = options.getProperty("hideObjects", "");
         zoom = options.getProperty("zoom", "false").equals("true");
+        new_minimap = options.getProperty("new_minimap", "true").equals("true");
         hideObjectList.clear();
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -181,6 +184,7 @@ public class Config {
         options.setProperty("hideObjects", hideObjects);
         options.setProperty("timestamp", (timestamp)?"true":"false");
         options.setProperty("zoom", zoom?"true":"false");
+        options.setProperty("new_minimap", new_minimap?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {

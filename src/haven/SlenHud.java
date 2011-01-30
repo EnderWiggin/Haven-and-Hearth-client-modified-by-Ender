@@ -33,7 +33,7 @@ import java.awt.event.KeyEvent;
 import static haven.Inventory.invsq;
 
 public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory, IHWindowParent {
-    public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
+    public static Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
     public static final Tex dispbg = Resource.loadtex("gfx/hud/slen/dispbg");
@@ -74,6 +74,8 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    return(new SlenHud(c, parent));
 		}
 	    });
+	if(Config.new_minimap)
+	    bg = Resource.loadtex("gfx/hud/slen/low2");
 	int h = bg.sz().y;
 	sz = new Coord(800, h);
 	sz.y = (h - fc.y > sz.y)?(h - fc.y):sz.y;
@@ -167,47 +169,53 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     public SlenHud(Coord c, Widget parent) {
 	super(new Coord((MainFrame.innerSize.width - sz.x) / 2, MainFrame.innerSize.height - sz.y), sz, parent);
 	new ChatHWPanel(new Coord(0,MainFrame.getInnerSize().y-300), new Coord(350,300), ui.root);
-    dy = -sz.y;
+	dy = -sz.y;
 	new Img(fc, flarps, this);
 	new Img(mc, mbg, this);
-	new Img(dispc, dispbg, this);
+	if(!Config.new_minimap)
+	    new Img(dispc, dispbg, this);
 	hb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/hbu"), Resource.loadimg("gfx/hud/slen/hbd"));
 	invb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/invu"), Resource.loadimg("gfx/hud/slen/invd"));
 	equb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/equu"), Resource.loadimg("gfx/hud/slen/equd"));
 	chrb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/chru"), Resource.loadimg("gfx/hud/slen/chrd"));
 	budb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/budu"), Resource.loadimg("gfx/hud/slen/budd"));
 	optb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/optu"), Resource.loadimg("gfx/hud/slen/optd"));
-	{
-	    new IButton(dispc, this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
-		private boolean v = false;
-		
-		public void click() {
-		    MapView mv = ui.root.findchild(MapView.class);
-		    if(v) {
-			mv.disol(2, 3);
-			v = false;
-		    } else {
-			mv.enol(2, 3);
-			v = true;
+	if (!Config.new_minimap) {
+	    {
+		new IButton(dispc, this,Resource.loadimg("gfx/hud/slen/dispauth"),Resource.loadimg("gfx/hud/slen/dispauthd")) {
+		    private boolean v = false;
+
+		    public void click() {
+			MapView mv = ui.root.findchild(MapView.class);
+			if (v) {
+			    mv.disol(2, 3);
+			    v = false;
+			} else {
+			    mv.enol(2, 3);
+			    v = true;
+			}
 		    }
-		}
-	    };
-	}
-	{
-	    new IButton(dispc, this, Resource.loadimg("gfx/hud/slen/dispclaim"), Resource.loadimg("gfx/hud/slen/dispclaimd")) {
-		private boolean v = false;
-		
-		public void click() {
-		    MapView mv = ui.root.findchild(MapView.class);
-		    if(v) {
-			mv.disol(0, 1);
-			v = false;
-		    } else {
-			mv.enol(0, 1);
-			v = true;
+		};
+	    }
+	    {
+		new IButton(dispc, this,Resource.loadimg("gfx/hud/slen/dispclaim"),Resource.loadimg("gfx/hud/slen/dispclaimd")) {
+		    private boolean v = false;
+
+		    public void click() {
+			MapView mv = ui.root.findchild(MapView.class);
+			if (v) {
+			    mv.disol(0, 1);
+			    v = false;
+			} else {
+			    mv.enol(0, 1);
+			    v = true;
+			}
 		    }
-		}
-	    };
+		};
+	    }
+	    new MiniMap(new Coord(5, 5), new Coord(125, 125), this, ui.mainview);
+	} else {
+	    new MinimapPanel(Coord.z, Coord.z, ui.root);
 	}
 	vc = new VC(this, fb = new FoldButton(new Coord((MainFrame.innerSize.width - 40) / 2, MainFrame.innerSize.height), parent) {
 		public void click() {
@@ -224,7 +232,6 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    sdn();
 		}
 	    };
-	new MinimapPanel(Coord.z, Coord.z, ui.root);
 	sub.visible = sdb.visible = false;
     loadBelts();
     }

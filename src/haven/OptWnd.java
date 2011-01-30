@@ -87,13 +87,20 @@ public class OptWnd extends Window {
 		    }
 		}};
 
-	    (new CheckBox(new Coord(10, 130), tab, "Add timestamp in chat") {
+	    (new CheckBox(new Coord(10, 130), tab, "Use new minimap (restart required)") {
+		public void changed(boolean val) {
+		    Config.new_minimap = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.new_minimap;
+	    
+	    (new CheckBox(new Coord(10, 165), tab, "Add timestamp in chat") {
 		public void changed(boolean val) {
 		    Config.timestamp = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.timestamp;
-
+	    
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
