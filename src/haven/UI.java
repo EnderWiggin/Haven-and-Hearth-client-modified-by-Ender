@@ -33,6 +33,7 @@ import java.awt.event.InputEvent;
 
 public class UI {
     public RootWidget root;
+    public SlenHud slen;
     private Widget keygrab, mousegrab;
     public Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
     public Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();
@@ -162,6 +163,7 @@ public class UI {
 		throw(new UIException("Null parent widget " + parent + " for " + id, type, args));
 	    Widget wdg = f.create(c, pwdg, args);
 	    bind(wdg, id);
+	    wdg.binded();
 	    if(wdg instanceof MapView)
 		mainview = (MapView)wdg;
 	}

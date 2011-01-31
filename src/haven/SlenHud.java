@@ -168,6 +168,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 
     public SlenHud(Coord c, Widget parent) {
 	super(new Coord((MainFrame.innerSize.width - sz.x) / 2, MainFrame.innerSize.height - sz.y), sz, parent);
+	ui.slen = this;
 	new ChatHWPanel(new Coord(0,MainFrame.getInnerSize().y-300), new Coord(350,300), ui.root);
 	dy = -sz.y;
 	new Img(fc, flarps, this);
@@ -233,7 +234,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		}
 	    };
 	sub.visible = sdb.visible = false;
-    loadBelts();
+	loadBelts();
     }
 
     private void loadBelts() {
@@ -377,7 +378,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    wdgmsg("chr");
 	    return;
 	} else if(sender == budb) {
-	    wdgmsg("bud");
+	    BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
 	    return;
 	} else if(sender == optb) {
 	    toggleopts();
@@ -385,7 +386,11 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	}
 	super.wdgmsg(sender, msg, args);
     }
-	
+    
+    public void binded() {
+	wdgmsg("bud");
+    }
+    
     public void uimsg(String msg, Object... args) {
 	if (msg == "err") {
 	    error((String) args[0]);
@@ -499,7 +504,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 			buf.append(src, off, len);
 			int p;
 			while((p = buf.indexOf("\n")) >= 0) {
-			    ((Logwindow)wnd).log.append(buf.substring(0, p));
+			    ((Logwindow)wnd).log.append((Config.timestamp?Utils.timestamp():"")+buf.substring(0, p));
 			    buf.delete(0, p + 1);
 			}
 		    }

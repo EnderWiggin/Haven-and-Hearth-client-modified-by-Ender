@@ -260,7 +260,11 @@ public class Widget {
 	    System.err.println("Unhandled widget message: " + msg);
 	}
     }
+    
+    public void binded() {
 	
+    }
+    
     public void wdgmsg(String msg, Object... args) {
 	wdgmsg(this, msg, args);
     }

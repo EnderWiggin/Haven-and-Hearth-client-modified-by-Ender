@@ -27,10 +27,17 @@
 package haven;
 
 import java.awt.Color;
-import java.util.*;
 import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class BuddyWnd extends Window {
+    public static BuddyWnd instance;
     private List<Buddy> buddies = new ArrayList<Buddy>();
     private Map<Integer, Buddy> idmap = new HashMap<Integer, Buddy>();
     private BuddyList bl;
@@ -356,6 +363,7 @@ public class BuddyWnd extends Window {
 
     public BuddyWnd(Coord c, Widget parent) {
 	super(c, new Coord(400, 370), parent, "Kin");
+	instance = this;
 	bl = new BuddyList(new Coord(10, 5), new Coord(180, 280), this) {
 		public void changed(Buddy b) {
 		    if(b != null)
@@ -397,6 +405,7 @@ public class BuddyWnd extends Window {
 	    }
 	};
 	bl.repop();
+	visible = false;
     }
     
     private String randpwd() {
@@ -422,6 +431,13 @@ public class BuddyWnd extends Window {
 	synchronized(buddies) {
 	    Collections.sort(buddies, bcmp);
 	}
+    }
+    
+    public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender == cbtn)
+	    hide();
+	else
+	    super.wdgmsg(sender, msg, args);
     }
     
     public void uimsg(String msg, Object... args) {
@@ -453,7 +469,11 @@ public class BuddyWnd extends Window {
 	    int id = (Integer)args[0];
 	    int online = (Integer)args[1];
 	    synchronized(buddies) {
-		idmap.get(id).online = online;
+		Buddy b = idmap.get(id);
+		b.online = online;
+		String str = b.name.text+" is "+((online>0)?"online":"offline")+" now";
+		ui.cons.out.println(str);
+		ui.slen.error(str);
 	    }
 	} else if(msg == "chnm") {
 	    int id = (Integer)args[0];
