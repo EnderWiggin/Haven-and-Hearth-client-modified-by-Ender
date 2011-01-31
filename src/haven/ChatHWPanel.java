@@ -37,7 +37,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     Button sub, sdb;
     IButton fbtn;
     int urgency, woff = 0;
-    boolean folded = false, dm = false, rsm = false;
+    boolean folded = false, dm = false, rsm = false, recalcsz = false;
     Coord btnc, doff, sc;
 
     static {
@@ -75,6 +75,10 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     }
 
     public void draw(GOut g) {
+	if(recalcsz) {
+	    recalcsz = false;
+	    deltasz(Coord.z);
+	}
 	if (folded) {
 	    if (SlenHud.urgcols[urgency] != null)
 		g.chcolor(SlenHud.urgcols[urgency]);
@@ -179,7 +183,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    setawnd(wnd);
 	else
 	    wnd.visible = false;
-	updbtns();
+	recalcsz = true;
     }
 
     @Override
