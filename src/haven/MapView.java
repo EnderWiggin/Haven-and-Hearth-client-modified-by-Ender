@@ -512,6 +512,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
     public boolean mousedown(Coord c, int button) {
 	setfocus(this);
+	Coord c0 = c;
 	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Gob hit = gobatpos(c);
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
@@ -526,9 +527,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    wdgmsg("place", gob.rc, button, ui.modflags());
 	} else {
 	    if(hit == null)
-		wdgmsg("click", c, mc, button, ui.modflags());
+		wdgmsg("click", c0, mc, button, ui.modflags());
 	    else
-		wdgmsg("click", c, mc, button, ui.modflags(), hit.id, hit.getc());
+		wdgmsg("click", c0, mc, button, ui.modflags(), hit.id, hit.getc());
 	}
 	return(true);
     }
