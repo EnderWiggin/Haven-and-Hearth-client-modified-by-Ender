@@ -60,6 +60,8 @@ public class RootWidget extends ConsoleHost {
 		Config.hide = !Config.hide;
 	    } else if((code == KeyEvent.VK_G)&&ctrl) {
 		Config.grid = !Config.grid;
+	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
+		BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
 	    } else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {
