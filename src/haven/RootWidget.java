@@ -72,14 +72,14 @@ public class RootWidget extends ConsoleHost {
     public void draw(GOut g) {
 	super.draw(g);
 	drawcmd(g, new Coord(20, 580));
-	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
-	    afk = true;
-	    Widget slen = findchild(SlenHud.class);
-	    if(slen != null)
-		slen.wdgmsg("afk");
-	} else if(afk && (System.currentTimeMillis() - ui.lastevent < 300000)) {
-	    afk = false;
-	}
+//	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
+//	    afk = true;
+//	    Widget slen = findchild(SlenHud.class);
+//	    if(slen != null)
+//		slen.wdgmsg("afk");
+//	} else if(afk && (System.currentTimeMillis() - ui.lastevent < 300000)) {
+//	    afk = false;
+//	}
     }
     
     public void error(String msg) {
