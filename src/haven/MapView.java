@@ -1118,7 +1118,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
     public boolean iteminteract(Coord cc, Coord ul) {
-	Gob hit = gobatpos(cc);
+	Gob hit = gobatpos(new Coord((int) (cc.x/getScale()), (int)(cc.y/getScale())));
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
 	if(hit == null)
 	    wdgmsg("itemact", cc, mc, ui.modflags());
