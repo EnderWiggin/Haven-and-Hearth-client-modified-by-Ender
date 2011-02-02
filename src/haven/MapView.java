@@ -1118,12 +1118,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
     public boolean iteminteract(Coord cc, Coord ul) {
-	Gob hit = gobatpos(new Coord((int) (cc.x/getScale()), (int)(cc.y/getScale())));
+	Coord cc0 = cc;
+	cc = new Coord((int) (cc.x/getScale()), (int)(cc.y/getScale()));
+	Gob hit = gobatpos(cc);
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
 	if(hit == null)
-	    wdgmsg("itemact", cc, mc, ui.modflags());
+	    wdgmsg("itemact", cc0, mc, ui.modflags());
 	else
-	    wdgmsg("itemact", cc, mc, ui.modflags(), hit.id, hit.getc());
+	    wdgmsg("itemact", cc0, mc, ui.modflags(), hit.id, hit.getc());
 	return(true);
     }
     
