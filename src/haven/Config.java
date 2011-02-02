@@ -59,6 +59,10 @@ public class Config {
     public static boolean nightvision;
     public static String currentCharName;
     public static Properties options;
+    public static int sfxVol;
+    public static int musicVol;
+    public static boolean isMusicOn = false;
+    public static boolean isSoundOn = false;
     
     static {
 	try {
@@ -68,7 +72,7 @@ public class Config {
 	    authuser = getprop("haven.authuser", null);
 	    authserv = getprop("haven.authserv", null);
 	    defserv = getprop("haven.defserv", null);
-	    if(!(p = getprop("haven.resurl", "https://www.havenandhearth.com/res/")).equals(""))
+	    if(!(p = getprop("haven.resurl", "http://www.havenandhearth.com/res/")).equals(""))
 		resurl = new URL(p);
 	    if(!(p = getprop("haven.mapurl", "http://www.havenandhearth.com/mm/")).equals(""))
 		mapurl = new URL(p);
@@ -150,7 +154,17 @@ public class Config {
 	if(opt.rest.length > 0)
 	    defserv = opt.rest[0];
     }
-
+    
+    public static double getSFXVolume()
+    {
+    	return (double)sfxVol/100;
+    }
+    
+    public static int getMusicVolume()
+    {
+    	return isMusicOn?musicVol:0;
+    }
+    
     private static void loadOptions() {
         File inputFile = new File("haven.conf");
         if (!inputFile.exists()) {
@@ -165,6 +179,10 @@ public class Config {
         String hideObjects = options.getProperty("hideObjects", "");
         zoom = options.getProperty("zoom", "false").equals("true");
         new_minimap = options.getProperty("new_minimap", "true").equals("true");
+        isMusicOn = options.getProperty("music_on", "true").equals("true");
+        isSoundOn = options.getProperty("sound_on", "true").equals("true");
+        sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
+        musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -185,6 +203,10 @@ public class Config {
         options.setProperty("timestamp", (timestamp)?"true":"false");
         options.setProperty("zoom", zoom?"true":"false");
         options.setProperty("new_minimap", new_minimap?"true":"false");
+        options.setProperty("sfx_vol", String.valueOf(sfxVol));
+        options.setProperty("music_vol", String.valueOf(musicVol));
+        options.setProperty("music_on", isMusicOn?"true":"false");
+        options.setProperty("sound_on", isSoundOn?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
