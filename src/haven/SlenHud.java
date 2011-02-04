@@ -402,8 +402,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		if (args.length < 2) {
 		    belt[currentBelt][(Integer) args[0]] = null;
 		} else {
-		    // belt[currentBelt][(Integer) args[0]] =
-		    // ui.sess.getres((Integer) args[1]);
+		    //belt[currentBelt][(Integer) args[0]] = ui.sess.getres((Integer) args[1]);
 		}
 	    }
 	} else {
@@ -539,9 +538,9 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     public boolean mousedown(Coord c, int button) {
 	int slot = beltslot(c);
 	if(slot != -1) {
-        if (belt[currentBelt][slot] != null) {
-	    wdgmsg("belt", slot, button, ui.modflags());
-        }
+	    if (belt[currentBelt][slot] != null) {
+		wdgmsg("belt", slot, button, ui.modflags());
+	    }
 	    return(true);
 	}
 	return(super.mousedown(c, button));
@@ -627,9 +626,9 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    if(thing instanceof Resource) {
 		Resource res = (Resource)thing;
 		if(res.layer(Resource.action) != null) {
-            belt[currentBelt][slot] = res.indir();
+		    belt[currentBelt][slot] = res.indir();
 		    wdgmsg("setbelt", slot, res.name);
-            saveBelts();
+		    saveBelts();
 		    return(true);
 		}
 	    }
