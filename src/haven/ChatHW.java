@@ -53,7 +53,7 @@ public class ChatHW extends HWindow {
     }
 	
     public ChatHW(Widget parent, String title, boolean closable) {
-	super(ChatHWPanel.instance, title, closable);
+	super((Widget)ChatHWPanel.instance, title, closable);
 	in = new TextEntry(new Coord(0, sz.y - 20), new Coord(sz.x, 20), this, "");
 	in.canactivate = true;
 	out = new Textlog(Coord.z, new Coord(sz.x, sz.y - 20), this);

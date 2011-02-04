@@ -94,7 +94,14 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.new_minimap;
 	    
-	    (new CheckBox(new Coord(10, 165), tab, "Add timestamp in chat") {
+	    (new CheckBox(new Coord(10, 165), tab, "Use new chat (restart required)") {
+		public void changed(boolean val) {
+		    Config.new_chat = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.new_chat;
+	    
+	    (new CheckBox(new Coord(10, 200), tab, "Add timestamp in chat") {
 		public void changed(boolean val) {
 		    Config.timestamp = val;
 		    Config.saveOptions();

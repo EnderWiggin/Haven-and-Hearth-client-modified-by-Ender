@@ -169,7 +169,10 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     public SlenHud(Coord c, Widget parent) {
 	super(new Coord((MainFrame.innerSize.width - sz.x) / 2, MainFrame.innerSize.height - sz.y), sz, parent);
 	ui.slen = this;
-	new ChatHWPanel(new Coord(0,MainFrame.getInnerSize().y-300), new Coord(350,300), ui.root);
+	if(Config.new_chat)
+	    new ChatHWPanel(new Coord(0,MainFrame.getInnerSize().y-300), new Coord(350,300), ui.root);
+	else
+	    ChatHWPanel.instance = this;
 	dy = -sz.y;
 	new Img(fc, flarps, this);
 	new Img(mc, mbg, this);

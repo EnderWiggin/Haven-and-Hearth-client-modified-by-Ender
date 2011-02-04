@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ChatHWPanel extends Widget implements IHWindowParent {
 
-    public static ChatHWPanel instance;
+    public static IHWindowParent instance;
     static BufferedImage[] fbtni = new BufferedImage[] {
 	    Resource.loadimg("gfx/hud/fbtn"),
 	    Resource.loadimg("gfx/hud/fbtnd"),
