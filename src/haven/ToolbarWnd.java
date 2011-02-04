@@ -2,6 +2,7 @@ package haven;
 
 import java.awt.Color;
 import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,24 +11,50 @@ import java.util.Properties;
 
 public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
+    private static final BufferedImage ilockc = Resource.loadimg("gfx/hud/lockc");
+    private static final BufferedImage ilockch = Resource.loadimg("gfx/hud/lockch");
+    private static final BufferedImage ilocko = Resource.loadimg("gfx/hud/locko");
+    private static final BufferedImage ilockoh = Resource.loadimg("gfx/hud/lockoh");
     public final static Coord bgsz = bg.sz().add(-1, -1);
     public static MenuGrid mnu;
     private Coord gsz, off;
     Resource pressed, dragging, layout[];
-    public boolean flipped = false;
+    private IButton lockbtn, flipbtn;
+    public boolean flipped = false, locked = false;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     
     public ToolbarWnd(Coord c, Coord sz, Widget parent) {
 	super( c, Coord.z,  parent, null);
+	lockbtn = new IButton(Coord.z, this, ilocko, ilockc, ilockoh) {
+		
+		public void click() {
+		    locked = !locked;
+		    if(locked) {
+			up = ilockc;
+			down = ilocko;
+			hover = ilockch;
+		    } else {
+			up = ilocko;
+			down = ilockc;
+			hover = ilockoh;
+		    }
+		}
+	};
+	lockbtn.recthit = true;
+	flipbtn = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/flip"), Resource.loadimg("gfx/hud/flip"), Resource.loadimg("gfx/hud/flipo")) {
+		public void click() {
+		    flip();
+		}
+	};
+	flipbtn.recthit = true;
 	gsz = new Coord(1, 10);
 	off = new Coord(5, 10);
 	fbtn.show();
-	mrgn = new Coord(2,16);
+	mrgn = new Coord(2,18);
 	layout = new Resource[gsz.x*gsz.y];
 	loadBelt(2);
 	pack();
-	//flip();
     }
     
     private void loadBelt(int beltNr) {
@@ -133,8 +160,16 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	cbtn.c = new Coord(wsz.x - 3 - Utils.imgsz(cbtni[0]).x, 3).sub(mrgn).sub(wbox.tloff());
 	if(flipped) {
 	    fbtn.c = new Coord(cbtn.c.x, wsz.y - 3 - Utils.imgsz(fbtni[0]).y - mrgn.y - wbox.tloff().y);
+	    if(lockbtn != null)
+		lockbtn.c = new Coord(3 - wbox.tloff().x - mrgn.x, cbtn.c.y );
+	    if(flipbtn != null)
+		flipbtn.c = new Coord(5 - wbox.tloff().x - mrgn.x, fbtn.c.y);
 	} else {
 	    fbtn.c = new Coord(3 - wbox.tloff().x, cbtn.c.y);
+	    if(lockbtn != null)
+		lockbtn.c = new Coord(fbtn.c.x, wsz.y - 21 - mrgn.y - wbox.tloff().y );
+	    if(flipbtn != null)
+		flipbtn.c = new Coord(cbtn.c.x - 2, wsz.y - 21 - mrgn.y - wbox.tloff().y);
 	}
     }
     
@@ -200,7 +235,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     public void mousemove(Coord c) {
-	if ((dragging == null) && (pressed != null)) {
+	if ((!locked)&&(dragging == null) && (pressed != null)) {
 	    dragging = pressed;
 	    pressed = layout[index(c)] = null;
 	} else {
@@ -218,7 +253,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     public boolean dropthing(Coord c, Object thing) {
-	if (thing instanceof Resource) {
+	if ((!locked)&&(thing instanceof Resource)) {
 	    layout[index(c)] = (Resource) thing;
 	    return true;
 	}

@@ -32,6 +32,7 @@ import java.awt.image.BufferedImage;
 public class IButton extends SSWidget {
     BufferedImage up, down, hover;
     boolean a = false, h = false;
+    public boolean recthit = false;
 	
     static {
 	Widget.addtype("ibtn", new WidgetFactory() {
@@ -66,6 +67,7 @@ public class IButton extends SSWidget {
     }
 
     public boolean checkhit(Coord c) {
+	if(recthit)return true;
 	int cl = up.getRGB(c.x, c.y);
 	return(Utils.rgbm.getAlpha(cl) >= 128);
     }
