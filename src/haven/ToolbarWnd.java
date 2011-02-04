@@ -292,4 +292,12 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	}
 	return(ttfnd.render(tt, 0));
     }
+    
+    public boolean type(char key, java.awt.event.KeyEvent ev) {
+	if(key == 27) {
+	    wdgmsg(fbtn, "click");
+	    return(true);
+	}
+	return(super.type(key, ev));
+    }
 }

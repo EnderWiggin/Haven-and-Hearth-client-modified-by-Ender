@@ -112,4 +112,12 @@ public class MinimapPanel extends Window {
 	}
     }
     
+    public boolean type(char key, java.awt.event.KeyEvent ev) {
+	if(key == 27) {
+	    wdgmsg(fbtn, "click");
+	    return(true);
+	}
+	return(super.type(key, ev));
+    }
+    
 }
