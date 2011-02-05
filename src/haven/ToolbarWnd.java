@@ -350,8 +350,14 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public boolean globtype(char ch, KeyEvent ev) {
 	int code = ev.getKeyCode();
 	int slot = code - key;
-	if(key == KeyEvent.VK_0)
-	    slot = (slot == 0)?9:slot-1;
+	if((slot >= 0)&&(slot < gsz.x*gsz.y)) {
+	    if(key == KeyEvent.VK_0)
+		    slot = (slot == 0)?9:slot-1;
+	    Resource h = layout[slot];
+	    if((h!=null)&&(mnu!=null))
+		mnu.use(h);
+	    return true;
+	}
 	return(super.globtype(ch, ev));
     }
     
