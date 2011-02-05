@@ -26,7 +26,8 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     Resource pressed, dragging, layout[];
     private IButton lockbtn, flipbtn;
     public boolean flipped = false, locked = false;
-    private int belt;
+    private int belt, key;
+    private Tex[] nums;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     
@@ -69,7 +70,14 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	mrgn = new Coord(2,18);
 	layout = new Resource[sz];
 	loadBelt(belt);
+	this.key = key;
 	pack();
+	/* Text rendering is slow, so pre-cache the hotbar numbers. */
+	nums = new Tex[sz];
+	for(int i = 0; i < sz; i++) {
+	    String slot = (key == KeyEvent.VK_0)?Integer.toString(i):"F"+Integer.toString(i+1);
+	    nums[i] = Text.render(slot).tex();
+	}
     }
     
     public static void loadBelts() {
@@ -122,6 +130,10 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    for(int x = 0; x < gsz.x; x++) {
 		Coord p = getcoord(x, y);
 		g.image(bg, p);
+		int slot = x+y;
+		if(key == KeyEvent.VK_0)
+		    slot = (slot + 1) % 10;
+		g.aimage(nums[slot], p.add(bg.sz()), 1, 1);
 		Resource btn = layout[x+y];
 		if(btn != null) {
 		    Tex btex = btn.layer(Resource.imgc).tex();
@@ -333,6 +345,14 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    tt += "\n\n" + pg.text;
 	}
 	return(ttfnd.render(tt, 0));
+    }
+    
+    public boolean globtype(char ch, KeyEvent ev) {
+	int code = ev.getKeyCode();
+	int slot = code - key;
+	if(key == KeyEvent.VK_0)
+	    slot = (slot == 0)?9:slot-1;
+	return(super.globtype(ch, ev));
     }
     
     public boolean type(char key, java.awt.event.KeyEvent ev) {
