@@ -95,7 +95,7 @@ public class MenuGrid extends Widget {
     public MenuGrid(Coord c, Widget parent) {
 	super(c, bgsz.mul(gsz).add(1, 1), parent);
 	cons(null);
-	ToolbarWnd.mnu = this;
+	ui.mnu = this;
 	ToolbarWnd.loadBelts();
 	new ToolbarWnd(new Coord(0,300), ui.root);
 	new ToolbarWnd(new Coord(50,300), ui.root, 2, 12, new Coord(4, 10), KeyEvent.VK_F1);

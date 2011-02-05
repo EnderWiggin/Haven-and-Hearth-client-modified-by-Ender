@@ -21,15 +21,23 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     private static final BufferedImage ilockoh = Resource.loadimg("gfx/hud/lockoh");
     public final static Coord bgsz = bg.sz().add(-1, -1);
     private static final Properties beltsConfig = new Properties();
-    public static MenuGrid mnu;
-    private Coord gsz, off;
+    private Coord gsz, off, beltNumC;
     Resource pressed, dragging, layout[];
-    private IButton lockbtn, flipbtn;
+    private IButton lockbtn, flipbtn, minus, plus;
     public boolean flipped = false, locked = false;
-    private int belt, key;
+    public int belt, key;
     private Tex[] nums;
+    private static Tex[] beltNums;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
+    
+    static {
+	/* Text rendering is slow, so pre-cache the belt numbers. */
+	beltNums = new Tex[BELTS_NUM];
+	for(int i = 0; i < BELTS_NUM; i++) {
+	    beltNums[i] = Text.render(Integer.toString(i)).tex();
+	}
+    }
     
     public ToolbarWnd(Coord c, Widget parent) {
 	super( c, Coord.z,  parent, null);
@@ -63,6 +71,16 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		    flip();
 		}
 	};
+	minus = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
+	    public void click() {
+		    prevBelt();
+		}
+	};
+	plus = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
+	    public void click() {
+		    nextBelt();
+		}
+	};
 	flipbtn.recthit = true;
 	gsz = new Coord(1, sz);
 	this.off = off;
@@ -80,6 +98,14 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	}
     }
     
+    private void nextBelt() {
+	loadBelt(belt + 2);
+    }
+    
+    private void prevBelt() {
+	loadBelt(belt - 2);
+    }
+    
     public static void loadBelts() {
 	
 	String configFileName = "belts_" + Config.currentCharName.replaceAll("[^a-zA-Z()]", "_") + ".conf";
@@ -94,11 +120,15 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     
     private void loadBelt(int beltNr) {
 	belt = beltNr % BELTS_NUM;
+	if(belt < 0)
+	    belt += BELTS_NUM;
 	synchronized (beltsConfig) {
 	    for (int slot = 0; slot < layout.length; slot++) {
 		String icon = beltsConfig.getProperty("belt_" + belt + "_" + slot, "");
-		if (!icon.isEmpty()) {
+		if (icon.length() > 0) {
 		    layout[slot] = Resource.load(icon);
+		} else {
+		    layout[slot] = null;
 		}
 	    }
 	}
@@ -146,6 +176,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		}
 	    }
 	}
+	g.aimage(beltNums[belt], beltNumC, 1, 1);
 	g.chcolor();
 	if(dragging != null) {
 	    final Tex dt = dragging.layer(Resource.imgc).tex();
@@ -205,12 +236,24 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		lockbtn.c = new Coord(3 - wbox.tloff().x - mrgn.x, cbtn.c.y );
 	    if(flipbtn != null)
 		flipbtn.c = new Coord(5 - wbox.tloff().x - mrgn.x, fbtn.c.y);
+	    if(plus != null)
+		plus.c = cbtn.c.sub(16,0);
+	    if(minus != null) {
+		minus.c = fbtn.c.sub(16,0);
+	    	beltNumC = minus.c.add(plus.c).div(2).add(36, 22);
+	    }
 	} else {
 	    fbtn.c = new Coord(3 - wbox.tloff().x, cbtn.c.y);
 	    if(lockbtn != null)
 		lockbtn.c = new Coord(fbtn.c.x, wsz.y - 21 - mrgn.y - wbox.tloff().y );
 	    if(flipbtn != null)
 		flipbtn.c = new Coord(cbtn.c.x - 2, wsz.y - 21 - mrgn.y - wbox.tloff().y);
+	    if(plus != null)
+		plus.c = flipbtn.c.sub(0, 16);
+	    if(minus != null) {
+		minus.c = lockbtn.c.sub(0, 16);
+	    	beltNumC = minus.c.add(plus.c).div(2).add(20, 38);
+	    }
 	}
     }
     
@@ -218,9 +261,9 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	ssz = bgsz.mul(gsz);
 	if (off.x > 0)
 	    if (flipped) {
-		ssz.x += off.y*((gsz.x/off.x) - ((gsz.x%off.x == 0)?1:0));
+		ssz.x += off.y*((gsz.x/off.x) - ((gsz.x%off.x == 0)?1:0)) + 16;
 	    } else {
-		ssz.y += off.y*((gsz.y/off.x) - ((gsz.y%off.x == 0)?1:0));
+		ssz.y += off.y*((gsz.y/off.x) - ((gsz.y%off.x == 0)?1:0)) + 16;
 	    }
 	checkfold();
 	placecbtn();
@@ -265,8 +308,8 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		dragging = pressed = null;
 	    } else if (pressed != null) {
 		if (pressed == h)
-		    if(mnu != null)
-			mnu.use(h);
+		    if(ui.mnu != null)
+			ui.mnu.use(h);
 		pressed = null;
 	    }
 	    ui.grabmouse(null);
@@ -354,7 +397,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    if(key == KeyEvent.VK_0)
 		    slot = (slot == 0)?9:slot-1;
 	    Resource h = layout[slot];
-	    if((h!=null)&&(mnu!=null))
+	    if((h!=null)&&(ui.mnu!=null))
 		mnu.use(h);
 	    return true;
 	}
