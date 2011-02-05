@@ -96,7 +96,9 @@ public class MenuGrid extends Widget {
 	super(c, bgsz.mul(gsz).add(1, 1), parent);
 	cons(null);
 	ToolbarWnd.mnu = this;
-	new ToolbarWnd(new Coord(0,300), Coord.z, ui.root);
+	ToolbarWnd.loadBelts();
+	new ToolbarWnd(new Coord(0,300), ui.root);
+	new ToolbarWnd(new Coord(40,300), ui.root, 2, 12, new Coord(4, 10), KeyEvent.VK_F1);
     }
 	
     private static Comparator<Resource> sorter = new Comparator<Resource>() {

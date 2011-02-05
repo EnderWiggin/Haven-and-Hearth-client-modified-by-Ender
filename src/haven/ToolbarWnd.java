@@ -1,31 +1,46 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 
 public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
+    private static final int BELTS_NUM = 10;
     private static final BufferedImage ilockc = Resource.loadimg("gfx/hud/lockc");
     private static final BufferedImage ilockch = Resource.loadimg("gfx/hud/lockch");
     private static final BufferedImage ilocko = Resource.loadimg("gfx/hud/locko");
     private static final BufferedImage ilockoh = Resource.loadimg("gfx/hud/lockoh");
     public final static Coord bgsz = bg.sz().add(-1, -1);
+    private static final Properties beltsConfig = new Properties();
     public static MenuGrid mnu;
     private Coord gsz, off;
     Resource pressed, dragging, layout[];
     private IButton lockbtn, flipbtn;
     public boolean flipped = false, locked = false;
+    private int belt;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     
-    public ToolbarWnd(Coord c, Coord sz, Widget parent) {
+    public ToolbarWnd(Coord c, Widget parent) {
 	super( c, Coord.z,  parent, null);
+	init(1, 10, new Coord(5, 10), KeyEvent.VK_0);
+    }
+    
+    public ToolbarWnd(Coord c, Widget parent, int belt, int sz, Coord off, int key) {
+	super( c, Coord.z,  parent, null);
+	init(belt, sz, off, key);
+    }
+    
+    private void init(int belt, int sz, Coord off, int key) {
 	lockbtn = new IButton(Coord.z, this, ilocko, ilockc, ilockoh) {
 		
 		public void click() {
@@ -48,34 +63,49 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		}
 	};
 	flipbtn.recthit = true;
-	gsz = new Coord(1, 10);
-	off = new Coord(5, 10);
+	gsz = new Coord(1, sz);
+	this.off = off;
 	fbtn.show();
 	mrgn = new Coord(2,18);
-	layout = new Resource[gsz.x*gsz.y];
-	loadBelt(2);
+	layout = new Resource[sz];
+	loadBelt(belt);
 	pack();
     }
     
+    public static void loadBelts() {
+	
+	String configFileName = "belts_" + Config.currentCharName.replaceAll("[^a-zA-Z()]", "_") + ".conf";
+	try {
+	    synchronized (beltsConfig) {
+		beltsConfig.load(new FileInputStream(configFileName));
+	    }
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	}
+    }
+    
     private void loadBelt(int beltNr) {
-        String configFileName = "belts_" + Config.currentCharName.replaceAll("[^a-zA-Z()]", "_") + ".conf";
-        File inputFile = new File(configFileName);
-        if (!inputFile.exists()) {
-            return;
-        }
-        Properties configFile = new Properties();
-        try {
-            configFile.load(new FileInputStream(configFileName));
-                for (int slot  = 0; slot < 10; slot++) {
-                    String icon = configFile.getProperty("belt_" + beltNr + "_" + slot, "");
-                    if (!icon.isEmpty()) {
-                        layout[slot] = Resource.load(icon);
-                    }
-                }
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
+	belt = beltNr % BELTS_NUM;
+	synchronized (beltsConfig) {
+	    for (int slot = 0; slot < layout.length; slot++) {
+		String icon = beltsConfig.getProperty("belt_" + belt + "_"
+			+ slot, "");
+		if (!icon.isEmpty()) {
+		    layout[slot] = Resource.load(icon);
+		}
+	    }
+	}
+    }
+    
+    public static void saveBelts() {
+	synchronized (beltsConfig) {
+	    String configFileName = "belts_" + Config.currentCharName.replaceAll("[^a-zA-Z()]", "_") + ".conf";
+	    try {
+		beltsConfig.store(new FileOutputStream(configFileName), "Belts actions for " + Config.currentCharName);
+	    } catch (FileNotFoundException e) {
+	    } catch (IOException e) {
+	    }
+	}
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
