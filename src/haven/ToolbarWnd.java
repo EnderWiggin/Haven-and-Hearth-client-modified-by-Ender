@@ -391,7 +391,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	return(ttfnd.render(tt, 0));
     }
     
-    public boolean globtype(char ch, KeyEvent ev) {
+    private boolean checkKey(char ch, KeyEvent ev) {
 	int code = ev.getKeyCode();
 	int slot = code - key;
 	if((slot >= 0)&&(slot < gsz.x*gsz.y)) {
@@ -402,14 +402,24 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		ui.mnu.use(h);
 	    return true;
 	}
-	return(super.globtype(ch, ev));
+	return false;
     }
     
-    public boolean type(char key, java.awt.event.KeyEvent ev) {
+    public boolean globtype(char ch, KeyEvent ev) {
+	if(!checkKey(ch, ev))
+	    return(super.globtype(ch, ev));
+	else
+	    return true;
+    }
+    
+    public boolean type(char key, KeyEvent ev) {
 	if(key == 27) {
 	    wdgmsg(fbtn, "click");
 	    return(true);
 	}
-	return(super.type(key, ev));
+	if(!checkKey(key, ev))
+	    return(super.type(key, ev));
+	else
+	    return true;
     }
 }
