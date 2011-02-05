@@ -34,7 +34,7 @@ import static haven.Inventory.invsq;
 
 public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory, IHWindowParent {
     public static Tex bg = Resource.loadtex("gfx/hud/slen/low");
-    public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
+    //public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
     public static final Tex dispbg = Resource.loadtex("gfx/hud/slen/dispbg");
     public static final Tex uglow = Resource.loadtex("gfx/hud/slen/sbg");
@@ -52,7 +52,6 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     };
     int woff = 0;
     int dy;
-    int currentBelt = 1;
     List<HWindow> wnds = new ArrayList<HWindow>();
     HWindow awnd;
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
@@ -64,8 +63,6 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     Text lasterr;
     long errtime;
     OptWnd optwnd = null;
-    @SuppressWarnings("unchecked")
-    Indir<Resource>[][] belt = new Indir[10][10];
     static int dh;
 	
     static {
@@ -174,7 +171,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	else
 	    ChatHWPanel.instance = this;
 	dy = -sz.y;
-	new Img(fc, flarps, this);
+	//new Img(fc, flarps, this);
 	new Img(mc, mbg, this);
 	if(!Config.new_minimap)
 	    new Img(dispc, dispbg, this);
@@ -190,7 +187,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    private boolean v = false;
 
 		    public void click() {
-			MapView mv = ui.root.findchild(MapView.class);
+			MapView mv = ui.mainview;
 			if (v) {
 			    mv.disol(2, 3);
 			    v = false;
@@ -206,7 +203,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    private boolean v = false;
 
 		    public void click() {
-			MapView mv = ui.root.findchild(MapView.class);
+			MapView mv = ui.mainview;
 			if (v) {
 			    mv.disol(0, 1);
 			    v = false;
@@ -237,48 +234,8 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		}
 	    };
 	sub.visible = sdb.visible = false;
-	loadBelts();
     }
 
-    private void loadBelts() {
-        String configFileName = "belts_" + Config.currentCharName.replaceAll("[^a-zA-Z()]", "_") + ".conf";
-        File inputFile = new File(configFileName);
-        if (!inputFile.exists()) {
-            return;
-        }
-        Properties configFile = new Properties();
-        try {
-            configFile.load(new FileInputStream(configFileName));
-            for (int beltNr = 0; beltNr < 10; beltNr++) {
-                for (int slot  = 0; slot < 10; slot++) {
-                    String icon = configFile.getProperty("belt_" + beltNr + "_" + slot, "");
-                    if (!icon.isEmpty()) {
-                        belt[beltNr][slot] = Resource.load(icon).indir();
-                    }
-                }
-            }
-        }
-        catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-
-    private void saveBelts() {
-        String configFileName = "belts_" + Config.currentCharName.replaceAll("[^a-zA-Z()]", "_") + ".conf";
-        Properties configFile = new Properties();
-        for (int beltNr = 0; beltNr < 10; beltNr++) {
-            for (int slot  = 0; slot < 10; slot++) {
-                String icon = (belt[beltNr][slot] != null ? belt[beltNr][slot].get().name : "");
-                configFile.setProperty("belt_" + beltNr + "_" + slot, icon);
-            }
-        }
-        try {
-            configFile.store(new FileOutputStream(configFileName), "Belts icons for " + Config.currentCharName);
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-	
     public Coord xlate(Coord c, boolean in) {
 	Coord bgc = sz.add(bg.sz().inv());
 	if(in)
@@ -293,41 +250,6 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	errtime = System.currentTimeMillis();
     }
 	
-    private Coord beltc(int i) {
-	if(i < 5) {
-	    return(bc1.add(i * (invsq.sz().x + 2), 0));
-	} else {
-	    return(bc2.add((i - 5) * (invsq.sz().x + 2), 0));
-	}
-    }
-    
-    private int beltslot(Coord c) {
-	c = xlate(c, false);
-	c.y += dh;
-	int sw = invsq.sz().x + 2;
-	if((c.x >= bc1.x) && (c.y >= bc1.y) && (c.y < bc1.y + invsq.sz().y)) {
-	    if((c.x - bc1.x) / sw < 5) {
-		if((c.x - bc1.x) % sw < invsq.sz().x)
-		    return((c.x - bc1.x) / sw);
-	    }
-	}
-	if((c.x >= bc2.x) && (c.y >= bc2.y) && (c.y < bc2.y + invsq.sz().y)) {
-	    if((c.x - bc2.x) / sw < 5) {
-		if((c.x - bc2.x) % sw < invsq.sz().x)
-		    return(((c.x - bc2.x) / sw) + 5);
-	    }
-	}
-	return(-1);
-    }
-
-    /* Text rendering is slow, so pre-cache the hotbar numbers. */
-    public static final Tex[] nums;
-    static {
-	nums = new Tex[10];
-	for(int i = 0; i < 10; i++)
-	    nums[i] = Text.render(Integer.toString(i)).tex();
-    }
-    
     public void draw(GOut g) {
 	vc.tick();
         c.x = (MainFrame.innerSize.width - sz.x) / 2;
@@ -335,24 +257,6 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	Coord bgc = sz.add(bg.sz().inv());
 	g.image(bg, bgc);
 	super.draw(g);
-	
-	g.chcolor(0, 0, 0, 255);
-	g.atext(Integer.toString(currentBelt), xlate(beltc(0), true).add(-10, 0), 1, 1);
-	g.chcolor();
-	for(int i = 0; i < 10; i++) {
-	    Coord c = xlate(beltc(i), true);
-	    g.image(invsq, c);
-	    g.chcolor(156, 180, 158, 255);
-	    g.aimage(nums[(i + 1) % 10], c.add(invsq.sz()), 1, 1);
-	    g.chcolor();
-	    Resource res = null;
-	    if(belt[currentBelt][i] != null) {
-            res = belt[currentBelt][i].get();
-        }
-	    if(res != null) {
-		g.image(res.layer(Resource.imgc).tex(), c.add(1, 1));
-	}
-	}
 	
 	if(cmdline != null) {
 	    drawcmd(g.reclip(new Coord(0, -20), new Coord(sz.x, 20)), new Coord(15, 0));
@@ -398,13 +302,13 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	if (msg == "err") {
 	    error((String) args[0]);
 	} else if (msg == "setbelt") {
-	    synchronized (belt) {
+	    /*synchronized (belt) {
 		if (args.length < 2) {
 		    belt[currentBelt][(Integer) args[0]] = null;
 		} else {
 		    //belt[currentBelt][(Integer) args[0]] = ui.sess.getres((Integer) args[1]);
 		}
-	    }
+	    }*/
 	} else {
 	    super.uimsg(msg, args);
 	}
@@ -536,13 +440,13 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
 	
     public boolean mousedown(Coord c, int button) {
-	int slot = beltslot(c);
+	/*int slot = beltslot(c);
 	if(slot != -1) {
 	    if (belt[currentBelt][slot] != null) {
 		wdgmsg("belt", slot, button, ui.modflags());
 	    }
 	    return(true);
-	}
+	}*/
 	return(super.mousedown(c, button));
     }
 
@@ -580,7 +484,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	} else if(ch == ':') {
 	    entercmd();
 	    return(true);
-	} else if((ch >= '0') && (ch <= '9')) {
+	/*} else if((ch >= '0') && (ch <= '9')) {
         if (ev.isAltDown()) {
             currentBelt = ch - '0';
             for (int i = 0; i < 10; i++) {
@@ -596,7 +500,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
                 wdgmsg("belt", slot, 1, 0);
             }
         }
-	    return(true);
+	    return(true);*/
 	} else if(ch == 15) {
 	    toggleopts();
 	}
@@ -608,11 +512,11 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
     
     public boolean drop(Coord cc, Coord ul) {
-	int slot = beltslot(cc);
+	/*int slot = beltslot(cc);
 	if(slot != -1) {
 	    wdgmsg("setbelt", slot, 0);
 	    return(true);
-	}
+	}*/
 	return(false);
     }
 
@@ -621,18 +525,17 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
 
     public boolean dropthing(Coord c, Object thing) {
-	int slot = beltslot(c);
+	/*int slot = beltslot(c);
 	if(slot != -1) {
 	    if(thing instanceof Resource) {
 		Resource res = (Resource)thing;
 		if(res.layer(Resource.action) != null) {
 		    belt[currentBelt][slot] = res.indir();
 		    wdgmsg("setbelt", slot, res.name);
-		    saveBelts();
 		    return(true);
 		}
 	    }
-	}
+	}*/
 	return(false);
     }
 
