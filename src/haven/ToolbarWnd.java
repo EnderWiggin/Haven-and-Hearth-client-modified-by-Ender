@@ -88,8 +88,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	belt = beltNr % BELTS_NUM;
 	synchronized (beltsConfig) {
 	    for (int slot = 0; slot < layout.length; slot++) {
-		String icon = beltsConfig.getProperty("belt_" + belt + "_"
-			+ slot, "");
+		String icon = beltsConfig.getProperty("belt_" + belt + "_" + slot, "");
 		if (!icon.isEmpty()) {
 		    layout[slot] = Resource.load(icon);
 		}
@@ -267,7 +266,9 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public void mousemove(Coord c) {
 	if ((!locked)&&(dragging == null) && (pressed != null)) {
 	    dragging = pressed;
-	    pressed = layout[index(c)] = null;
+	    int slot = index(c);
+	    pressed = layout[slot] = null;
+	    setBeltSlot(slot, "");
 	} else {
 	    super.mousemove(c);
 	}
@@ -284,10 +285,21 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     
     public boolean dropthing(Coord c, Object thing) {
 	if ((!locked)&&(thing instanceof Resource)) {
-	    layout[index(c)] = (Resource) thing;
+	    int slot = index(c);
+	    Resource res = (Resource)thing;
+	    setBeltSlot(slot, res.name);
+	    layout[slot] = res;
 	    return true;
 	}
 	return false;
+    }
+    
+    private void setBeltSlot(int slot, String icon) {
+	String key = "belt_" + belt + "_" + slot;
+	synchronized (beltsConfig) {
+	    beltsConfig.setProperty(key, icon);
+	}
+	saveBelts();
     }
     
     private Resource curttr = null;
