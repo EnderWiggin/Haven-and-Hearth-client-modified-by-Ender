@@ -50,6 +50,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     private void init(int belt, int sz, Coord off, int key) {
+	cbtn.visible = false;
 	lockbtn = new IButton(Coord.z, this, ilocko, ilockc, ilockoh) {
 		
 		public void click() {
@@ -398,7 +399,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		    slot = (slot == 0)?9:slot-1;
 	    Resource h = layout[slot];
 	    if((h!=null)&&(ui.mnu!=null))
-		mnu.use(h);
+		ui.mnu.use(h);
 	    return true;
 	}
 	return(super.globtype(ch, ev));
