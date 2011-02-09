@@ -239,10 +239,21 @@ public class MenuGrid extends Widget {
 	    else
 		curoff += 14;
 	} else {
-	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
+	    String [] ad = r.layer(Resource.action).ad;
+	    if(ad[0].equals("@"))
+		usecustom(ad);
+	    else
+		wdgmsg("act", (Object[])ad);
 	}
     }
-	
+    
+    private void usecustom(String[] list) {
+	if(list[1].equals("radius")) {
+	    Config.showRadius = !Config.showRadius; 
+	}
+	use(null);
+    }
+    
     public boolean mouseup(Coord c, int button) {
 	Resource h = bhit(c);
 	if(button == 1) {
