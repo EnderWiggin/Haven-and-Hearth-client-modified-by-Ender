@@ -894,6 +894,44 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		p.szo = szo;
 	    }
 	}
+	
+	if(Config.showHidden && Config.hide) {
+		g.chcolor(255, 0, 0, 128);
+		synchronized(glob.oc) {
+		    for(Gob gob : glob.oc) {
+			Drawable d = gob.getattr(Drawable.class);
+			Resource.Neg neg;
+			String name = gob.resname();
+			if(!gob.hide || (name.indexOf("wald")>-1))
+			    continue;
+			if(d instanceof ResDrawable) {
+			    ResDrawable rd = (ResDrawable)d;
+			    if(rd.spr == null)
+				continue;
+			    if(rd.spr.res == null)
+				continue;
+			    neg = rd.spr.res.layer(Resource.negc);
+			} else if(d instanceof Layered) {
+			    Layered lay = (Layered)d;
+			    if(lay.base.get() == null)
+				continue;
+			    neg = lay.base.get().layer(Resource.negc);
+			} else {
+			    continue;
+			}
+			if((neg.bs.x > 0) && (neg.bs.y > 0)) {
+			    Coord c1 = gob.getc().add(neg.bc);
+			    Coord c2 = gob.getc().add(neg.bc).add(neg.bs);
+			    g.frect(m2s(c1).add(oc),
+				    m2s(new Coord(c2.x, c1.y)).add(oc),
+				    m2s(c2).add(oc),
+				    m2s(new Coord(c1.x, c2.y)).add(oc));
+			}
+		    }
+		}
+		g.chcolor();
+	    }
+	
 	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
 	    for(Gob gob : glob.oc) {
@@ -939,40 +977,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		else
 		    g2.chcolor(255, 255, 0, 255);
 		part.drawol(g2);
-	    }
-	    
-	    if(Config.bounddb && ui.modshift) {
-		g.chcolor(255, 0, 0, 128);
-		synchronized(glob.oc) {
-		    for(Gob gob : glob.oc) {
-			Drawable d = gob.getattr(Drawable.class);
-			Resource.Neg neg;
-			if(d instanceof ResDrawable) {
-			    ResDrawable rd = (ResDrawable)d;
-			    if(rd.spr == null)
-				continue;
-			    if(rd.spr.res == null)
-				continue;
-			    neg = rd.spr.res.layer(Resource.negc);
-			} else if(d instanceof Layered) {
-			    Layered lay = (Layered)d;
-			    if(lay.base.get() == null)
-				continue;
-			    neg = lay.base.get().layer(Resource.negc);
-			} else {
-			    continue;
-			}
-			if((neg.bs.x > 0) && (neg.bs.y > 0)) {
-			    Coord c1 = gob.getc().add(neg.bc);
-			    Coord c2 = gob.getc().add(neg.bc).add(neg.bs);
-			    g.frect(m2s(c1).add(oc),
-				    m2s(new Coord(c2.x, c1.y)).add(oc),
-				    m2s(c2).add(oc),
-				    m2s(new Coord(c1.x, c2.y)).add(oc));
-			}
-		    }
-		}
-		g.chcolor();
 	    }
 	    
 	    if(curf != null)

@@ -250,6 +250,8 @@ public class MenuGrid extends Widget {
     private void usecustom(String[] list) {
 	if(list[1].equals("radius")) {
 	    Config.showRadius = !Config.showRadius; 
+	} else if(list[1].equals("hidden")) {
+	    Config.showHidden = !Config.showHidden;
 	}
 	use(null);
     }

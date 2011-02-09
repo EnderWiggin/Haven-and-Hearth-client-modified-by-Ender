@@ -51,6 +51,7 @@ public class Glob {
 	//adding extended commands
 	paginae.add(Resource.load("paginae/act/add"));
 	paginae.add(Resource.load("paginae/add/rad"));
+	paginae.add(Resource.load("paginae/add/shhd"));
     }
     
     public static class CAttr extends Observable {

@@ -35,6 +35,7 @@ public class Gob implements Sprite.Owner {
     public final Glob glob;
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
     public Collection<Overlay> ols = new LinkedList<Overlay>();
+    public boolean hide;
 	
     public static class Overlay {
 	public Indir<Resource> res;
@@ -159,7 +160,7 @@ public class Gob implements Sprite.Owner {
     public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
 	Drawable d = getattr(Drawable.class);
         String resourceName = resname();
-        boolean hide = false;
+        hide = false;
 	Coord dro = drawoff();
 	for(Overlay ol : ols) {
             if (ol.spr != null) {
