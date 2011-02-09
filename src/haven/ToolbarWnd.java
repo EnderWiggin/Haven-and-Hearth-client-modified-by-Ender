@@ -28,6 +28,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public int belt, key;
     private Tex[] nums;
     private static Tex[] beltNums;
+    private String name;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     
@@ -39,19 +40,45 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	}
     }
     
-    public ToolbarWnd(Coord c, Widget parent) {
+    public ToolbarWnd(Coord c, Widget parent, String name) {
 	super( c, Coord.z,  parent, null);
+	this.name = name;
 	init(1, 10, new Coord(5, 10), KeyEvent.VK_0);
     }
     
-    public ToolbarWnd(Coord c, Widget parent, int belt, int sz, Coord off, int key) {
+    public ToolbarWnd(Coord c, Widget parent, String name, int belt, int sz, Coord off, int key) {
 	super( c, Coord.z,  parent, null);
+	this.name = name;
 	init(belt, sz, off, key);
     }
     
+    private void loadOpts() {
+	String val;
+	Boolean res;
+	val = Config.window_props.getProperty("toolbar2_locked", "fail");
+	val = Config.window_props.getProperty(name+"_locked", "false");
+	res = val.equals("true");
+	if(res) {
+	    locked = true;
+	}
+	if(Config.window_props.getProperty(name+"_flipped", "false").equals("true")) {
+	    flip();
+	}
+	if(Config.window_props.getProperty(name+"_folded", "false").equals("true")) {
+	    folded = true;
+	    checkfold();
+	}
+    }
+    
     private void init(int belt, int sz, Coord off, int key) {
+	gsz = new Coord(1, sz);
+	this.off = off;
+	fbtn.show();
+	mrgn = new Coord(2,18);
+	layout = new Resource[sz];
+	loadOpts();
 	cbtn.visible = false;
-	lockbtn = new IButton(Coord.z, this, ilocko, ilockc, ilockoh) {
+	lockbtn = new IButton(Coord.z, this, locked?ilockc:ilocko, locked?ilocko:ilockc, locked?ilockch:ilockoh) {
 		
 		public void click() {
 		    locked = !locked;
@@ -64,6 +91,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 			down = ilockc;
 			hover = ilockoh;
 		    }
+		    Config.setWindowOpt(name+"_locked", locked);
 		}
 	};
 	lockbtn.recthit = true;
@@ -83,11 +111,6 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		}
 	};
 	flipbtn.recthit = true;
-	gsz = new Coord(1, sz);
-	this.off = off;
-	fbtn.show();
-	mrgn = new Coord(2,18);
-	layout = new Resource[sz];
 	loadBelt(belt);
 	this.key = key;
 	pack();
@@ -149,8 +172,12 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == cbtn)
 	    ui.destroy(this);
+	Boolean _folded = folded;
 	if(sender == fbtn)
 	    super.wdgmsg(sender, msg, args);
+	if(_folded != folded) {
+	    Config.setWindowOpt(name+"_folded", folded);
+	}
     }
     
     public void draw(GOut g) {
@@ -227,6 +254,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	gsz = new Coord(gsz.y, gsz.x);
 	mrgn = new Coord(mrgn.y, mrgn.x);
 	pack();
+	Config.setWindowOpt(name+"_flipped", flipped);
     }
     
     protected void placecbtn() {

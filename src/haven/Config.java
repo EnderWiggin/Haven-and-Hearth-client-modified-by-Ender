@@ -59,7 +59,7 @@ public class Config {
     public static HashSet<String> hideObjectList;
     public static boolean nightvision;
     public static String currentCharName;
-    public static Properties options;
+    public static Properties options, window_props;
     public static int sfxVol;
     public static int musicVol;
     public static boolean isMusicOn = false;
@@ -98,8 +98,10 @@ public class Config {
 	    GoogleTranslator.turnedon = false;
 	    currentCharName = "";
 	    options = new Properties();
+	    window_props = new Properties();
 	    hideObjectList = new HashSet<String>();
 	    loadOptions();
+	    loadWindowOptions();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -166,6 +168,19 @@ public class Config {
     	return isMusicOn?musicVol:0;
     }
     
+    private static void loadWindowOptions() {
+	File inputFile = new File("windows.conf");
+        if (!inputFile.exists()) {
+            return;
+        }
+        try {
+            window_props.load(new FileInputStream(inputFile));
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+    
     private static void loadOptions() {
         File inputFile = new File("haven.conf");
         if (!inputFile.exists()) {
@@ -196,6 +211,26 @@ public class Config {
         timestamp = options.getProperty("timestamp","false").equals("true");
     }
 
+    public static synchronized void setWindowOpt(String key, String value) {
+	String prev_val =window_props.getProperty(key); 
+	if((prev_val != null)&&prev_val.equals(value))
+	    return;
+	window_props.setProperty(key, value);
+	saveWindowOpt();
+    }
+    
+    public static synchronized void setWindowOpt(String key, Boolean value) {
+	setWindowOpt(key, value?"true":"false");
+    }
+    
+    public static void saveWindowOpt() {
+	try {
+	    window_props.store(new FileOutputStream("windows.conf"), "Window config options");
+	} catch (IOException e) {
+	    System.out.println(e);
+	}
+    }
+    
     public static void saveOptions() {
         String hideObjects = "";
         for (String objectName : hideObjectList) {
