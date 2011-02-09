@@ -44,7 +44,21 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
     public Coord() {
 	this(0, 0);
     }
-	
+    
+    public Coord(String str) {
+	int x,y;
+	if((str == null)||(str.charAt(0)!='(')||(str.charAt(str.length()-1)!=')'))
+	    x = y = 0;
+	else {
+	    str = str.substring(1,str.length()-1);
+	    String val[] = str.split(", ");
+	    x = Integer.parseInt(val[0]);
+	    y = Integer.parseInt(val[1]);
+	}
+	this.x = x;
+	this.y = y;
+    }
+    
     public Coord(java.awt.Dimension d) {
 	this(d.width, d.height);
     }
