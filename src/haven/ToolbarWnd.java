@@ -53,12 +53,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     private void loadOpts() {
-	String val;
-	Boolean res;
-	val = Config.window_props.getProperty("toolbar2_locked", "fail");
-	val = Config.window_props.getProperty(name+"_locked", "false");
-	res = val.equals("true");
-	if(res) {
+	if(Config.window_props.getProperty(name+"_locked", "false").equals("true")) {
 	    locked = true;
 	}
 	if(Config.window_props.getProperty(name+"_flipped", "false").equals("true")) {
@@ -68,6 +63,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    folded = true;
 	    checkfold();
 	}
+	c = new Coord(Config.window_props.getProperty(name+"_pos", c.toString()));
     }
     
     private void init(int belt, int sz, Coord off, int key) {
@@ -343,7 +339,11 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    }
 	    ui.grabmouse(null);
 	}
+	if(dm) {
+	    Config.setWindowOpt(name+"_pos", this.c.toString());
+	}
 	super.mouseup(c, button);
+	
 	return (true);
     }
     
