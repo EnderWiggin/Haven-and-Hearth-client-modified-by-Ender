@@ -64,6 +64,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     int si = 4;
     double _scale = 1;
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
+    Map<String, Integer> radiuses;
     
     public double getScale() {
         return Config.zoom?_scale:1;
@@ -469,6 +470,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	glob = ui.sess.glob;
 	map = glob.map;
 	mask = new ILM(MainFrame.getScreenSize(), glob.oc);
+	radiuses = new HashMap<String, Integer>();
     }
 	
     public static Coord m2s(Coord c) {
@@ -620,8 +622,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    gob.setattr(new ResDrawable(gob, res));
 	    plob.add(gob);
 	    glob.oc.ladd(plob);
-	    if(args.length > 3)
+	    if(args.length > 3) {
 		plrad = (Integer)args[3];
+		radiuses.put(res.name, plrad);
+		if(res.name == "gfx\terobjs\bhive")
+		    radiuses.put("gfx\terobjs\bhived", plrad);
+	    }
 	    this.plob = plob;
 	} else if(msg == "unplace") {
 	    if(plob != null)
@@ -736,7 +742,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor(Color.WHITE);
     }
-	
+    
+    private void drawradius(GOut g, Coord c, int radius) {
+	g.fellipse(c, new Coord((int)(radius * 4 * Math.sqrt(0.5)), (int)(radius * 2 * Math.sqrt(0.5))));
+    }
+    
     private void drawplobeffect(GOut g) {
 	if(plob == null)
 	    return;
@@ -746,15 +756,30 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	if(gob.sc == null)
 	    return;
 	if(plrad > 0) {
+	    String name = gob.resname();
 	    g.chcolor(0, 255, 0, 32);
-	    g.fellipse(gob.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
-	    for(Gob tg : glob.oc)
-		if((tg.resname() == gob.resname())&&(tg.sc != null))
-		    g.fellipse(tg.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
+	    synchronized (glob.oc) {
+		for (Gob tg : glob.oc)
+		    if ((tg.resname() == name) && (tg.sc != null))
+			drawradius(g, tg.sc, plrad);
+	    }
 	    g.chcolor();
 	}
     }
-
+    
+    private void draweffectradius(GOut g) {
+	String name;
+	g.chcolor(0, 255, 0, 32);
+	synchronized (glob.oc) {
+	    for (Gob tg : glob.oc) {
+		name = tg.resname();
+		if (radiuses.containsKey(name) && (tg.sc != null))
+		    drawradius(g, tg.sc, radiuses.get(name));
+	    }
+	}
+	g.chcolor();
+    }
+    
     private boolean follows(Gob g1, Gob g2) {
 	Following flw;
 	if((flw = g1.getattr(Following.class)) != null) {
@@ -830,7 +855,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	if(curf != null)
 	    curf.tick("map");
 
-	drawplobeffect(g);
+	if(Config.showRadius)
+	    draweffectradius(g);
+	else
+	    drawplobeffect(g);
 	if(curf != null)
 	    curf.tick("plobeff");
 		

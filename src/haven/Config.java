@@ -64,6 +64,7 @@ public class Config {
     public static int musicVol;
     public static boolean isMusicOn = false;
     public static boolean isSoundOn = false;
+    public static boolean showRadius = false;
     
     static {
 	try {
