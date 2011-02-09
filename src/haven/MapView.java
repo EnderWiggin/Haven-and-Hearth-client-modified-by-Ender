@@ -625,8 +625,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(args.length > 3) {
 		plrad = (Integer)args[3];
 		radiuses.put(res.name, plrad);
-		if(res.name == "gfx\terobjs\bhive")
-		    radiuses.put("gfx\terobjs\bhived", plrad);
+		if(res.name.equals("gfx/terobjs/bhive"))
+		    radiuses.put("gfx/terobjs/bhived", plrad);
 	    }
 	    this.plob = plob;
 	} else if(msg == "unplace") {
@@ -760,7 +760,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor(0, 255, 0, 32);
 	    synchronized (glob.oc) {
 		for (Gob tg : glob.oc)
-		    if ((tg.resname() == name) && (tg.sc != null))
+		    if ((tg.sc != null) && (tg.resname() == name))
 			drawradius(g, tg.sc, plrad);
 	    }
 	    g.chcolor();
