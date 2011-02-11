@@ -101,8 +101,12 @@ public class Item extends Widget implements DTarget {
 	    }
 	    if(meter > 0) {
 		double a = ((double)meter) / 100.0;
-		g.chcolor(255, 255, 255, 64);
-		g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
+		int r = (int) ((1-a)*255);
+		int gr = (int) (a*255);
+		int b = 0;
+		g.chcolor(r, gr, b, 255);
+		//g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
+		g.frect(new Coord(sz.x-5,(int) ((1-a)*sz.y)), new Coord(5,(int) (a*sz.y)));
 		g.chcolor();
 	    }
 	    ttres = res.get();
@@ -146,6 +150,9 @@ public class Item extends Widget implements DTarget {
 		    if(hq)
 			tt = tt + "+";
 		}
+//		if(meter > 0) {
+//		    tt = tt + " (" + meter + "%)";
+//		}
 		return(tt);
 	    }
 	}
@@ -161,8 +168,12 @@ public class Item extends Widget implements DTarget {
 	if((now - hoverstart) < 500) {
 	    if(shorttip == null) {
 		String tt = shorttip();
-		if(tt != null)
+		if(tt != null) {
+		    if(meter > 0) {
+			    tt = tt + " (" + meter + "%)";
+			}
 		    shorttip = Text.render(tt);
+		}
 	    }
 	    return(shorttip);
 	} else {
@@ -173,6 +184,9 @@ public class Item extends Widget implements DTarget {
 		if(tip == null)
 		    return(null);
 		String tt = RichText.Parser.quote(tip);
+		if(meter > 0) {
+		    tt = tt + " (" + meter + "%)";
+		}
 		if(pg != null)
 		    tt += "\n\n" + pg.text;
 		longtip = RichText.render(tt, 200);
