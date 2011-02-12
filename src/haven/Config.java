@@ -66,6 +66,7 @@ public class Config {
     public static boolean isSoundOn = false;
     public static boolean showRadius = false;
     public static boolean showHidden = false;
+    public static boolean showDirection;
     
     static {
 	try {
@@ -200,6 +201,7 @@ public class Config {
         new_chat = options.getProperty("new_chat", "true").equals("true");
         isMusicOn = options.getProperty("music_on", "true").equals("true");
         isSoundOn = options.getProperty("sound_on", "true").equals("true");
+        showDirection = options.getProperty("show_direction", "true").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
@@ -247,6 +249,7 @@ public class Config {
         options.setProperty("music_vol", String.valueOf(musicVol));
         options.setProperty("music_on", isMusicOn?"true":"false");
         options.setProperty("sound_on", isSoundOn?"true":"false");
+        options.setProperty("show_direction", showDirection?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
