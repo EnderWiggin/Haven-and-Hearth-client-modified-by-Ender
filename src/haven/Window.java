@@ -50,6 +50,7 @@ public class Window extends Widget implements DTarget {
     static Text.Foundry cf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
     static IBox wbox;
     boolean dt = false;
+    public boolean justclose = false;
     Text cap;
     boolean dm = false;
     public Coord atl, asz, wsz;
@@ -235,7 +236,10 @@ public class Window extends Widget implements DTarget {
 
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == cbtn) {
-	    wdgmsg("close");
+	    if(justclose)
+		ui.destroy(this);
+	    else
+		wdgmsg("close");
 	} else if(sender == fbtn){
 		folded = !folded;
 		checkfold();
