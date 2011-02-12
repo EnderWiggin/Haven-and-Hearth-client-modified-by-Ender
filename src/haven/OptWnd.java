@@ -108,6 +108,13 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.timestamp;
 	    
+	    (new CheckBox(new Coord(10, 235), tab, "Show dowsing direcion") {
+		public void changed(boolean val) {
+		    Config.showDirection = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showDirection;
+	    
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
