@@ -10,5 +10,3 @@ def generate(parent, v, name, req, hk, *params):
     for param in params:
         tmp += str(param) + "\x00"
     return "action\x00" +pack("L",len(tmp))+tmp
-
-    
