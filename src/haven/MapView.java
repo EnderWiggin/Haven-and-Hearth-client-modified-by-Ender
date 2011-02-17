@@ -1083,7 +1083,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	if(cam == null)
 	    return;
 	Coord sz = this.sz;
-	SlenHud slen = ui.root.findchild(SlenHud.class);
+	SlenHud slen = ui.slen;
 	if(slen != null)
 	    sz = sz.add(0, -slen.foldheight());
 	Gob player = glob.oc.getgob(playergob);

@@ -47,11 +47,11 @@ public class RootWidget extends ConsoleHost {
 	    boolean ctrl = (((ev.getModifiers() & InputEvent.CTRL_MASK) != 0));
 	    
 	    if(Config.profile && (key == '`')) {
-		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).prof, "MV prof");
+		new Profwnd(ui.slen, ui.mainview.prof, "MV prof");
 	    } else if(Config.profile && (key == '~')) {
-		new Profwnd(findchild(SlenHud.class), gprof, "Glob prof");
+		new Profwnd(ui.slen, gprof, "Glob prof");
 	    } else if(Config.profile && (key == '!')) {
-		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).mask.prof, "ILM prof");
+		new Profwnd(ui.slen, ui.mainview.mask.prof, "ILM prof");
 	    } else if((code == KeyEvent.VK_N)&&ctrl) {
 		Config.nightvision = !Config.nightvision;
 	    } else if((code == KeyEvent.VK_X)&&ctrl) {

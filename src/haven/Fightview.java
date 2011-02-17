@@ -86,7 +86,7 @@ public class Fightview extends Widget {
     
     public Fightview(Coord c, Widget parent) {
         super(c.add(-bg.sz().x, 0), new Coord(bg.sz().x, (bg.sz().y + ymarg) * height), parent);
-	SlenHud s = ui.root.findchild(SlenHud.class);
+	SlenHud s = ui.slen;
 	curgive = new GiveButton(cgivec, ui.root, 0) {
 		public void wdgmsg(String name, Object... args) {
 		    if(name == "click")

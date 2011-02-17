@@ -337,7 +337,7 @@ public class OptWnd extends Window {
 	String[] args = camargs.get(curcam);
 	if(args == null) args = new String[0];
 
-	MapView mv = ui.root.findchild(MapView.class);
+	MapView mv = ui.mainview;
 	if (mv != null) {
 	    if     (curcam.equals("clicktgt"))   mv.cam = new MapView.OrigCam2(args);
 	    else if(curcam.equals("fixedcake"))  mv.cam = new MapView.FixedCakeCam(args);

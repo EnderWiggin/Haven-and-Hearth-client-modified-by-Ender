@@ -20,7 +20,7 @@ public class MinimapPanel extends Window {
 		private boolean v = false;
 		
 		public void click() {
-		    MapView mv = ui.root.findchild(MapView.class);
+		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
 		    down = up;
 		    up = tmp;
@@ -40,7 +40,7 @@ public class MinimapPanel extends Window {
 		private boolean v = false;
 		
 		public void click() {
-		    MapView mv = ui.root.findchild(MapView.class);
+		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
 		    down = up;
 		    up = tmp;
