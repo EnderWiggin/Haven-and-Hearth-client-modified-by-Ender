@@ -80,7 +80,7 @@ public class Layered extends Drawable {
 	}
 
 	private synchronized void usecache(Object[] id) {
-	    for(Iterator i = recency.iterator(); i.hasNext();) {
+	    for(Iterator<Object[]> i = recency.iterator(); i.hasNext();) {
 		Object[] cid = (Object[])i.next();
 		if(cid == id) {
 		    i.remove();
