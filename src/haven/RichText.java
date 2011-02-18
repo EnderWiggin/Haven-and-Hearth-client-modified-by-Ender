@@ -29,16 +29,17 @@ package haven;
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.text.AttributedCharacterIterator.Attribute;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.font.*;
-import static java.text.AttributedCharacterIterator.Attribute;
 
 public class RichText extends Text {
     public static final Parser std;
     public static final Foundry stdf;
+    public  List<Part> parts;
 
     static {
 	Map<Attribute, Object> a = new HashMap<Attribute, Object>();
@@ -48,10 +49,27 @@ public class RichText extends Text {
 	stdf = new Foundry(std);
     }
     
+    public static class ActionAttribute extends Attribute
+    {
+	public static final ActionAttribute ACTION = new ActionAttribute();
+	public ActionAttribute() {
+	    super("action attribute");
+	}
+    }
+    
     private RichText(String text) {
 	super(text);
     }
 
+    public Part partat(Coord c) {
+	for (Part part : parts) {
+	    if(c.isect(new Coord(part.x, part.y), new Coord(part.width(), part.height()))) {
+		return part;
+	    }
+	}
+	return null;
+    }
+    
     private static class RState {
 	FontRenderContext frc;
 	
@@ -161,6 +179,7 @@ public class RichText extends Text {
     public static class TextPart extends Part {
 	public AttributedString str;
 	public int start, end;
+	public String action;
 	private TextMeasurer tm = null;
 	private TextLayout tl = null;
 	
@@ -168,6 +187,9 @@ public class RichText extends Text {
 	    this.str = str;
 	    this.start = start;
 	    this.end = end;
+	    AttributedCharacterIterator aci = str.getIterator();
+	    aci.setIndex(start);
+	    action = (String) aci.getAttributes().get(ActionAttribute.ACTION);
 	}
 	
 	public TextPart(String str, Map<? extends Attribute, ?> attrs) {
@@ -383,6 +405,8 @@ public class RichText extends Text {
 		    na.put(TextAttribute.FOREGROUND, a2col(args));
 		} else if(tn == "bg") {
 		    na.put(TextAttribute.BACKGROUND, a2col(args));
+		} else if(tn == "a") {
+		    na.put(ActionAttribute.ACTION, args[0]);
 		}
 		if(s.in.peek(true) != '{')
 		    throw(new FormatException("Expected `{', got `" + (char)s.in.peek() + "'"));
@@ -565,23 +589,23 @@ public class RichText extends Text {
 	}
 
 	public RichText render(String text, int width, Object... extra) {
+	    RichText rt = new RichText(text);
 	    Map<? extends Attribute, ?> extram = null;
 	    if(extra.length > 0) {
 		extram = fillattrs(extra);
 	    }
 	    Part fp = parser.parse(text, extram);
 	    fp.prepare(rs);
-	    List<Part> parts = layout(fp, width);
-	    Coord sz = bounds(parts);
+	    rt.parts = layout(fp, width);
+	    Coord sz = bounds(rt.parts);
 	    if(sz.x < 1) sz = sz.add(1, 0);
 	    if(sz.y < 1) sz = sz.add(0, 1);
 	    BufferedImage img = TexI.mkbuf(sz);
 	    Graphics2D g = img.createGraphics();
 	    if(aa)
 		Utils.AA(g);
-	    RichText rt = new RichText(text);
 	    rt.img = img;
-	    for(Part p : parts)
+	    for(Part p : rt.parts)
 		p.render(g);
 	    return(rt);
 	}
