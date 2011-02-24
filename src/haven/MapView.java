@@ -818,7 +818,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Coord cy = c.add(m2s(new Coord(0, tilesz.y)));
 	Coord cx = c.add(m2s(new Coord(tilesz.x, 0)));
 	Color cl = g.getcolor();
-	g.chcolor(new Color(0, 0, 0));
+	g.chcolor(new Color(32, 32, 32));
 	g.line(cy, c, 1);
         g.line(c, cx, 1);
         g.chcolor(cl);
