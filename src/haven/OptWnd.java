@@ -115,6 +115,13 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.showDirection;
 	    
+	    (new CheckBox(new Coord(10, 270), tab, "Always show kin names") {
+		public void changed(boolean val) {
+		    Config.showNames = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showNames;
+	    
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {

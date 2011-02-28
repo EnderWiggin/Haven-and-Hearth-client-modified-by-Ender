@@ -992,7 +992,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    int tm = (int)(now - k.seen);
 		    Color show = null;
 		    boolean auto = (k.type & 1) == 0;
-		    if(k.gob == onmouse) {
+		    if((Config.showNames)||(k.gob == onmouse)) {
 			show = Color.WHITE;
 		    } else if(auto && (tm < 7500)) {
 			show = Utils.clipcol(255, 255, 255, 255 - ((255 * tm) / 7500));
