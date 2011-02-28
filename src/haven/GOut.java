@@ -209,6 +209,10 @@ public class GOut {
 	    double a = (i * Math.PI * 2) / 360.0;
 	    vertex(c.add((int)(Math.cos(a) * r.x), -(int)(Math.sin(a) * r.y)));
 	}
+	if((a1 - a2)%5 > 0) {
+	    double a = (a2 * Math.PI * 2) / 360.0;
+	    vertex(c.add((int)(Math.cos(a) * r.x), -(int)(Math.sin(a) * r.y)));
+	}
 	gl.glEnd();
 	checkerr();
     }
