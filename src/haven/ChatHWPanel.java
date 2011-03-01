@@ -129,11 +129,11 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 		continue;
 	    if (woff > 0) {
 		sub.visible = true;
-		sub.c = btnc.add(new Coord(sz.x - sbtnw, 0));
+		sub.c = btnc.add(sz.x - sbtnw, 0);
 	    }
 	    if (woff < wnds.size() - bpp) {
 		sdb.visible = true;
-		sdb.c = btnc.add(new Coord(sz.x - sbtnw, 20));
+		sdb.c = btnc.add(sz.x - sbtnw, 20);
 	    }
 	    HWindow w = wnds.get(wi);
 	    Button b = btns.get(w);
@@ -142,7 +142,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 		    : SlenHud.urgcols[w.urgent]);
 	    b.visible = true;
 	    b.sz.x = bw;
-	    b.c = btnc.add(new Coord(bw * (i % k), ((int) i / k) * 20));
+	    b.c = btnc.add(bw * (i % k), ((int) i / k) * 20);
 	}
     }
 
