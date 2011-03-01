@@ -116,6 +116,7 @@ public class wikiReader extends Thread{
                }else{
                    this.results = this.showPage(content);
                    this.searchResults = null;
+                   this.ready = true;
                }
             }catch (Exception ex) { }
             
@@ -126,7 +127,7 @@ public class wikiReader extends Thread{
             while(ma.find()){
                 String link = "/wiki/"+ this.findSpaces.matcher(ma.group(1)).replaceAll("_");
                 String title = (ma.group(3) == null)? ma.group(1): ma.group(3);
-                //link = $u{$col[70,70,200]{$a[link]{title}}};
+                link = "$u{$col[70,70,200]{$a["+link+"]{"+title+"}}}";
                 ma.appendReplacement(buffer, Matcher.quoteReplacement(link));
             }
               ma.appendTail(buffer);
@@ -134,7 +135,7 @@ public class wikiReader extends Thread{
         }
         private String showPage(String content){
             // TODO add code for decyphering wiki code language for single pages
-            return null;
+            return content;
         }
         private List<header> getHeaders(String content){
 
@@ -189,14 +190,4 @@ public class wikiReader extends Thread{
             }
             return headers;
         }
-}
-//helper classes for returning data
-class header{
-    String title;
-    List<searchItem> results = new ArrayList<searchItem>();
-}
-class searchItem{
-    String link;
-    String title;
-    String desc;
 }
