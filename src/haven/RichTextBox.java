@@ -26,6 +26,9 @@
 
 package haven;
 
+import haven.RichText.Part;
+import haven.RichText.TextPart;
+
 import java.awt.Color;
 
 public class RichTextBox extends Widget {
@@ -33,6 +36,7 @@ public class RichTextBox extends Widget {
     private final RichText.Foundry fnd;
     private RichText text;
     private Scrollbar sb;
+    public boolean registerclicks = false;
     
     public RichTextBox(Coord c, Coord sz, Widget parent, String text, RichText.Foundry fnd) {
 	super(c, sz, parent);
@@ -71,5 +75,18 @@ public class RichTextBox extends Widget {
     public boolean mousewheel(Coord c, int amount) {
 	sb.ch(amount * 20);
 	return(true);
+    }
+    
+    public boolean mousedown(Coord c, int button) {
+	if(registerclicks) {
+	    Part p = text.partat(c.sub(10, 10 - sb.val));
+	    if(p instanceof TextPart) {
+		TextPart tp = (TextPart)p;
+		if(tp.getAction()!=null) {
+		    wdgmsg("click", tp.getAction(), button);
+		}
+	    }
+	}
+	return super.mousedown(c, button);
     }
 }

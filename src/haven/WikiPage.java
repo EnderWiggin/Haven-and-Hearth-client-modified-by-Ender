@@ -19,6 +19,7 @@ public class WikiPage extends HWindow {
 	super(parent, title, closable);
 	content = new RichTextBox(Coord.z, sz, this, "", fnd);
 	content.bg = new Color(255, 255, 255, 128);
+	content.registerclicks = true;
 	reader = new wikiReader();
 	reader.start();
 	reader.setSearch(title);
@@ -34,6 +35,14 @@ public class WikiPage extends HWindow {
 	    showResults();
 	}
 	super.draw(g);
+    }
+    
+    public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender == content) {
+	    new WikiPage(ui.wiki, (String)args[0], true);
+	} else {
+	    super.wdgmsg(sender, msg, args);
+	}
     }
     
     private void showResults(){

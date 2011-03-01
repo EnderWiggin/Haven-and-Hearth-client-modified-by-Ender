@@ -179,7 +179,6 @@ public class RichText extends Text {
     public static class TextPart extends Part {
 	public AttributedString str;
 	public int start, end;
-	public String action;
 	private TextMeasurer tm = null;
 	private TextLayout tl = null;
 	
@@ -187,9 +186,6 @@ public class RichText extends Text {
 	    this.str = str;
 	    this.start = start;
 	    this.end = end;
-	    AttributedCharacterIterator aci = str.getIterator();
-	    aci.setIndex(start);
-	    action = (String) aci.getAttributes().get(ActionAttribute.ACTION);
 	}
 	
 	public TextPart(String str, Map<? extends Attribute, ?> attrs) {
@@ -198,6 +194,12 @@ public class RichText extends Text {
 	
 	public TextPart(String str) {
 	    this(new AttributedString(str), 0, str.length());
+	}
+	
+	public String getAction() {
+	    AttributedCharacterIterator aci = str.getIterator();
+	    aci.setIndex(start);
+	   return (String) aci.getAttributes().get(ActionAttribute.ACTION);
 	}
 	
 	private AttributedCharacterIterator ti() {
