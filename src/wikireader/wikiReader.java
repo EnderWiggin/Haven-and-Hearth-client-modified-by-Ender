@@ -40,6 +40,9 @@ public class wikiReader extends Thread{
                     this.grabPage = false;
                     this.getNextPage();
                 }
+                try {
+		    sleep(200);
+		} catch (InterruptedException e) {}
             }
         }
         //-----------------------
@@ -102,7 +105,8 @@ public class wikiReader extends Thread{
         }
         private void searchPage(String search, int limit , int offset){
        try{
-               URL addr = new URL("http://ringofbrodgar.com/w/index.php?limit="+limit+"&offset="+offset+"&search="+search);
+               //URL addr = new URL("http://ringofbrodgar.com/w/index.php?limit="+limit+"&offset="+offset+"&search="+search);
+               URL addr = new URL("http://havenandhearth.wikia.com/wiki/index.php?limit="+limit+"&offset="+offset+"&search="+search);
                BufferedReader in = new BufferedReader(new InputStreamReader(addr.openStream()));
                String inputLine,content = "";
                while ((inputLine = in.readLine()) != null) content += inputLine;
