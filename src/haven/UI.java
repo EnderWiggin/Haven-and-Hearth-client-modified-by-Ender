@@ -36,6 +36,7 @@ public class UI {
     public RootWidget root;
     public SlenHud slen;
     public MenuGrid mnu;
+    public WikiBrowser wiki;
     private Widget keygrab, mousegrab;
     public Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
     public Map<Widget, Integer> rwidgets = new HashMap<Widget, Integer>();

@@ -61,6 +61,13 @@ public class RichTextBox extends Widget {
 	sb.val = 0;
     }
     
+    public void setsz(Coord s) {
+	sz = s;
+	sb.c = new Coord(sz.x - 10, 0);
+	sb.sz = new Coord(10, sz.y);
+	settext(text.text);
+    }
+    
     public boolean mousewheel(Coord c, int amount) {
 	sb.ch(amount * 20);
 	return(true);
