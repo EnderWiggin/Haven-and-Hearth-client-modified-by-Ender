@@ -11,9 +11,11 @@ import wikilib.WikiLib;
 
 public class WikiPage extends HWindow {
     private static final Foundry fnd = new Foundry(TextAttribute.FOREGROUND, Color.BLACK);
+    private static final Color busycolor = new Color(255,255,255,128);
     private RichTextBox content;
     private WikiLib reader;
     private RequestCallback callback;
+    private Boolean busy;
     
     public WikiPage(Widget parent, String request, boolean closable) {
 	super(parent, request, closable);
@@ -22,7 +24,7 @@ public class WikiPage extends HWindow {
 	content.registerclicks = true;
 	
 	final HWindow wnd = this;
-	
+	busy = false;
 	callback = new RequestCallback() {
 	    public void run(Request req) {
 		synchronized (content) {
@@ -31,16 +33,15 @@ public class WikiPage extends HWindow {
 			title = req.title;
 			ui.wiki.updurgency(wnd, 0);
 		    }
+		    synchronized(busy) {
+			busy = false;
+		    }
 		}
 	    }
 	};
-	Request req = new Request(request, callback);
-	if(request.indexOf("/wiki/")>=0) {
-	    request = request.replaceAll("/wiki/", "");
-	    req.initPage(request);
-	}
+	
 	reader = new WikiLib();
-	reader.search(req);
+	open(request);
 	if(cbtn != null) {
 	    cbtn.raise();
 	}
@@ -53,16 +54,39 @@ public class WikiPage extends HWindow {
     
     public void draw(GOut g) {
 	super.draw(g);
+	if(busy) {
+	    g.chcolor(busycolor);
+	    g.frect(Coord.z, sz);
+	    g.chcolor();
+	}
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(busy){return;}
 	if(sender == content) {
-	    new WikiPage(ui.wiki, (String)args[0], true);
+	    String request = (String)args[0];
+	    if((Integer)args[1] == 1) {
+		open(request);
+	    } else {
+		new WikiPage(ui.wiki, request, true);
+	    }
 	} else if(sender == cbtn) {
 	    ui.destroy(this);
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
+    }
+    
+    private void open(String request) {
+	Request req = new Request(request, callback);
+	if(request.indexOf("/wiki/")>=0) {
+	    request = request.replaceAll("/wiki/", "");
+	    req.initPage(request);
+	}
+	synchronized (busy) {
+	    busy = true;
+	}
+	reader.search(req);
     }
     
     public void destroy() {
