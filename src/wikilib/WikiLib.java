@@ -19,30 +19,37 @@ public class WikiLib extends Thread {
     public WikiLib() {
 	super("WikiLib Thread");
 	requests = new ArrayList<Request>();
+	start();
     }
 
     // Thread main process
     @Override
     public void run() {
-	Boolean b = true;
-	Request req;
-	while (b) {
+	while(true) {
+	    boolean b;
 	    synchronized (requests) {
-		req = requests.remove(0);
+		b = !requests.isEmpty();;
 	    }
-	    searchPage(req);
-	    synchronized (requests) {
-		b = !requests.isEmpty();
+	    Request req;
+	    while (b) {
+		synchronized (requests) {
+		    req = requests.remove(0);
+		}
+		searchPage(req);
+		synchronized (requests) {
+		    b = !requests.isEmpty();
+		}
 	    }
+	    
+	    try {
+		sleep(250);
+	    } catch (InterruptedException e) {}
 	}
     }
 
     public void search(Request req) {
 	synchronized (requests) {
 	    requests.add(req);
-	}
-	if (!isAlive()) {
-	    start();
 	}
     }
 
@@ -80,7 +87,7 @@ public class WikiLib extends Thread {
 	content = content.replaceAll("\\{", "");
 	content = content.replaceAll("\\}", "");
 	content = content.replaceAll("<br/>", "\n");
-	content = content.replaceAll("</p>", "\n\n");
+	content = content.replaceAll("</p>", "\n");
 	content = formatH2(content);
 	content = formatLinks(content);
 	content = formatOL(content);
@@ -269,7 +276,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</h2>", aStart);
 	    
-	    buf += "$size[12]{$b{"+content.substring(aStart+4, aEnd)+"}}\n\n";
+	    buf += "\n$size[12]{$b{"+content.substring(aStart+4, aEnd)+"}}\n\n";
 
 	    idx = aEnd;
 	}
