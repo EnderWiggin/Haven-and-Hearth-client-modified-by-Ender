@@ -11,20 +11,21 @@ public class WikiBrowser extends Window implements IHWindowParent {
     static final BufferedImage grip = Resource.loadimg("gfx/hud/gripbr");
     static final Coord gzsz = new Coord(16,17);
     static final Coord minsz = new Coord(230, 150);
-    static final int addrh = 30;
+    static final int addrh = 40;
     static final int minbtnw = 90;
     static final int maxbtnw = 200;
     static final int sbtnw = 50;
-    static final int btnh = 40;
+    static final int btnh = 30;
     
-    
-    boolean rsm = false, recalcsz = false;
+    boolean rsm = false, recalcsz = true;
     Button sub, sdb;
     HWindow awnd;
     List<HWindow> wnds = new ArrayList<HWindow>();
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
     int woff = 0;
     Coord btnc;
+    TextEntry search;
+    
     
     public WikiBrowser(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent, "Wiki");
@@ -32,6 +33,7 @@ public class WikiBrowser extends Window implements IHWindowParent {
 	ui.wiki = this;
 	mrgn = Coord.z;
 	btnc = Coord.z.add(0, addrh);
+	search = new TextEntry(new Coord(5,15), new Coord(sz.x, 20), this, "");
 	sub = new Button(new Coord(300, 260), sbtnw, this,
 		Resource.loadimg("gfx/hud/slen/sau")) {
 	    public void click() {
@@ -122,6 +124,7 @@ public class WikiBrowser extends Window implements IHWindowParent {
 	    HWindow wnd = wnds.get(i);
 	    wnd.setsz(s);
 	}
+	search.sz = new Coord(s.x-10, 20);
 	updbtns();
     }
     
@@ -130,7 +133,29 @@ public class WikiBrowser extends Window implements IHWindowParent {
 	    wdgmsg(fbtn, "click");
 	    return(true);
 	}
+	if((key == 10) && (focused == search)) {
+	    open(search.text);
+	    return true;
+	}
 	return(super.type(key, ev));
+    }
+    
+    private void open(String request) {
+	new WikiPage(this, request, true);
+    }
+    
+    public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender == search) {
+	    System.out.println("asd");
+	    return;
+	} else if (sender == cbtn) {
+	    while(wnds.size() > 0) {
+		ui.destroy(wnds.get(0));
+	    }
+	    ui.destroy(this);
+	    return;
+	}
+	super.wdgmsg(sender, msg, args);
     }
     
     @Override

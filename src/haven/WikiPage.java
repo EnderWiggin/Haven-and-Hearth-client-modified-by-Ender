@@ -10,7 +10,7 @@ import wikilib.RequestCallback;
 import wikilib.WikiLib;
 
 public class WikiPage extends HWindow {
-    private static final Foundry fnd = new Foundry(TextAttribute.FOREGROUND, Color.BLACK);
+    private static final Foundry fnd = new Foundry(TextAttribute.FOREGROUND, Color.BLACK,TextAttribute.SIZE,12);
     private static final Color busycolor = new Color(255,255,255,128);
     private RichTextBox content;
     private WikiLib reader;

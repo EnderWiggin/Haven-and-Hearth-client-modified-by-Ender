@@ -146,7 +146,7 @@ public class WikiLib extends Thread {
 		String title = this.removeHtml.matcher(link).replaceAll("");
 		link = link.substring(linkidx, link.indexOf("\"", linkidx + 6)).replace("href=\"", "");
 		
-		buf += "$size[12]{$b{$u{$col[0,0,192]{$a["+ link + "]{" + title + "}}}}}\n";
+		buf += "$b{$u{$col[0,0,192]{$a["+ link + "]{" + title + "}}}}\n";
 		buf += desc + "\n\n";
 		
 		idxItem = liEnd + 1;
@@ -276,7 +276,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</h2>", aStart);
 	    
-	    buf += "\n$size[12]{$b{"+content.substring(aStart+4, aEnd)+"}}\n\n";
+	    buf += "\n$b{"+content.substring(aStart+4, aEnd)+"}\n\n";
 
 	    idx = aEnd;
 	}
