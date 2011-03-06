@@ -26,22 +26,22 @@
 
 package haven;
 
-import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 
-public class Button extends SSWidget {
-    static BufferedImage bl = Resource.loadimg("gfx/hud/buttons/tbtn/left");
-    static BufferedImage br = Resource.loadimg("gfx/hud/buttons/tbtn/right");
-    static BufferedImage bt = Resource.loadimg("gfx/hud/buttons/tbtn/top");
-    static BufferedImage bb = Resource.loadimg("gfx/hud/buttons/tbtn/bottom");
-    static BufferedImage dt = Resource.loadimg("gfx/hud/buttons/tbtn/dtex");
-    static BufferedImage ut = Resource.loadimg("gfx/hud/buttons/tbtn/utex");
+public class Button extends Widget {
+    static Tex bl = Resource.loadtex("gfx/hud/buttons/tbtn/left");
+    static Tex br = Resource.loadtex("gfx/hud/buttons/tbtn/right");
+    static Tex bt = Resource.loadtex("gfx/hud/buttons/tbtn/top");
+    static Tex bb = Resource.loadtex("gfx/hud/buttons/tbtn/bottom");
+    static Tex dt = Resource.loadtex("gfx/hud/buttons/tbtn/dtex");
+    static Tex ut = Resource.loadtex("gfx/hud/buttons/tbtn/utex");
     public Text text;
     public BufferedImage cont;
     static Text.Foundry tf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12), Color.YELLOW);
     boolean a = false;
+    public Color color = Color.YELLOW;
 	
     static {
 	Widget.addtype("btn", new WidgetFactory() {
@@ -65,50 +65,46 @@ public class Button extends SSWidget {
 	super(c, new Coord(w, 19), parent);
 	this.text = tf.render(text);
 	this.cont = this.text.img;
-	render();
     }
         
     public Button(Coord c, Integer w, Widget parent, Text text) {
 	super(c, new Coord(w, 19), parent);
 	this.text = text;
 	this.cont = text.img;
-	render();
     }
 	
     public Button(Coord c, Integer w, Widget parent, BufferedImage cont) {
 	super(c, new Coord(w, 19), parent);
 	this.cont = cont;
-	render();
     }
 	
-    public void render() {
+    public void draw(GOut g) {
 	synchronized(this) {
-	    Graphics g = graphics();
-	    g.drawImage(a?dt:ut, 3, 3, sz.x - 6, 13, null);
-	    g.drawImage(bl, 0, 0, null);
-	    g.drawImage(br, sz.x - br.getWidth(), 0, null);
-	    g.drawImage(bt, 3, 0, sz.x - 6, bt.getHeight(), null);
-	    g.drawImage(bb, 3, sz.y - bb.getHeight(), sz.x - 6, bb.getHeight(), null);
+	    //Graphics g = graphics();
+	    g.image(a?dt:ut, new Coord(3, 3), new Coord(sz.x - 6, 13));
+	    g.image(bl, new Coord());
+	    g.image(br, new Coord(sz.x - br.sz().x, 0));
+	    g.image(bt, new Coord(3, 0), new Coord(sz.x - 6, bt.sz().y));
+	    g.image(bb, new Coord(3, sz.y - bb.sz().y), new Coord(sz.x - 6, bb.sz().y));
 	    Coord tc = sz.div(2).add(Utils.imgsz(cont).div(2).inv());
 	    if(a)
 		tc = tc.add(1, 1);
-	    g.drawImage(cont, tc.x, tc.y, null);
-	    update();
+	    g.image(cont, new Coord(tc.x, tc.y));
 	}
     }
 	
     public void change(String text, Color col) {
 	if(col == null)
 	    col = Color.YELLOW;
+	color = col;
 	this.text = tf.render(text, col);
 	this.cont = this.text.img;
-	render();
     }
     
     public void change(String text) {
 	change(text, null);
     }
-
+    
     public void click() {
 	wdgmsg("activate");
     }
@@ -126,7 +122,6 @@ public class Button extends SSWidget {
 	if(button != 1)
 	    return(false);
 	a = true;
-	render();
 	ui.grabmouse(this);
 	return(true);
     }
@@ -134,7 +129,6 @@ public class Button extends SSWidget {
     public boolean mouseup(Coord c, int button) {
 	if(a && button == 1) {
 	    a = false;
-	    render();
 	    ui.grabmouse(null);
 	    if(c.isect(new Coord(0, 0), sz))
 		click();
