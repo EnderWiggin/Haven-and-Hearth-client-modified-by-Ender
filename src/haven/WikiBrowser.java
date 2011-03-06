@@ -170,8 +170,7 @@ public class WikiBrowser extends Window implements IHWindowParent {
 
     @Override
     public void updurgency(HWindow wnd, int level) {
-	// TODO Auto-generated method stub
-	
+	btns.get(wnd).change(wnd.title, wnd.visible ? Color.WHITE:null);	
     }
 
     @Override

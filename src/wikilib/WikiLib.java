@@ -8,15 +8,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import wikilib.SearchHeader;
-import wikilib.SearchItem;
-
 public class WikiLib extends Thread {
 
     private List<Request> requests;
     private Pattern removeHtml = Pattern.compile("\\<.*?\\>");
     private Pattern findKeywords = Pattern.compile("\\[\\[([\\sa-zA-Z0-9]+)(\\|\\s*([\\sa-zA-Z0-9]+))?\\]\\]");
     private Pattern findSpaces = Pattern.compile("\\s");
+    private Pattern findTitle = Pattern.compile("<h1.*>(.*)</h1>");
 
     public WikiLib() {
 	super("WikiLib Thread");
@@ -60,6 +58,9 @@ public class WikiLib extends Thread {
 		req.result = formatSearchResults(content);
 		req.complete();
 	    } else {
+		Matcher ma = findTitle.matcher(content);
+		ma.find();
+		req.title = ma.group(1);
 		req.result = formatPage(content);
 		req.complete();
 	    }
@@ -71,7 +72,6 @@ public class WikiLib extends Thread {
     
     private String formatPage(String content) {
 	// clean up the contents so less content to go through (faster)
-	//int s = content.indexOf("<div id=\"bodyContent\">");
 	int s = content.indexOf("<!-- start content -->");
 	int f = content.indexOf("<div class=\"printfooter\">");
 	content = content.substring(s,f);
@@ -251,7 +251,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</li>", aStart);
 	    
-	    buf += "$size[11]{$b{"+(ordered?i:'*')+".}} "+content.substring(aStart+4, aEnd)+"\n";
+	    buf += "$size[11]{$b{"+(ordered?i+".":"*")+"}} "+content.substring(aStart+4, aEnd)+"\n";
 
 	    idx = aEnd;
 	}

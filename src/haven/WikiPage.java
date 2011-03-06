@@ -15,22 +15,29 @@ public class WikiPage extends HWindow {
     private WikiLib reader;
     private RequestCallback callback;
     
-    public WikiPage(Widget parent, String title, boolean closable) {
-	super(parent, title, closable);
+    public WikiPage(Widget parent, String request, boolean closable) {
+	super(parent, request, closable);
 	content = new RichTextBox(Coord.z, sz, this, "", fnd);
 	content.bg = new Color(255, 255, 255, 128);
 	content.registerclicks = true;
+	
+	final HWindow wnd = this;
+	
 	callback = new RequestCallback() {
 	    public void run(Request req) {
 		synchronized (content) {
 		    content.settext(req.result);
+		    if(req.title != null) {
+			title = req.title;
+			ui.wiki.updurgency(wnd, 0);
+		    }
 		}
 	    }
 	};
-	Request req = new Request(title, callback);
-	if(title.indexOf("/wiki/")>=0) {
-	    title = title.replaceAll("/wiki/", "");
-	    req.initPage(title);
+	Request req = new Request(request, callback);
+	if(request.indexOf("/wiki/")>=0) {
+	    request = request.replaceAll("/wiki/", "");
+	    req.initPage(request);
 	}
 	reader = new WikiLib();
 	reader.search(req);
@@ -51,8 +58,16 @@ public class WikiPage extends HWindow {
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == content) {
 	    new WikiPage(ui.wiki, (String)args[0], true);
+	} else if(sender == cbtn) {
+	    ui.destroy(this);
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
+    }
+    
+    public void destroy() {
+	super.destroy();
+	callback = null;
+	reader = null;;
     }
 }
