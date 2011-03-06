@@ -67,7 +67,7 @@ public class WikiLib extends Thread {
 	    } else {
 		Matcher ma = findTitle.matcher(content);
 		ma.find();
-		req.title = ma.group(1);
+		req.title = formatSymbols(ma.group(1));
 		req.result = formatPage(content);
 		req.complete();
 	    }
@@ -93,9 +93,14 @@ public class WikiLib extends Thread {
 	content = formatOL(content);
 	content = formatUL(content);
 	content = this.removeHtml.matcher(content).replaceAll("");
-	content = content.replaceAll("&gt;",">");
-	content = content.replaceAll("&lt;","<");
+	content = formatSymbols(content);
 	return content;
+    }
+    
+    private String formatSymbols(String content) {
+	return content.replaceAll("&gt;",">")
+		.replaceAll("&lt;","<")
+		.replaceAll("&amp;","&");
     }
     
     private String formatSearchResults(String content) {
@@ -139,6 +144,7 @@ public class WikiLib extends Thread {
 		String desc = itemcnt.substring(descStart, descEnd);
 		desc = this.removeHtml.matcher(desc).replaceAll("");
 		desc = formatKeywords(desc);
+		desc = formatSymbols(desc);
 		String link = itemcnt.substring(itemcnt.indexOf("<a"),
 			itemcnt.indexOf("</a>"));
 		

@@ -1,5 +1,9 @@
 package haven;
 
+import haven.Resource.AButton;
+import haven.Resource.Pagina;
+import haven.Resource.Tooltip;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -7,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WikiBrowser extends Window implements IHWindowParent {
+public class WikiBrowser extends Window implements DTarget, DropTarget, IHWindowParent {
     static final BufferedImage grip = Resource.loadimg("gfx/hud/gripbr");
     static final Coord gzsz = new Coord(16,17);
     static final Coord minsz = new Coord(230, 150);
@@ -154,6 +158,26 @@ public class WikiBrowser extends Window implements IHWindowParent {
 	    return;
 	}
 	super.wdgmsg(sender, msg, args);
+    }
+    
+    public boolean dropthing(Coord c, Object thing) {
+	if (thing instanceof Resource) {
+	    Resource res = (Resource)thing;
+	    String name = null;
+	    Tooltip tt = res.layer(Resource.tooltip);
+	    if(tt!=null){
+		name = tt.t;
+	    } else {
+		AButton ad = res.layer(Resource.action);
+		if(ad != null) {
+		    name = ad.name;
+		}
+	    }
+	    if(name!=null)
+		open(name);
+	    return true;
+	}
+	return false;
     }
     
     @Override
