@@ -145,14 +145,12 @@ public class WikiBrowser extends Window implements IHWindowParent {
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if(sender == search) {
-	    System.out.println("asd");
-	    return;
-	} else if (sender == cbtn) {
+	if (sender == cbtn) {
 	    while(wnds.size() > 0) {
 		ui.destroy(wnds.get(0));
 	    }
 	    ui.destroy(this);
+	    ui.wiki = null;
 	    return;
 	}
 	super.wdgmsg(sender, msg, args);

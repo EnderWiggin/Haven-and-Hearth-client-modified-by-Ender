@@ -52,6 +52,7 @@ public class Glob {
 	paginae.add(Resource.load("paginae/act/add"));
 	paginae.add(Resource.load("paginae/add/rad"));
 	paginae.add(Resource.load("paginae/add/shhd"));
+	paginae.add(Resource.load("paginae/add/wiki"));
     }
     
     public static class CAttr extends Observable {

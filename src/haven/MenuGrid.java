@@ -252,6 +252,12 @@ public class MenuGrid extends Widget {
 	    Config.showRadius = !Config.showRadius; 
 	} else if(list[1].equals("hidden")) {
 	    Config.showHidden = !Config.showHidden;
+	} else if(list[1].equals("wiki")) {
+	    if(ui.wiki == null) {
+		new WikiBrowser(MainFrame.getCenterPoint().sub(115, 75), Coord.z, ui.root);
+	    } else {
+		ui.wiki.wdgmsg(ui.wiki.cbtn, "click");
+	    }
 	}
 	use(null);
     }
