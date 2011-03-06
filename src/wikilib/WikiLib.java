@@ -226,7 +226,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</ol>", aStart);
 	    
-	    buf += formatLI(content.substring(aStart+4, aEnd), true);
+	    buf += "\n"+formatLI(content.substring(aStart+4, aEnd), true);
 
 	    idx = aEnd;
 	}
@@ -244,7 +244,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</ul>", aStart);
 	    
-	    buf += formatLI(content.substring(aStart+4, aEnd), false);
+	    buf += "\n"+formatLI(content.substring(aStart+4, aEnd), false);
 
 	    idx = aEnd;
 	}
