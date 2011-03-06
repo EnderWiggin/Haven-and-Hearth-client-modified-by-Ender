@@ -61,10 +61,16 @@ public class RichText extends Text {
 	super(text);
     }
 
-    public Part partat(Coord c) {
+    public String actionat(Coord c) {
 	for (Part part : parts) {
 	    if(c.isect(new Coord(part.x, part.y), new Coord(part.width(), part.height()))) {
-		return part;
+		String action = null;
+		if(part instanceof TextPart)
+		{
+		    TextPart tp = (TextPart) part;
+		    action = tp.getAction(tp.charAt(c.x - part.x));
+		}
+		return action;
 	    }
 	}
 	return null;
@@ -197,9 +203,13 @@ public class RichText extends Text {
 	}
 	
 	public String getAction() {
+	   return getAction(0);
+	}
+	
+	public String getAction(int index) {
 	    AttributedCharacterIterator aci = str.getIterator();
-	    aci.setIndex(start);
-	   return (String) aci.getAttributes().get(ActionAttribute.ACTION);
+	    aci.setIndex(start + index);
+	    return (String) aci.getAttributes().get(ActionAttribute.ACTION);
 	}
 	
 	private AttributedCharacterIterator ti() {
@@ -237,6 +247,14 @@ public class RichText extends Text {
 	public int width() {
 	    if(start == end) return(0);
 	    return((int)tm().getAdvanceBetween(start, end));
+	}
+	
+	public int charAt(int x) {
+	    for(int i=start+1; i<end; i++) {
+		if(x < tm().getAdvanceBetween(start, i))
+		    return i - start - 1;
+	    }
+	    return -1;
 	}
 	
 	public int height() {

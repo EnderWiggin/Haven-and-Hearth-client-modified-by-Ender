@@ -79,12 +79,9 @@ public class RichTextBox extends Widget {
     
     public boolean mousedown(Coord c, int button) {
 	if(registerclicks) {
-	    Part p = text.partat(c.sub(10, 10 - sb.val));
-	    if(p instanceof TextPart) {
-		TextPart tp = (TextPart)p;
-		if(tp.getAction()!=null) {
-		    wdgmsg("click", tp.getAction(), button);
-		}
+	    String action = text.actionat(c.sub(10, 10 - sb.val));
+	    if(action!=null) {
+		wdgmsg("click", action, button);
 	    }
 	}
 	return super.mousedown(c, button);
