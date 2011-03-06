@@ -1,28 +1,42 @@
 package haven;
 
+import haven.RichText.Foundry;
+
 import java.awt.Color;
 import java.awt.font.TextAttribute;
-import java.util.List;
 
-import wikireader.header;
-import wikireader.searchItem;
-import wikireader.wikiReader;
-
-import haven.RichText.Foundry;
+import wikilib.Request;
+import wikilib.RequestCallback;
+import wikilib.WikiLib;
 
 public class WikiPage extends HWindow {
     private static final Foundry fnd = new Foundry(TextAttribute.FOREGROUND, Color.BLACK);
     private RichTextBox content;
-    private wikiReader reader;
+    private WikiLib reader;
+    private RequestCallback callback;
     
     public WikiPage(Widget parent, String title, boolean closable) {
 	super(parent, title, closable);
 	content = new RichTextBox(Coord.z, sz, this, "", fnd);
 	content.bg = new Color(255, 255, 255, 128);
 	content.registerclicks = true;
-	reader = new wikiReader();
-	reader.start();
-	reader.setSearch(title);
+	callback = new RequestCallback() {
+	    public void run(Request req) {
+		synchronized (content) {
+		    content.settext(req.result);
+		}
+	    }
+	};
+	Request req = new Request(title, callback);
+	if(title.indexOf("/wiki/")>=0) {
+	    title = title.replaceAll("/wiki/", "");
+	    req.initPage(title);
+	}
+	reader = new WikiLib();
+	reader.search(req);
+	if(cbtn != null) {
+	    cbtn.raise();
+	}
     }
     
     public void setsz(Coord s) {
@@ -31,9 +45,6 @@ public class WikiPage extends HWindow {
     }
     
     public void draw(GOut g) {
-	if(reader.isReady()){
-	    showResults();
-	}
 	super.draw(g);
     }
     
@@ -43,25 +54,5 @@ public class WikiPage extends HWindow {
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
-    }
-    
-    private void showResults(){
-        List<header> results = reader.getSearchResults();
-        String buf = "";
-        //Wasn't search results ready but it was page
-        if(results != null) {
-            //go through the array list
-            for(header head : results){
-        	if(head.title != null)  System.out.println(head.title);
-        	buf+="***********************\n";
-        	for(searchItem item : head.results){
-        	    buf+="$size[14]{$b{$u{$col[70,70,200]{$a["+item.link+"]{"+item.title+"}}}}}\n";
-        	    buf+=item.desc+"\n\n";
-        	}
-            }
-        } else {
-            buf = reader.getResults();
-        }
-        content.settext(buf);
     }
 }
