@@ -74,6 +74,18 @@ public class MinimapPanel extends Window {
 	    }
 	};
 	
+	new IButton(new Coord(90, 12), this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
+	    public void click() {
+		mm.setScale(mm.scale+1);
+	    }
+	};
+	
+	new IButton(new Coord(105, 12), this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
+	    public void click() {
+		mm.setScale(mm.scale-1);
+	    }
+	};
+	
 	pack();
 	this.c = new Coord( MainFrame.getInnerSize().x - this.sz.x, 7);
     }

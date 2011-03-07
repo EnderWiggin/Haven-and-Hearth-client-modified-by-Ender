@@ -50,8 +50,17 @@ public class MiniMap extends Widget {
     boolean hidden = false, grid=false;;
     MapView mv;
     boolean dm = false;
-    double scale = 1;
+    public int scale = 4;
+    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
     
+    public double getScale() {
+        return scales[scale];
+    }
+
+    public void setScale(int scale) {
+	this.scale = Math.max(0,Math.min(scale,scales.length-1)); 
+    }
+
     static class Loader implements Runnable {
 	Thread me = null;
 	
@@ -224,13 +233,14 @@ public class MiniMap extends Widget {
 
     public Coord xlate(Coord c, boolean in) {
 	if(in) {
-	    return c.div(scale);
+	    return c.div(getScale());
 	} else {
-	    return c.mul(scale);
+	    return c.mul(getScale());
 	}
     }
     
     public void draw(GOut og) {
+	double scale = getScale();
 	Coord hsz = sz.div(scale);
 	
 	Coord tc = mv.mc.div(tilesz).add(off.div(scale));
