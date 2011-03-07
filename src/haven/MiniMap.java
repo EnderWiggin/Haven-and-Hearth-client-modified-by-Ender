@@ -50,6 +50,7 @@ public class MiniMap extends Widget {
     boolean hidden = false, grid=false;;
     MapView mv;
     boolean dm = false;
+    double scale = 1;
     
     static class Loader implements Runnable {
 	Thread me = null;
@@ -221,24 +222,40 @@ public class MiniMap extends Widget {
 	    }));
     }
 
-    public void draw(GOut g) {
-	Coord tc = mv.mc.div(tilesz).add(off);
+    public Coord xlate(Coord c, boolean in) {
+	if(in) {
+	    return c.div(scale);
+	} else {
+	    return c.mul(scale);
+	}
+    }
+    
+    public void draw(GOut og) {
+	Coord hsz = sz.div(scale);
+	
+	Coord tc = mv.mc.div(tilesz).add(off.div(scale));
 	Coord ulg = tc.div(cmaps);
-	while((ulg.x * cmaps.x) - tc.x + (sz.x / 2) > 0)
+	while((ulg.x * cmaps.x) - tc.x + (hsz.x / 2) > 0)
 	    ulg.x--;
-	while((ulg.y * cmaps.y) - tc.y + (sz.y / 2) > 0)
+	while((ulg.y * cmaps.y) - tc.y + (hsz.y / 2) > 0)
 	    ulg.y--;
 	boolean missing = false;
 	if(!hidden) {
-	    for(int y = 0; (y * bg.sz().y) < sz.y; y++) {
-		    for(int x = 0; (x * bg.sz().x) < sz.x; x++) {
-			g.image(bg, new Coord(x*bg.sz().x, y*bg.sz().y));
+	    Coord s = bg.sz();
+	    for(int y = 0; (y * s.y) < sz.y; y++) {
+		    for(int x = 0; (x * s.x) < sz.x; x++) {
+			og.image(bg, new Coord(x*s.x, y*s.y));
 		    }
 	    }
 	}
+	
+	GOut g = og.reclip(og.ul.mul((1-scale)/scale), hsz);
+	g.gl.glPushMatrix();
+	g.scale(scale);
+	
 	outer:
-	for(int y = ulg.y; (y * cmaps.y) - tc.y + (sz.y / 2) < sz.y; y++) {
-	    for(int x = ulg.x; (x * cmaps.x) - tc.x + (sz.x / 2) < sz.x; x++) {
+	for(int y = ulg.y; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
+	    for(int x = ulg.x; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
 		Coord cg = new Coord(x, y);
 		if (mappingStartPoint == null) {
 		    mappingStartPoint = new Coord(cg);
@@ -266,6 +283,11 @@ public class MiniMap extends Widget {
 		    }
 		    mnm = grid.mnm;
 		}
+		
+		Tex tex = getgrid(mnm);
+		if (tex == null)
+		    continue;
+		
 		if (!gridsHashes.containsKey(mnm)) {
 		    if ((Math.abs(relativeCoordinates.x) > 450)
 			    || (Math.abs(relativeCoordinates.y) > 450)) {
@@ -273,8 +295,8 @@ public class MiniMap extends Widget {
 			mappingStartPoint = cg;
 			relativeCoordinates = new Coord(0, 0);
 		    }
-			gridsHashes.put(mnm, relativeCoordinates);
-			coordHashes.put(relativeCoordinates, mnm);
+		    gridsHashes.put(mnm, relativeCoordinates);
+		    coordHashes.put(relativeCoordinates, mnm);
 		}
 		else {
 		    Coord coordinates = gridsHashes.get(mnm);
@@ -282,10 +304,7 @@ public class MiniMap extends Widget {
 			mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
 		    }
 		}
-		Tex tex = getgrid(mnm);
-		if (tex == null)
-		    continue;
-		if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(sz.div(2)));
+		if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(hsz.div(2)));
 	    }
 	}
 	
@@ -294,16 +313,16 @@ public class MiniMap extends Widget {
 	    g.chcolor(200,32,64,255);
 	    Coord c1, c2;
 	    c1 = new Coord();
-	    c2 = new Coord(sz.x,0);
-	    for(int y = ulg.y+1; (y * cmaps.y) - tc.y + (sz.y / 2) < sz.y; y++) {
-		c1.y = (y * cmaps.y) - tc.y + (sz.y / 2);
+	    c2 = new Coord(hsz.x,0);
+	    for(int y = ulg.y+1; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
+		c1.y = (y * cmaps.y) - tc.y + (hsz.y / 2);
 		c2.y = c1.y;
 		g.line(c1, c2, 1);
 	    }
 	    c1 = new Coord();
-	    c2 = new Coord(0,sz.y);
-	    for(int x = ulg.x+1; (x * cmaps.x) - tc.x + (sz.x / 2) < sz.x; x++) {
-		c1.x = (x * cmaps.x) - tc.x + (sz.x / 2);
+	    c2 = new Coord(0,hsz.y);
+	    for(int x = ulg.x+1; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
+		c1.x = (x * cmaps.x) - tc.x + (hsz.x / 2);
 		c2.x = c1.x;
 		g.line(c1, c2, 1);
 	    }
@@ -320,7 +339,7 @@ public class MiniMap extends Widget {
 			Coord ptc = m.getc();
 			if(ptc == null)
 			    continue;
-			ptc = ptc.div(tilesz).add(tc.inv()).add(sz.div(2));
+			ptc = ptc.div(tilesz).add(tc.inv()).add(hsz.div(2));
 			g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 128);
 			g.image(plx.layer(Resource.imgc).tex(), ptc.add(plx.layer(Resource.negc).cc.inv()));
 			g.chcolor();
@@ -328,7 +347,8 @@ public class MiniMap extends Widget {
 		}
 	    }
 	}
-	super.draw(g);
+	g.gl.glPopMatrix();
+	super.draw(og);
     }
     
     public boolean mousedown(Coord c, int button) {
