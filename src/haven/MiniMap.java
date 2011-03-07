@@ -46,8 +46,10 @@ public class MiniMap extends Widget {
     public static final Tex bg = Resource.loadtex("gfx/hud/mmap/ptex");
     public static final Tex nomap = Resource.loadtex("gfx/hud/mmap/nomap");
     public static final Resource plx = Resource.load("gfx/hud/mmap/x");
+    public Coord off, doff;
     boolean hidden = false;
     MapView mv;
+    boolean dm = false;
     
     static class Loader implements Runnable {
 	Thread me = null;
@@ -200,6 +202,7 @@ public class MiniMap extends Widget {
     public MiniMap(Coord c, Coord sz, Widget parent, MapView mv) {
 	super(c, sz, parent);
 	this.mv = mv;
+	off = new Coord();
 	newMappingSession();
     }
     
@@ -219,7 +222,7 @@ public class MiniMap extends Widget {
     }
 
     public void draw(GOut g) {
-	Coord tc = mv.mc.div(tilesz);
+	Coord tc = mv.mc.div(tilesz).add(off);
 	Coord ulg = tc.div(cmaps);
 	while((ulg.x * cmaps.x) - tc.x + (sz.x / 2) > 0)
 	    ulg.x--;
@@ -303,6 +306,34 @@ public class MiniMap extends Widget {
 	    }
 	}
 	super.draw(g);
+    }
+    
+    public boolean mousedown(Coord c, int button) {
+	if(button == 1) {
+	    ui.grabmouse(this);
+	    dm = true;
+	    doff = c;
+	}
+	return(true);
+    }
+    
+    public boolean mouseup(Coord c, int button) {
+	if(dm) {
+	    ui.grabmouse(null);
+	    dm = false;
+	    return true;
+	} else {
+	    return super.mouseup(c, button);
+	}
+    }
+    
+    public void mousemove(Coord c) {
+	if(dm) {
+	    off = off.add(doff.sub(c));
+	    doff = c;
+	} else {
+	    super.mousemove(c);
+	}
     }
     
     public void hide() {
