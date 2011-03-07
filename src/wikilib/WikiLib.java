@@ -264,7 +264,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</li>", aStart);
 	    
-	    buf += "$size[11]{$b{"+(ordered?i+".":"*")+"}} "+content.substring(aStart+4, aEnd)+"\n";
+	    buf += "$size[11]{$b{"+(ordered?i+".":"•")+"}} "+content.substring(aStart+4, aEnd)+"\n";
 
 	    idx = aEnd;
 	}
