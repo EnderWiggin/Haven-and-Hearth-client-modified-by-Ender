@@ -30,7 +30,7 @@ public class DowseFx extends FreeSprite
     if(Config.showDirection) {
 	Window wnd = new Window(new Coord(100,100),Coord.z,UI.instance.root,"Direction");
 	wnd.justclose = true;
-	new Label(Coord.z, wnd, "Direction: "+(a0 + 270)+", delta: "+d);
+	new Label(Coord.z, wnd, "Direction: "+(a0 + 270)+"°, delta: "+d+"°");
 	wnd.pack();
     }
   }
