@@ -58,7 +58,7 @@ public class MinimapPanel extends Window {
 	
 	mm = new MiniMap(new Coord(0, 32), new Coord(125, 125), this, ui.mainview);
 	
-	new IButton(new Coord(45, 8), this, Resource.loadimg("gfx/hud/slen/nonet"), Resource.loadimg("gfx/hud/slen/autht")) {
+	new IButton(new Coord(45, 8), this, Resource.loadimg("gfx/hud/buttons/gridu"), Resource.loadimg("gfx/hud/buttons/gridd")) {
 	    public void click() {
 		BufferedImage tmp = down;
 		down = up;
@@ -68,7 +68,7 @@ public class MinimapPanel extends Window {
 	    }
 	};
 	
-	new IButton(new Coord(65, 8), this, Resource.loadimg("gfx/hud/slen/nonet"), Resource.loadimg("gfx/hud/slen/autht")) {
+	new IButton(new Coord(65, 8), this, Resource.loadimg("gfx/hud/buttons/centeru"), Resource.loadimg("gfx/hud/buttons/centerd")) {
 	    public void click() {
 		mm.off = new Coord();
 	    }

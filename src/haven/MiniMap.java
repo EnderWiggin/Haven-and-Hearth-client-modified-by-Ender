@@ -319,7 +319,7 @@ public class MiniMap extends Widget {
 	}
 	
 	//grid
-	if(grid) {
+	if(grid&&!hidden) {
 	    g.chcolor(200,32,64,255);
 	    Coord c1, c2;
 	    c1 = new Coord();
