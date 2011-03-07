@@ -288,6 +288,27 @@ public class MiniMap extends Widget {
 		if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(sz.div(2)));
 	    }
 	}
+	
+	//grid
+	g.chcolor(200,32,64,255);
+	Coord c1, c2;
+	c1 = new Coord();
+	c2 = new Coord(sz.x,0);
+	for(int y = ulg.y+1; (y * cmaps.y) - tc.y + (sz.y / 2) < sz.y; y++) {
+	    c1.y = (y * cmaps.y) - tc.y + (sz.y / 2);
+	    c2.y = c1.y;
+	    g.line(c1, c2, 1);
+	}
+	c1 = new Coord();
+	c2 = new Coord(0,sz.y);
+	for(int x = ulg.x+1; (x * cmaps.x) - tc.x + (sz.x / 2) < sz.x; x++) {
+	    c1.x = (x * cmaps.x) - tc.x + (sz.x / 2);
+	    c2.x = c1.x;
+	    g.line(c1, c2, 1);
+	}
+	g.chcolor();
+	//end of grid
+	
 	if(missing) {
 	    if(!hidden) g.image(nomap, Coord.z);
 	} else {
