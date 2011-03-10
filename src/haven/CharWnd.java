@@ -732,6 +732,10 @@ public class CharWnd extends Window {
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(ui.rwidgets.containsKey(sender)) {
+	    super.wdgmsg(sender, msg, args);
+	    return;
+	}
 	if(sender instanceof Item)
 	    return;
 	if(sender instanceof Inventory)
