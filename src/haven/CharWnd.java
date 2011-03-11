@@ -35,7 +35,7 @@ public class CharWnd extends Window {
     Widget cattr, skill, belief, study;
     Worship ancw;
     Label cost, skcost;
-    Label explbl;
+    Label explbl, snlbl;
     int exp;
     int btime = 0;
     SkillList psk, nsk;
@@ -647,6 +647,10 @@ public class CharWnd extends Window {
 	belief.visible = false;
 
 	study = new Widget(Coord.z, new Coord(400, 275), this);
+	new Label(new Coord(138, 210), study, "Used attention:");
+	new Label(new Coord(138, 225), study, "Attention limit:");
+	snlbl = new Label(new Coord(240, 210), study, "");
+	new Label(new Coord(240, 225), study, Integer.toString(ui.sess.glob.cattr.get("intel").base));
 	study.visible = false;
 	if(studyid >= 0)
 	    ui.bind(study, studyid);
@@ -692,6 +696,8 @@ public class CharWnd extends Window {
 	if(msg == "exp") {
 	    exp = (Integer)args[0];
 	    updexp();
+	} else if(msg == "studynum") {
+	    snlbl.settext(Integer.toString((Integer)args[0]));
 	} else if(msg == "reset") {
 	    updexp();
 	} else if(msg == "nsk") {
