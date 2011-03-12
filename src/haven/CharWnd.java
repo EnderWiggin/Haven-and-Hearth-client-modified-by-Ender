@@ -642,7 +642,7 @@ public class CharWnd extends Window {
 	new Belief("martial", "martial", "peaceful", true, 18, 190);
 	new Belief("change", "tradition", "change", false, 18, 225);
 
-	ancw = new Worship(new Coord(210, 10), belief, "The Ancestors", ancestors);
+	ancw = new Worship(new Coord(255, 40), belief, "The Ancestors", ancestors);
 	
 	belief.visible = false;
 
