@@ -32,10 +32,10 @@ import java.awt.font.TextAttribute;
 import java.util.*;
 
 public class CharWnd extends Window {
-    Widget cattr, skill, belief, worship;
+    Widget cattr, skill, belief, study;
     Worship ancw;
     Label cost, skcost;
-    Label explbl;
+    Label explbl, snlbl;
     int exp;
     int btime = 0;
     SkillList psk, nsk;
@@ -55,7 +55,10 @@ public class CharWnd extends Window {
     static {
 	Widget.addtype("chr", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
-		    return(new CharWnd(c, parent));
+		    int studyid = -1;
+		    if(args.length > 0)
+			studyid = (Integer)args[0];
+		    return(new CharWnd(c, parent, studyid));
 		}
 	    });
     }
@@ -549,7 +552,7 @@ public class CharWnd extends Window {
 	new SAttr(id, 320, y);
     }
 
-    public CharWnd(Coord c, Widget parent) {
+    public CharWnd(Coord c, Widget parent, int studyid) {
 	super(c, new Coord(400, 340), parent, "Character Sheet");
 	
 	int y;
@@ -638,51 +641,63 @@ public class CharWnd extends Window {
 	new Belief("nature", "nature", "industry", true, 18, 155);
 	new Belief("martial", "martial", "peaceful", true, 18, 190);
 	new Belief("change", "tradition", "change", false, 18, 225);
+
+	ancw = new Worship(new Coord(255, 40), belief, "The Ancestors", ancestors);
 	
 	belief.visible = false;
 
-	worship = new Widget(Coord.z, new Coord(400, 275), this);
-	ancw = new Worship(new Coord(150, 50), worship, "The Ancestors", ancestors);
-	worship.visible = false;
-
-	new IButton(new Coord(10, 310), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
+	study = new Widget(Coord.z, new Coord(400, 275), this);
+	new Label(new Coord(138, 210), study, "Used attention:");
+	new Label(new Coord(138, 225), study, "Attention limit:");
+	snlbl = new Label(new Coord(240, 210), study, "");
+	new Label(new Coord(240, 225), study, Integer.toString(ui.sess.glob.cattr.get("intel").base));
+	study.visible = false;
+	if(studyid >= 0)
+	    ui.bind(study, studyid);
+	
+	int bx = 10;
+	new IButton(new Coord(bx, 310), this, Resource.loadimg("gfx/hud/charsh/attribup"), Resource.loadimg("gfx/hud/charsh/attribdown")) {
 	    public void click() {
 		cattr.visible = true;
 		skill.visible = false;
 		belief.visible = false;
-		worship.visible = false;
+		study.visible = false;
 	    }
 	}.tooltip = "Attributes";
-	new IButton(new Coord(80, 310), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
+	if(studyid >= 0) {
+	    new IButton(new Coord(bx += 70, 310), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
+		public void click() {
+		    cattr.visible = false;
+		    skill.visible = false;
+		    belief.visible = false;
+		    study.visible = true;
+		}
+	    }.tooltip = "Study";
+	}
+	new IButton(new Coord(bx += 70, 310), this, Resource.loadimg("gfx/hud/charsh/skillsup"), Resource.loadimg("gfx/hud/charsh/skillsdown")) {
 	    public void click() {
 		cattr.visible = false;
 		skill.visible = true;
 		belief.visible = false;
-		worship.visible = false;
+		study.visible = false;
 	    }
 	}.tooltip = "Skills";
-	new IButton(new Coord(150, 310), this, Resource.loadimg("gfx/hud/charsh/ideasup"), Resource.loadimg("gfx/hud/charsh/ideasdown")) {
+	new IButton(new Coord(bx += 70, 310), this, Resource.loadimg("gfx/hud/charsh/worshipup"), Resource.loadimg("gfx/hud/charsh/worshipdown")) {
 	    public void click() {
 		cattr.visible = false;
 		skill.visible = false;
 		belief.visible = true;
-		worship.visible = false;
+		study.visible = false;
 	    }
 	}.tooltip = "Personal Beliefs";
-	new IButton(new Coord(220, 310), this, Resource.loadimg("gfx/hud/charsh/worshipup"), Resource.loadimg("gfx/hud/charsh/worshipdown")) {
-	    public void click() {
-		cattr.visible = false;
-		skill.visible = false;
-		belief.visible = false;
-		worship.visible = true;
-	    }
-	}.tooltip = "Worship";
     }
     
     public void uimsg(String msg, Object... args) {
 	if(msg == "exp") {
 	    exp = (Integer)args[0];
 	    updexp();
+	} else if(msg == "studynum") {
+	    snlbl.settext(Integer.toString((Integer)args[0]));
 	} else if(msg == "reset") {
 	    updexp();
 	} else if(msg == "nsk") {
@@ -723,6 +738,10 @@ public class CharWnd extends Window {
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(ui.rwidgets.containsKey(sender)) {
+	    super.wdgmsg(sender, msg, args);
+	    return;
+	}
 	if(sender instanceof Item)
 	    return;
 	if(sender instanceof Inventory)
