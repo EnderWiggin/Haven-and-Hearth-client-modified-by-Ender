@@ -97,7 +97,6 @@ public class Config {
 	    nightvision = false;
 	    zoom = false;
 	    new_minimap = true;
-	    GoogleTranslator.apikey = "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0";
 	    GoogleTranslator.lang = "en";
 	    GoogleTranslator.turnedon = false;
 	    currentCharName = "";
@@ -197,6 +196,7 @@ public class Config {
             System.out.println(e);
         }
         String hideObjects = options.getProperty("hideObjects", "");
+        GoogleTranslator.apikey = options.getProperty("GoogleAPIKey", "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0");
         zoom = options.getProperty("zoom", "false").equals("true");
         new_minimap = options.getProperty("new_minimap", "true").equals("true");
         new_chat = options.getProperty("new_chat", "true").equals("true");
@@ -243,6 +243,7 @@ public class Config {
             hideObjects += objectName+",";
         }
         options.setProperty("hideObjects", hideObjects);
+        options.setProperty("GoogleAPIKey", GoogleTranslator.apikey);
         options.setProperty("timestamp", (timestamp)?"true":"false");
         options.setProperty("zoom", zoom?"true":"false");
         options.setProperty("new_minimap", new_minimap?"true":"false");

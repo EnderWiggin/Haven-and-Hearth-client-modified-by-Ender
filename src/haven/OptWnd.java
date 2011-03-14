@@ -326,8 +326,17 @@ public class OptWnd extends Window {
 	    langs.add("en", new Coord(150, 45));
 	    langs.add("ru", new Coord(150, 70));
 	    langs.check(GoogleTranslator.lang);
-
-	    new Label(new Coord(100, 120), tab, "Powered by Google Translate");
+	    
+	    new Label(new Coord(25, 125), tab, "Google API Key:");
+	    final TextEntry te = new TextEntry(new Coord(25, 150), new Coord(300, 20), tab, GoogleTranslator.apikey);
+	    new Button(new Coord(330, 150), 50, tab, "set") {
+		public void click() {
+		    GoogleTranslator.apikey = te.text;
+		    Config.saveOptions();
+		}
+	    };
+	    
+	    new Label(new Coord(100, 190), tab, "Powered by Google Translate");
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
