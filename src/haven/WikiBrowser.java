@@ -1,7 +1,6 @@
 package haven;
 
 import haven.Resource.AButton;
-import haven.Resource.Pagina;
 import haven.Resource.Tooltip;
 
 import java.awt.Color;

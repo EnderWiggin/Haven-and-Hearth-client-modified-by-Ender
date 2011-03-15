@@ -82,13 +82,15 @@ public class WikiLib extends Thread {
 	int s = content.indexOf("<!-- start content -->");
 	int f = content.indexOf("<div class=\"printfooter\">");
 	content = content.substring(s,f);
-	content = removeTables(content);
+	content = removeSpanSort(content);
+	content = formatTables(content);
 	content = removeScript(content);
 	content = content.replaceAll("\\{", "");
 	content = content.replaceAll("\\}", "");
 	content = content.replaceAll("<br/>", "\n");
 	content = content.replaceAll("</p>", "\n");
 	content = formatH2(content);
+	content = formatH3(content);
 	content = formatLinks(content);
 	content = formatOL(content);
 	content = formatUL(content);
@@ -100,6 +102,8 @@ public class WikiLib extends Thread {
     private String formatSymbols(String content) {
 	return content.replaceAll("&gt;",">")
 		.replaceAll("&lt;","<")
+		.replaceAll("&nbsp;"," ")
+		.replaceAll("&#39;","'")
 		.replaceAll("&amp;","&");
     }
     
@@ -162,18 +166,18 @@ public class WikiLib extends Thread {
 	return buf;
     }
     
-    private String removeTables(String content) {
+    private String removeSpanSort(String content) {
 	String buf = "";
 	int idx = 0;
 	int aStart = 0;
-	int aEnd = -8;
-	while (content.indexOf("<table", idx) != -1) {
-	    aStart = content.indexOf("<table", idx);
-	    buf += content.substring(aEnd+8, aStart);
-	    aEnd = content.indexOf("</table>", aStart);
+	int aEnd = -7;
+	while (content.indexOf("<span class=\"smwsortkey\">", idx) != -1) {
+	    aStart = content.indexOf("<span class=\"smwsortkey\">", idx);
+	    buf += content.substring(aEnd+7, aStart);
+	    aEnd = content.indexOf("</span>", aStart);
 	    idx = aEnd;
 	}
-	buf += content.substring(aEnd+8);
+	buf += content.substring(aEnd+7);
 	return buf;
     }
     
@@ -189,6 +193,70 @@ public class WikiLib extends Thread {
 	    idx = aEnd;
 	}
 	buf += content.substring(aEnd+9);
+	return buf;
+    }
+    
+    private String formatTables(String content) {
+	String buf = "";
+	int idx = 0;
+	int aStart = 0;
+	int aEnd = -8;
+	while (content.indexOf("<table", idx) != -1) {
+	    aStart = content.indexOf("<table", idx);
+	    buf += content.substring(aEnd+8, aStart);
+	    
+	    idx = content.indexOf(">", aStart)+1;
+	    aEnd = content.indexOf("</table>", idx);
+	    
+	    if(content.substring(aStart, idx).indexOf("toc") < 0) {
+		aStart = idx;
+		buf += formatTR(content.substring(aStart, aEnd).replaceAll("<th", "<td").replaceAll("</th", "</td"));
+		buf += "\n\n";
+	    }
+	    
+	    idx = aEnd;
+	}
+	buf += content.substring(aEnd+8);
+	return buf;
+    }
+    
+    private String formatTR(String content) {
+	String buf = "";
+	int idx = 0;
+	int aStart = 0;
+	int aEnd = -5;
+	while (content.indexOf("<tr", idx) != -1) {
+	    aStart = content.indexOf("<tr", idx);
+	    //buf += content.substring(aEnd+5, aStart);
+	    aStart = content.indexOf(">", aStart)+1;
+	    aEnd = content.indexOf("</tr>", aStart);
+	    
+	    buf += "\n"+formatTD(content.substring(aStart, aEnd))+"   |";
+
+	    idx = aEnd;
+	}
+	//buf += content.substring(aEnd+5);
+	return buf;
+    }
+    
+    private String formatTD(String content) {
+	String buf = "";
+	int idx = 0;
+	int aStart = 0;
+	int aEnd = -5;
+	int i=0;
+	while (content.indexOf("<td", idx) != -1) {
+	    i++;
+	    aStart = content.indexOf("<td", idx);
+	    aStart = content.indexOf(">", aStart)+1;
+	    //buf += content.substring(aEnd+5, aStart);
+	    aEnd = content.indexOf("</td>", aStart);
+	    
+	    buf += "   |   "+content.substring(aStart, aEnd);
+
+	    idx = aEnd;
+	}
+	//buf += content.substring(aEnd+5);
 	return buf;
     }
     
@@ -264,7 +332,7 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</li>", aStart);
 	    
-	    buf += "$size[11]{$b{"+(ordered?i+".":"•")+"}} "+content.substring(aStart+4, aEnd)+"\n";
+	    buf += "$b{"+(ordered?i+".":"•")+"} "+content.substring(aStart+4, aEnd)+"\n";
 
 	    idx = aEnd;
 	}
@@ -282,7 +350,25 @@ public class WikiLib extends Thread {
 	    buf += content.substring(aEnd+5, aStart);
 	    aEnd = content.indexOf("</h2>", aStart);
 	    
-	    buf += "\n$b{"+content.substring(aStart+4, aEnd)+"}\n\n";
+	    buf += "\n$size[13]{$b{"+content.substring(aStart+4, aEnd)+"}}\n\n";
+
+	    idx = aEnd;
+	}
+	buf += content.substring(aEnd+5);
+	return buf;
+    }
+    
+    private String formatH3(String content) {
+	String buf = "";
+	int idx = 0;
+	int aStart = 0;
+	int aEnd = -5;
+	while (content.indexOf("<h3>", idx) != -1) {
+	    aStart = content.indexOf("<h3>", idx);
+	    buf += content.substring(aEnd+5, aStart);
+	    aEnd = content.indexOf("</h3>", aStart);
+	    
+	    buf += "\n$b{"+content.substring(aStart+4, aEnd)+"}";
 
 	    idx = aEnd;
 	}
