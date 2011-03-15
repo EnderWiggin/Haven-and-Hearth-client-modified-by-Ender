@@ -74,6 +74,9 @@ public class ILM extends TexRT {
     }
 	
     protected boolean subrend(GOut g) {
+	if(Config.nightvision){
+	    return false;
+	}
 	GL gl = g.gl;
 	gl.glClearColor(255, 255, 255, 255);
 	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
