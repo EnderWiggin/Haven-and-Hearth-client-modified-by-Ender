@@ -294,10 +294,6 @@ public class MiniMap extends Widget {
 		    mnm = grid.mnm;
 		}
 		
-		Tex tex = getgrid(mnm);
-		if (tex == null)
-		    continue;
-		
 		if (!gridsHashes.containsKey(mnm)) {
 		    if ((Math.abs(relativeCoordinates.x) > 450)
 			    || (Math.abs(relativeCoordinates.y) > 450)) {
@@ -314,6 +310,11 @@ public class MiniMap extends Widget {
 			mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
 		    }
 		}
+		
+		Tex tex = getgrid(mnm);
+		if (tex == null)
+		    continue;
+		
 		if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(hsz.div(2)));
 	    }
 	}
