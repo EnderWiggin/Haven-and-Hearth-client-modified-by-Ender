@@ -58,7 +58,15 @@ public class MCache {
 
     static {
 	colors.put(0, new Color(32,32,128));	//deep water
+	colors.put(1, new Color(54,54,160));	//shallow water
 	colors.put(8, new Color(160,160,160));	//stone paving
+	colors.put(9, new Color(200,200,200));	//plowed
+	colors.put(10, new Color(45,70,16));	//coniferous forest
+	colors.put(11, new Color(80,100,32));	//broadleaf forest
+	colors.put(13, new Color(16,128,16));	//grass
+	colors.put(15, new Color(132,160,32));	//heath
+	colors.put(17, new Color(132,222,32));	//swamp 1
+	colors.put(19, new Color(160,94,32));	//stomped dirt
 	colors.put(25, new Color(112,116,112));	//cave
 	colors.put(255, new Color(0,0,0));	//void
     }

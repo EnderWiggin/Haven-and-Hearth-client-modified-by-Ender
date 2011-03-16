@@ -305,7 +305,7 @@ public class MiniMap extends Widget {
 		
 		Tex tex = null;
 		
-		if(mnm != null) {
+		if (mnm != null) {
 		    caveTex.clear();
 		    if (!gridsHashes.containsKey(mnm)) {
 			if ((Math.abs(relativeCoordinates.x) > 450)
@@ -326,7 +326,6 @@ public class MiniMap extends Widget {
 		
 		    tex = getgrid(mnm);
 		} else {
-		    //Grid gd = mv.map.grids.get(cg);
 		    if(grid != null) {
 			tex = grid.getTex();
 			if(tex != null) {
