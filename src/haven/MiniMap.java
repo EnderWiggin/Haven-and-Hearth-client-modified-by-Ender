@@ -279,7 +279,6 @@ public class MiniMap extends Widget {
 	g.gl.glPushMatrix();
 	g.scale(scale);
 	
-	outer:
 	for(int y = ulg.y; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
 	    for(int x = ulg.x; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
 		Coord cg = new Coord(x, y);
