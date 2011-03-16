@@ -28,6 +28,7 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
+import haven.MCache.Grid;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -57,6 +58,7 @@ public class MiniMap extends Widget {
     static long mappingSession = 0;
     static Map<String, Coord> gridsHashes = new TreeMap<String, Coord>();
     static Map<Coord, String> coordHashes = new TreeMap<Coord, String>();
+    static Map<Coord, Tex> caveTex = new TreeMap<Coord, Tex>();
     public static final Tex bg = Resource.loadtex("gfx/hud/mmap/ptex");
     public static final Tex nomap = Resource.loadtex("gfx/hud/mmap/nomap");
     public static final Resource plx = Resource.load("gfx/hud/mmap/x");
@@ -263,7 +265,7 @@ public class MiniMap extends Widget {
 	    ulg.x--;
 	while((ulg.y * cmaps.y) - tc.y + (hsz.y / 2) > 0)
 	    ulg.y--;
-	boolean missing = false;
+	
 	if(!hidden) {
 	    Coord s = bg.sz();
 	    for(int y = 0; (y * s.y) < sz.y; y++) {
@@ -284,7 +286,7 @@ public class MiniMap extends Widget {
 		if (mappingStartPoint == null) {
 		    mappingStartPoint = new Coord(cg);
 		}
-		MCache.Grid grid;
+		Grid grid;
 		synchronized(ui.sess.glob.map.req) {
 		    synchronized(ui.sess.glob.map.grids) {
 			grid = ui.sess.glob.map.grids.get(cg);
@@ -294,22 +296,17 @@ public class MiniMap extends Widget {
 		}
 		Coord relativeCoordinates = cg.sub(mappingStartPoint);
 		String mnm = null;
+		
 		if(grid == null) {
-		    if(coordHashes.containsKey(relativeCoordinates))
-			mnm = coordHashes.get(relativeCoordinates);
-		    else
-			continue;
+		    mnm = coordHashes.get(relativeCoordinates);
+		} else {
+		    mnm = grid.mnm;
 		}
-		if (mnm == null) {
-		    if (grid.mnm == null) {
-			missing = true;
-			//break outer;
-		    } else {
-			mnm = grid.mnm;
-		    }
-		}
+		
 		Tex tex = null;
-		if(!missing) {
+		
+		if(mnm != null) {
+		    caveTex.clear();
 		    if (!gridsHashes.containsKey(mnm)) {
 			if ((Math.abs(relativeCoordinates.x) > 450)
 				|| (Math.abs(relativeCoordinates.y) > 450)) {
@@ -329,7 +326,14 @@ public class MiniMap extends Widget {
 		
 		    tex = getgrid(mnm);
 		} else {
-		    tex = mv.map.grids.get(cg).getTex();
+		    //Grid gd = mv.map.grids.get(cg);
+		    if(grid != null) {
+			tex = grid.getTex();
+			if(tex != null) {
+			    caveTex.put(cg, tex);
+			}
+		    }
+		    tex = caveTex.get(cg);
 		}
 		
 		if (tex == null)
