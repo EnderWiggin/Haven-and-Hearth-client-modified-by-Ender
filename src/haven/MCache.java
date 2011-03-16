@@ -26,9 +26,21 @@
 
 package haven;
 
-import java.util.*;
-import haven.Resource.Tileset;
 import haven.Resource.Tile;
+import haven.Resource.Tileset;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.zip.Inflater;
 
 public class MCache {
@@ -42,7 +54,15 @@ public class MCache {
     public static final Coord cmaps = new Coord(100, 100);
     Random gen;
     java.util.Map<Integer, Defrag> fragbufs = new TreeMap<Integer, Defrag>();
-	
+    public static final Map<Integer, Color> colors = new TreeMap<Integer, Color>();
+
+    static {
+	colors.put(0, new Color(32,32,128));	//deep water
+	colors.put(8, new Color(160,160,160));	//stone paving
+	colors.put(25, new Color(112,116,112));	//cave
+	colors.put(255, new Color(0,0,0));	//void
+    }
+    
     public class Overlay {
 	Coord c1, c2;
 	int mask;
@@ -76,6 +96,8 @@ public class MCache {
 	Coord gc;
 	OCache oc = sess.glob.oc;
 	String mnm;
+	BufferedImage img;
+	Tex tex;
 		
 	public Grid(Coord gc) {
 	    this.gc = gc;
@@ -99,7 +121,33 @@ public class MCache {
 		regged = false;
 	    }
 	}
-		
+	
+	public void render() {
+	    img = TexI.mkbuf(cmaps);
+	    Graphics2D g = img.createGraphics();
+	    Coord c = new Coord();
+	    
+	    for(c.y = 0; c.y < cmaps.x; c.y++) {
+		for(c.x = 0; c.x < cmaps.y; c.x++) {
+		    int id =tiles[c.x][c.y];
+		    Color col = colors.get(id);
+		    if(col == null){
+			col = new Color(255, 0, 255);
+			System.out.println(id);
+		    }
+		    g.setColor(col);
+		    g.fillRect(c.x, c.y, 1, 1);
+		}
+	    }
+	}
+	
+	public Tex getTex() {
+	    if((tex == null)&&(img != null)) {
+		tex = new TexI(img);
+	    }
+	    return tex;
+	}
+	
 	public void makeflavor() {
 	    fo.clear();
 	    Coord c = new Coord(0, 0);
@@ -392,6 +440,7 @@ public class MCache {
 			replace(grids.remove(c));
 		    }
 		    grids.put(c, g);
+		    g.render();
 		}
 	    }
 	}

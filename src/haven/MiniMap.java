@@ -28,11 +28,25 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
-import java.security.*;
-import java.util.*;
-import java.net.*;
-import java.io.*;
+
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.WeakHashMap;
+
 import javax.imageio.ImageIO;
 
 public class MiniMap extends Widget {
@@ -51,14 +65,14 @@ public class MiniMap extends Widget {
     MapView mv;
     boolean dm = false;
     public int scale = 4;
-    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
+    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2};
     
     public double getScale() {
         return scales[scale];
     }
 
     public void setScale(int scale) {
-	this.scale = Math.max(0,Math.min(scale,scales.length-1)); 
+	this.scale = Math.max(0,Math.min(scale,scales.length-1));
     }
 
     static class Loader implements Runnable {
@@ -289,29 +303,35 @@ public class MiniMap extends Widget {
 		if (mnm == null) {
 		    if (grid.mnm == null) {
 			missing = true;
-			break outer;
+			//break outer;
+		    } else {
+			mnm = grid.mnm;
 		    }
-		    mnm = grid.mnm;
+		}
+		Tex tex = null;
+		if(!missing) {
+		    if (!gridsHashes.containsKey(mnm)) {
+			if ((Math.abs(relativeCoordinates.x) > 450)
+				|| (Math.abs(relativeCoordinates.y) > 450)) {
+			    newMappingSession();
+			    mappingStartPoint = cg;
+			    relativeCoordinates = new Coord(0, 0);
+			}
+			gridsHashes.put(mnm, relativeCoordinates);
+			coordHashes.put(relativeCoordinates, mnm);
+		    }
+		    else {
+			Coord coordinates = gridsHashes.get(mnm);
+			if (!coordinates.equals(relativeCoordinates)) {
+			    mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
+			}
+		    }
+		
+		    tex = getgrid(mnm);
+		} else {
+		    tex = mv.map.grids.get(cg).getTex();
 		}
 		
-		if (!gridsHashes.containsKey(mnm)) {
-		    if ((Math.abs(relativeCoordinates.x) > 450)
-			    || (Math.abs(relativeCoordinates.y) > 450)) {
-			newMappingSession();
-			mappingStartPoint = cg;
-			relativeCoordinates = new Coord(0, 0);
-		    }
-		    gridsHashes.put(mnm, relativeCoordinates);
-		    coordHashes.put(relativeCoordinates, mnm);
-		}
-		else {
-		    Coord coordinates = gridsHashes.get(mnm);
-		    if (!coordinates.equals(relativeCoordinates)) {
-			mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
-		    }
-		}
-		
-		Tex tex = getgrid(mnm);
 		if (tex == null)
 		    continue;
 		
@@ -341,20 +361,16 @@ public class MiniMap extends Widget {
 	}
 	//end of grid
 	
-	if(missing) {
-	    if(!hidden) g.image(nomap, Coord.z);
-	} else {
-	    if((!plx.loading)&&(!hidden)) {
-		synchronized(ui.sess.glob.party.memb) {
-		    for(Party.Member m : ui.sess.glob.party.memb.values()) {
-			Coord ptc = m.getc();
-			if(ptc == null)
-			    continue;
-			ptc = ptc.div(tilesz).add(tc.inv()).add(hsz.div(2));
-			g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 128);
-			g.image(plx.layer(Resource.imgc).tex(), ptc.add(plx.layer(Resource.negc).cc.inv()));
-			g.chcolor();
-		    }
+	if((!plx.loading)&&(!hidden)) {
+	    synchronized(ui.sess.glob.party.memb) {
+		for(Party.Member m : ui.sess.glob.party.memb.values()) {
+		    Coord ptc = m.getc();
+		    if(ptc == null)
+			continue;
+		    ptc = ptc.div(tilesz).add(tc.inv()).add(hsz.div(2));
+		    g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 128);
+		    g.image(plx.layer(Resource.imgc).tex(), ptc.add(plx.layer(Resource.negc).cc.inv()));
+		    g.chcolor();
 		}
 	    }
 	}
