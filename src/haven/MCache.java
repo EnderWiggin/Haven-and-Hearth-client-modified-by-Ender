@@ -68,6 +68,7 @@ public class MCache {
 	colors.put(17, new Color(132,222,32));	//swamp 1
 	colors.put(19, new Color(160,94,32));	//dirt
 	colors.put(20, new Color(212,164,81));	//sand
+	colors.put(21, new Color(212,212,212));	//house
 	colors.put(24, new Color(80,80,80));	//mine
 	colors.put(25, new Color(112,116,112));	//cave
 	colors.put(255, new Color(0,0,0));	//void
