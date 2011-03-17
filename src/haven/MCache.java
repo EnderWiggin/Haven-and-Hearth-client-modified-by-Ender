@@ -57,16 +57,17 @@ public class MCache {
     public static final Map<Integer, Color> colors = new TreeMap<Integer, Color>();
 
     static {
-	colors.put(0, new Color(32,32,128));	//deep water
-	colors.put(1, new Color(54,54,160));	//shallow water
+	colors.put(0, new Color(0x3152a2));	//deep water
+	colors.put(1, new Color(0x4480c8));	//shallow water
 	colors.put(8, new Color(160,160,160));	//stone paving
 	colors.put(9, new Color(200,200,200));	//plowed
-	colors.put(10, new Color(45,70,16));	//coniferous forest
-	colors.put(11, new Color(80,100,32));	//broadleaf forest
-	colors.put(13, new Color(16,128,16));	//grass
-	colors.put(15, new Color(132,160,32));	//heath
+	colors.put(10, new Color(0x497937));	//coniferous forest
+	colors.put(11, new Color(0x60864f));	//broadleaf forest
+	colors.put(12, new Color(220,220,200));	//thicket
+	colors.put(13, new Color(0x468d37));	//grass
+	colors.put(15, new Color(0x999927));	//heath
 	colors.put(17, new Color(132,222,32));	//swamp 1
-	colors.put(19, new Color(160,94,32));	//dirt
+	colors.put(19, new Color(0xa67936));	//dirt
 	colors.put(20, new Color(212,164,81));	//sand
 	colors.put(21, new Color(212,212,212));	//house
 	colors.put(24, new Color(80,80,80));	//mine

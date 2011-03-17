@@ -324,6 +324,9 @@ public class MiniMap extends Widget {
 		    }
 		
 		    tex = getgrid(mnm);
+		    if((tex == null)&&(grid!=null)){
+			tex = grid.getTex();
+		    }
 		} else {
 		    if(grid != null) {
 			tex = grid.getTex();
@@ -333,6 +336,8 @@ public class MiniMap extends Widget {
 		    }
 		    tex = caveTex.get(cg);
 		}
+		
+		//caveTex.isEmpty();
 		
 		if (tex == null)
 		    continue;
@@ -378,6 +383,38 @@ public class MiniMap extends Widget {
 	}
 	g.gl.glPopMatrix();
 	super.draw(og);
+    }
+    
+    public boolean isCave() {
+	synchronized (caveTex) {
+	   return !caveTex.isEmpty(); 
+	}
+    }
+    
+    public void saveCaveMaps() {
+	synchronized (caveTex) {
+	    Coord rc = null;
+	    String sess = Utils.sessdate(System.currentTimeMillis());
+	    File outputfile = new File("cave/" + sess);
+	    try {
+		Writer currentSessionFile = new FileWriter("cave/currentsession.js");
+		currentSessionFile.write("var currentSession = '" + sess + "';\n");
+		currentSessionFile.close();
+	    } catch (IOException e1) { }
+	    outputfile.mkdirs();
+	    for(Coord c:caveTex.keySet()) {
+		if(rc == null){
+		    rc = c;
+		}
+		TexI tex = (TexI) caveTex.get(c);
+		c = c.sub(rc);
+		String fileName = "tile_" + c.x + "_" + c.y;
+		outputfile = new File("cave/"	+ sess + "/" + fileName + ".png");
+		try {
+		    ImageIO.write(tex.back, "png", outputfile);
+		} catch (IOException e) { }
+	    }
+	}
     }
     
     public boolean mousedown(Coord c, int button) {

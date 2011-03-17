@@ -6,10 +6,12 @@ public class MinimapPanel extends Window {
 
     static final BufferedImage grip = Resource.loadimg("gfx/hud/gripbr");
     static final Coord gzsz = new Coord(16,17);
-    static final Coord minsz = new Coord(100, 100);
+    static final Coord minsz = new Coord(150, 125);
     
     boolean rsm = false;
     MiniMap mm;
+    IButton btncave;
+    
     public MinimapPanel(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent, "Minimap");
 	mrgn = Coord.z;
@@ -56,7 +58,7 @@ public class MinimapPanel extends Window {
 	    };
 	}
 	
-	mm = new MiniMap(new Coord(0, 32), new Coord(125, 125), this, ui.mainview);
+	mm = new MiniMap(new Coord(0, 32), minsz, this, ui.mainview);
 	
 	new IButton(new Coord(45, 8), this, Resource.loadimg("gfx/hud/buttons/gridu"), Resource.loadimg("gfx/hud/buttons/gridd")) {
 	    public void click() {
@@ -74,15 +76,21 @@ public class MinimapPanel extends Window {
 	    }
 	};
 	
-	new IButton(new Coord(90, 12), this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
+	new IButton(new Coord(88, 12), this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
 	    public void click() {
 		mm.setScale(mm.scale+1);
 	    }
 	};
 	
-	new IButton(new Coord(105, 12), this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
+	new IButton(new Coord(103, 12), this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
 	    public void click() {
 		mm.setScale(mm.scale-1);
+	    }
+	};
+	
+	btncave = new IButton(new Coord(121, 8), this, Resource.loadimg("gfx/hud/buttons/saveu"), Resource.loadimg("gfx/hud/buttons/saved")) {
+	    public void click() {
+		mm.saveCaveMaps();
 	    }
 	};
 	
@@ -97,6 +105,7 @@ public class MinimapPanel extends Window {
     
     public void draw(GOut g) {
 	super.draw(g);
+	btncave.visible = !folded && mm.isCave();
 	if(!folded)
 	    g.image(grip, sz.sub(gzsz));
     }
