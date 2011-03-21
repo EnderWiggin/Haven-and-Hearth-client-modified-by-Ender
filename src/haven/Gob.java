@@ -180,8 +180,24 @@ public class Gob implements Sprite.Owner {
     }
     
     public String resname() {
+	Resource res;
 	ResDrawable dw = getattr(ResDrawable.class);
-	return (dw != null && dw.res.get() != null ? dw.res.get().name : "");
+	String name = "";
+	if(dw != null){
+	    res = dw.res.get();
+	    if(res != null) {
+		name = res.name;
+	    }
+	} else {
+	    Layered ld = getattr(Layered.class);
+	    if((ld != null)&&(ld.layers.size()>0)) {
+		res = ld.layers.get(0).get();
+		if(res != null)
+		    name = res.name;
+	    }
+	}
+	//return (dw != null && dw.res.get() != null ? dw.res.get().name : "");
+	return name;
     }
     
     public Random mkrandoom() {

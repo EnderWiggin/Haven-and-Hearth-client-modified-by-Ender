@@ -65,8 +65,11 @@ public class MCache {
 	colors.put(11, new Color(0x60864f));	//broadleaf forest
 	colors.put(12, new Color(220,220,200));	//thicket
 	colors.put(13, new Color(0x468d37));	//grass
+	colors.put(14, new Color(0xac7664));	//moor
 	colors.put(15, new Color(0x999927));	//heath
-	colors.put(17, new Color(132,222,32));	//swamp 1
+	colors.put(16, new Color(0x60ad8a));	//swamp 1
+	colors.put(17, new Color(0x3d6242));	//swamp 2
+	colors.put(18, new Color(0x5e6453));	//swamp 3
 	colors.put(19, new Color(0xa67936));	//dirt
 	colors.put(20, new Color(212,164,81));	//sand
 	colors.put(21, new Color(212,212,212));	//house

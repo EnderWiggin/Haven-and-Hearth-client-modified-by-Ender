@@ -65,6 +65,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     double _scale = 1;
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
     Map<String, Integer> radiuses;
+    int beast_check_delay = 0;
     
     public double getScale() {
         return Config.zoom?_scale:1;
@@ -773,8 +774,32 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	synchronized (glob.oc) {
 	    for (Gob tg : glob.oc) {
 		name = tg.resname();
-		if (radiuses.containsKey(name) && (tg.sc != null))
+		if (radiuses.containsKey(name) && (tg.sc != null)) {
 		    drawradius(g, tg.sc, radiuses.get(name));
+		//} else if (name.indexOf("kritter/boar")>=0) {
+		} else if (name.indexOf("skeleton")>=0) {
+		    g.chcolor(255, 0, 0, 96);
+		    drawradius(g, tg.sc, 150);
+		    g.chcolor(0, 255, 0, 32);
+		}
+	    }
+	}
+	g.chcolor();
+    }
+    
+    private void drawbeastradius(GOut g) {
+	String name;
+	g.chcolor(255, 0, 0, 96);
+	synchronized (glob.oc) {
+	    for (Gob tg : glob.oc) {
+		name = tg.resname();
+		if(name == "") {
+		    System.out.println(name);
+		}
+		if ((tg.sc!=null)&&(name.indexOf("/cdv")<0)&&((name.indexOf("kritter/boar")>=0)
+			|| (name.indexOf("kritter/bear")>=0))) {
+		    drawradius(g, tg.sc, 100);
+		}
 	    }
 	}
 	g.chcolor();
@@ -859,6 +884,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    draweffectradius(g);
 	else
 	    drawplobeffect(g);
+	
+	if(Config.showBeast){
+	    drawbeastradius(g);
+	}
+	
 	if(curf != null)
 	    curf.tick("plobeff");
 		
@@ -935,6 +965,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
 	    for(Gob gob : glob.oc) {
+//		if(beast_check_delay <= 0) {
+//		    beast_check_delay = 5;
+//		    if(gob.resname().indexOf("skeleton")>=0){
+//			System.out.println("skeleton!!!!!");
+//		    }
+//		} else {
+//		    beast_check_delay--;
+//		}
 		drawer.chcur(gob);
 		Coord dc = m2s(gob.getc()).add(oc);
 		gob.sc = dc;

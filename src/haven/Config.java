@@ -66,6 +66,7 @@ public class Config {
     public static boolean isSoundOn = false;
     public static boolean showRadius = false;
     public static boolean showHidden = false;
+    public static boolean showBeast = true;
     public static boolean showDirection;
     public static boolean showNames;
     
