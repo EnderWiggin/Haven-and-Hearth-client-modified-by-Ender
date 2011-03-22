@@ -351,7 +351,10 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	if ((!locked)&&(dragging == null) && (pressed != null)) {
 	    dragging = pressed;
 	    int slot = index(c);
-	    pressed = layout[slot] = null;
+	    if(slot >= 0){
+		layout[slot] = null;
+	    }
+	    pressed = null;
 	    setBeltSlot(slot, "");
 	} else {
 	    super.mousemove(c);
