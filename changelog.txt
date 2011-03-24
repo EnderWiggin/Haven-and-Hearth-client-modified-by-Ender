@@ -1,5 +1,18 @@
 Change log 
 
+24.03.11
+ * made study intergace display modified INT as attantion limit.
+ * fixed crash when dragging icons from toolbar
+ * added declaiming verification
+ * added hotkey toolbar belt switching.
+   ALT-<1..5> - F-key toolbar.
+   CTRL-<1..5> - digit-key toolbar
+ * chat now saves it's size and positions
+ * added button (X->A) to toggle highlight of boars and bears.
+ * removed screen going black if not loaded grid appears on screen
+ * added shortcuts for moving speed.
+   ALT-Q - crawl, ALT-W - walk, ALT-E - run, ALT-R - sprint
+
 18.03.11
  * while minimap pic is loading from server automated pic is shown.
    It has less details, but better than nothing. Good when server
