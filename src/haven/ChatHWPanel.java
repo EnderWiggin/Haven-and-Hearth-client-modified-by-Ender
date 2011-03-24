@@ -62,8 +62,18 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	};
 	sub.visible = sdb.visible = false;
 	fbtn = new IButton(Coord.z, this, fbtni[0], fbtni[1], fbtni[2]);
+	loadOpts();
     }
-
+    
+    private void loadOpts() {
+	String str = Config.window_props.getProperty("chat_pos_folded", "null");
+	if(!str.equals("null")){
+	    sc = new Coord(str);
+	}
+	sz = new Coord(Config.window_props.getProperty("chat_size", sz.toString()));
+	c = new Coord(Config.window_props.getProperty("chat_pos", c.toString()));
+    }
+    
     private void sup() {
 	woff--;
 	updbtns();
@@ -277,13 +287,15 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    setfold(false);
 	    return true;
 	}
-		
+	
 	if (dm) {
 	    ui.grabmouse(null);
 	    dm = false;
+	    Config.setWindowOpt("chat_pos"+(folded?"_folded":""), this.c.toString());
 	} else if (rsm){
 	    ui.grabmouse(null);
 	    rsm = false;
+	    Config.setWindowOpt("chat_size", this.sz.toString());
 	} else {
 	    super.mouseup(c, button);
 	}
