@@ -240,10 +240,13 @@ public class MenuGrid extends Widget {
 		curoff += 14;
 	} else {
 	    String [] ad = r.layer(Resource.action).ad;
-	    if(ad[0].equals("@"))
+	    if(ad[0].equals("@")) {
 		usecustom(ad);
-	    else
+	    } else if (ad[0].equals("declaim")){
+		new DeclaimVerification(ui.root, ad);
+	    } else {
 		wdgmsg("act", (Object[])ad);
+	    }
 	}
     }
     
