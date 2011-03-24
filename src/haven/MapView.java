@@ -776,11 +776,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		name = tg.resname();
 		if (radiuses.containsKey(name) && (tg.sc != null)) {
 		    drawradius(g, tg.sc, radiuses.get(name));
-		//} else if (name.indexOf("kritter/boar")>=0) {
-		} else if (name.indexOf("skeleton")>=0) {
-		    g.chcolor(255, 0, 0, 96);
-		    drawradius(g, tg.sc, 150);
-		    g.chcolor(0, 255, 0, 32);
 		}
 	    }
 	}

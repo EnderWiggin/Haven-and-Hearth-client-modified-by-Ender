@@ -252,9 +252,23 @@ public class MenuGrid extends Widget {
     
     private void usecustom(String[] list) {
 	if(list[1].equals("radius")) {
-	    Config.showRadius = !Config.showRadius; 
+	    Config.showRadius = !Config.showRadius;
+	    String str = "Radius highlight is turned "+((Config.showRadius)?"ON":"OFF");
+	    ui.cons.out.println(str);
+	    ui.slen.error(str);
+	    Config.saveOptions();
 	} else if(list[1].equals("hidden")) {
 	    Config.showHidden = !Config.showHidden;
+	    String str = "Hidden object highlight is turned "+((Config.showHidden)?"ON":"OFF");
+	    ui.cons.out.println(str);
+	    ui.slen.error(str);
+	    Config.saveOptions();
+	} else if(list[1].equals("animal")) {
+	    Config.showBeast = !Config.showBeast;
+	    String str = "Animal highlight is turned "+((Config.showBeast)?"ON":"OFF");
+	    ui.cons.out.println(str);
+	    ui.slen.error(str);
+	    Config.saveOptions();
 	} else if(list[1].equals("wiki")) {
 	    if(ui.wiki == null) {
 		new WikiBrowser(MainFrame.getCenterPoint().sub(115, 75), Coord.z, ui.root);

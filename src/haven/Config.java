@@ -66,7 +66,7 @@ public class Config {
     public static boolean isSoundOn = false;
     public static boolean showRadius = false;
     public static boolean showHidden = false;
-    public static boolean showBeast = true;
+    public static boolean showBeast = false;
     public static boolean showDirection;
     public static boolean showNames;
     
@@ -205,6 +205,9 @@ public class Config {
         isSoundOn = options.getProperty("sound_on", "true").equals("true");
         showDirection = options.getProperty("show_direction", "true").equals("true");
         showNames = options.getProperty("showNames", "true").equals("true");
+        showBeast = options.getProperty("showBeast", "false").equals("true");
+        showRadius = options.getProperty("showRadius", "false").equals("true");
+        showHidden = options.getProperty("showHidden", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
@@ -255,6 +258,9 @@ public class Config {
         options.setProperty("sound_on", isSoundOn?"true":"false");
         options.setProperty("show_direction", showDirection?"true":"false");
         options.setProperty("showNames", showNames?"true":"false");
+        options.setProperty("showBeast", showBeast?"true":"false");
+        options.setProperty("showRadius", showRadius?"true":"false");
+        options.setProperty("showHidden", showHidden?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
