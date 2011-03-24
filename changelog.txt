@@ -1,0 +1,124 @@
+Change log 
+
+18.03.11
+ * while minimap pic is loading from server automated pic is shown.
+   It has less details, but better than nothing. Good when server
+   lags. Some terrain types not colored yet, they shown as purple
+   areas.
+ * in caves (and homes, cellars etc.) minimap have save button.
+   It saves current map into new folder in 'cave' folder in game
+   dir.
+    
+16.03.11
+  * added cave mapper
+ 
+15.03.11
+  * possibly fixed minimap naming
+  * improved wiki browser. now it supports tables.
+ 
+14.03.11
+  * merged with W5 loftar's changes
+  * now it's possible to change Google API key in options->translate
+  
+07.03.11
+ * dowsing/prospecting direction message now has ° symbol next 
+   to numbers, to indicate that this is degrees.
+ * changed * to • in Unordered List formatting in wiki browser
+ * added ability to scroll minimap. Just drag map with mouse.
+   To center it on player press button with green circle on 
+   minimap panel.
+ * added grid to minimap. To toggle it press button with red
+   grid on minimap panel.
+ * added zoom to minimap. Use + and - buttons on minimap panel.
+
+06.03.11
+ * added option to always show kin names. Can be toggled in 
+   Options->General
+ * again fixed direction display when angle delta is less than 
+   5 degrees
+ * fixed rustroot icon in craft menu
+ * added simple haven wiki browser. Accessible through X->W
+ 
+09.02.11
+ * fixed toolbar not accepting hotkey if it is in focus
+ * toolbars now remember their status (folded/locked/flipped)
+ * toolbars now remember their positions
+ * added new elements to grid menu in lower-right:
+    - added option to toggle show radius of objects [x->r].
+    - added option to toggle highlight hidden objects [x->s].
+
+05.02.11
+ * reworked audio options
+ * chat can be toggled to old state in options->general
+ * overhauled new toolbars and removed standard one. New ones
+   can be flipped and locked to prevent accidental changes.
+   There are two of them - one have 10 slots and hotkeys 0-9,
+   and another one have 12 slots and hotkeys F1-F12
+ * toolbars and map will fold/unfold on ESC
+
+01.02.11
+ * removed going AFK
+ * fixed buddy window not showing on CTRL-B
+ * fixed object-on-cursor right-clicking (farming, adding fuel
+   , etc.) when zoomed
+
+01.02.11
+ * fixed rightclicking when zoomed. Frarming is still bugged though
+ * fixed chat input field overlapping channel buttons
+ * When your kin becomes online/offline you will be notified.
+
+30.01.11
+ * Vandalised minimap. It's now not part of bottom HUD, but 
+   separate floating and resizeable window. Can be toggled in 
+   Options->General.
+
+28.01.11
+ * Added translation of runestones. Additionally all translated
+   text will contain tag of detected source language.
+
+27.01.11
+ * enlarged chat font
+ * made some too bright fonts darker.
+ * any input field now should accept CTRL-V for pasting text.
+ * ability to add timestamp in chat. Can be toggled in Options->General
+ * ability to zoom with mouse wheel. Can be toggled in options->camera
+
+25.01.11
+ * chat window now draggable
+ * chat window now folds into small icon
+ * chat window remembers opened and closed positions separately.
+
+24.01.11
+ * Reworked chat window.
+
+23.01.11
+ * Fixed chat scrolling by mousewheel.
+ * CTRL-G shows grid.
+
+22.01.11.2
+ * ported Gilbertus's mapper.
+
+22.01.11
+ * Now all items that have influence radius (beehives, mine
+   supports, etc.) will show their radius when placing item 
+   of same kind. E.g. - when placing a beehive all beehives 
+   show their radius.
+
+21.01.11
+ * Added preview of what will become new belt system. Added
+   floating toolbar to the left screen borber. You can fold
+   it, move it, drop actions on it (though no items from inventory).
+   It has tooltips, but no hotkeys for now.
+
+19.01.11.2
+ * Fixed combat portrait positioning bug.
+ * Ported object hiding and multiple belts from Gilbertus.
+   These belts are temp, though. I will try to implement something 
+   more interesting.
+
+19.01.11
+ * Added resizable client window.
+
+18.01.11
+ * first version.
+ * translates chat messages using Google
