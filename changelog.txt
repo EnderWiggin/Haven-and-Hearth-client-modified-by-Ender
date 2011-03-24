@@ -1,7 +1,7 @@
 Change log 
 
 24.03.11
- * made study intergace display modified INT as attantion limit.
+ * made study intergace display modified INT as attention limit.
  * fixed crash when dragging icons from toolbar
  * added declaiming verification
  * added hotkey toolbar belt switching.
@@ -9,6 +9,8 @@ Change log
    CTRL-<1..5> - digit-key toolbar
  * chat now saves it's size and positions
  * added button (X->A) to toggle highlight of boars and bears.
+ * animal highlight, radius showing and hidden object highlight now
+   stored in config file
  * removed screen going black if not loaded grid appears on screen
  * added shortcuts for moving speed.
    ALT-Q - crawl, ALT-W - walk, ALT-E - run, ALT-R - sprint
