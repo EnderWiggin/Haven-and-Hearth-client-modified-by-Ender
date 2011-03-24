@@ -56,6 +56,7 @@ public class Speedget extends Widget {
 	super(c, tsz, parent);
 	this.cur = cur;
 	this.max = max;
+	ui.spd = this;
     }
     
     public void draw(GOut g) {

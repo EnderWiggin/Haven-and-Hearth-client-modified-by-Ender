@@ -44,7 +44,8 @@ public class RootWidget extends ConsoleHost {
     public boolean globtype(char key, KeyEvent ev) {
 	if(!super.globtype(key, ev)) {
 	    int code = ev.getKeyCode();
-	    boolean ctrl = (((ev.getModifiers() & InputEvent.CTRL_MASK) != 0));
+	    boolean ctrl = ev.isControlDown();
+	    boolean alt = ev.isAltDown();
 	    
 	    if(Config.profile && (key == '`')) {
 		new Profwnd(ui.slen, ui.mainview.prof, "MV prof");
@@ -58,6 +59,14 @@ public class RootWidget extends ConsoleHost {
 		Config.xray = !Config.xray;
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
+	    } else if((code == KeyEvent.VK_Q)&&alt) {
+		ui.spd.wdgmsg("set", 0);
+	    } else if((code == KeyEvent.VK_W)&&alt) {
+		ui.spd.wdgmsg("set", 1);
+	    } else if((code == KeyEvent.VK_E)&&alt) {
+		ui.spd.wdgmsg("set", 2);
+	    } else if((code == KeyEvent.VK_R)&&alt) {
+		ui.spd.wdgmsg("set", 3);
 	    } else if((code == KeyEvent.VK_G)&&ctrl) {
 		Config.grid = !Config.grid;
 	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
