@@ -425,7 +425,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
     static {camtypes.put("fixedcake", FixedCakeCam.class);}
     
-    private class Loading extends RuntimeException {}
+    private class Loading extends Exception {}
     
     private static Camera makecam(Class<? extends Camera> ct, String... args) throws ClassNotFoundException {
 	try {
@@ -663,28 +663,28 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    visol[ol]--;
     }
 	
-    private int gettilen(Coord tc) {
+    private int gettilen(Coord tc) throws Loading {
 	int r = map.gettilen(tc);
 	if(r == -1)
 	    throw(new Loading());
 	return(r);
     }
 	
-    private Tile getground(Coord tc) {
+    private Tile getground(Coord tc) throws Loading {
 	Tile r = map.getground(tc);
 	if(r == null)
 	    throw(new Loading());
 	return(r);
     }
 	
-    private Tile[] gettrans(Coord tc) {
+    private Tile[] gettrans(Coord tc) throws Loading {
 	Tile[] r = map.gettrans(tc);
 	if(r == null)
 	    throw(new Loading());
 	return(r);
     }
 
-    private int getol(Coord tc) {
+    private int getol(Coord tc)  throws Loading {
 	int ol = map.getol(tc);
 	if(ol == -1)
 	    throw(new Loading());
@@ -694,14 +694,16 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private void drawtile(GOut g, Coord tc, Coord sc) {
 	Tile t;
 		
-	t = getground(tc);
-	//t = gettile(tc).ground.pick(0);
-	g.image(t.tex(), sc);
-	//g.setColor(FlowerMenu.pink);
-	//Utils.drawtext(g, Integer.toString(t.i), sc);
-	for(Tile tt : gettrans(tc)) {
-	    g.image(tt.tex(), sc);
-	}
+	try {
+	    t = getground(tc);
+	    //t = gettile(tc).ground.pick(0);
+	    g.image(t.tex(), sc);
+	    //g.setColor(FlowerMenu.pink);
+	    //Utils.drawtext(g, Integer.toString(t.i), sc);
+	    for(Tile tt : gettrans(tc)) {
+		g.image(tt.tex(), sc);
+	    }
+	} catch (Loading e) {}
     }
 	
     private void drawol(GOut g, Coord tc, Coord sc) {
@@ -709,39 +711,42 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	int i;
 	double w = 2;
 		
-	ol = getol(tc);
-	if(ol == 0)
-	    return;
-	Coord c1 = sc;
-	Coord c2 = sc.add(m2s(new Coord(0, tilesz.y)));
-	Coord c3 = sc.add(m2s(new Coord(tilesz.x, tilesz.y)));
-	Coord c4 = sc.add(m2s(new Coord(tilesz.x, 0)));
-	for(i = 0; i < olc.length; i++) {
-	    if(olc[i] == null)
-		continue;
-	    if(((ol & (1 << i)) == 0) || (visol[i] < 1))
-		continue;
-	    Color fc = new Color(olc[i].getRed(), olc[i].getGreen(), olc[i].getBlue(), 32);
-	    g.chcolor(fc);
-	    g.frect(c1, c2, c3, c4);
-	    if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
-		g.chcolor(olc[i]);
-		g.line(c2, c1, w);
+	try {
+	    ol = getol(tc);
+
+	    if(ol == 0)
+		return;
+	    Coord c1 = sc;
+	    Coord c2 = sc.add(m2s(new Coord(0, tilesz.y)));
+	    Coord c3 = sc.add(m2s(new Coord(tilesz.x, tilesz.y)));
+	    Coord c4 = sc.add(m2s(new Coord(tilesz.x, 0)));
+	    for(i = 0; i < olc.length; i++) {
+		if(olc[i] == null)
+		    continue;
+		if(((ol & (1 << i)) == 0) || (visol[i] < 1))
+		    continue;
+		Color fc = new Color(olc[i].getRed(), olc[i].getGreen(), olc[i].getBlue(), 32);
+		g.chcolor(fc);
+		g.frect(c1, c2, c3, c4);
+		if(((ol & ~getol(tc.add(new Coord(-1, 0)))) & (1 << i)) != 0) {
+		    g.chcolor(olc[i]);
+		    g.line(c2, c1, w);
+		}
+		if(((ol & ~getol(tc.add(new Coord(0, -1)))) & (1 << i)) != 0) {
+		    g.chcolor(olc[i]);
+		    g.line(c1.add(1, 0), c4.add(1, 0), w);
+		}
+		if(((ol & ~getol(tc.add(new Coord(1, 0)))) & (1 << i)) != 0) {
+		    g.chcolor(olc[i]);
+		    g.line(c4.add(1, 0), c3.add(1, 0), w);
+		}
+		if(((ol & ~getol(tc.add(new Coord(0, 1)))) & (1 << i)) != 0) {
+		    g.chcolor(olc[i]);
+		    g.line(c3, c2, w);
+		}
 	    }
-	    if(((ol & ~getol(tc.add(new Coord(0, -1)))) & (1 << i)) != 0) {
-		g.chcolor(olc[i]);
-		g.line(c1.add(1, 0), c4.add(1, 0), w);
-	    }
-	    if(((ol & ~getol(tc.add(new Coord(1, 0)))) & (1 << i)) != 0) {
-		g.chcolor(olc[i]);
-		g.line(c4.add(1, 0), c3.add(1, 0), w);
-	    }
-	    if(((ol & ~getol(tc.add(new Coord(0, 1)))) & (1 << i)) != 0) {
-		g.chcolor(olc[i]);
-		g.line(c3, c2, w);
-	    }
-	}
-	g.chcolor(Color.WHITE);
+	    g.chcolor(Color.WHITE);
+	} catch (Loading e) {}
     }
     
     private void drawradius(GOut g, Coord c, int radius) {
@@ -1145,7 +1150,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    unflashol();
 	map.sendreqs();
 	checkplmove();
-	try {
+//	try {
 	    if(((mask.amb = glob.amblight) == null) || Config.nightvision)
 		mask.amb = new Color(0, 0, 0, 0);
 	    drawmap(g);
@@ -1153,13 +1158,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor(Color.WHITE);
 	    if(Config.dbtext)
 		g.atext(mc.toString(), new Coord(10, 560), 0, 1);
-	} catch(Loading l) {
-	    String text = "Loading...";
-	    g.chcolor(Color.BLACK);
-	    g.frect(Coord.z, sz);
-	    g.chcolor(Color.WHITE);
-	    g.atext(text, sz, 0.5, 0.5);
-	}
+//	} catch(Loading l) {
+//	    String text = "Loading...";
+//	    g.chcolor(Color.BLACK);
+//	    g.frect(Coord.z, sz);
+//	    g.chcolor(Color.WHITE);
+//	    g.atext(text, sz, 0.5, 0.5);
+//	}
 	long poldt = now - polchtm;
 	if((polownert != null) && (poldt < 6000)) {
 	    int a;
