@@ -26,14 +26,28 @@
 
 package haven;
 
-import java.awt.GraphicsConfiguration;
 import java.awt.Cursor;
+import java.awt.GraphicsConfiguration;
 import java.awt.Toolkit;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.awt.event.*;
-import java.util.*;
-import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCanvas;
+import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLException;
 
 public class HavenPanel extends GLCanvas implements Runnable {
     UI ui;
