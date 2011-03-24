@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -425,7 +424,22 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     private boolean checkKey(char ch, KeyEvent ev) {
 	int code = ev.getKeyCode();
 	int slot = code - key;
-	if((slot >= 0)&&(slot < gsz.x*gsz.y)) {
+	boolean alt = ev.isAltDown();
+	boolean ctrl = ev.isControlDown();
+	if(alt && key == KeyEvent.VK_F1){
+	    slot = code - KeyEvent.VK_0;
+	    if((slot>0)&&(slot<=5)){
+		loadBelt(slot*2);
+		return true;
+	    }
+	} else if (ctrl && key == KeyEvent.VK_0) {
+	    slot = code - KeyEvent.VK_0;
+	    if((slot>0)&&(slot<=5)){
+		slot = ((slot-1)<<1) + 1;
+		loadBelt(slot);
+		return true;
+	    }
+	} else	if(!alt && !ctrl && (slot >= 0)&&(slot < gsz.x*gsz.y)) {
 	    if(key == KeyEvent.VK_0)
 		    slot = (slot == 0)?9:slot-1;
 	    Resource h = layout[slot];
