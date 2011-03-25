@@ -120,21 +120,21 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 
     public MainFrame(int w, int h) {
 	super("Haven and Hearth (modified by Ender v24.03.11)");
-    innerSize = new Dimension(w, h);
-    centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
+	innerSize = new Dimension(w, h);
+	centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
 	p = new HavenPanel(w, h);
 	fsmode = findmode(w, h);
 	add(p);
 	pack();
-    Insets insets = getInsets();
-    insetsSize = new Dimension(insets.left + insets.right, insets.top + insets.bottom);
+	Insets insets = getInsets();
+	insetsSize = new Dimension(insets.left + insets.right, insets.top + insets.bottom);
 	setResizable(true);
-    setMinimumSize(new Dimension(800 + insetsSize.width, 600 + insetsSize.height));
+	setMinimumSize(new Dimension(800 + insetsSize.width, 600 + insetsSize.height));
 	p.requestFocus();
 	seticon();
 	setVisible(true);
 	p.init();
-    setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+	setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
     }
 
     public static Coord getScreenSize() {
