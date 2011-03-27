@@ -1,5 +1,9 @@
 Change log
 
+28.03.11
+ * added flavor objects, stones, wooden houses and thiket to hide object list
+ * added hide object list items to menu grid
+
 25.03.11
  * removed declaiming verification. loftar already implemented it on server-side.
 
