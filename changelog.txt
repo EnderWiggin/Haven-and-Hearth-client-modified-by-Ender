@@ -1,4 +1,7 @@
-Change log 
+Change log
+
+25.03.11
+ * removed declaiming verification. loftar already implemented it on server-side.
 
 24.03.11
  * made study interface display modified INT as attention limit.
