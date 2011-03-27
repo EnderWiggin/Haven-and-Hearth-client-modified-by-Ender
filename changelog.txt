@@ -1,7 +1,7 @@
 Change log 
 
 24.03.11
- * made study intergace display modified INT as attention limit.
+ * made study interface display modified INT as attention limit.
  * fixed crash when dragging icons from toolbar
  * added declaiming verification
  * added hotkey toolbar belt switching.
