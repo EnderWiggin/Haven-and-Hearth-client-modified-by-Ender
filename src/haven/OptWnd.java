@@ -286,10 +286,14 @@ public class OptWnd extends Window {
 
 	    String[][] checkboxesList = { { "Walls", "gfx/arch/walls" },
 		    { "Gates", "gfx/arch/gates" },
+		    { "Wooden Houses", "gfx/arch/cabin" },
 		    { "Stone Mansions", "gfx/arch/inn" },
 		    { "Plants", "gfx/terobjs/plants" },
 		    { "Trees", "gfx/terobjs/trees" },
-		    { "Bushes", "gfx/tiles/wald" } };
+		    { "Stones", "gfx/terobjs/bumlings" },
+		    { "Flavor objects", "flavobjs" },
+		    { "Bushes", "gfx/tiles/wald" },
+		    { "Thicket", "gfx/tiles/dwald" } };
 	    int y = 0;
 	    for (final String[] checkbox : checkboxesList) {
 		CheckBox chkbox = new CheckBox(new Coord(10, y += 30), tab,

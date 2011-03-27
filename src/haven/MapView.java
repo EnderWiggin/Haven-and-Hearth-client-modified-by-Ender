@@ -932,7 +932,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			Drawable d = gob.getattr(Drawable.class);
 			Resource.Neg neg;
 			String name = gob.resname();
-			if(!gob.hide || (name.indexOf("wald")>-1))
+			if(!gob.hide || (name.indexOf("wald")>-1) || (name.indexOf("flavobjs")>-1))
 			    continue;
 			if(d instanceof ResDrawable) {
 			    ResDrawable rd = (ResDrawable)d;
