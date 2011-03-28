@@ -143,7 +143,7 @@ public class MenuGrid extends Widget {
 	if(pos >= 0)
 	    tt = tt.substring(0, pos) + "$col[255,255,0]{" + tt.charAt(pos) + "}" + tt.substring(pos + 1);
 	else if(ad.hk != 0)
-	    tt += " [" + ad.hk + "]";
+	    tt += " [$col[255,255,0]{" + ad.hk + "}]";
 	if(withpg && (pg != null)) {
 	    tt += "\n\n" + pg.text;
 	}
@@ -263,6 +263,15 @@ public class MenuGrid extends Widget {
 	    ui.cons.out.println(str);
 	    ui.slen.error(str);
 	    Config.saveOptions();
+	} else if(list[1].equals("hide")) {
+	    for(int i=2;i<list.length;i++){
+		String item = list[i];
+		if(Config.hideObjectList.contains(item)){
+		    Config.hideObjectList.remove(item);
+		} else {
+		    Config.hideObjectList.add(item);
+		}
+	    }
 	} else if(list[1].equals("animal")) {
 	    Config.showBeast = !Config.showBeast;
 	    String str = "Animal highlight is turned "+((Config.showBeast)?"ON":"OFF");

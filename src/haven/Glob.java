@@ -54,6 +54,17 @@ public class Glob {
 	paginae.add(Resource.load("paginae/add/shhd"));
 	paginae.add(Resource.load("paginae/add/wiki"));
 	paginae.add(Resource.load("paginae/add/animal"));
+	paginae.add(Resource.load("paginae/add/hide"));
+	paginae.add(Resource.load("paginae/add/hide/tree"));
+	paginae.add(Resource.load("paginae/add/hide/flav"));
+	paginae.add(Resource.load("paginae/add/hide/wall"));
+	paginae.add(Resource.load("paginae/add/hide/gate"));
+	paginae.add(Resource.load("paginae/add/hide/bush"));
+	paginae.add(Resource.load("paginae/add/hide/thik"));
+	paginae.add(Resource.load("paginae/add/hide/cabi"));
+	paginae.add(Resource.load("paginae/add/hide/mans"));
+	paginae.add(Resource.load("paginae/add/hide/plan"));
+	paginae.add(Resource.load("paginae/add/hide/ston"));
     }
     
     public static class CAttr extends Observable {
