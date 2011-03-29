@@ -1,5 +1,8 @@
 Change log
 
+29.03.11
+ * fixed crash due to incorrect resource images
+
 28.03.11
  * added flavor objects, stones, wooden houses and thiket to hide object list
  * added hide object list items to menu grid
