@@ -839,17 +839,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	return(obsc);
     }
     
-    private void drawgrid(GOut g, Coord c) {
-	Coord cy = c.add(m2s(new Coord(0, tilesz.y)));
-	Coord cx = c.add(m2s(new Coord(tilesz.x, 0)));
-	Color cl = g.getcolor();
-	g.chcolor(new Color(32, 32, 32));
-	g.line(cy, c, 1);
-        g.line(c, cx, 1);
-        g.chcolor(cl);
-
-    }
-    
     public void drawmap(GOut g) {
 	int x, y, i;
 	int stw, sth;
@@ -871,11 +860,32 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    sc.x -= tilesz.x * 2;
 		    drawtile(g, ctc, sc);
 		    sc.x += tilesz.x * 2;
-		    if(Config.grid)
-			drawgrid(g, sc);
 		    drawol(g, ctc, sc);
 		}
 	    }
+	}
+	if(Config.grid){
+	    g.chcolor(new Color(40, 40, 40));
+	    Coord c1, c2, d;
+	    d = tc.mul(tilesz);
+	    int hy = (sz.y / sth)*tilesz.y;
+	    int hx = (sz.x / stw)*tilesz.x;
+	    c1 = d.add(0, 0);
+	    c2 = d.add(5*hx/2,0);
+	    for(y = d.y - hy; y < d.y + hy; y = y + tilesz.y){
+		c1.y = y;
+		c2.y = c1.y;
+		g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+	    }
+	    c1 = d.add(0, -hy);
+	    c2 = d.add(0, hy);
+	    
+	    for(x = d.x; x < d.x + 5*hx/2; x = x + tilesz.x){
+		c1.x = x;
+		c2.x = c1.x;
+		g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+	    }
+	    g.chcolor();
 	}
 	if(curf != null)
 	    curf.tick("map");
