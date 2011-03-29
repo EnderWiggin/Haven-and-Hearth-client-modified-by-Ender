@@ -1,6 +1,7 @@
 Change log
 
 29.03.11
+ * optimized grid drawing
  * fixed crash due to incorrect resource images
 
 28.03.11
