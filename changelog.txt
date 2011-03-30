@@ -1,5 +1,8 @@
 Change log
 
+30.03.11
+ * more fixes to dowsing effect.
+
 29.03.11
  * added new art for mansion. Art by SacreDoom.
  * optimized grid drawing
