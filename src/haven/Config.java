@@ -56,6 +56,7 @@ public class Config {
     public static boolean new_chat;
     public static boolean zoom;
     public static boolean new_minimap;
+    public static boolean simple_plants = false;
     public static HashSet<String> hideObjectList;
     public static boolean nightvision;
     public static String currentCharName;

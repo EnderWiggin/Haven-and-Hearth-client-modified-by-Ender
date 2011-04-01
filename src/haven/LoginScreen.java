@@ -26,9 +26,6 @@
 
 package haven;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class LoginScreen extends Widget {
     Login cur;

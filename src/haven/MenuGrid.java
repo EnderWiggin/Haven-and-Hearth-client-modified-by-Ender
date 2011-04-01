@@ -272,6 +272,11 @@ public class MenuGrid extends Widget {
 		    Config.hideObjectList.add(item);
 		}
 	    }
+	} else if(list[1].equals("simple plants")) {
+	    Config.simple_plants = !Config.simple_plants;
+	    String str = "Simplified plants is turned "+((Config.simple_plants)?"ON":"OFF");
+	    ui.cons.out.println(str);
+	    ui.slen.error(str);
 	} else if(list[1].equals("animal")) {
 	    Config.showBeast = !Config.showBeast;
 	    String str = "Animal highlight is turned "+((Config.showBeast)?"ON":"OFF");

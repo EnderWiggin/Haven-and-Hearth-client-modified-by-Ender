@@ -39,7 +39,11 @@ public class CommonPlant extends CSprite {
 	public Factory(int num) {
 	    Resource res = Utils.myres(this.getClass());
 	    this.neg = res.layer(Resource.negc);
-	    this.num = num;
+	    if(Config.simple_plants){
+		this.num = 1;
+	    } else {
+		this.num = num;
+	    }
 	    ArrayList<Tex> strands = new ArrayList<Tex>();
 	    for(Resource.Image img : res.layers(Resource.imgc)) {
 		if(img.id != -1)
@@ -53,7 +57,13 @@ public class CommonPlant extends CSprite {
 	    spr.addnegative();
 	    Random rnd = owner.mkrandoom();
 	    for(int i = 0; i < num; i++) {
-		Coord c = new Coord(rnd.nextInt(neg.bs.x), rnd.nextInt(neg.bs.y)).add(neg.bc);
+		Coord c;
+		if(Config.simple_plants){
+		    c = neg.bc.add(neg.bs).sub(5, 5);
+		} else {
+		    c = new Coord(rnd.nextInt(neg.bs.x), rnd.nextInt(neg.bs.y)).add(neg.bc);
+		}
+
 		Tex s = strands[rnd.nextInt(strands.length)];
 		spr.add(s, 0, MapView.m2s(c), new Coord(s.sz().x / 2, s.sz().y).inv());
 	    }
