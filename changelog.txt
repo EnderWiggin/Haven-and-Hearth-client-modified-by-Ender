@@ -1,4 +1,6 @@
 Change log
+1.04.11
+ * added possibility to simplify plants (X->P)
 
 30.03.11
  * more fixes to dowsing effect.
