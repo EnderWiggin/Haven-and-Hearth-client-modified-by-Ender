@@ -277,6 +277,7 @@ public class MenuGrid extends Widget {
 	    String str = "Simplified plants is turned "+((Config.simple_plants)?"ON":"OFF");
 	    ui.cons.out.println(str);
 	    ui.slen.error(str);
+	    Config.saveOptions();
 	} else if(list[1].equals("animal")) {
 	    Config.showBeast = !Config.showBeast;
 	    String str = "Animal highlight is turned "+((Config.showBeast)?"ON":"OFF");

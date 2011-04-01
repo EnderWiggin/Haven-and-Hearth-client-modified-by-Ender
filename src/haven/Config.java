@@ -209,6 +209,7 @@ public class Config {
         showBeast = options.getProperty("showBeast", "false").equals("true");
         showRadius = options.getProperty("showRadius", "false").equals("true");
         showHidden = options.getProperty("showHidden", "false").equals("true");
+        simple_plants = options.getProperty("simple_plants", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
@@ -262,6 +263,7 @@ public class Config {
         options.setProperty("showBeast", showBeast?"true":"false");
         options.setProperty("showRadius", showRadius?"true":"false");
         options.setProperty("showHidden", showHidden?"true":"false");
+        options.setProperty("simple_plants", simple_plants?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
