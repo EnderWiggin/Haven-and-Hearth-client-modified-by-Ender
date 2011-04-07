@@ -1,5 +1,9 @@
 Change log
-1.04.11
+
+07.04.11
+ * made swimming, tracking and criminal acts display in buff list when turned on.
+
+01.04.11
  * added possibility to simplify plants (X->P)
 
 30.03.11
