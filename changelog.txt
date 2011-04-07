@@ -1,6 +1,7 @@
 Change log
 
 07.04.11
+ * made cameras borderless. HOME button centers on player.
  * made swimming, tracking and criminal acts display in buff list when turned on.
 
 01.04.11

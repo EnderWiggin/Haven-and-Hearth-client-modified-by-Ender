@@ -124,28 +124,31 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public void moved(MapView mv) {}
 	
 	public static void borderize(MapView mv, Gob player, Coord sz, Coord border) {
-	    Coord mc = mv.mc;
-	    Coord oc = m2s(mc).inv();
-	    int bt = -((sz.y / 2) - border.y);
-	    int bb = (sz.y / 2) - border.y;
-	    int bl = -((sz.x / 2) - border.x);
-	    int br = (sz.x / 2) - border.x;
-	    Coord sc = m2s(player.getc()).add(oc);
-	    if(sc.x < bl)
-		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
-	    if(sc.x > br)
-		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
-	    if(sc.y < bt)
-		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
-	    if(sc.y > bb)
-		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
-	    mv.mc = mc;
+//	    Coord mc = mv.mc;
+//	    Coord oc = m2s(mc).inv();
+//	    int bt = -((sz.y / 2) - border.y);
+//	    int bb = (sz.y / 2) - border.y;
+//	    int bl = -((sz.x / 2) - border.x);
+//	    int br = (sz.x / 2) - border.x;
+//	    Coord sc = m2s(player.getc()).add(oc);
+//	    if(sc.x < bl)
+//		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
+//	    if(sc.x > br)
+//		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
+//	    if(sc.y < bt)
+//		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
+//	    if(sc.y > bb)
+//		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
+//	    mv.mc = mc;
 	}
+
+	public void reset() {}
     }
     
     private static abstract class DragCam extends Camera {
 	Coord o, mo;
 	boolean dragging = false;
+	boolean needreset = false;
 	
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
 	    if(button == 2) {
@@ -168,6 +171,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    moved(mv);
 		}
 	    }
+	}
+	
+	public void reset(){
+	    needreset = true;
 	}
 	
 	public boolean release(MapView mv, Coord sc, Coord mc, int button) {
@@ -218,6 +225,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	
 	public void setpos(MapView mv, Gob player, Coord sz) {
+	    
+	    if(needreset){
+		needreset = false;
+		mv.mc = player.getc();
+	    }
+	    
 	    if(tgt != null) {
 		if(mv.mc.dist(tgt) < 10) {
 		    tgt = null;
@@ -240,6 +253,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	
 	public void moved(MapView mv) {
+	    tgt = null;
+	}
+	
+	public void reset() {
+	    super.reset();
 	    tgt = null;
 	}
     }
@@ -266,6 +284,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public final Coord border = new Coord(250, 150);
 
 	public void setpos(MapView mv, Gob player, Coord sz) {
+	    if(needreset){
+		needreset = false;
+		mv.mc = player.getc();
+	    }
 	    borderize(mv, player, sz, border);
 	}
     }
@@ -282,6 +304,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    long now = System.currentTimeMillis();
 	    double dt = ((double)(now - last)) / 1000.0;
 	    last = now;
+	    
+	    if(needreset){
+		needreset = false;
+		mv.mc = player.getc();
+	    }
 	    
 	    Coord mc = mv.mc.add(s2m(sz.add(mv.sz.inv()).div(2)));
 	    Coord sc = m2s(player.getc()).add(m2s(mc).inv());
@@ -342,6 +369,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public void moved(MapView mv) {
 	    reset = true;
 	}
+	
+	public void reset(){
+	    reset = true;
+	    xa = ya = 0;
+	    super.reset();
+	}
     }
     static {camtypes.put("predict", PredictCam.class);}
     
@@ -361,6 +394,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	
 	public void moved(MapView mv) {
 	    setoff = true;
+	}
+	
+	public void reset() {
+	    off = Coord.z;
 	}
     }
     static {camtypes.put("fixed", FixedCam.class);}
@@ -422,6 +459,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public void moved(MapView mv) {
 	    setoff = true;
 	}
+	
+	public void reset(){
+	    off = new Coord();
+	}
     }
     static {camtypes.put("fixedcake", FixedCakeCam.class);}
     
@@ -473,7 +514,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	mask = new ILM(MainFrame.getScreenSize(), glob.oc);
 	radiuses = new HashMap<String, Integer>();
     }
-	
+    
+    public void resetcam(){
+	if(cam != null){
+	    cam.reset();
+	}
+    }
+    
     public static Coord m2s(Coord c) {
 	return(new Coord((c.x * 2) - (c.y * 2), c.x + c.y));
     }
