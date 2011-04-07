@@ -245,6 +245,21 @@ public class MenuGrid extends Widget {
 //	    } else if (ad[0].equals("declaim")){
 //		new DeclaimVerification(ui.root, ad);
 	    } else {
+		int k = 0;
+		if (ad[0].equals("crime")){k = -1;}
+		if (ad[0].equals("tracking")){k = -2;}
+		if (ad[0].equals("swim")){k = -3;}
+		if(k<0){
+		    synchronized (ui.sess.glob.buffs) {
+			if(ui.sess.glob.buffs.containsKey(k)){
+			    ui.sess.glob.buffs.remove(k);
+			} else {
+			    Buff buff = new Buff(k, r.indir());
+			    buff.major = true;
+			    ui.sess.glob.buffs.put(k, buff);
+			}
+		    }
+		}
 		wdgmsg("act", (Object[])ad);
 	    }
 	}
