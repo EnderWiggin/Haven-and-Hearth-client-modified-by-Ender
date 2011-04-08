@@ -55,6 +55,7 @@ public class Config {
     public static boolean timestamp;
     public static boolean new_chat;
     public static boolean zoom;
+    public static boolean noborders;
     public static boolean new_minimap;
     public static boolean simple_plants = false;
     public static HashSet<String> hideObjectList;
@@ -200,6 +201,7 @@ public class Config {
         String hideObjects = options.getProperty("hideObjects", "");
         GoogleTranslator.apikey = options.getProperty("GoogleAPIKey", "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0");
         zoom = options.getProperty("zoom", "false").equals("true");
+        noborders = options.getProperty("noborders", "false").equals("true");
         new_minimap = options.getProperty("new_minimap", "true").equals("true");
         new_chat = options.getProperty("new_chat", "true").equals("true");
         isMusicOn = options.getProperty("music_on", "true").equals("true");
@@ -252,6 +254,7 @@ public class Config {
         options.setProperty("GoogleAPIKey", GoogleTranslator.apikey);
         options.setProperty("timestamp", (timestamp)?"true":"false");
         options.setProperty("zoom", zoom?"true":"false");
+        options.setProperty("noborders", noborders?"true":"false");
         options.setProperty("new_minimap", new_minimap?"true":"false");
         options.setProperty("new_chat", new_chat?"true":"false");
         options.setProperty("sfx_vol", String.valueOf(sfxVol));

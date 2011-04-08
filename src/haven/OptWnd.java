@@ -58,9 +58,9 @@ public class OptWnd extends Window {
     }
 
     public OptWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 340), parent, "Options");
+	super(c, new Coord(400, 370), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(400, 300), this) {
+	body = new Tabs(Coord.z, new Coord(400, 330), this) {
 	    public void changed(Tab from, Tab to) {
 		Utils.setpref("optwndtab", to.btn.text.text);
 		from.btn.c.y = 0;
@@ -229,6 +229,12 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.zoom;
+	    (new CheckBox(new Coord(50, 300), tab, "Disable camera borders") {
+		public void changed(boolean val) {
+		    Config.noborders = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.noborders;
 	}
 
 	{ /* AUDIO TAB */
@@ -343,7 +349,7 @@ public class OptWnd extends Window {
 	    new Label(new Coord(100, 190), tab, "Powered by Google Translate");
 	}
 
-	new Frame(new Coord(-10, 20), new Coord(420, 330), this);
+	new Frame(new Coord(-10, 20), new Coord(420, 360), this);
 	String last = Utils.getpref("optwndtab", "");
 	for (Tabs.Tab t : body.tabs) {
 	    if (t.btn.text.text.equals(last))

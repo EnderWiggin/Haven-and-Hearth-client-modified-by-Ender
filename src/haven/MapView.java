@@ -124,22 +124,23 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public void moved(MapView mv) {}
 	
 	public static void borderize(MapView mv, Gob player, Coord sz, Coord border) {
-//	    Coord mc = mv.mc;
-//	    Coord oc = m2s(mc).inv();
-//	    int bt = -((sz.y / 2) - border.y);
-//	    int bb = (sz.y / 2) - border.y;
-//	    int bl = -((sz.x / 2) - border.x);
-//	    int br = (sz.x / 2) - border.x;
-//	    Coord sc = m2s(player.getc()).add(oc);
-//	    if(sc.x < bl)
-//		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
-//	    if(sc.x > br)
-//		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
-//	    if(sc.y < bt)
-//		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
-//	    if(sc.y > bb)
-//		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
-//	    mv.mc = mc;
+	    if(Config.noborders){return;}
+	    Coord mc = mv.mc;
+	    Coord oc = m2s(mc).inv();
+	    int bt = -((sz.y / 2) - border.y);
+	    int bb = (sz.y / 2) - border.y;
+	    int bl = -((sz.x / 2) - border.x);
+	    int br = (sz.x / 2) - border.x;
+	    Coord sc = m2s(player.getc()).add(oc);
+	    if(sc.x < bl)
+		mc = mc.add(s2m(new Coord(sc.x - bl, 0)));
+	    if(sc.x > br)
+		mc = mc.add(s2m(new Coord(sc.x - br, 0)));
+	    if(sc.y < bt)
+		mc = mc.add(s2m(new Coord(0, sc.y - bt)));
+	    if(sc.y > bb)
+		mc = mc.add(s2m(new Coord(0, sc.y - bb)));
+	    mv.mc = mc;
 	}
 
 	public void reset() {}
