@@ -125,9 +125,9 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		    if(res.ver < ver) {
 			res = null;
 			cache.remove(name);
-		    } //else if(res.ver > ver) {
-//			throw(new RuntimeException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source)));
-//		    }
+		    } else if(res.ver > ver) {
+			throw(new RuntimeException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source)));
+		    }
 		} else if(ver == -1) {
 		    if(res.error != null) {
 			res = null;
