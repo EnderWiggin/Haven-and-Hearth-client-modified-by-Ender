@@ -1,5 +1,9 @@
 Change log
 
+08.04.11
+ * made quick-fix for Dodge skill related crash during combat.
+ * added option to toggle no borders for camera
+
 07.04.11
  * made cameras borderless. HOME button centers on player.
  * made swimming, tracking and criminal acts display in buff list when turned on.
