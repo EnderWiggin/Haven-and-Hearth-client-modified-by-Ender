@@ -279,73 +279,75 @@ public class MiniMap extends Widget {
 	g.gl.glPushMatrix();
 	g.scale(scale);
 	
-	for(int y = ulg.y; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
-	    for(int x = ulg.x; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
-		Coord cg = new Coord(x, y);
-		if (mappingStartPoint == null) {
-		    mappingStartPoint = new Coord(cg);
-		}
-		Grid grid;
-		synchronized(ui.sess.glob.map.req) {
-		    synchronized(ui.sess.glob.map.grids) {
-			grid = ui.sess.glob.map.grids.get(cg);
-			if(grid == null)
-			    ui.sess.glob.map.request(cg);
+	synchronized(caveTex){
+
+	    for(int y = ulg.y; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
+		for(int x = ulg.x; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
+		    Coord cg = new Coord(x, y);
+		    if (mappingStartPoint == null) {
+			mappingStartPoint = new Coord(cg);
 		    }
-		}
-		Coord relativeCoordinates = cg.sub(mappingStartPoint);
-		String mnm = null;
-		
-		if(grid == null) {
-		    mnm = coordHashes.get(relativeCoordinates);
-		} else {
-		    mnm = grid.mnm;
-		}
-		
-		Tex tex = null;
-		
-		if (mnm != null) {
-		    caveTex.clear();
-		    if (!gridsHashes.containsKey(mnm)) {
-			if ((Math.abs(relativeCoordinates.x) > 450)
-				|| (Math.abs(relativeCoordinates.y) > 450)) {
-			    newMappingSession();
-			    mappingStartPoint = cg;
-			    relativeCoordinates = new Coord(0, 0);
-			}
-			gridsHashes.put(mnm, relativeCoordinates);
-			coordHashes.put(relativeCoordinates, mnm);
-		    }
-		    else {
-			Coord coordinates = gridsHashes.get(mnm);
-			if (!coordinates.equals(relativeCoordinates)) {
-			    mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
+		    Grid grid;
+		    synchronized(ui.sess.glob.map.req) {
+			synchronized(ui.sess.glob.map.grids) {
+			    grid = ui.sess.glob.map.grids.get(cg);
+			    if(grid == null)
+				ui.sess.glob.map.request(cg);
 			}
 		    }
-		
-		    tex = getgrid(mnm);
-		    if((tex == null)&&(grid!=null)){
-			tex = grid.getTex();
+		    Coord relativeCoordinates = cg.sub(mappingStartPoint);
+		    String mnm = null;
+
+		    if(grid == null) {
+			mnm = coordHashes.get(relativeCoordinates);
+		    } else {
+			mnm = grid.mnm;
 		    }
-		} else {
-		    if(grid != null) {
-			tex = grid.getTex();
-			if(tex != null) {
-			    caveTex.put(cg, tex);
+
+		    Tex tex = null;
+
+		    if (mnm != null) {
+			caveTex.clear();
+			if (!gridsHashes.containsKey(mnm)) {
+			    if ((Math.abs(relativeCoordinates.x) > 450)
+				    || (Math.abs(relativeCoordinates.y) > 450)) {
+				newMappingSession();
+				mappingStartPoint = cg;
+				relativeCoordinates = new Coord(0, 0);
+			    }
+			    gridsHashes.put(mnm, relativeCoordinates);
+			    coordHashes.put(relativeCoordinates, mnm);
 			}
+			else {
+			    Coord coordinates = gridsHashes.get(mnm);
+			    if (!coordinates.equals(relativeCoordinates)) {
+				mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
+			    }
+			}
+
+			tex = getgrid(mnm);
+			if((tex == null)&&(grid!=null)){
+			    tex = grid.getTex();
+			}
+		    } else {
+			if(grid != null) {
+			    tex = grid.getTex();
+			    if(tex != null) {
+				caveTex.put(cg, tex);
+			    }
+			}
+			tex = caveTex.get(cg);
 		    }
-		    tex = caveTex.get(cg);
+
+		    //caveTex.isEmpty();
+
+		    if (tex == null)
+			continue;
+
+		    if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(hsz.div(2)));
 		}
-		
-		//caveTex.isEmpty();
-		
-		if (tex == null)
-		    continue;
-		
-		if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(hsz.div(2)));
 	    }
 	}
-	
 	//grid
 	if(grid&&!hidden) {
 	    g.chcolor(200,32,64,255);

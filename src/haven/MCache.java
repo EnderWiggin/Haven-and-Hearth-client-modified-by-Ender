@@ -510,6 +510,10 @@ public class MCache {
 		req.clear();
 	    }
 	}
+	synchronized (MiniMap.caveTex) {
+	    MiniMap.caveTex.clear();
+	}
+	UI.instance.mainview.resetcam();
     }
 	
     public void trim(Coord ul, Coord lr) {
