@@ -55,6 +55,20 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 
     static {
 	try {
+	    chainloader(new Loader(new FileSource(new File("./custom_res"))));
+	} catch(Exception e) {
+	    /* Ignore these. We don't want to be crashing the client
+	     * for users just because of errors in development
+	     * aids. */
+	}
+	try {
+	    chainloader(new Loader(new FileSource(new File("./res"))));
+	} catch(Exception e) {
+	    /* Ignore these. We don't want to be crashing the client
+	     * for users just because of errors in development
+	     * aids. */
+	}
+	try {
 	    String dir = Config.resdir;
 	    if(dir == null)
 		dir = System.getenv("HAVEN_RESDIR");
