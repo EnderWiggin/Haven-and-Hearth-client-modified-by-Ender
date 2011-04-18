@@ -39,11 +39,7 @@ public class GrowingPlant extends CSprite {
 	public Factory(int stages, int variants, int num, boolean rev) {
 	    Resource res = Utils.myres(this.getClass());
 	    this.neg = res.layer(Resource.negc);
-	    if(Config.simple_plants){
-		this.num = 1;
-	    } else {
-		this.num = num;
-	    }
+	    this.num = num;
 	    strands = new Tex[stages][variants];
 	    if(rev) {
 		for(Resource.Image img : res.layers(Resource.imgc)) {
@@ -67,7 +63,8 @@ public class GrowingPlant extends CSprite {
 	    GrowingPlant spr = new GrowingPlant(owner, res);
 	    spr.addnegative();
 	    Random rnd = owner.mkrandoom();
-	    for(int i = 0; i < num; i++) {
+	    int n = Config.simple_plants?1:num;
+	    for(int i = 0; i < n; i++) {
 		Coord c;
 		if(Config.simple_plants){
 		    c = neg.bc.add(neg.bs).sub(5, 5);
