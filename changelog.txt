@@ -1,5 +1,18 @@
 Change log
 
+18.04.11
+ * tracking direction slice now stays on screen for as long as window with it's direction is open.
+ * added displaying opponent's IP after slash in combat view.
+ * MenuGrid hotkeys work for all actions of current group, even if they on another page.
+ * added custom_res folder as source for client resources modifications
+ * res folder now added as source by default. No more need for bat-file option
+ * fixed plants simplification turn-off bug
+
+10.04.11
+ * buffs now display their strength as percentage in braces (e.g. (100%))
+   and time left as percentage or (if available) in minutes and seconds
+   in square braces (e.g. [1m 25s] or [50%])
+
 08.04.11
  * made quick-fix for Dodge skill related crash during combat.
  * added option to toggle no borders for camera
