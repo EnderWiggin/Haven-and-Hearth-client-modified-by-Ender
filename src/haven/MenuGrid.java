@@ -115,8 +115,14 @@ public class MenuGrid extends Widget {
     private void updlayout() {
 	Resource[] cur = cons(this.cur);
 	Arrays.sort(cur, sorter);
-	int i = curoff;
+	int i;
 	hotmap.clear();
+	for (i = 0; i< cur.length; i++){
+	    Resource.AButton ad = cur[i].layer(Resource.action);
+	    if(ad.hk != 0)
+		hotmap.put(Character.toUpperCase(ad.hk), cur[i]);
+	}
+	i = curoff;
 	for(int y = 0; y < gsz.y; y++) {
 	    for(int x = 0; x < gsz.x; x++) {
 		Resource btn = null;
@@ -125,9 +131,6 @@ public class MenuGrid extends Widget {
 		} else if((cur.length > ((gsz.x * gsz.y) - 1)) && (x == gsz.x - 2) && (y == gsz.y - 1)) {
 		    btn = next;
 		} else if(i < cur.length) {
-		    Resource.AButton ad = cur[i].layer(Resource.action);
-		    if(ad.hk != 0)
-			hotmap.put(Character.toUpperCase(ad.hk), cur[i]);
 		    btn = cur[i++];
 		}
 		layout[x][y] = btn;
