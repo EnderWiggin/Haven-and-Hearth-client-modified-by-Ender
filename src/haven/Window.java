@@ -250,7 +250,10 @@ public class Window extends Widget implements DTarget {
 	
     public boolean type(char key, java.awt.event.KeyEvent ev) {
 	if(key == 27) {
-	    wdgmsg("close");
+	    if(justclose)
+		ui.destroy(this);
+	    else
+		wdgmsg("close");
 	    return(true);
 	}
 	return(super.type(key, ev));

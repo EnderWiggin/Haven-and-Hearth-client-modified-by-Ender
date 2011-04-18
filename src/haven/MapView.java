@@ -853,6 +853,18 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	g.chcolor();
     }
     
+    private void drawtracking(GOut g) {
+	g.chcolor(255, 0, 255, 128);
+	Coord oc = viewoffset(sz, mc);
+	for(int i = 0; i<TrackingWnd.instances.size(); i++){
+	    TrackingWnd wnd = TrackingWnd.instances.get(i);
+	    if(wnd.pos == null){continue;}
+	    Coord c = m2s(wnd.pos).add(oc);
+	    g.fellipse(c, new Coord(100, 50), wnd.a1, wnd.a2);
+	}
+	g.chcolor();
+    }
+    
     private boolean follows(Gob g1, Gob g2) {
 	Following flw;
 	if((flw = g1.getattr(Following.class)) != null) {
@@ -946,6 +958,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	if(Config.showBeast){
 	    drawbeastradius(g);
 	}
+	
+	drawtracking(g);
 	
 	if(curf != null)
 	    curf.tick("plobeff");

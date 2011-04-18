@@ -2,12 +2,10 @@ import haven.Config;
 import haven.Coord;
 import haven.FreeSprite;
 import haven.GOut;
-import haven.Label;
 import haven.Message;
 import haven.Resource;
 import haven.Sprite;
-import haven.UI;
-import haven.Window;
+import haven.TrackingWnd;
 
 public class DowseFx extends FreeSprite
 {
@@ -28,10 +26,7 @@ public class DowseFx extends FreeSprite
     int d = Math.max(Math.abs(a1 - a2)%360, 5);
     a2 = a1 + d;
     if(Config.showDirection) {
-	Window wnd = new Window(new Coord(100,100),Coord.z,UI.instance.root,"Direction");
-	wnd.justclose = true;
-	new Label(Coord.z, wnd, "Direction: "+(a0 + 270)+"°, delta: "+d+"°");
-	wnd.pack();
+	new TrackingWnd(a0+270, d, a1, a2);
     }
   }
 
