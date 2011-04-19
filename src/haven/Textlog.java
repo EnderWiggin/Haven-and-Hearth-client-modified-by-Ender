@@ -26,16 +26,18 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.Color;
 import java.awt.font.TextAttribute;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class Textlog extends Widget {
     static Tex texpap = Resource.loadtex("gfx/hud/texpap");
     static Tex schain = Resource.loadtex("gfx/hud/schain");
     static Tex sflarp = Resource.loadtex("gfx/hud/sflarp");
     static RichText.Foundry fnd = new RichText.Foundry(TextAttribute.FAMILY, "Sans Serif", TextAttribute.SIZE, 12, TextAttribute.FOREGROUND, Color.BLACK);
-    List<Text> lines;
+    List<RichText> lines;
     int maxy, cury;
     int margin = 3;
     boolean sdrag = false;
@@ -82,15 +84,32 @@ public class Textlog extends Widget {
 	
     public Textlog(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent);
-	lines = new LinkedList<Text>();
+	lines = new LinkedList<RichText>();
 	maxy = cury = 0;
+    }
+    
+    private String smileys(String str){
+	//ATTRIBUTES
+	str = Pattern.compile("*str*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/str\\]");
+	str = Pattern.compile("*agi*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/agil\\]");
+	str = Pattern.compile("*int*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/intel\\]");
+	str = Pattern.compile("*con*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/cons\\]");
+	str = Pattern.compile("*per*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/perc\\]");
+	str = Pattern.compile("*csm*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/csm\\]");
+	str = Pattern.compile("*dex*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/dxt\\]");
+	str = Pattern.compile("*psy*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/psy\\]");
+	
+	//SMILEYS
+	str = Pattern.compile(":)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/happy\\]");
+	return str;
     }
 	
     public void append(String line, Color col) {
-	Text rl;
+	RichText rl;
 	if(col == null)
 	    col = defcolor;
-	rl = fnd.render(RichText.Parser.quote(line), sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
+	rl = fnd.render(smileys(RichText.Parser.quote(line)), sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
+	//rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
 	synchronized(lines) {
 	    lines.add(rl);
 	}
