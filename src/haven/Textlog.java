@@ -90,17 +90,24 @@ public class Textlog extends Widget {
     
     private String smileys(String str){
 	//ATTRIBUTES
-	str = Pattern.compile("*str*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/str\\]");
-	str = Pattern.compile("*agi*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/agil\\]");
-	str = Pattern.compile("*int*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/intel\\]");
-	str = Pattern.compile("*con*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/cons\\]");
-	str = Pattern.compile("*per*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/perc\\]");
-	str = Pattern.compile("*csm*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/csm\\]");
-	str = Pattern.compile("*dex*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/dxt\\]");
-	str = Pattern.compile("*psy*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/psy\\]");
+//	str = Pattern.compile("*str*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/str\\]");
+//	str = Pattern.compile("*agi*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/agil\\]");
+//	str = Pattern.compile("*int*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/intel\\]");
+//	str = Pattern.compile("*con*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/cons\\]");
+//	str = Pattern.compile("*per*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/perc\\]");
+//	str = Pattern.compile("*csm*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/csm\\]");
+//	str = Pattern.compile("*dex*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/dxt\\]");
+//	str = Pattern.compile("*psy*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/psy\\]");
 	
 	//SMILEYS
 	str = Pattern.compile(":)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/happy\\]");
+	str = Pattern.compile(":]", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/smile\\]");
+	str = Pattern.compile("B)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/cool\\]");
+	str = Pattern.compile(":D", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/lol\\]");
+	str = Pattern.compile(":*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/kiss\\]");
+	str = Pattern.compile(":(", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/sad\\]");
+	str = Pattern.compile(":O", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/shocked\\]");
+	str = Pattern.compile(":p", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/tongue\\]");
 	return str;
     }
 	
