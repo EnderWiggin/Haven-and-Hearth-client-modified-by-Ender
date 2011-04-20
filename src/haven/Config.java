@@ -26,9 +26,11 @@
 
 package haven;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.io.*;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.net.URL;
 import java.io.PrintStream;
 
@@ -59,6 +61,7 @@ public class Config {
     public static boolean new_minimap;
     public static boolean simple_plants = false;
     public static HashSet<String> hideObjectList;
+    public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
     public static Properties options, window_props;
@@ -108,6 +111,7 @@ public class Config {
 	    hideObjectList = new HashSet<String>();
 	    loadOptions();
 	    loadWindowOptions();
+	    loadSmileys();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -172,6 +176,28 @@ public class Config {
     public static int getMusicVolume()
     {
     	return isMusicOn?musicVol:0;
+    }
+    
+    private static void loadSmileys() {
+	smileys = new HashMap<Pattern, String>();
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("smileys.conf");
+	    DataInputStream in = new DataInputStream(fstream);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		String [] tmp = strLine.split("\t");
+		String smile, res;
+		smile = tmp[0];
+		res = "\\$img\\[smiley\\/"+tmp[1]+"\\]";
+		smileys.put(Pattern.compile(smile, Pattern.CASE_INSENSITIVE|Pattern.LITERAL), res);
+	    }
+	    in.close();
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	}
+	
     }
     
     private static void loadWindowOptions() {

@@ -100,14 +100,20 @@ public class Textlog extends Widget {
 //	str = Pattern.compile("*psy*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[gfx\\/hud\\/charsh\\/psy\\]");
 	
 	//SMILEYS
-	str = Pattern.compile(":)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/happy\\]");
-	str = Pattern.compile(":]", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/smile\\]");
-	str = Pattern.compile("B)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/cool\\]");
-	str = Pattern.compile(":D", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/lol\\]");
-	str = Pattern.compile(":*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/kiss\\]");
-	str = Pattern.compile(":(", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/sad\\]");
-	str = Pattern.compile(":O", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/shocked\\]");
-	str = Pattern.compile(":p", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/tongue\\]");
+//	str = Pattern.compile(":)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/happy\\]");
+//	str = Pattern.compile(":]", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/smile\\]");
+//	str = Pattern.compile("B)", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/cool\\]");
+//	str = Pattern.compile(":D", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/lol\\]");
+//	str = Pattern.compile(":*", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/kiss\\]");
+//	str = Pattern.compile(":(", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/sad\\]");
+//	str = Pattern.compile(":O", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/shocked\\]");
+//	str = Pattern.compile(":p", Pattern.CASE_INSENSITIVE|Pattern.LITERAL).matcher(str).replaceAll("\\$img\\[smiley\\/tongue\\]");
+	
+	for(Pattern p : Config.smileys.keySet()){
+	    String res = Config.smileys.get(p);
+	    str = p.matcher(str).replaceAll(res);
+	}
+	
 	return str;
     }
 	
