@@ -102,7 +102,11 @@ public class Charlist extends Widget {
 		y += bg.sz().y + margin;
 	    }
 	}
-	super.draw(g);
+	try{
+	    super.draw(g);
+	} catch (Exception e) {
+	    System.out.println("qweqwe");
+	}
     }
     
     public boolean mousewheel(Coord c, int amount) {
