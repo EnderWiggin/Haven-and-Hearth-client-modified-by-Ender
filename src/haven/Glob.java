@@ -55,6 +55,7 @@ public class Glob {
 	paginae.add(Resource.load("paginae/add/wiki"));
 	paginae.add(Resource.load("paginae/add/animal"));
 	paginae.add(Resource.load("paginae/add/plants"));
+	paginae.add(Resource.load("paginae/add/global"));
 	paginae.add(Resource.load("paginae/add/hide"));
 	paginae.add(Resource.load("paginae/add/hide/tree"));
 	paginae.add(Resource.load("paginae/add/hide/flav"));
