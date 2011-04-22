@@ -117,6 +117,16 @@ public class Config {
 	}
     }
     
+    public static String mksmiley(String str){
+	synchronized (smileys) {
+	    for(Pattern p : Config.smileys.keySet()){
+		String res = Config.smileys.get(p);
+		str = p.matcher(str).replaceAll(res);
+	    }
+	}
+	return str;
+    }
+    
     private static void usage(PrintStream out) {
 	out.println("usage: haven.jar [-hdPf] [-u USER] [-C HEXCOOKIE] [-r RESDIR] [-U RESURL] [-A AUTHSERV] [SERVER]");
     }
