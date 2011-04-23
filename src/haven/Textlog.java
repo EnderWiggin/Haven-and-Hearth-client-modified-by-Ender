@@ -37,7 +37,7 @@ public class Textlog extends Widget {
     static Tex schain = Resource.loadtex("gfx/hud/schain");
     static Tex sflarp = Resource.loadtex("gfx/hud/sflarp");
     static RichText.Foundry fnd = new RichText.Foundry(TextAttribute.FAMILY, "Sans Serif", TextAttribute.SIZE, 12, TextAttribute.FOREGROUND, Color.BLACK);
-    List<RichText> lines;
+    List<Text> lines;
     int maxy, cury;
     int margin = 3;
     boolean sdrag = false;
@@ -84,16 +84,20 @@ public class Textlog extends Widget {
 	
     public Textlog(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent);
-	lines = new LinkedList<RichText>();
+	lines = new LinkedList<Text>();
 	maxy = cury = 0;
     }
     
     public void append(String line, Color col) {
-	RichText rl;
+	Text rl;
 	if(col == null)
 	    col = defcolor;
-	rl = fnd.render(Config.mksmiley(RichText.Parser.quote(line)), sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
-	//rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
+	
+	line = RichText.Parser.quote(line);
+	if(Config.use_smileys){
+	    line = Config.mksmiley(line);
+	}
+	rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
 	synchronized(lines) {
 	    lines.add(rl);
 	}

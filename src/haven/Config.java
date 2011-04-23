@@ -56,6 +56,7 @@ public class Config {
     public static boolean grid;
     public static boolean timestamp;
     public static boolean new_chat;
+    public static boolean use_smileys;
     public static boolean zoom;
     public static boolean noborders;
     public static boolean new_minimap;
@@ -240,6 +241,7 @@ public class Config {
         noborders = options.getProperty("noborders", "false").equals("true");
         new_minimap = options.getProperty("new_minimap", "true").equals("true");
         new_chat = options.getProperty("new_chat", "true").equals("true");
+        use_smileys = options.getProperty("use_smileys", "true").equals("true");
         isMusicOn = options.getProperty("music_on", "true").equals("true");
         isSoundOn = options.getProperty("sound_on", "true").equals("true");
         showDirection = options.getProperty("show_direction", "true").equals("true");
@@ -293,6 +295,7 @@ public class Config {
         options.setProperty("noborders", noborders?"true":"false");
         options.setProperty("new_minimap", new_minimap?"true":"false");
         options.setProperty("new_chat", new_chat?"true":"false");
+        options.setProperty("use_smileys", use_smileys?"true":"false");
         options.setProperty("sfx_vol", String.valueOf(sfxVol));
         options.setProperty("music_vol", String.valueOf(musicVol));
         options.setProperty("music_on", isMusicOn?"true":"false");
