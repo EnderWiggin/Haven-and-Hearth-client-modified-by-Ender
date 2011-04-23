@@ -629,6 +629,7 @@ public class RichText extends Text {
 	    fp.prepare(rs);
 	    rt.parts = layout(fp, width);
 	    Coord sz = bounds(rt.parts);
+	    if((width>0)&&(sz.x > width)) sz.x = width;
 	    if(sz.x < 1) sz = sz.add(1, 0);
 	    if(sz.y < 1) sz = sz.add(0, 1);
 	    BufferedImage img = TexI.mkbuf(sz);
