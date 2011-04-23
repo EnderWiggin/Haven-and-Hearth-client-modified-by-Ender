@@ -1,5 +1,9 @@
 Change log
 
+23.04.11
+ * various fixes for text rendering and layout. They decrease chances of 'smiley hanging'
+ * added option to turn smileys off.
+
 20.04.11
  * made global chat part of chat panel
  * added button to menu grid to show global chat

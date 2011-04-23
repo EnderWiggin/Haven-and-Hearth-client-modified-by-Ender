@@ -119,7 +119,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     }
 
     public MainFrame(int w, int h) {
-	super("Haven and Hearth (modified by Ender v20.04.11)");
+	super("Haven and Hearth (modified by Ender v23.04.11)");
 	innerSize = new Dimension(w, h);
 	centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
 	p = new HavenPanel(w, h);
