@@ -121,7 +121,7 @@ public class RichText extends Text {
 	public int baseline() {return(0);}
 	public void render(Graphics2D g) {}
 	public Part split(int w) {
-	    return(this);
+	    return(null);
 	}
     }
     
@@ -277,6 +277,9 @@ public class RichText extends Text {
 	}
 
 	public Part split(int w) {
+	    if((end-start)<=1){
+		return null;
+	    }
 	    int l = start, r = end;
 	    while(true) {
 		int t = l + ((r - l) / 2);
@@ -298,6 +301,9 @@ public class RichText extends Text {
 		if(Character.isWhitespace(it.setIndex(i))) {
 		    return(split2(i, i + 1));
 		}
+	    }
+	    if(l == start){
+		l+=1;
 	    }
 	    return(split2(l, l));
 	}
@@ -573,9 +579,14 @@ public class RichText extends Text {
 		    ph = p.height();
 		    if(w > 0) {
 			if(p.x + pw > w) {
-			    p = p.split(w - x);
 			    lb = true;
-			    continue;
+			    Part tmp = p.split(w - x);
+			    if(tmp != null){
+				p = tmp;
+				continue;
+			    } else {
+				break;
+			    }
 			}
 		    }
 		    break;
