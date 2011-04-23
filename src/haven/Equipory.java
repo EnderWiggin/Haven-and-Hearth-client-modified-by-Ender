@@ -63,6 +63,7 @@ public class Equipory extends Window implements DTarget {
 	
     public Equipory(Coord c, Widget parent) {
 	super(c, new Coord(0, 0), parent, "Equipment");
+	canhastrash = false;
 	epoints = new ArrayList<Inventory>();
 	equed = new ArrayList<Item>(ecoords.length);
 	//new Img(new Coord(32, 0), bg, this);

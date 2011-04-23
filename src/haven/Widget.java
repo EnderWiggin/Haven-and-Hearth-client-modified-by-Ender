@@ -40,6 +40,7 @@ public class Widget {
     Widget focused;
     public Resource cursor = null;
     public Object tooltip = null;
+    public boolean canhastrash = true;
     private Widget prevtt;
     static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
     static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,

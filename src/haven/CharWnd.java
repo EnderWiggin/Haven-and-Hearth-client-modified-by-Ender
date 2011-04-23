@@ -387,6 +387,7 @@ public class CharWnd extends Window {
 	
 	public Worship(Coord c, Widget parent, String title, Tex img) {
 	    super(c, new Coord(100, 200), parent);
+	    canhastrash = false;
 	    this.title = Text.render(title);
 	    this.img = img;
 	    this.numen = Text.render("0");
@@ -647,6 +648,7 @@ public class CharWnd extends Window {
 	belief.visible = false;
 
 	study = new Widget(Coord.z, new Coord(400, 275), this);
+	study.canhastrash = false;
 	new Label(new Coord(138, 210), study, "Used attention:");
 	new Label(new Coord(138, 225), study, "Attention limit:");
 	snlbl = new Label(new Coord(240, 210), study, "");

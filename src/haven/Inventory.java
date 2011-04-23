@@ -26,10 +26,18 @@
 
 package haven;
 
+import java.awt.image.BufferedImage;
+
 public class Inventory extends Widget implements DTarget {
     public static Tex invsq = Resource.loadtex("gfx/hud/invsq");
+    protected static BufferedImage[] tbtni = new BufferedImage[] {
+	Resource.loadimg("gfx/hud/trashu"),
+	Resource.loadimg("gfx/hud/trashd"),
+	Resource.loadimg("gfx/hud/trashh")};
     Coord isz;
-
+    private IButton trash;
+    private boolean wait = false;
+    
     static {
 	Widget.addtype("inv", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
@@ -50,8 +58,11 @@ public class Inventory extends Widget implements DTarget {
     }
 	
     public Inventory(Coord c, Coord sz, Widget parent) {
-	super(c, invsq.sz().add(new Coord(-1, -1)).mul(sz).add(new Coord(1, 1)), parent);
+	super(c, invsq.sz().add(new Coord(-1, -1)).mul(sz).add(new Coord(17, 1)), parent);
 	isz = sz;
+	trash = new IButton(Coord.z, this, tbtni[0], tbtni[1], tbtni[2]);
+	trash.visible = parent.canhastrash;
+	recalcsz();
     }
     
     public boolean mousewheel(Coord c, int amount) {
@@ -74,7 +85,81 @@ public class Inventory extends Widget implements DTarget {
     public void uimsg(String msg, Object... args) {
 	if(msg == "sz") {
 	    isz = (Coord)args[0];
-	    sz = invsq.sz().add(new Coord(-1, -1)).mul(isz).add(new Coord(1, 1));
+	    recalcsz();
+	}
+    }
+    
+    public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender == trash) {
+	    if(wait){return;}
+	    wait = true;
+	    new ConfirmWnd(parent.c.add(c).add(trash.c), ui.root, getmsg(), new ConfirmWnd.Callback() {
+		public void result(Boolean res) {
+		    wait = false;
+		    if(res){
+			empty();
+		    }
+		}
+	    });
+	} else {
+	    super.wdgmsg(sender, msg, args);
+	}
+    }
+    
+    public void showtrash(boolean visible){
+	trash.visible = visible;
+	recalcsz();
+    }
+    
+    private String getmsg(){
+	if(parent instanceof Window){
+	    String str = ((Window)parent).cap.text;
+	    return "Drop all items from the "+str.toLowerCase()+" to ground?";
+	}
+	return "Drop all items to ground?";
+    }
+    
+    private void empty(){
+	for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+	    if(!wdg.visible)
+		continue;
+	    if(!(wdg instanceof Item)){
+		continue;
+	    }
+	    wdg.wdgmsg("drop", Coord.z);
+	}
+    }
+    
+    private boolean needshift(){
+	if(parent instanceof Window){
+	    Window wnd = (Window)parent;
+	    if(wnd.cap != null){
+		String str = wnd.cap.text;
+		if(str.equals("Oven")){
+		    return true;
+		}
+		if(str.equals("Finery Forge")){
+		    return true;
+		}
+		if(str.equals("Steel Crucible")){
+		    return true;
+		}
+	    }
+	}
+	return false;
+    }
+    
+    private void recalcsz(){
+	sz = invsq.sz().add(new Coord(-1, -1)).mul(isz).add(new Coord(1, 1));
+	if(trash.visible){
+	    trash.c = sz.sub(0, invsq.sz().y);
+	    hsz = sz.add(16,0);
+	    if(needshift()){//small inventory, button should be shifted (Finery forge, oven, crucible)
+		trash.c = trash.c.add(18,0);
+		hsz = hsz.add(18,0);
+	    }
+	} else {
+	    hsz = null;
 	}
     }
 }

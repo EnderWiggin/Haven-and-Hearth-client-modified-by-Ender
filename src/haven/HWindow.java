@@ -59,6 +59,7 @@ public class HWindow extends Widget {
     
     public HWindow(Widget parent, String title, boolean closable) {
 	super(new Coord(234, 29), new Coord(430, 100), parent);
+	canhastrash = false;
 	this.title = title;
 	shp = (IHWindowParent)parent;
 	shp.addwnd(this);
