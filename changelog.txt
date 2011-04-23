@@ -1,5 +1,8 @@
 Change log
 
+23.04.11.2
+ * added button to drop all items to ground.
+
 23.04.11
  * various fixes for text rendering and layout. They decrease chances of 'smiley hanging'
  * added option to turn smileys off.
