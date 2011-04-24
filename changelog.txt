@@ -1,5 +1,10 @@
 Change log
 
+24.04.11
+ * fixed crash when pressing ESC while Confirmation window has focus
+ * added digital representation of offense, defense and balance
+ * added displaying of combat info and name of non-current targets
+
 23.04.11.2
  * added button to drop all items to ground.
 
