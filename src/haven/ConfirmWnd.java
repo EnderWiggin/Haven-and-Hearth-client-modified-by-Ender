@@ -41,6 +41,14 @@ public class ConfirmWnd extends Window {
 	super.wdgmsg(sender, msg, args);
     }
     
+    public boolean type(char key, java.awt.event.KeyEvent ev) {
+	if(key == 27) {
+	    clbk.result(false);
+	    close();
+	}
+	return(super.type(key, ev));
+    }
+    
     public static interface Callback {
 	public void result(Boolean res);
     }
