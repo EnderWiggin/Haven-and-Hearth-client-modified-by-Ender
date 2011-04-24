@@ -26,17 +26,22 @@
 
 package haven;
 
+import haven.Text.Foundry;
+
 import java.awt.Color;
+import java.awt.Font;
 
 public class ComMeter extends Widget {
     static Tex sword = Resource.loadtex("gfx/hud/combat/com/offdeff");
-    static Text.Foundry intf = new Text.Foundry("Serif", 16);
+    static Text.Foundry intf = new Text.Foundry(new Font("Serif", Font.BOLD, 16));
+    static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 10));
     static Coord
 	moc = new Coord(54, 61),
 	mdc = new Coord(54, 71),
 	ooc = new Coord(80, 61),
 	odc = new Coord(80, 71);
-    static Coord intc = new Coord(66, 33);
+    static Coord intc = new Coord(66, 25);
+    static Coord balc = new Coord(66, 40);
     static Color offcol = new Color(255, 0, 0), defcol = new Color(0, 0, 255);
     static Tex scales[];
     Fightview fv;
@@ -66,8 +71,11 @@ public class ComMeter extends Widget {
 	    g.frect(mdc, new Coord(-fv.def / 200, 5));
 	}
 	g.chcolor();
+	g.aimage(fnd.render(String.format("%d", fv.off/100)).tex(), moc.sub(25, -2), 0.5, 0.5);
+	g.aimage(fnd.render(String.format("%d", fv.def/100)).tex(), mdc.sub(25, -2), 0.5, 0.5);
 	if(rel != null) {
 	    g.aimage(intf.render(String.format("%d", rel.intns)).tex(), intc, 0.5, 0.5);
+	    g.aimage(intf.render(String.format("%d", rel.bal)).tex(), balc, 0.5, 0.5);
 	    if(rel.off >= 200) {
 		g.chcolor(offcol);
 		g.frect(ooc, new Coord(rel.off / 200, 5));
@@ -77,6 +85,8 @@ public class ComMeter extends Widget {
 		g.frect(odc, new Coord(rel.def / 200, 5));
 	    }
 	    g.chcolor();
+	    g.aimage(fnd.render(String.format("%d", rel.off/100)).tex(), ooc.add(25, 2), 0.5, 0.5);
+	    g.aimage(fnd.render(String.format("%d", rel.def/100)).tex(), odc.add(25, 2), 0.5, 0.5);
 	}
     }
 }
