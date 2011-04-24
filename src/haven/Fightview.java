@@ -26,6 +26,9 @@
 
 package haven;
 
+import haven.Text.Line;
+
+import java.awt.Color;
 import java.util.*;
 
 public class Fightview extends Widget {
@@ -59,6 +62,17 @@ public class Fightview extends Widget {
 	    this.give = new GiveButton(Coord.z, Fightview.this, 0, new Coord(15, 15));
         }
 	
+        public Tex name(){
+            Gob gob = ui.sess.glob.oc.getgob(gobid);
+	    if(gob != null){
+		KinInfo k = gob.getattr(KinInfo.class);
+		if(k != null){
+		    return k.rendered();
+		}
+	    }
+	    return null;
+        }
+        
 	public void give(int state) {
 	    if(this == current)
 		curgive.state = state;
@@ -126,7 +140,17 @@ public class Fightview extends Widget {
             rel.ava.c = new Coord(25, ((bg.sz().y - rel.ava.sz.y) / 2) + y);
 	    rel.give.c = new Coord(5, 4 + y);
 	    rel.show(true);
-            g.text(String.format("%d %d", rel.bal, rel.intns), new Coord(65, y + 10));
+	    Tex name = rel.name();
+	    if(name != null){
+		g.image(name, new Coord(65, y-2));
+	    }
+	    String str = String.format("$img[gfx/hud/combat/bal]%d/%d $img[gfx/hud/combat/ip]%d/%d\n",rel.bal, rel.intns, rel.ip, rel.oip);
+	    str += "$img[gfx/hud/combat/off]"+((int)rel.off/100);
+	    str += " $img[gfx/hud/combat/def]"+((int)rel.def/100);
+	    Tex text = RichText.render(str, 0).tex();
+	    g.image(text, new Coord(65, y + 10));
+	    text.dispose();
+            //g.text(String.format("%d %d %d/%d", rel.bal, rel.intns, new Coord(65, y + 10));
             y += bg.sz().y + ymarg;
         }
         super.draw(g);
