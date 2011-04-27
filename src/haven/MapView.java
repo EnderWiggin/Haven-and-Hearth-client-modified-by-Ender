@@ -60,6 +60,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     static Text.Foundry polownertf = new Text.Foundry("serif", 20);
     public Text polownert = null;
     public String polowner = null;
+    public Gob onmouse;
     long polchtm = 0;
     int si = 4;
     double _scale = 1;
@@ -1067,7 +1068,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    if(curf != null)
 		curf.tick("sort");
-	    Gob onmouse = null;
+	    onmouse = null;
 	    if(pmousepos != null)
 		onmouse = gobatpos(pmousepos);
 	    obscured = findobsc();

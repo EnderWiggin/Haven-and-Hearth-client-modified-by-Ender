@@ -56,6 +56,7 @@ public class Config {
     public static boolean grid;
     public static boolean timestamp;
     public static boolean new_chat;
+    public static boolean highlight = false;
     public static boolean use_smileys;
     public static boolean zoom;
     public static boolean noborders;
