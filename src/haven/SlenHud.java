@@ -26,11 +26,13 @@
 
 package haven;
 
-import java.io.*;
-import java.util.*;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import static haven.Inventory.invsq;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory, IHWindowParent {
     public static Tex bg = Resource.loadtex("gfx/hud/slen/low");
@@ -234,6 +236,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		}
 	    };
 	sub.visible = sdb.visible = false;
+	new TimerPanel(ui.root);
     }
 
     public Coord xlate(Coord c, boolean in) {

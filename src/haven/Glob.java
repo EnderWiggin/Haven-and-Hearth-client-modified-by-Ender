@@ -28,12 +28,15 @@ package haven;
 
 import java.util.*;
 
+import ender.timer.TimerController;
+
 public class Glob {
     public static final int GMSG_TIME = 0;
     public static final int GMSG_ASTRO = 1;
     public static final int GMSG_LIGHT = 2;
 	
     public long time;
+    public long local;
     public Astronomy ast;
     public OCache oc = new OCache(this);
     public MCache map;
@@ -43,8 +46,14 @@ public class Glob {
     public Map<String, CAttr> cattr = new HashMap<String, CAttr>();
     public Map<Integer, Buff> buffs = new TreeMap<Integer, Buff>();
     public java.awt.Color amblight = null;
+    public static TimerController timers = null;
     
     public Glob(Session sess) {
+	
+	if(timers == null){
+	    timers = new TimerController();
+	}
+	
 	this.sess = sess;
 	map = new MCache(sess);
 	party = new Party(this);
@@ -98,6 +107,8 @@ public class Glob {
 	    switch(msg.uint8()) {
 	    case GMSG_TIME:
 		time = msg.int32();
+		local = System.currentTimeMillis()/1000;
+		timers.update(time, local);
 		break;
 	    case GMSG_ASTRO:
 		double dt = defix(msg.int32());
