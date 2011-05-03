@@ -1,5 +1,8 @@
 Change log
 
+03.05.11
+ * added timers. They can be accessed through lower-right menu (X->T)
+
 24.04.11
  * fixed crash when pressing ESC while Confirmation window has focus
  * added digital representation of offense, defense and balance
