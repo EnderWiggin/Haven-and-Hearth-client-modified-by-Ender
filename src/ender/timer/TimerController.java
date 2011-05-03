@@ -1,15 +1,28 @@
 package ender.timer;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class TimerController extends Thread {
-
-    private List<Timer> timers;
-    private long server=0, local=0;
+    private static TimerController instance;
+    public List<Timer> timers;
+    private Properties options;
+    
+    public static TimerController getInstance(){
+	if(instance == null){
+	    instance = new TimerController();
+	}
+	return instance;
+    }
     
     public TimerController(){
 	super("Timer Thread");
+	options = new Properties();
 	timers = new ArrayList<Timer>();
 	start();
     }
@@ -19,14 +32,9 @@ public class TimerController extends Thread {
     public void run() {
 	while(true) {
 	    synchronized (timers) {
-		long now = System.currentTimeMillis()/1000;
-		int i = 0;
-		while(i < timers.size()){
-		    Timer timer = timers.get(i);
-		    if(timer.update(server, local, now)){
-			timers.remove(i);
-		    } else{
-			i++;
+		for(Timer timer : timers){
+		    if((timer.isWorking())&&(timer.update())){
+			timer.stop();
 		    }
 		}
 	    }	    
@@ -42,9 +50,53 @@ public class TimerController extends Thread {
 	}
     }
     
-    public void update(long server, long local){
-	this.server = server;
-	this.local = local;
+    public void remove(Timer timer){
+	synchronized (timers) {
+	    timers.remove(timer);
+	}
     }
-    
+
+    public void load(){
+	synchronized(options){
+	    try {
+		options.load(new FileInputStream("timers.conf"));
+		synchronized (timers){
+		    for(Object key : options.keySet()){
+			String str = key.toString();
+			if(str.indexOf("Name")>0){
+			    continue;
+			}
+			String tmp[] = options.getProperty(str).split(",");
+			try{
+			    int start = Integer.parseInt(tmp[0]);
+			    int time = Integer.parseInt(tmp[1]);
+			    String name = options.getProperty(str+"Name");
+			    new Timer(start, time, name);
+			} catch(Exception e){}
+		    }
+		}
+	    } catch (FileNotFoundException e) {
+	    } catch (IOException e) {
+	    }
+	}
+    }
+
+    public void save(){
+	int i=0;
+	synchronized(options){
+	    options.clear();
+	    synchronized (timers){
+		for (Timer timer : timers){
+		    options.setProperty("Timer"+i, String.format("%d,%d",timer.getStart(), timer.getTime()));
+		    options.setProperty("Timer"+i+"Name", timer.getName());
+		    i++;
+		}
+	    }
+	    try {
+		options.store(new FileOutputStream("timers.conf"), "Timers config");
+	    } catch (FileNotFoundException e) {
+	    } catch (IOException e) {
+	    }
+	}
+    }
 }

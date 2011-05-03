@@ -30,7 +30,6 @@ import java.awt.Color;
 import java.awt.font.TextAttribute;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Textlog extends Widget {
     static Tex texpap = Resource.loadtex("gfx/hud/texpap");

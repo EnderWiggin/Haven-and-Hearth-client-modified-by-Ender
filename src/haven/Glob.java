@@ -28,15 +28,13 @@ package haven;
 
 import java.util.*;
 
-import ender.timer.TimerController;
+import ender.timer.Timer;
 
 public class Glob {
     public static final int GMSG_TIME = 0;
     public static final int GMSG_ASTRO = 1;
     public static final int GMSG_LIGHT = 2;
 	
-    public long time;
-    public long local;
     public Astronomy ast;
     public OCache oc = new OCache(this);
     public MCache map;
@@ -46,13 +44,8 @@ public class Glob {
     public Map<String, CAttr> cattr = new HashMap<String, CAttr>();
     public Map<Integer, Buff> buffs = new TreeMap<Integer, Buff>();
     public java.awt.Color amblight = null;
-    public static TimerController timers = null;
     
     public Glob(Session sess) {
-	
-	if(timers == null){
-	    timers = new TimerController();
-	}
 	
 	this.sess = sess;
 	map = new MCache(sess);
@@ -65,6 +58,7 @@ public class Glob {
 	paginae.add(Resource.load("paginae/add/animal"));
 	paginae.add(Resource.load("paginae/add/plants"));
 	paginae.add(Resource.load("paginae/add/global"));
+	paginae.add(Resource.load("paginae/add/timer"));
 	paginae.add(Resource.load("paginae/add/hide"));
 	paginae.add(Resource.load("paginae/add/hide/tree"));
 	paginae.add(Resource.load("paginae/add/hide/flav"));
@@ -106,9 +100,8 @@ public class Glob {
 	while(!msg.eom()) {
 	    switch(msg.uint8()) {
 	    case GMSG_TIME:
-		time = msg.int32();
-		local = System.currentTimeMillis()/1000;
-		timers.update(time, local);
+		Timer.server = msg.int32();;
+		Timer.local = System.currentTimeMillis()/1000;
 		break;
 	    case GMSG_ASTRO:
 		double dt = defix(msg.int32());

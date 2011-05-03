@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ender.timer.TimerController;
+
 public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory, IHWindowParent {
     public static Tex bg = Resource.loadtex("gfx/hud/slen/low");
     //public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
@@ -236,7 +238,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		}
 	    };
 	sub.visible = sdb.visible = false;
-	new TimerPanel(ui.root);
+	TimerController.getInstance().load();
     }
 
     public Coord xlate(Coord c, boolean in) {

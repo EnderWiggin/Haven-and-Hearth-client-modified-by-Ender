@@ -296,6 +296,8 @@ public class MenuGrid extends Widget {
 	    ui.cons.out.println(str);
 	    ui.slen.error(str);
 	    Config.saveOptions();
+	} else if(list[1].equals("timers")) {
+	    TimerPanel.toggle();
 	} else if(list[1].equals("animal")) {
 	    Config.showBeast = !Config.showBeast;
 	    String str = "Animal highlight is turned "+((Config.showBeast)?"ON":"OFF");
