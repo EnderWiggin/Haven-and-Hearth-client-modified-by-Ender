@@ -61,6 +61,7 @@ public class TimerController extends Thread {
 	    try {
 		options.load(new FileInputStream("timers.conf"));
 		synchronized (timers){
+		    timers.clear();
 		    for(Object key : options.keySet()){
 			String str = key.toString();
 			if(str.indexOf("Name")>0){
