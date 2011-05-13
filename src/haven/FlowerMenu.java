@@ -96,11 +96,12 @@ public class FlowerMenu extends Widget {
 		
 	public void tick() {
 	    int dt = (int)(System.currentTimeMillis() - st);
-	    if(dt < ms)
-		s = (double)dt / ms;
+	    int animlength = (Config.fastFlowerAnim)?0:ms;
+	    if(dt < animlength)
+		s = (double)dt / animlength;
 	    else
 		s = 1;
-	    if(dt >= ms)
+	    if(dt >= animlength)
 		end();
 	    tick2();
 	}

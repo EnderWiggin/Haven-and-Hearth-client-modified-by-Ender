@@ -60,7 +60,7 @@ public class OptWnd extends Window {
     public OptWnd(Coord c, Widget parent) {
 	super(c, new Coord(400, 370), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(400, 330), this) {
+	body = new Tabs(Coord.z, new Coord(400, 360), this) {
 	    public void changed(Tab from, Tab to) {
 		Utils.setpref("optwndtab", to.btn.text.text);
 		from.btn.c.y = 0;
@@ -128,6 +128,13 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.use_smileys;
+	    
+	    (new CheckBox(new Coord(230, 130), tab, "Fast menu") {
+		public void changed(boolean val) {
+		    Config.fastFlowerAnim = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.fastFlowerAnim;
 	    
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");

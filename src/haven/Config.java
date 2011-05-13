@@ -76,6 +76,7 @@ public class Config {
     public static boolean showBeast = false;
     public static boolean showDirection;
     public static boolean showNames;
+    public static boolean fastFlowerAnim;
     
     static {
 	try {
@@ -251,6 +252,7 @@ public class Config {
         showRadius = options.getProperty("showRadius", "false").equals("true");
         showHidden = options.getProperty("showHidden", "false").equals("true");
         simple_plants = options.getProperty("simple_plants", "false").equals("true");
+        fastFlowerAnim = options.getProperty("fastFlowerAnim", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
@@ -307,6 +309,7 @@ public class Config {
         options.setProperty("showRadius", showRadius?"true":"false");
         options.setProperty("showHidden", showHidden?"true":"false");
         options.setProperty("simple_plants", simple_plants?"true":"false");
+        options.setProperty("fastFlowerAnim", fastFlowerAnim?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
