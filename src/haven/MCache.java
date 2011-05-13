@@ -80,18 +80,25 @@ public class MCache {
     }
     
     public class Overlay {
+	Set<Overlay> list;
 	Coord c1, c2;
 	int mask;
-		
+	
 	public Overlay(Coord c1, Coord c2, int mask) {
+	    this(ols, c1, c2, mask);
+	}
+	
+	public Overlay(Set<Overlay> set, Coord c1, Coord c2, int mask) {
+	    this.list = set;
 	    this.c1 = c1;
 	    this.c2 = c2;
 	    this.mask = mask;
-	    ols.add(this);
+	    set.add(this);
 	}
 		
 	public void destroy() {
-	    ols.remove(this);
+	    list.remove(this);
+	    list = null;
 	}
 		
 	public void update(Coord c1, Coord c2) {
@@ -105,6 +112,7 @@ public class MCache {
 	public Tile gcache[][];
 	public Tile tcache[][][];
 	public int ol[][];
+	Set<Overlay> ols = new HashSet<Overlay>();
 	Collection<Gob> fo = new LinkedList<Gob>();
 	boolean regged = false;
 	public long lastreq = 0;
@@ -448,6 +456,7 @@ public class MCache {
 				g.ol[x][y] |= ol;
 			    }
 			}
+			new Overlay(g.ols, c1, c2, ol);
 		    }
 		    req.remove(c);
 		    g.makeflavor();

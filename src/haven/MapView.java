@@ -28,6 +28,8 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
+import haven.MCache.Grid;
+import haven.MCache.Overlay;
 import haven.Resource.Tile;
 import java.awt.Color;
 import java.util.*;
@@ -754,7 +756,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	} catch (Loading e) {}
     }
-	
+    
     private void drawol(GOut g, Coord tc, Coord sc) {
 	int ol;
 	int i;
@@ -900,6 +902,50 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	return(obsc);
     }
     
+    private void drawols(GOut g, Coord sc) {
+	for(Coord gc : map.grids.keySet()){
+	    Grid grid = map.grids.get(gc);
+	    for(Overlay lol : grid.ols ){
+		int id = getolid(lol.mask);
+		if(visol[id] < 1){
+		    continue;
+		}
+		Coord c0 = gc.mul(cmaps);
+		drawol2(g, id, c0.add(lol.c1), c0.add(lol.c2), sc);
+	    }
+	}
+	for(Overlay lol : map.ols ){
+	    int id = getolid(lol.mask);
+	    if(visol[id] < 1){
+		continue;
+	    }
+	    drawol2(g, id, lol.c1, lol.c2, sc);
+	}
+	g.chcolor();
+    }
+    
+    private int getolid(int mask){
+	for(int i=0; i<olc.length; i++){
+	    if((mask & (1 << i)) != 0){
+		return i;
+	    }
+	}
+	return 0;
+    }
+    
+    private void drawol2(GOut g, int id, Coord c0, Coord cx, Coord sc){
+	cx = cx.add(1,1);
+	Coord c1 = m2s(c0.mul(tilesz)).add(sc);
+	Coord c2 = m2s(new Coord(c0.x, cx.y).mul(tilesz)).add(sc);
+	Coord c3 = m2s(cx.mul(tilesz)).add(sc);
+	Coord c4 = m2s(new Coord(cx.x, c0.y).mul(tilesz)).add(sc);
+	
+	Color fc = new Color(olc[id].getRed(), olc[id].getGreen(), olc[id].getBlue(), 32);
+	g.chcolor(fc);
+	g.frect(c1, c2, c3, c4);
+	g.chcolor();
+    }
+    
     public void drawmap(GOut g) {
 	int x, y, i;
 	int stw, sth;
@@ -921,10 +967,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    sc.x -= tilesz.x * 2;
 		    drawtile(g, ctc, sc);
 		    sc.x += tilesz.x * 2;
-		    drawol(g, ctc, sc);
+		    //drawol(g, ctc, sc);
 		}
 	    }
 	}
+	drawols(g, oc);
 	if(Config.grid){
 	    g.chcolor(new Color(40, 40, 40));
 	    Coord c1, c2, d;
