@@ -169,7 +169,7 @@ public class Gob implements Sprite.Owner {
         }
         if (Config.hide) {
             for (String objectName : Config.hideObjectList) {
-                if (resourceName.indexOf(objectName) != -1) {
+                if (resourceName.contains(objectName)&&(!resourceName.contains("door"))) {
                     hide = true;
                 }
             }
