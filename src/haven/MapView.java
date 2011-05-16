@@ -1016,11 +1016,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    sc.x -= tilesz.x * 2;
 		    drawtile(g, ctc, sc);
 		    sc.x += tilesz.x * 2;
-		    //drawol(g, ctc, sc);
+		    if(!Config.newclaim){drawol(g, ctc, sc);}
 		}
 	    }
 	}
-	drawols(g, oc);
+	if(Config.newclaim){drawols(g, oc);}
 	if(Config.grid){
 	    g.chcolor(new Color(40, 40, 40));
 	    Coord c1, c2, d;
