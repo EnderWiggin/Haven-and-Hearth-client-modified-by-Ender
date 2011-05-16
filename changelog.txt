@@ -1,5 +1,18 @@
 Change log
 
+16.05.11
+ * optimized claim highlight drawing. Can be toggled at general options.
+ * added possibility to make screenshots with END key. Can be configured
+   at general options - use PNG or JPEG and whether exclude UI from
+   screenshots or no.
+
+13.05.11
+ * added options for right-click menus to appear instantly
+ * made doors to not hide
+
+11.05.11
+ * tried to make party member icons clickeble past first six
+
 03.05.11
  * added timers. They can be accessed through lower-right menu (X->T)
 
