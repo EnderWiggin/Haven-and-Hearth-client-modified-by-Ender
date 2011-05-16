@@ -31,9 +31,19 @@ import static haven.MCache.tilesz;
 import haven.MCache.Grid;
 import haven.MCache.Overlay;
 import haven.Resource.Tile;
+
 import java.awt.Color;
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MapView extends Widget implements DTarget, Console.Directory {
     static Color[] olc = new Color[31];
@@ -509,6 +519,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
     public MapView(Coord c, Coord sz, Widget parent, Coord mc, int playergob) {
 	super(c, sz, parent);
+	isui = false;
 	this.mc = mc;
 	this.playergob = playergob;
 	this.cam = restorecam();
@@ -903,15 +914,17 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
     
     private void drawols(GOut g, Coord sc) {
-	for(Coord gc : map.grids.keySet()){
-	    Grid grid = map.grids.get(gc);
-	    for(Overlay lol : grid.ols ){
-		int id = getolid(lol.mask);
-		if(visol[id] < 1){
-		    continue;
+	synchronized(map.grids){
+	    for(Coord gc : map.grids.keySet()){
+		Grid grid = map.grids.get(gc);
+		for(Overlay lol : grid.ols ){
+		    int id = getolid(lol.mask);
+		    if(visol[id] < 1){
+			continue;
+		    }
+		    Coord c0 = gc.mul(cmaps);
+		    drawol2(g, id, c0.add(lol.c1), c0.add(lol.c2), sc);
 		}
-		Coord c0 = gc.mul(cmaps);
-		drawol2(g, id, c0.add(lol.c1), c0.add(lol.c2), sc);
 	    }
 	}
 	for(Overlay lol : map.ols ){
@@ -943,7 +956,43 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Color fc = new Color(olc[id].getRed(), olc[id].getGreen(), olc[id].getBlue(), 32);
 	g.chcolor(fc);
 	g.frect(c1, c2, c3, c4);
+	cx = cx.sub(1,1);
+	drawline(g, new Coord(0,-1), c0.y, id, c0, cx, sc);
+	drawline(g, new Coord(0,1), cx.y, id, c0, cx, sc);
+	drawline(g, new Coord(1,0), cx.x, id, c0, cx, sc);
+	drawline(g, new Coord(-1,0), c0.x, id, c0, cx, sc);
 	g.chcolor();
+    }
+    
+    private void drawline(GOut g, Coord d, int med, int id, Coord c0, Coord cx, Coord sc){
+	
+	Coord m = d.abs();
+	Coord r = m.swap();
+	Coord off = m.mul(med).add(d.add(m).div(2));
+	int min = c0.mul(r).sum();
+	int max = cx.mul(r).sum()+1;
+	boolean t=false;
+	int begin = min;
+	int ol = 1<<id;
+	g.chcolor(olc[id]);
+	for(int i=min; i<=max; i++){
+	    Coord c = r.mul(i).add(m.mul(med)).add(d);
+	    int ol2;
+	    try{ol2 = getol(c);}catch(Loading e){ol2 = ol;}
+	    if(t){
+		if(((ol2&ol)!=0)||i==max){
+		    t = false;
+		    Coord cb = m2s(tilesz.mul(r.mul(begin).add(off))).add(sc);
+		    Coord ce = m2s(tilesz.mul(r.mul(i).add(off))).add(sc);
+		    g.line(cb, ce, 2);
+		}
+	    } else {
+		if((ol2&ol)==0){
+		    t = true;
+		    begin = i;
+		}
+	    }
+	}
     }
     
     public void drawmap(GOut g) {
