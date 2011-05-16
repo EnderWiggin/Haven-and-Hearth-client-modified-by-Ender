@@ -129,12 +129,26 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.use_smileys;
 	    
-	    (new CheckBox(new Coord(230, 130), tab, "Fast menu") {
+	    (new CheckBox(new Coord(220, 130), tab, "Fast menu") {
 		public void changed(boolean val) {
 		    Config.fastFlowerAnim = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.fastFlowerAnim;
+	    
+	    (new CheckBox(new Coord(220, 165), tab, "Compress screenshots") {
+		public void changed(boolean val) {
+		    Config.sshot_compress = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.sshot_compress;
+	    
+	    (new CheckBox(new Coord(220, 200), tab, "Exclude UI from screenshot") {
+		public void changed(boolean val) {
+		    Config.sshot_noui = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.sshot_noui;
 	    
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");

@@ -28,12 +28,19 @@ package haven;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+
+import javax.media.opengl.GLException;
+
+import com.sun.opengl.util.Screenshot;
 
 public class RootWidget extends ConsoleHost {
     public static Resource defcurs = Resource.load("gfx/hud/curs/arw");
     Logout logout = null;
     Profile gprof;
     boolean afk = false;
+    boolean screenshot = false;
 	
     public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
@@ -73,6 +80,8 @@ public class RootWidget extends ConsoleHost {
 		BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
 	    } else if(code == KeyEvent.VK_HOME) {
 		ui.mainview.resetcam();
+	    } else if(code == KeyEvent.VK_END) {
+		screenshot = true;
 	    } else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {
@@ -83,8 +92,23 @@ public class RootWidget extends ConsoleHost {
     }
 
     public void draw(GOut g) {
+	if(screenshot&&Config.sshot_noui){visible = false;}
 	super.draw(g);
 	drawcmd(g, new Coord(20, 580));
+	if(screenshot){
+	    visible = true;
+	    screenshot = false;
+	    try {
+		Coord s = MainFrame.getInnerSize();
+		String stamp = Utils.sessdate(System.currentTimeMillis());
+		String ext = Config.sshot_compress?".jpg":".png";
+		File f = new File("screenshots/SS_"+stamp+ext);
+		f.mkdirs();
+		Screenshot.writeToFile(f, s.x, s.y);
+	    } catch (GLException e){e.printStackTrace();}
+	    catch (IOException e){e.printStackTrace();}
+	}
+	
 //	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
 //	    afk = true;
 //	    Widget slen = findchild(SlenHud.class);

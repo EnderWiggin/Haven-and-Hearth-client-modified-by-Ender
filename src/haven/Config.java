@@ -77,6 +77,8 @@ public class Config {
     public static boolean showDirection;
     public static boolean showNames;
     public static boolean fastFlowerAnim;
+    public static boolean sshot_compress;
+    public static boolean sshot_noui;
     
     static {
 	try {
@@ -253,6 +255,8 @@ public class Config {
         showHidden = options.getProperty("showHidden", "false").equals("true");
         simple_plants = options.getProperty("simple_plants", "false").equals("true");
         fastFlowerAnim = options.getProperty("fastFlowerAnim", "false").equals("true");
+        sshot_compress = options.getProperty("sshot_compress", "false").equals("true");
+        sshot_noui = options.getProperty("sshot_noui", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
@@ -310,6 +314,8 @@ public class Config {
         options.setProperty("showHidden", showHidden?"true":"false");
         options.setProperty("simple_plants", simple_plants?"true":"false");
         options.setProperty("fastFlowerAnim", fastFlowerAnim?"true":"false");
+        options.setProperty("sshot_compress", sshot_compress?"true":"false");
+        options.setProperty("sshot_noui", sshot_noui?"true":"false");
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {

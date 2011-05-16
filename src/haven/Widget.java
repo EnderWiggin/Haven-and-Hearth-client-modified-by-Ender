@@ -42,6 +42,7 @@ public class Widget {
     public Object tooltip = null;
     public boolean canhastrash = true;
     private Widget prevtt;
+    public boolean isui = true;
     static Map<String, WidgetFactory> types = new TreeMap<String, WidgetFactory>();
     static Class<?>[] barda = {Img.class, TextEntry.class, MapView.class, FlowerMenu.class,
 			       Window.class, Button.class, Inventory.class, Item.class, Listbox.class,
@@ -279,10 +280,10 @@ public class Widget {
 	
     public void draw(GOut g) {
 	Widget next;
-		
+	
 	for(Widget wdg = child; wdg != null; wdg = next) {
 	    next = wdg.next;
-	    if(!wdg.visible)
+	    if(!wdg.visible||(!ui.root.visible&&wdg.isui))
 		continue;
 	    Coord cc = xlate(wdg.c, true);
 	    wdg.draw(g.reclip(cc, wdg.sz));
