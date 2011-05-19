@@ -27,7 +27,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public int belt, key;
     private Tex[] nums;
     private static Tex[] beltNums;
-    private String name;
+    public String name;
     
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     
@@ -68,6 +68,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    folded = true;
 	    checkfold();
 	}
+	visible = Config.window_props.getProperty(name, "true").equals("true");
 	c = new Coord(Config.window_props.getProperty(name+"_pos", c.toString()));
     }
     
@@ -435,6 +436,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     private boolean checkKey(char ch, KeyEvent ev) {
+	if(!visible){return false;}
 	int code = ev.getKeyCode();
 	int slot = code - key;
 	boolean alt = ev.isAltDown();

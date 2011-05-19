@@ -42,6 +42,9 @@ public class MenuGrid extends Widget {
     private Resource cur, pressed, dragging, layout[][] = new Resource[gsz.x][gsz.y];
     private int curoff = 0;
     private Map<Character, Resource> hotmap = new TreeMap<Character, Resource>();
+    public ToolbarWnd digitbar;
+    public ToolbarWnd functionbar;
+    public ToolbarWnd numpadbar;
 	
     static {
 	Widget.addtype("scm", new WidgetFactory() {
@@ -97,9 +100,9 @@ public class MenuGrid extends Widget {
 	cons(null);
 	ui.mnu = this;
 	ToolbarWnd.loadBelts();
-	new ToolbarWnd(new Coord(0,300), ui.root, "toolbar1");
-	new ToolbarWnd(new Coord(50,300), ui.root, "toolbar2", 2, KeyEvent.VK_F1, 12, new Coord(4, 10));
-	new ToolbarWnd(new Coord(100,300), ui.root, "toolbar3", 10, KeyEvent.VK_NUMPAD0){
+	digitbar = new ToolbarWnd(new Coord(0,300), ui.root, "toolbar1");
+	functionbar = new ToolbarWnd(new Coord(50,300), ui.root, "toolbar2", 2, KeyEvent.VK_F1, 12, new Coord(4, 10));
+	numpadbar = new ToolbarWnd(new Coord(100,300), ui.root, "toolbar3", 10, KeyEvent.VK_NUMPAD0){
 	    protected void nextBelt(){
 		loadBelt((belt+1)%5+10);
 	    }
