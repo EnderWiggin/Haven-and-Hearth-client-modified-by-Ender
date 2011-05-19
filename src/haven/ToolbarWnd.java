@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
-    private static final int BELTS_NUM = 10;
+    private static final int BELTS_NUM = 15;
     private static final BufferedImage ilockc = Resource.loadimg("gfx/hud/lockc");
     private static final BufferedImage ilockch = Resource.loadimg("gfx/hud/lockch");
     private static final BufferedImage ilocko = Resource.loadimg("gfx/hud/locko");
@@ -45,12 +45,18 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	init(1, 10, new Coord(5, 10), KeyEvent.VK_0);
     }
     
-    public ToolbarWnd(Coord c, Widget parent, String name, int belt, int sz, Coord off, int key) {
+    public ToolbarWnd(Coord c, Widget parent, String name, int belt, int key, int sz, Coord off) {
 	super( c, Coord.z,  parent, null);
 	this.name = name;
 	init(belt, sz, off, key);
     }
     
+    public ToolbarWnd(Coord c, Widget parent, String name, int belt, int key) {
+	super( c, Coord.z,  parent, null);
+	this.name = name;
+	init(belt, 10, new Coord(5, 10), key);
+    }
+
     private void loadOpts() {
 	if(Config.window_props.getProperty(name+"_locked", "false").equals("true")) {
 	    locked = true;
@@ -112,16 +118,23 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	/* Text rendering is slow, so pre-cache the hotbar numbers. */
 	nums = new Tex[sz];
 	for(int i = 0; i < sz; i++) {
-	    String slot = (key == KeyEvent.VK_0)?Integer.toString(i):"F"+Integer.toString(i+1);
+	    String slot;
+	    if(key == KeyEvent.VK_0){
+		slot = Integer.toString(i);
+	    } else if(key == KeyEvent.VK_F1){
+		slot = "F"+Integer.toString(i+1);
+	    } else {
+		slot = "N"+Integer.toString(i);
+	    }
 	    nums[i] = Text.render(slot).tex();
 	}
     }
     
-    private void nextBelt() {
+    protected void nextBelt() {
 	loadBelt(belt + 2);
     }
     
-    private void prevBelt() {
+    protected void prevBelt() {
 	loadBelt(belt - 2);
     }
     
@@ -137,7 +150,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	}
     }
     
-    private void loadBelt(int beltNr) {
+    protected void loadBelt(int beltNr) {
 	belt = beltNr % BELTS_NUM;
 	if(belt < 0)
 	    belt += BELTS_NUM;
