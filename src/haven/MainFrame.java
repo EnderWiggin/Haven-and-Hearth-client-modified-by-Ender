@@ -31,6 +31,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
+@SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
     HavenPanel p;
     ThreadGroup g;
@@ -38,6 +39,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     Dimension insetsSize;
     public static Dimension innerSize;
     public static Point centerPoint;
+    public static Coord screenSZ;
 	
     static {
 	try {
@@ -122,6 +124,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	super("Haven and Hearth (modified by Ender v16.05.11)");
 	innerSize = new Dimension(w, h);
 	centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
+	screenSZ = new Coord(Toolkit.getDefaultToolkit().getScreenSize());
 	p = new HavenPanel(w, h);
 	fsmode = findmode(w, h);
 	add(p);
@@ -138,7 +141,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     }
 
     public static Coord getScreenSize() {
-        return new Coord(Toolkit.getDefaultToolkit().getScreenSize());
+        return screenSZ;
     }
 
     public static Coord getInnerSize() {

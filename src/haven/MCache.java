@@ -157,7 +157,7 @@ public class MCache {
 		    Color col = colors.get(id);
 		    if(col == null){
 			col = new Color(255, 0, 255);
-			System.out.println(id);
+			//System.out.println(id);
 		    }
 		    g.setColor(col);
 		    g.fillRect(c.x, c.y, 1, 1);

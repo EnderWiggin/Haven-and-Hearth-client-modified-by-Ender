@@ -76,7 +76,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     long polchtm = 0;
     int si = 4;
     double _scale = 1;
-    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75};
+    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.25, 1.5, 1.75, 2};
     Map<String, Integer> radiuses;
     int beast_check_delay = 0;
     
@@ -1134,14 +1134,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
 	    for(Gob gob : glob.oc) {
-//		if(beast_check_delay <= 0) {
-//		    beast_check_delay = 5;
-//		    if(gob.resname().indexOf("skeleton")>=0){
-//			System.out.println("skeleton!!!!!");
-//		    }
-//		} else {
-//		    beast_check_delay--;
-//		}
 		drawer.chcur(gob);
 		Coord dc = m2s(gob.getc()).add(oc);
 		gob.sc = dc;
