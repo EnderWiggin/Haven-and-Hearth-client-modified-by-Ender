@@ -1,5 +1,13 @@
 Change log
 
+
+26.05.11
+ * various small fixes. Among them tried to fix deadlock reported by novaalpha
+
+19.05.11
+ * added additional toolbar for numpad keys
+ * added options to show/hide toolbars
+
 16.05.11
  * optimized claim highlight drawing. Can be toggled at general options.
  * added possibility to make screenshots with END key. Can be configured
