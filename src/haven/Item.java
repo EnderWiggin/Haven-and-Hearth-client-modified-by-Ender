@@ -35,6 +35,7 @@ public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
+    static Color outcol = new Color(8,8,8,255);
     boolean dm = false;
     int q;
     boolean hq;
@@ -115,12 +116,7 @@ public class Item extends Widget implements DTarget {
 	    }
 	    if(Config.showq && (q > 0)){
 		tex = getqtex(q);
-		Coord c = sz.sub(1,1);
-		Coord s = tex.sz();
-		g.chcolor(8, 8, 8, 128);
-		g.frect(c.sub(s), s);
-		g.chcolor();
-		g.aimage(tex, c, 1, 1);
+		g.aimage(tex, sz.sub(1,1), 1, 1);
 	    }
 	    ttres = res.get();
 	}
@@ -142,7 +138,9 @@ public class Item extends Widget implements DTarget {
 	    if(qmap.containsKey(q)){
 		return qmap.get(q);
 	    } else {
-		Tex tex = Text.render(Integer.toString(q)).tex();
+		BufferedImage img = Text.render(Integer.toString(q)).img;
+		img = Utils.outline2(img, outcol);
+		Tex tex = new TexI(img);
 		qmap.put(q, tex);
 		return tex;
 	    }
