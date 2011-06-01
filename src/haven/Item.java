@@ -270,7 +270,7 @@ public class Item extends Widget implements DTarget {
 	    if(wdg == this)
 		continue;
 	    Coord cc = w.xlate(wdg.c, true);
-	    if(c.isect(cc, wdg.sz)) {
+	    if(c.isect(cc, (wdg.hsz == null)?wdg.sz:wdg.hsz)) {
 		if(dropon(wdg, c.add(cc.inv())))
 		    return(true);
 	    }
@@ -287,7 +287,7 @@ public class Item extends Widget implements DTarget {
 	    if(wdg == this)
 		continue;
 	    Coord cc = w.xlate(wdg.c, true);
-	    if(c.isect(cc, wdg.sz)) {
+	    if(c.isect(cc, (wdg.hsz == null)?wdg.sz:wdg.hsz)) {
 		if(interact(wdg, c.add(cc.inv())))
 		    return(true);
 	    }
