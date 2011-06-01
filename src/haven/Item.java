@@ -35,7 +35,7 @@ public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
-    static Color outcol = new Color(8,8,8,255);
+    static Color outcol = new Color(0,0,0,255);
     boolean dm = false;
     int q;
     boolean hq;
@@ -139,7 +139,7 @@ public class Item extends Widget implements DTarget {
 		return qmap.get(q);
 	    } else {
 		BufferedImage img = Text.render(Integer.toString(q)).img;
-		img = Utils.outline2(img, outcol);
+		img = Utils.outline2(img, outcol, true);
 		Tex tex = new TexI(img);
 		qmap.put(q, tex);
 		return tex;

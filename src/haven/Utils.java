@@ -475,6 +475,10 @@ public class Utils {
     }
 
     public static BufferedImage outline(BufferedImage img, Color col) {
+	return outline(img, col, false);
+    }
+    
+    public static BufferedImage outline(BufferedImage img, Color col, boolean thick) {
 	Coord sz = imgsz(img).add(2, 2);
 	BufferedImage ol = TexI.mkbuf(sz);
 	for(int y = 0; y < sz.y; y++) {
@@ -489,17 +493,28 @@ public class Utils {
 		if(!t)
 		    continue;
 		if(((x > 1) && (y > 0) && (y < sz.y - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 2, y - 1)) >= 250)) ||
-		   ((x > 0) && (y > 1) && (x < sz.x - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 1, y - 2)) >= 250)) ||
-		   ((x < sz.x - 2) && (y > 0) && (y < sz.y - 1) && (Utils.rgbm.getAlpha(img.getRGB(x, y - 1)) >= 250)) ||
-		   ((x > 0) && (y < sz.y - 2) && (x < sz.x - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 1, y)) >= 250)))
+			((x > 0) && (y > 1) && (x < sz.x - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 1, y - 2)) >= 250)) ||
+			((x < sz.x - 2) && (y > 0) && (y < sz.y - 1) && (Utils.rgbm.getAlpha(img.getRGB(x, y - 1)) >= 250)) ||
+			((x > 0) && (y < sz.y - 2) && (x < sz.x - 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 1, y)) >= 250)))
 		    ol.setRGB(x, y, col.getRGB());
+		if(thick){
+		    if(((x > 1) && (y > 1) && (Utils.rgbm.getAlpha(img.getRGB(x - 2, y - 2)) >= 250)) ||
+			    ((x < sz.x - 2) && (y < sz.y - 2) && (Utils.rgbm.getAlpha(img.getRGB(x, y)) >= 250)) ||
+			    ((x < sz.x - 2) && (y > 1) && (Utils.rgbm.getAlpha(img.getRGB(x, y - 2)) >= 250)) ||
+			    ((x > 1) && (y < sz.y - 2) && (Utils.rgbm.getAlpha(img.getRGB(x - 2, y)) >= 250)))
+			ol.setRGB(x, y, col.getRGB());
+		}
 	    }
 	}
 	return(ol);
     }
     
     public static BufferedImage outline2(BufferedImage img, Color col) {
-	BufferedImage ol = outline(img, col);
+	return outline2(img, col, false);
+    }
+    
+    public static BufferedImage outline2(BufferedImage img, Color col, boolean thick) {
+	BufferedImage ol = outline(img, col, thick);
 	Graphics g = ol.getGraphics();
 	g.drawImage(img, 1, 1, null);
 	g.dispose();
