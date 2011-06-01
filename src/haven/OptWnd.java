@@ -120,21 +120,28 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.showDirection;
 	    
-	    (new CheckBox(new Coord(10, 270), tab, "Always show kin names") {
+	    (new CheckBox(new Coord(10, 270), tab, "Always show heartling names") {
 		public void changed(boolean val) {
 		    Config.showNames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showNames;
 	    
-	    (new CheckBox(new Coord(10, 305), tab, "Show smileys in chat") {
+	    (new CheckBox(new Coord(10, 305), tab, "Always show other kin names") {
+		public void changed(boolean val) {
+		    Config.showOtherNames = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showOtherNames;
+	    
+	    (new CheckBox(new Coord(10, 340), tab, "Show smileys in chat") {
 		public void changed(boolean val) {
 		    Config.use_smileys = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.use_smileys;
 	    
-	    (new CheckBox(new Coord(10, 340), tab, "Show item quality") {
+	    (new CheckBox(new Coord(10, 375), tab, "Show item quality") {
 		public void changed(boolean val) {
 		    Config.showq = val;
 		    Config.saveOptions();
