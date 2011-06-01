@@ -121,7 +121,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     }
 
     public MainFrame(int w, int h) {
-	super("Haven and Hearth (modified by Ender v28.05.11)");
+	super("Haven and Hearth (modified by Ender v01.06.11)");
 	innerSize = new Dimension(w, h);
 	centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
 	screenSZ = new Coord(Toolkit.getDefaultToolkit().getScreenSize());
