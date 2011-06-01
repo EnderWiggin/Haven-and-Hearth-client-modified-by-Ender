@@ -26,16 +26,24 @@
 
 package haven;
 
+import static haven.Utils.getprop;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.io.*;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import java.net.URL;
-import java.io.PrintStream;
 
 import ender.GoogleTranslator;
-import static haven.Utils.getprop;
 
 public class Config {
     public static byte[] authck;
@@ -79,6 +87,7 @@ public class Config {
     public static boolean fastFlowerAnim;
     public static boolean sshot_compress;
     public static boolean sshot_noui;
+    public static boolean sshot_nonames;
     public static boolean newclaim;
     public static boolean showq;
     
@@ -259,6 +268,7 @@ public class Config {
         fastFlowerAnim = options.getProperty("fastFlowerAnim", "false").equals("true");
         sshot_compress = options.getProperty("sshot_compress", "false").equals("true");
         sshot_noui = options.getProperty("sshot_noui", "false").equals("true");
+        sshot_nonames = options.getProperty("sshot_nonames", "false").equals("true");
         newclaim = options.getProperty("newclaim", "true").equals("true");
         showq = options.getProperty("showq", "true").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
@@ -320,6 +330,7 @@ public class Config {
         options.setProperty("fastFlowerAnim", fastFlowerAnim?"true":"false");
         options.setProperty("sshot_compress", sshot_compress?"true":"false");
         options.setProperty("sshot_noui", sshot_noui?"true":"false");
+        options.setProperty("sshot_nonames", sshot_nonames?"true":"false");
         options.setProperty("newclaim", newclaim?"true":"false");
         options.setProperty("showq", showq?"true":"false");
         

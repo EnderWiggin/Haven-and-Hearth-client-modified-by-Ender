@@ -26,8 +26,13 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.font.TextAttribute;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import ender.GoogleTranslator;
 
@@ -58,9 +63,9 @@ public class OptWnd extends Window {
     }
 
     public OptWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 405), parent, "Options");
+	super(c, new Coord(400, 440), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(400, 395), this) {
+	body = new Tabs(Coord.z, new Coord(400, 430), this) {
 	    public void changed(Tab from, Tab to) {
 		Utils.setpref("optwndtab", to.btn.text.text);
 		from.btn.c.y = 0;
@@ -157,28 +162,35 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.sshot_noui;
 	    
-	    (new CheckBox(new Coord(220, 235), tab, "Use optimized claim higlighting") {
+	    (new CheckBox(new Coord(220, 235), tab, "Exclude names from screenshot") {
+		public void changed(boolean val) {
+		    Config.sshot_nonames = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.sshot_nonames;
+	    
+	    (new CheckBox(new Coord(220, 270), tab, "Use optimized claim higlighting") {
 		public void changed(boolean val) {
 		    Config.newclaim = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.newclaim;
 	    
-	    (new CheckBox(new Coord(220, 270), tab, "Show digit toolbar") {
+	    (new CheckBox(new Coord(220, 305), tab, "Show digit toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.digitbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.digitbar.name, val);
 		}
 	    }).a = ui.mnu.digitbar.visible;
 	    
-	    (new CheckBox(new Coord(220, 305), tab, "Show F-button toolbar") {
+	    (new CheckBox(new Coord(220, 340), tab, "Show F-button toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.functionbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.functionbar.name, val);
 		}
 	    }).a = ui.mnu.functionbar.visible;
 	    
-	    (new CheckBox(new Coord(220, 340), tab, "Show numpad toolbar") {
+	    (new CheckBox(new Coord(220, 375), tab, "Show numpad toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.numpadbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.numpadbar.name, val);
@@ -412,7 +424,7 @@ public class OptWnd extends Window {
 	    new Label(new Coord(100, 190), tab, "Powered by Google Translate");
 	}
 
-	new Frame(new Coord(-10, 20), new Coord(420, 395), this);
+	new Frame(new Coord(-10, 20), new Coord(420, 430), this);
 	String last = Utils.getpref("optwndtab", "");
 	for (Tabs.Tab t : body.tabs) {
 	    if (t.btn.text.text.equals(last))

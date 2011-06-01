@@ -1182,27 +1182,30 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		curf.tick("draw");
 	    g.image(mask, Coord.z);
 	    long now = System.currentTimeMillis();
-	    for(KinInfo k : kin) {
-		Tex t = k.rendered();
-		Coord gc = k.gob.sc;
-		if(gc.isect(Coord.z, sz)) {
-		    if(k.seen == 0)
-			k.seen = now;
-		    int tm = (int)(now - k.seen);
-		    Color show = null;
-		    boolean auto = (k.type & 1) == 0;
-		    if((Config.showNames)||(k.gob == onmouse)) {
-			show = Color.WHITE;
-		    } else if(auto && (tm < 7500)) {
-			show = Utils.clipcol(255, 255, 255, 255 - ((255 * tm) / 7500));
+	    RootWidget.names_ready = (RootWidget.screenshot && Config.sshot_nonames);
+	    if(!RootWidget.names_ready){
+		for(KinInfo k : kin) {
+		    Tex t = k.rendered();
+		    Coord gc = k.gob.sc;
+		    if(gc.isect(Coord.z, sz)) {
+			if(k.seen == 0)
+			    k.seen = now;
+			int tm = (int)(now - k.seen);
+			Color show = null;
+			boolean auto = (k.type & 1) == 0;
+			if((Config.showNames)||(k.gob == onmouse)) {
+			    show = Color.WHITE;
+			} else if(auto && (tm < 7500)) {
+			    show = Utils.clipcol(255, 255, 255, 255 - ((255 * tm) / 7500));
+			}
+			if(show != null) {
+			    g.chcolor(show);
+			    g.image(t, gc.add(-t.sz().x / 2, -40 - t.sz().y));
+			    g.chcolor();
+			}
+		    } else {
+			k.seen = 0;
 		    }
-		    if(show != null) {
-			g.chcolor(show);
-			g.image(t, gc.add(-t.sz().x / 2, -40 - t.sz().y));
-			g.chcolor();
-		    }
-		} else {
-		    k.seen = 0;
 		}
 	    }
 	    for(Speaking s : speaking) {
