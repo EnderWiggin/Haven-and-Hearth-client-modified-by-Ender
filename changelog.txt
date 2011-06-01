@@ -1,6 +1,7 @@
 Change log
 
 01.06.11
+ * separated options to show hearthling names and other names (hearthfires, skeletons)
  * added option to show item quality on it's icon
  * fixed bug with right-clicking when zoomed in
  * added option to exclude names from screenshots
