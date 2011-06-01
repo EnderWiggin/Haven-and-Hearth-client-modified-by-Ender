@@ -26,11 +26,14 @@
 
 package haven;
 
-import java.awt.image.BufferedImage;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
+    static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
     boolean dm = false;
     int q;
@@ -67,6 +70,7 @@ public class Item extends Widget implements DTarget {
 		}
 	    });
 	missing.loadwait();
+	qmap = new HashMap<Integer, Tex>();
     }
 	
     private void fixsize() {
@@ -109,6 +113,15 @@ public class Item extends Widget implements DTarget {
 		g.frect(new Coord(sz.x-5,(int) ((1-a)*sz.y)), new Coord(5,(int) (a*sz.y)));
 		g.chcolor();
 	    }
+	    if(Config.showq && (q > 0)){
+		tex = getqtex(q);
+		Coord c = sz.sub(1,1);
+		Coord s = tex.sz();
+		g.chcolor(8, 8, 8, 128);
+		g.frect(c.sub(s), s);
+		g.chcolor();
+		g.aimage(tex, c, 1, 1);
+	    }
 	    ttres = res.get();
 	}
 	if(olcol != null) {
@@ -124,6 +137,18 @@ public class Item extends Widget implements DTarget {
 	}
     }
 
+    static Tex getqtex(int q){
+	synchronized (qmap) {
+	    if(qmap.containsKey(q)){
+		return qmap.get(q);
+	    } else {
+		Tex tex = Text.render(Integer.toString(q)).tex();
+		qmap.put(q, tex);
+		return tex;
+	    }
+	}
+    }
+    
     static Tex makesh(Resource res) {
 	BufferedImage img = res.layer(Resource.imgc).img;
 	Coord sz = Utils.imgsz(img);

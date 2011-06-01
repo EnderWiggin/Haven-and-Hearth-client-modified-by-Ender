@@ -129,6 +129,13 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.use_smileys;
 	    
+	    (new CheckBox(new Coord(10, 340), tab, "Show item quality") {
+		public void changed(boolean val) {
+		    Config.showq = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showq;
+	    
 	    (new CheckBox(new Coord(220, 130), tab, "Fast menu") {
 		public void changed(boolean val) {
 		    Config.fastFlowerAnim = val;
