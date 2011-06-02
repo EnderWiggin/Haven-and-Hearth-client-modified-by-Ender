@@ -101,8 +101,9 @@ public class Item extends Widget implements DTarget {
 		g.image(tex, Coord.z);
 	    }
 	    if(num >= 0) {
-		g.chcolor(Color.WHITE);
-		g.atext(Integer.toString(num), tex.sz(), 1, 1);
+		//g.chcolor(Color.WHITE);
+		//g.atext(Integer.toString(num), new Coord(0, 30), 0, 1);
+		g.aimage(getqtex(num), Coord.z, 0, 0);
 	    }
 	    if(meter > 0) {
 		double a = ((double)meter) / 100.0;
