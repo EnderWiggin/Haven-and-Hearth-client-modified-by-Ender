@@ -50,13 +50,13 @@ public class BuddyWnd extends Window {
     public static final Tex offline = Resource.loadtex("gfx/hud/offline");
     public static final Color[] gc = new Color[] {
 	new Color(255, 255, 255),
-	new Color(0, 255, 0),
-	new Color(255, 0, 0),
-	new Color(0, 0, 255),
+	new Color(64, 255, 64),
+	new Color(255, 64, 64),
+	new Color(96, 160, 255),
 	new Color(0, 255, 255),
 	new Color(255, 255, 0),
-	new Color(255, 0, 255),
-	new Color(255, 0, 128),
+	new Color(211, 64, 255),
+	new Color(255, 128, 16),
     };
     private Comparator<Buddy> bcmp;
     private Comparator<Buddy> alphacmp = new Comparator<Buddy>() {
@@ -305,7 +305,7 @@ public class BuddyWnd extends Window {
 			    continue;
 			Buddy b = buddies.get(i + sb.val);
 			if(b == sel) {
-			    g.chcolor(255, 255, 0, 128);
+			    g.chcolor(96, 96, 96, 255);
 			    g.frect(new Coord(0, i * 20), new Coord(sz.x, 20));
 			    g.chcolor();
 			}

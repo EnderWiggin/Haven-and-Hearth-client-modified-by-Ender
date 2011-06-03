@@ -453,7 +453,7 @@ public class Utils {
     public static Color contrast(Color col) {
 	int max = Math.max(col.getRed(), Math.max(col.getGreen(), col.getBlue()));
 	if(max > 128) {
-	    return(new Color(col.getRed() / 2, col.getGreen() / 2, col.getBlue() / 2, col.getAlpha()));
+	    return(new Color(col.getRed() / 3, col.getGreen() / 3, col.getBlue() / 3, col.getAlpha()));
 	} else if(max == 0) {
 	    return(Color.WHITE);
 	} else {
