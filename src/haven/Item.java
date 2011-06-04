@@ -161,7 +161,17 @@ public class Item extends Widget implements DTarget {
 	}
 	return(new TexI(sh));
     }
-	
+    
+    public String name() {
+	if(this.tooltip != null)
+	    return(this.tooltip);
+	Resource res = this.res.get();
+	if((res != null) && (res.layer(Resource.tooltip) != null)) {
+	    return res.layer(Resource.tooltip).t;
+	}
+	return null;
+    }
+    
     public String shorttip() {
 	if(this.tooltip != null)
 	    return(this.tooltip);
@@ -275,7 +285,7 @@ public class Item extends Widget implements DTarget {
 	    }
 	}
 	if(w instanceof DTarget) {
-	    if(((DTarget)w).drop(c, c.add(doff.inv())))
+	    if(((DTarget)w).drop(c, c.add(doff.inv()), this))
 		return(true);
 	}
 	return(false);
@@ -353,7 +363,7 @@ public class Item extends Widget implements DTarget {
 	    this.c = this.c.add(c.add(doff.inv()));
     }
 	
-    public boolean drop(Coord cc, Coord ul) {
+    public boolean drop(Coord cc, Coord ul, Item item) {
 	return(false);
     }
 	

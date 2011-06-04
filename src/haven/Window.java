@@ -259,7 +259,7 @@ public class Window extends Widget implements DTarget {
 	return(super.type(key, ev));
     }
 	
-    public boolean drop(Coord cc, Coord ul) {
+    public boolean drop(Coord cc, Coord ul, Item item) {
 	if(dt) {
 	    wdgmsg("drop", cc);
 	    return(true);

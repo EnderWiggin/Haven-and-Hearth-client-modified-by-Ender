@@ -307,13 +307,11 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	if (msg == "err") {
 	    error((String) args[0]);
 	} else if (msg == "setbelt") {
-	    /*synchronized (belt) {
 		if (args.length < 2) {
-		    belt[currentBelt][(Integer) args[0]] = null;
+		    ToolbarWnd.setbelt((Integer) args[0], null);
 		} else {
-		    //belt[currentBelt][(Integer) args[0]] = ui.sess.getres((Integer) args[1]);
+		    ToolbarWnd.setbelt((Integer) args[0], ui.sess.getres((Integer) args[1]));
 		}
-	    }*/
 	} else {
 	    super.uimsg(msg, args);
 	}
@@ -516,7 +514,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	return(MainFrame.innerSize.height - c.y);
     }
     
-    public boolean drop(Coord cc, Coord ul) {
+    public boolean drop(Coord cc, Coord ul, Item item) {
 	/*int slot = beltslot(cc);
 	if(slot != -1) {
 	    wdgmsg("setbelt", slot, 0);
