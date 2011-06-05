@@ -1,5 +1,18 @@
 Change log
 
+05.06.11
+ * made possible to hotkey items from inventory
+ * made minimap to remember it's position and size
+
+04.06.11
+ * made possible dragging item from inventory into wiki browser to open search for item name
+
+03.06.11
+ * changed kin group colors
+
+02.06.11
+ * moved count number on item (leafs eaten, etc.) to upper-left corner.
+ 
 01.06.11
  * separated options to show hearthling names and other names (hearthfires, skeletons)
  * added option to show item quality on it's icon
