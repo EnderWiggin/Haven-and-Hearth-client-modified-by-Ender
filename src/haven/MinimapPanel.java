@@ -93,9 +93,17 @@ public class MinimapPanel extends Window {
 		mm.saveCaveMaps();
 	    }
 	};
-	
 	pack();
 	this.c = new Coord( MainFrame.getInnerSize().x - this.sz.x, 7);
+	loadpos();
+    }
+    
+    private void loadpos(){
+	synchronized (Config.window_props) {
+	    c = new Coord(Config.window_props.getProperty("minimap_pos", c.toString()));
+	    mm.sz = new Coord(Config.window_props.getProperty("minimap_sz", mm.sz.toString()));
+	    pack();
+	}
     }
     
     protected void placecbtn() {
@@ -128,9 +136,13 @@ public class MinimapPanel extends Window {
     }
 
     public boolean mouseup(Coord c, int button) {
+	if(dm){
+	    Config.setWindowOpt("minimap_pos", this.c.toString());
+	}
 	if (rsm){
 	    ui.grabmouse(null);
 	    rsm = false;
+	    Config.setWindowOpt("minimap_sz", mm.sz.toString());
 	} else {
 	    super.mouseup(c, button);
 	}
