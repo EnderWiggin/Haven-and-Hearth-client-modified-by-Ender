@@ -130,7 +130,7 @@ public class Equipory extends Window implements DTarget {
 	super.wdgmsg(sender, msg, args);
     }
 	
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
 	wdgmsg("drop", -1);
 	return(true);
     }

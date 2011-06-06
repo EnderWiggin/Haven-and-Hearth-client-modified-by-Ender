@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WikiBrowser extends Window implements DTarget, DropTarget, IHWindowParent {
+public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindowParent {
     static final BufferedImage grip = Resource.loadimg("gfx/hud/gripbr");
     static final Coord gzsz = new Coord(16,17);
     static final Coord minsz = new Coord(230, 150);

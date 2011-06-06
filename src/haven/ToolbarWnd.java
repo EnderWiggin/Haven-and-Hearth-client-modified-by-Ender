@@ -390,7 +390,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    
     }
     
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
 	if(!locked){
 	    int s = getbeltslot();
 	    if(s<0){

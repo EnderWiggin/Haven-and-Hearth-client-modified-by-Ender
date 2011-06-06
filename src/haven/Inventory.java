@@ -73,7 +73,7 @@ public class Inventory extends Widget implements DTarget {
 	return(true);
     }
     
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
 	wdgmsg("drop", ul.add(new Coord(15, 15)).div(invsq.sz()));
 	return(true);
     }

@@ -1349,7 +1349,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	super.draw(og);
     }
 	
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
 	wdgmsg("drop", ui.modflags());
 	return(true);
     }

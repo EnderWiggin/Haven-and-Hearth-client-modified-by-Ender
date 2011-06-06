@@ -285,7 +285,11 @@ public class Item extends Widget implements DTarget {
 	    }
 	}
 	if(w instanceof DTarget) {
-	    if(((DTarget)w).drop(c, c.add(doff.inv()), this))
+	    if(((DTarget)w).drop(c, c.add(doff.inv())))
+		return(true);
+	}
+	if(w instanceof DTarget2) {
+	    if(((DTarget2)w).drop(c, c.add(doff.inv()), this))
 		return(true);
 	}
 	return(false);
@@ -363,7 +367,7 @@ public class Item extends Widget implements DTarget {
 	    this.c = this.c.add(c.add(doff.inv()));
     }
 	
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
 	return(false);
     }
 	

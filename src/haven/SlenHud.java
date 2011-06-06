@@ -514,7 +514,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	return(MainFrame.innerSize.height - c.y);
     }
     
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
 	/*int slot = beltslot(cc);
 	if(slot != -1) {
 	    wdgmsg("setbelt", slot, 0);
