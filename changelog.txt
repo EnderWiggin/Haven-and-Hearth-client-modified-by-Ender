@@ -1,5 +1,9 @@
 Change log
 
+06.06.11
+ * fixed crash when dropping item to Barter Stand
+ * made Inventory, Equipment, Kin, Character Sheet and Cupboard windows remember their position.
+
 05.06.11
  * made possible to hotkey items from inventory
  * made minimap to remember it's position and size
