@@ -38,6 +38,11 @@ public class Window extends Widget implements DTarget {
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
     static Tex cm = Resource.loadtex("gfx/hud/cmain");
     static Tex cr = Resource.loadtex("gfx/hud/cright");
+    private static String storeposlist[] = {"Inventory",
+					    "Cupboard",
+					    "Equipment",
+					    "Character Sheet",
+					    "Kin"};
     protected static BufferedImage[] cbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/cbtn"),
 	Resource.loadimg("gfx/hud/cbtnd"),
@@ -100,6 +105,7 @@ public class Window extends Widget implements DTarget {
 	placecbtn();
 	setfocustab(true);
 	parent.setfocus(this);
+	loadpos();
     }
 	
     public Window(Coord c, Coord sz, Widget parent, String cap) {
@@ -220,6 +226,7 @@ public class Window extends Widget implements DTarget {
 	if(dm) {
 	    ui.grabmouse(null);
 	    dm = false;
+	    storepos();
 	} else {
 	    super.mouseup(c, button);
 	}
@@ -233,7 +240,29 @@ public class Window extends Widget implements DTarget {
 	    super.mousemove(c);
 	}
     }
-
+    
+    private void storepos(){
+	if(cap == null){return;}
+	String name = cap.text;
+	for(int i=0; i< storeposlist.length; i++){
+	    if(storeposlist[i].equals(name)){
+		Config.setWindowOpt(name+"_pos", c.toString());
+		return;
+	    }
+	}
+    }
+    
+    private void loadpos(){
+	if(cap == null){return;}
+	String name = cap.text;
+	for(int i=0; i< storeposlist.length; i++){
+	    if(storeposlist[i].equals(name)){
+		c = new Coord(Config.window_props.getProperty(name+"_pos", c.toString()));
+		return;
+	    }
+	}
+    }
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == cbtn) {
 	    if(justclose)

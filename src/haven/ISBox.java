@@ -89,7 +89,7 @@ public class ISBox extends Widget implements DTarget {
 	return(true);
     }
     
-    public boolean drop(Coord cc, Coord ul, Item item) {
+    public boolean drop(Coord cc, Coord ul) {
         wdgmsg("drop");
         return(true);
     }
