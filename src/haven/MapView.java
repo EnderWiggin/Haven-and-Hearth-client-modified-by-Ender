@@ -855,9 +855,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	synchronized (glob.oc) {
 	    for (Gob tg : glob.oc) {
 		name = tg.resname();
-		if(name == "") {
-		    System.out.println(name);
-		}
 		if ((tg.sc!=null)&&(name.indexOf("/cdv")<0)&&((name.indexOf("kritter/boar")>=0)
 			|| (name.indexOf("kritter/bear")>=0))) {
 		    drawradius(g, tg.sc, 100);
