@@ -33,6 +33,7 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
+    private static final String TITLE = "Haven and Hearth (modified by Ender v06.06.11)";
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
@@ -123,7 +124,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 
     @Override
     public void setTitle(String charname) {
-	String str = "Haven and Hearth (modified by Ender v06.06.11)";
+	String str = TITLE;
 	if(charname != null){
 	    str = charname+" - "+str;
 	}
