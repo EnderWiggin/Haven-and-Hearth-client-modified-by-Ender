@@ -1,5 +1,13 @@
 Change log
 
+12.06.11
+ * Window title now shows current character name
+ * attention limit now correctly updates with change of INT
+ * added reverse quality transfer (low to high) transfer with CTRL+ALT+SHIFT+Mousewheel
+
+11.06.11
+ * buckets/jars/flasks etc. now show quality of liquids inside them if any
+
 06.06.11
  * fixed crash when dropping item to Barter Stand
  * made Inventory, Equipment, Kin, Character Sheet and Cupboard windows remember their position.
