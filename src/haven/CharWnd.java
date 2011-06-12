@@ -31,11 +31,13 @@ import java.awt.image.BufferedImage;
 import java.awt.font.TextAttribute;
 import java.util.*;
 
+import com.sun.org.apache.bcel.internal.generic.LLOAD;
+
 public class CharWnd extends Window {
     Widget cattr, skill, belief, study;
     Worship ancw;
     Label cost, skcost;
-    Label explbl, snlbl;
+    Label explbl, snlbl, sllbl;
     int exp;
     int btime = 0;
     SkillList psk, nsk;
@@ -161,6 +163,9 @@ public class CharWnd extends Window {
 	
 	public void update() {
 	    lbl.settext(Integer.toString(attr.comp));
+	    if((nm == "intel") && (sllbl != null)){
+		sllbl.settext(lbl.texts);
+	    }
 	    if(attr.comp < attr.base) {
 		lbl.setcolor(debuff);
 		lbl.tooltip = String.format("%d - %d", attr.base, attr.base - attr.comp);
@@ -652,7 +657,7 @@ public class CharWnd extends Window {
 	new Label(new Coord(138, 210), study, "Used attention:");
 	new Label(new Coord(138, 225), study, "Attention limit:");
 	snlbl = new Label(new Coord(240, 210), study, "");
-	new Label(new Coord(240, 225), study, Integer.toString(ui.sess.glob.cattr.get("intel").comp));
+	sllbl = new Label(new Coord(240, 225), study, Integer.toString(ui.sess.glob.cattr.get("intel").comp));
 	study.visible = false;
 	if(studyid >= 0)
 	    ui.bind(study, studyid);
