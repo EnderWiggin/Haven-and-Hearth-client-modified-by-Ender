@@ -119,9 +119,10 @@ public class Charlist extends Widget {
 	    synchronized(chars) {
 		for(Char c : chars) {
 		    if(sender == c.plb) {
-                Config.currentCharName = c.name;
+			Config.currentCharName = c.name;
+			MainFrame.instance.setTitle(c.name);
 			wdgmsg("play", c.name);
-		}
+		    }
 	    }
 	    }
 	} else if(sender instanceof Avaview) {

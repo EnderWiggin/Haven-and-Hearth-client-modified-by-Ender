@@ -40,6 +40,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     public static Dimension innerSize;
     public static Point centerPoint;
     public static Coord screenSZ;
+    public static MainFrame instance;
 	
     static {
 	try {
@@ -120,8 +121,19 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	setIconImage(icon);
     }
 
+    @Override
+    public void setTitle(String charname) {
+	String str = "Haven and Hearth (modified by Ender v06.06.11)";
+	if(charname != null){
+	    str = charname+" - "+str;
+	}
+	super.setTitle(str);
+    }
+
     public MainFrame(int w, int h) {
-	super("Haven and Hearth (modified by Ender v06.06.11)");
+	super("");
+	setTitle(null);
+	instance = this;
 	innerSize = new Dimension(w, h);
 	centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
 	screenSZ = new Coord(Toolkit.getDefaultToolkit().getScreenSize());
