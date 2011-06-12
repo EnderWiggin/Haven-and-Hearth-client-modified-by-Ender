@@ -237,7 +237,7 @@ public class UI {
 	int mod = ev.getModifiersEx();
 	modshift = (mod & InputEvent.SHIFT_DOWN_MASK) != 0;
 	modctrl = (mod & InputEvent.CTRL_DOWN_MASK) != 0;
-	modmeta = (mod & InputEvent.META_DOWN_MASK) != 0;
+	modmeta = (mod & InputEvent.ALT_DOWN_MASK) != 0;
 	/*
  	modsuper = (mod & InputEvent.SUPER_DOWN_MASK) != 0;
 	*/
