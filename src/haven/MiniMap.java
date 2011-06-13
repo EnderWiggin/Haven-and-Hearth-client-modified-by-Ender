@@ -120,7 +120,6 @@ public class MiniMap extends Widget {
 			+ ".png");
 		if(!inputfile.exists())
 		    throw(new FileNotFoundException("Minimap cache not found"));
-		System.out.print(inputfile.toString()+"\n");
 		return new FileInputStream(inputfile);
 	    }
 	    throw(new FileNotFoundException("No resource cache installed"));

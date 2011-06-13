@@ -467,7 +467,8 @@ public class Session {
 			    }
 			    Session.this.close();
 			} else {
-			    throw(new MessageException("Unknown message type: " + msg.type, msg));
+			    //throw(new MessageException("Unknown message type: " + msg.type, msg));
+			    System.out.println("Unknown message type: " + msg.type+"\nMSG: " + msg.toString());
 			}
 		    }
 		}

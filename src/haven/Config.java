@@ -91,6 +91,7 @@ public class Config {
     public static boolean sshot_nonames;
     public static boolean newclaim;
     public static boolean showq;
+    public static boolean showpath;
     
     static {
 	try {
@@ -273,6 +274,7 @@ public class Config {
         sshot_nonames = options.getProperty("sshot_nonames", "false").equals("true");
         newclaim = options.getProperty("newclaim", "true").equals("true");
         showq = options.getProperty("showq", "true").equals("true");
+        showpath = options.getProperty("showpath", "true").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
@@ -340,6 +342,7 @@ public class Config {
         options.setProperty("sshot_nonames", sshot_nonames?"true":"false");
         options.setProperty("newclaim", newclaim?"true":"false");
         options.setProperty("showq", showq?"true":"false");
+        options.setProperty("showpath", showpath?"true":"false");
         
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

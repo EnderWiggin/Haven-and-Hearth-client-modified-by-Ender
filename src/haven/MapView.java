@@ -73,6 +73,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     public Text polownert = null;
     public String polowner = null;
     public Gob onmouse;
+    public Coord moveto = null;
     long polchtm = 0;
     int si = 4;
     double _scale = 1;
@@ -591,9 +592,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		gob = g;
 	    wdgmsg("place", gob.rc, button, ui.modflags());
 	} else {
-	    if(hit == null)
-		wdgmsg("click", c0, mc, button, ui.modflags());
-	    else
+	    if(hit == null){
+		if(ui.modshift){
+		    glob.oc.enqueue(mc);
+		    glob.oc.checkqueue();
+		} else {
+		    glob.oc.clearqueue();
+		    wdgmsg("click", c0, mc, button, ui.modflags());
+		}
+	    } else
 		wdgmsg("click", c0, mc, button, ui.modflags(), hit.id, hit.getc());
 	}
 	return(true);
@@ -1294,6 +1301,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 
     public void draw(GOut og) {
+	if(moveto != null){
+	    wdgmsg("click", moveto, moveto, 1, 0);
+	    moveto = null;
+	}
 	hsz = MainFrame.getInnerSize();
 	sz = hsz.mul(1/getScale());
 	GOut g = og.reclip(Coord.z, sz);
@@ -1318,6 +1329,30 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(((mask.amb = glob.amblight) == null) || Config.nightvision)
 		mask.amb = new Color(0, 0, 0, 0);
 	    drawmap(g);
+	    
+	    //movement highlight
+	    if(Config.showpath){
+		Coord oc = viewoffset(sz, mc);
+		Coord pc, cc;
+		Gob player = glob.oc.getgob(playergob);
+		Moving m = player.getattr(Moving.class);
+		g.chcolor(Color.GREEN);
+		if((m != null) && (m instanceof LinMove)){
+		    LinMove lm = (LinMove)m;
+		    pc = m2s(lm.t).add(oc);
+		    g.line(player.sc, pc, 2);
+		    synchronized(glob.oc.movequeue){
+			for(int i=0; i< glob.oc.movequeue.size(); i++){
+			    cc = m2s(glob.oc.movequeue.get(i)).add(oc);
+			    g.line(pc, cc, 2);
+			    pc = cc;
+			}
+		    }
+		}
+		g.chcolor();
+	    }
+	    //###############
+	    
 	    drawarrows(g);
 	    g.chcolor(Color.WHITE);
 	    if(Config.dbtext)

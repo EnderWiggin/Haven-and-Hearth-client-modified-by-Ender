@@ -33,6 +33,8 @@ public class OCache implements Iterable<Gob> {
     private Collection<Collection<Gob>> local = new LinkedList<Collection<Gob>>();
     private Map<Integer, Gob> objs = new TreeMap<Integer, Gob>();
     private Map<Integer, Integer> deleted = new TreeMap<Integer, Integer>();
+    public List<Coord> movequeue = new ArrayList<Coord>();
+    private boolean ismoving = false;
     private Glob glob;
     long lastctick = 0;
 	
@@ -127,16 +129,50 @@ public class OCache implements Iterable<Gob> {
 	    g.setattr(new ResDrawable(g, res, sdt));
 	}
     }
-	
+    
+    public void enqueue(Coord c){
+	synchronized (movequeue) {
+	    movequeue.add(c);
+	}
+    }
+    
+    public void clearqueue(){
+	synchronized (movequeue) {
+	    movequeue.clear();
+	}
+    }
+    
+    public void checkqueue(){
+	synchronized (movequeue) {
+	    if(!ismoving && movequeue.size()>0){
+		ismoving = true;
+		UI.instance.mainview.moveto = movequeue.get(0);
+		movequeue.remove(0);
+	    }
+	}
+    }
+    
+    public boolean isplayerid(int id){
+	if((UI.instance != null)
+		&& (UI.instance.mainview != null)
+		&& (UI.instance.mainview.playergob == id)){
+	    return true;
+	}
+	return false;
+    }
+    
     public synchronized void linbeg(int id, int frame, Coord s, Coord t, int c) {
 	Gob g = getgob(id, frame);
 	if(g == null)
 	    return;
 	LinMove lm = new LinMove(g, s, t, c);
 	g.setattr(lm);
+	if(isplayerid(id))
+	    ismoving = true;
     }
 	
     public synchronized void linstep(int id, int frame, int l) {
+	boolean isplayer = isplayerid(id);
 	Gob g = getgob(id, frame);
 	if(g == null)
 	    return;
@@ -144,10 +180,18 @@ public class OCache implements Iterable<Gob> {
 	if((m == null) || !(m instanceof LinMove))
 	    return;
 	LinMove lm = (LinMove)m;
-	if((l < 0) || (l >= lm.c))
+	if((l < 0) || (l >= lm.c)) {
 	    g.delattr(Moving.class);
-	else
+	    if(isplayer){
+		ismoving = false;
+		checkqueue();
+	    }
+	} else {
 	    lm.setl(l);
+	    if(isplayer){
+		ismoving = true;
+	    }
+	}
     }
 	
     public synchronized void speak(int id, int frame, Coord off, String text) {

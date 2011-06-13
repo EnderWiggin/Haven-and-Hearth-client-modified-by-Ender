@@ -63,9 +63,9 @@ public class OptWnd extends Window {
     }
 
     public OptWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 440), parent, "Options");
+	super(c, new Coord(400, 445), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(400, 430), this) {
+	body = new Tabs(Coord.z, new Coord(400, 445), this) {
 	    public void changed(Tab from, Tab to) {
 		Utils.setpref("optwndtab", to.btn.text.text);
 		from.btn.c.y = 0;
@@ -147,6 +147,13 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.showq;
+	    
+	    (new CheckBox(new Coord(10, 410), tab, "Show player path") {
+		public void changed(boolean val) {
+		    Config.showpath = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showpath;
 	    
 	    (new CheckBox(new Coord(220, 130), tab, "Fast menu") {
 		public void changed(boolean val) {
