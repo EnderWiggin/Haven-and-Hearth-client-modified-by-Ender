@@ -274,7 +274,7 @@ public class Config {
         sshot_nonames = options.getProperty("sshot_nonames", "false").equals("true");
         newclaim = options.getProperty("newclaim", "true").equals("true");
         showq = options.getProperty("showq", "true").equals("true");
-        showpath = options.getProperty("showpath", "true").equals("true");
+        showpath = options.getProperty("showpath", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         hideObjectList.clear();
