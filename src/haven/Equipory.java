@@ -87,7 +87,7 @@ public class Equipory extends Window implements DTarget {
 			Item ni = new Item(Coord.z, res, q, epoints.get(i), null);
 			equed.set(i++, ni);
 			if((o < args.length) && (args[o] instanceof String))
-			    ni.tooltip = (String)args[o++];
+			    ni.settip((String)args[o++]);
 		    } else {
 			equed.set(i++, null);
 		    }
@@ -100,7 +100,7 @@ public class Equipory extends Window implements DTarget {
 	} else if(msg == "settt") {
 	    int i = (Integer)args[0];
 	    String tt = (String)args[1];
-	    equed.get(i).tooltip = tt;
+	    equed.get(i).settip(tt);
 	} else if(msg == "ava") {
 	    avagob = (Integer)args[0];
 	}

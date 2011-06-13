@@ -69,25 +69,29 @@ public class Item extends Widget implements DTarget {
 		    if(args.length > ca)
 			num = (Integer)args[ca++];
 		    Item item = new Item(c, res, q, parent, drag, num);
-		    item.tooltip = tooltip;
-		    item.q2 = -1;
-		    if(tooltip != null){
-			try{
-			    Matcher m =patt.matcher(tooltip); 
-			    if(m.find()){
-				item.q2 = Integer.parseInt(m.group(1));
-			    }
-			} catch(IllegalStateException e){
-			    System.out.println(e.getMessage());
-			}
-		    }
+		    item.settip(tooltip);
 		    return(item);
 		}
 	    });
 	missing.loadwait();
 	qmap = new HashMap<Integer, Tex>();
     }
-	
+    
+    public void settip(String t){
+	tooltip = t;
+	q2 = -1;
+	if(tooltip != null){
+	    try{
+		Matcher m =patt.matcher(tooltip); 
+		if(m.find()){
+		    q2 = Integer.parseInt(m.group(1));
+		}
+	    } catch(IllegalStateException e){
+		System.out.println(e.getMessage());
+	    }
+	}
+    }
+    
     private void fixsize() {
 	if(res.get() != null) {
 	    Tex tex = res.get().layer(Resource.imgc).tex();
@@ -343,9 +347,9 @@ public class Item extends Widget implements DTarget {
 	    olcol = (Color)args[0];
 	} else if(name == "tt") {
 	    if((args.length > 0) && (((String)args[0]).length() > 0))
-		tooltip = (String)args[0];
+		settip((String)args[0]);
 	    else
-		tooltip = null;
+		settip(null);
 	    resettt();
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
