@@ -67,13 +67,13 @@ public class RootWidget extends ConsoleHost {
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
 	    } else if((code == KeyEvent.VK_Q)&&alt) {
-		ui.spd.wdgmsg("set", 0);
+		ui.spd.setspeed(0, true);
 	    } else if((code == KeyEvent.VK_W)&&alt) {
-		ui.spd.wdgmsg("set", 1);
+		ui.spd.setspeed(1, true);
 	    } else if((code == KeyEvent.VK_E)&&alt) {
-		ui.spd.wdgmsg("set", 2);
+		ui.spd.setspeed(2, true);
 	    } else if((code == KeyEvent.VK_R)&&alt) {
-		ui.spd.wdgmsg("set", 3);
+		ui.spd.setspeed(3, true);
 	    } else if((code == KeyEvent.VK_G)&&ctrl) {
 		Config.grid = !Config.grid;
 	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
