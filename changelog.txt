@@ -1,5 +1,10 @@
 Change log
 
+13.06.11
+ * movement speed now automatically returns to value set by player when possible
+ * added movement queuing with SHIFT
+ * added option to show player path
+
 12.06.11
  * Window title now shows current character name
  * attention limit now correctly updates with change of INT
