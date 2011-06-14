@@ -1,5 +1,10 @@
 Change log
 
+14.06.11
+ * fixed inability to place objects aligned to grid
+ * fixed item popup resizing when hover for more then half second
+ * few small improvements
+
 13.06.11
  * movement speed now automatically returns to value set by player when possible
  * added movement queuing with SHIFT

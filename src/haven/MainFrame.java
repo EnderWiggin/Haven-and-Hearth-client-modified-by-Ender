@@ -33,7 +33,7 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
-    private static final String TITLE = "Haven and Hearth (modified by Ender v13.06.11)";
+    private static final String TITLE = "Haven and Hearth (modified by Ender v14.06.11)";
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
