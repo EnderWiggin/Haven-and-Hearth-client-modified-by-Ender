@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
-    static Pattern patt = Pattern.compile("quality (\\d+) ");
+    static Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
     static Color outcol = new Color(0,0,0,255);
@@ -83,7 +83,7 @@ public class Item extends Widget implements DTarget {
 	if(tooltip != null){
 	    try{
 		Matcher m =patt.matcher(tooltip); 
-		if(m.find()){
+		while(m.find()){
 		    q2 = Integer.parseInt(m.group(1));
 		}
 	    } catch(IllegalStateException e){
@@ -218,7 +218,9 @@ public class Item extends Widget implements DTarget {
 	long now = System.currentTimeMillis();
 	if(!again)
 	    hoverstart = now;
-	if((now - hoverstart) < 500) {
+	Resource res = this.res.get();
+	Resource.Pagina pg = (res!=null)?res.layer(Resource.pagina):null;
+	if(((now - hoverstart) < 500)||(pg == null)) {
 	    if(shorttip == null) {
 		String tt = shorttip();
 		if(tt != null) {
@@ -230,9 +232,7 @@ public class Item extends Widget implements DTarget {
 	    }
 	    return(shorttip);
 	} else {
-	    Resource res = this.res.get();
 	    if((longtip == null) && (res != null)) {
-		Resource.Pagina pg = res.layer(Resource.pagina);
 		String tip = shorttip();
 		if(tip == null)
 		    return(null);
