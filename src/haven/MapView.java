@@ -593,7 +593,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    wdgmsg("place", gob.rc, button, ui.modflags());
 	} else {
 	    if(hit == null){
-		if(ui.modshift){
+		if(ui.modshift && (button == 1)){
 		    glob.oc.enqueue(mc);
 		    glob.oc.checkqueue();
 		} else {
