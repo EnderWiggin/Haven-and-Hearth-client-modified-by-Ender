@@ -1341,12 +1341,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    LinMove lm = (LinMove)m;
 		    pc = m2s(lm.t).add(oc);
 		    g.line(player.sc, pc, 2);
-		    synchronized(glob.oc.movequeue){
-			for(int i=0; i< glob.oc.movequeue.size(); i++){
-			    cc = m2s(glob.oc.movequeue.get(i)).add(oc);
-			    g.line(pc, cc, 2);
-			    pc = cc;
-			}
+		    for(Coord c:glob.oc.movequeue){
+			cc = m2s(c).add(oc);
+			g.line(pc, cc, 2);
+			pc = cc;
 		    }
 		}
 		g.chcolor();

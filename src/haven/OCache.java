@@ -27,13 +27,14 @@
 package haven;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class OCache implements Iterable<Gob> {
     /* XXX: Use weak refs */
     private Collection<Collection<Gob>> local = new LinkedList<Collection<Gob>>();
     private Map<Integer, Gob> objs = new TreeMap<Integer, Gob>();
     private Map<Integer, Integer> deleted = new TreeMap<Integer, Integer>();
-    public List<Coord> movequeue = new ArrayList<Coord>();
+    public ConcurrentLinkedQueue<Coord> movequeue = new ConcurrentLinkedQueue<Coord>();
     private boolean ismoving = false;
     private Glob glob;
     long lastctick = 0;
@@ -131,24 +132,18 @@ public class OCache implements Iterable<Gob> {
     }
     
     public void enqueue(Coord c){
-	synchronized (movequeue) {
-	    movequeue.add(c);
-	}
+	movequeue.add(c);
     }
     
     public void clearqueue(){
-	synchronized (movequeue) {
-	    movequeue.clear();
-	}
+	movequeue.clear();
     }
     
     public void checkqueue(){
-	synchronized (movequeue) {
-	    if(!ismoving && movequeue.size()>0){
-		ismoving = true;
-		UI.instance.mainview.moveto = movequeue.get(0);
-		movequeue.remove(0);
-	    }
+	if(!ismoving && !movequeue.isEmpty()){
+	    ismoving = true;
+	    UI.instance.mainview.moveto = movequeue.poll();
+	    movequeue.remove(0);
 	}
     }
     
