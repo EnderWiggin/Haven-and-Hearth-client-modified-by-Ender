@@ -30,6 +30,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import ender.GoogleTranslator;
 
@@ -38,11 +40,7 @@ public class Window extends Widget implements DTarget {
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
     static Tex cm = Resource.loadtex("gfx/hud/cmain");
     static Tex cr = Resource.loadtex("gfx/hud/cright");
-    private static String storeposlist[] = {"Inventory",
-					    "Cupboard",
-					    "Equipment",
-					    "Character Sheet",
-					    "Kin"};
+    private final static Set<String> storePosSet = new HashSet<String>();
     protected static BufferedImage[] cbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/cbtn"),
 	Resource.loadimg("gfx/hud/cbtnd"),
@@ -78,6 +76,11 @@ public class Window extends Widget implements DTarget {
 		}
 	    });
 	wbox = new IBox("gfx/hud", "tl", "tr", "bl", "br", "extvl", "extvr", "extht", "exthb");
+	storePosSet.add("Inventory");
+	storePosSet.add("Cupboard");
+	storePosSet.add("Equipment");
+	storePosSet.add("Character Sheet");
+	storePosSet.add("Kin");
     }
 
     protected void placecbtn() {
@@ -244,22 +247,18 @@ public class Window extends Widget implements DTarget {
     private void storepos(){
 	if(cap == null){return;}
 	String name = cap.text;
-	for(int i=0; i< storeposlist.length; i++){
-	    if(storeposlist[i].equals(name)){
-		Config.setWindowOpt(name+"_pos", c.toString());
-		return;
-	    }
+	if(storePosSet.contains(name)){
+	    Config.setWindowOpt(name+"_pos", c.toString());
+	    return;
 	}
     }
     
     private void loadpos(){
 	if(cap == null){return;}
 	String name = cap.text;
-	for(int i=0; i< storeposlist.length; i++){
-	    if(storeposlist[i].equals(name)){
-		c = new Coord(Config.window_props.getProperty(name+"_pos", c.toString()));
-		return;
-	    }
+	if(storePosSet.contains(name)){
+	    c = new Coord(Config.window_props.getProperty(name+"_pos", c.toString()));
+	    return;
 	}
     }
     
