@@ -27,11 +27,13 @@
 package haven;
 
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Inventory extends Widget implements DTarget {
     public static final Tex invsq;  // InvisibleSquare = 1x1 cell
     public static final Coord invSqSize; //size of invsq
-    public static final Coord invSqSizeSubOne; //size of invsq.sub(1,1)    protected static BufferedImage[] tbtni = new BufferedImage[] {
+    public static final Coord invSqSizeSubOne; //size of invsq.sub(1,1)    
+    protected static BufferedImage[] tbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/trashu"),
 	Resource.loadimg("gfx/hud/trashd"),
 	Resource.loadimg("gfx/hud/trashh")};
