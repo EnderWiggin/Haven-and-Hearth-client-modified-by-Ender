@@ -29,15 +29,22 @@ package haven;
 import java.awt.image.BufferedImage;
 
 public class Inventory extends Widget implements DTarget {
-    public static Tex invsq = Resource.loadtex("gfx/hud/invsq");
-    protected static BufferedImage[] tbtni = new BufferedImage[] {
+    public static final Tex invsq;  // InvisibleSquare = 1x1 cell
+    public static final Coord invSqSize; //size of invsq
+    public static final Coord invSqSizeSubOne; //size of invsq.sub(1,1)    protected static BufferedImage[] tbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/trashu"),
 	Resource.loadimg("gfx/hud/trashd"),
 	Resource.loadimg("gfx/hud/trashh")};
     Coord isz;
-    private IButton trash;
-    private boolean wait = false;
-    
+    private final IButton trash;
+    private final AtomicBoolean wait = new AtomicBoolean(false);
+
+    static {
+        invsq = Resource.loadtex("gfx/hud/invsq"); // InvisibleSquare = 1x1 cell
+        invSqSize = invsq.sz();  //32x32
+        invSqSizeSubOne = Inventory.invSqSize.sub(1, 1);
+    }
+
     static {
 	Widget.addtype("inv", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
@@ -48,7 +55,7 @@ public class Inventory extends Widget implements DTarget {
 
     public void draw(GOut g) {
 	Coord c = new Coord();
-	Coord sz = invsq.sz().add(new Coord(-1, -1));
+	Coord sz = invSqSizeSubOne;
 	for(c.y = 0; c.y < isz.y; c.y++) {
 	    for(c.x = 0; c.x < isz.x; c.x++) {
 		g.image(invsq, c.mul(sz));
@@ -58,10 +65,14 @@ public class Inventory extends Widget implements DTarget {
     }
 	
     public Inventory(Coord c, Coord sz, Widget parent) {
-	super(c, invsq.sz().add(new Coord(-1, -1)).mul(sz).add(new Coord(17, 1)), parent);
+	super(c, invSqSizeSubOne.mul(sz).add(new Coord(17, 1)), parent);
 	isz = sz;
+    if (parent.canhastrash) {
 	trash = new IButton(Coord.z, this, tbtni[0], tbtni[1], tbtni[2]);
-	trash.visible = parent.canhastrash;
+    trash.visible = true;
+    } else {
+        trash = null;
+    }
 	recalcsz();
     }
     
@@ -74,7 +85,7 @@ public class Inventory extends Widget implements DTarget {
     }
     
     public boolean drop(Coord cc, Coord ul) {
-	wdgmsg("drop", ul.add(new Coord(15, 15)).div(invsq.sz()));
+	wdgmsg("drop", ul.add(new Coord(15, 15)).div(invSqSize));
 	return(true);
     }
 	
@@ -90,12 +101,12 @@ public class Inventory extends Widget implements DTarget {
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if(sender == trash) {
-	    if(wait){return;}
-	    wait = true;
+	if(checkTrashButton(sender)) {
+	    if(wait.get()){return;}
+	    wait.set(true);
 	    new ConfirmWnd(parent.c.add(c).add(trash.c), ui.root, getmsg(), new ConfirmWnd.Callback() {
 		public void result(Boolean res) {
-		    wait = false;
+		    wait.set(false);
 		    if(res){
 			empty();
 		    }
@@ -105,11 +116,21 @@ public class Inventory extends Widget implements DTarget {
 	    super.wdgmsg(sender, msg, args);
 	}
     }
-    
-    public void showtrash(boolean visible){
-	trash.visible = visible;
-	recalcsz();
-    }
+  
+//    Commented out because not used  
+//    public void showtrash(boolean visible){
+//        if (visible) {
+//            if (trash == null) {
+//                trash = new IButton(Coord.z, this, trashButtonImages);
+//            }
+//            trash.visible = visible;
+//        } else {
+//            if (trash != null) {
+//                trash.visible = visible;
+//            }
+//        }
+//        recalculateSize();
+//    }
     
     private String getmsg(){
 	if(parent instanceof Window){
@@ -121,12 +142,9 @@ public class Inventory extends Widget implements DTarget {
     
     private void empty(){
 	for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-	    if(!wdg.visible)
-		continue;
-	    if(!(wdg instanceof Item)){
-		continue;
-	    }
+	    if(wdg.visible && wdg instanceof Item){
 	    wdg.wdgmsg("drop", Coord.z);
+        }
 	}
     }
     
@@ -135,31 +153,29 @@ public class Inventory extends Widget implements DTarget {
 	    Window wnd = (Window)parent;
 	    if(wnd.cap != null){
 		String str = wnd.cap.text;
-		if(str.equals("Oven")){
-		    return true;
-		}
-		if(str.equals("Finery Forge")){
-		    return true;
-		}
-		if(str.equals("Steel Crucible")){
+		if(str.equals("Oven") || str.equals("Finery Forge") || str.equals("Steel Crucible")){
 		    return true;
 		}
 	    }
 	}
 	return false;
     }
-    
+
     private void recalcsz(){
-	sz = invsq.sz().add(new Coord(-1, -1)).mul(isz).add(new Coord(1, 1));
+	sz = invSqSizeSubOne.mul(isz).add(new Coord(1, 1));
 	if(trash.visible){
-	    trash.c = sz.sub(0, invsq.sz().y);
+	    trash.c = sz.sub(0, invSqSize.y);
 	    hsz = sz.add(16,0);
 	    if(needshift()){//small inventory, button should be shifted (Finery forge, oven, crucible)
-		trash.c = trash.c.add(18,0);
-		hsz = hsz.add(18,0);
+		trash.c.x+=18;
+		hsz.x+=18;
 	    }
 	} else {
 	    hsz = null;
 	}
+    }
+
+    protected boolean checkTrashButton(Widget w) {
+        return trash != null && w == trash;
     }
 }
