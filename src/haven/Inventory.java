@@ -69,12 +69,12 @@ public class Inventory extends Widget implements DTarget {
     public Inventory(Coord c, Coord sz, Widget parent) {
 	super(c, invSqSizeSubOne.mul(sz).add(new Coord(17, 1)), parent);
 	isz = sz;
-    if (parent.canhastrash) {
-	trash = new IButton(Coord.z, this, tbtni[0], tbtni[1], tbtni[2]);
-    trash.visible = true;
-    } else {
-        trash = null;
-    }
+	if (parent.canhastrash) {
+	    trash = new IButton(Coord.z, this, tbtni[0], tbtni[1], tbtni[2]);
+	    trash.visible = true;
+	} else {
+	    trash = null;
+	}
 	recalcsz();
     }
     
@@ -165,7 +165,7 @@ public class Inventory extends Widget implements DTarget {
 
     private void recalcsz(){
 	sz = invSqSizeSubOne.mul(isz).add(new Coord(1, 1));
-	if(trash.visible){
+	if((trash!=null) && (trash.visible)){
 	    trash.c = sz.sub(0, invSqSize.y);
 	    hsz = sz.add(16,0);
 	    if(needshift()){//small inventory, button should be shifted (Finery forge, oven, crucible)
