@@ -396,9 +396,9 @@ public class OptWnd extends Window {
 
 		    public void changed(boolean val) {
 			if (val) {
-			    Config.hideObjectList.add(checkbox[1]);
+			    Config.addhide(checkbox[1]);
 			} else {
-			    Config.hideObjectList.remove(checkbox[1]);
+			    Config.remhide(checkbox[1]);
 			}
 			Config.saveOptions();
 		    }

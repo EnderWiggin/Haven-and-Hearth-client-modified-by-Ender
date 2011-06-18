@@ -296,9 +296,9 @@ public class MenuGrid extends Widget {
 	    for(int i=2;i<list.length;i++){
 		String item = list[i];
 		if(Config.hideObjectList.contains(item)){
-		    Config.hideObjectList.remove(item);
+		    Config.remhide(item);
 		} else {
-		    Config.hideObjectList.add(item);
+		    Config.addhide(item);
 		}
 	    }
 	} else if(list[1].equals("simple plants")) {

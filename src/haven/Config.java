@@ -38,9 +38,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import ender.GoogleTranslator;
@@ -70,7 +72,7 @@ public class Config {
     public static boolean noborders;
     public static boolean new_minimap;
     public static boolean simple_plants = false;
-    public static HashSet<String> hideObjectList;
+    public static Set<String> hideObjectList;
     public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
@@ -126,7 +128,7 @@ public class Config {
 	    currentCharName = "";
 	    options = new Properties();
 	    window_props = new Properties();
-	    hideObjectList = new HashSet<String>();
+	    hideObjectList = Collections.synchronizedSet(new HashSet<String>());
 	    loadOptions();
 	    loadWindowOptions();
 	    loadSmileys();
@@ -285,6 +287,7 @@ public class Config {
                 }
             }
         }
+        Resource.checkhide();
         timestamp = options.getProperty("timestamp","false").equals("true");
     }
 
@@ -310,6 +313,16 @@ public class Config {
 		System.out.println(e);
 	    }
 	}
+    }
+    
+    public static void addhide(String str){
+	hideObjectList.add(str);
+	Resource.checkhide();
+    }
+    
+    public static void remhide(String str){
+	hideObjectList.remove(str);
+	Resource.checkhide();
     }
     
     public static void saveOptions() {

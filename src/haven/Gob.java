@@ -156,47 +156,52 @@ public class Gob implements Sprite.Owner {
 	    ret = ret.add(flw.doff);
 	return(ret);
     }
+    
+    public void checkhide(){
 	
-    public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
-	Drawable d = getattr(Drawable.class);
-        String resourceName = resname();
-        hide = false;
-	Coord dro = drawoff();
-	for(Overlay ol : ols) {
-            if (ol.spr != null) {
-		ol.spr.setup(drawer, dc, dro);
-	}
-        }
-        if (Config.hide) {
-            for (String objectName : Config.hideObjectList) {
-                if (resourceName.contains(objectName)&&(!resourceName.contains("door"))) {
-                    hide = true;
-                }
-            }
-        }
-        if (d != null && !hide) {
-	    d.setup(drawer, dc, dro);
-    }
     }
     
-    public String resname() {
-	Resource res;
+    public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
+	Resource res = getres();
+	hide = (res != null) && res.hide && res.once && Config.hide;
+	if(hide)
+	    return;
+	if(res != null)
+	    res.once = true;
+	
+	Drawable d = getattr(Drawable.class);
+	Coord dro = drawoff();
+	for(Overlay ol : ols) {
+	    if (ol.spr != null) {
+		ol.spr.setup(drawer, dc, dro);
+	    }
+	}
+	
+	if (d != null) {
+	    d.setup(drawer, dc, dro);
+	}
+    }
+    
+    public Resource getres() {
+	Resource res = null;
 	ResDrawable dw = getattr(ResDrawable.class);
-	String name = "";
 	if(dw != null){
 	    res = dw.res.get();
-	    if(res != null) {
-		name = res.name;
-	    }
 	} else {
 	    Layered ld = getattr(Layered.class);
 	    if((ld != null)&&(ld.layers.size()>0)) {
 		res = ld.layers.get(0).get();
-		if(res != null)
-		    name = res.name;
 	    }
 	}
-	//return (dw != null && dw.res.get() != null ? dw.res.get().name : "");
+	return res;
+    }
+    
+    public String resname() {
+	Resource res = getres();
+	String name = "";
+	if(res != null) {
+	    name = res.name;
+	}
 	return name;
     }
     
@@ -208,18 +213,8 @@ public class Gob implements Sprite.Owner {
     }
     
     public Resource.Neg getneg() {
-	Drawable d = getattr(Drawable.class);
-	if(d instanceof ResDrawable) {
-	    ResDrawable rd = (ResDrawable)d;
-	    Resource r;
-	    if((r = rd.res.get()) == null)
-		return(null);
-	    return(r.layer(Resource.negc));
-	} else if(d instanceof Layered) {
-	    Layered l = (Layered)d;
-	    Resource r;
-	    if((r = l.base.get()) == null)
-		return(null);
+	Resource r = getres();
+	if(r != null){
 	    return(r.layer(Resource.negc));
 	}
 	return(null);
