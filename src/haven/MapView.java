@@ -1102,8 +1102,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		g.chcolor(255, 0, 0, 128);
 		synchronized(glob.oc) {
 		    for(Gob gob : glob.oc) {
-			String name = gob.resname();
-			if(!gob.hide || name.contains("wald") || name.contains("flavobjs"))
+			Resource res = gob.getres();
+			if(!gob.hide || ((res != null)&&(res.skiphighlight)))
 			    continue;
 			Resource.Neg neg = gob.getneg();
 			if(neg == null)
