@@ -251,6 +251,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    setfold(false);
 	}
 	awnd = wnd;
+	awnd.setfocus(awnd);
 	for (HWindow w : wnds)
 	    w.visible = false;
 	if (wnd != null) {
@@ -267,7 +268,10 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	    if(c.isect(Coord.z.add(cl.sz()), isz))
 		return true;
 	}
-	parent.setfocus(this);
+	if(awnd != null)
+	    awnd.setfocus(awnd);
+	else
+	    parent.setfocus(this);
 	raise();
 	if (super.mousedown(c, button))
 	    return (true);

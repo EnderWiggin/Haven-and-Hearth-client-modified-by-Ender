@@ -72,7 +72,17 @@ public class ChatHW extends HWindow {
 	in.sz = new Coord(sz.x, 20);
 	out.sz = new Coord(sz.x, sz.y - 20);
     }
-    
+
+    @Override
+    public void setfocus(Widget w) {
+	if(w == this){
+	    w = in;
+	}
+	if(w == null)
+	    return;
+	super.setfocus(w);
+    }
+
     public void uimsg(String msg, Object... args) {
 	if(msg == "log") {
 	    Color col = null;
