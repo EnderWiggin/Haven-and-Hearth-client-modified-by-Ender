@@ -1,5 +1,20 @@
 Change log
 
+21.06.11
+ * small fixes
+ * chat focuses input field if clicked everywhere on chat panel
+ * chat now does not grab input it cannot handle. As a result it's now possible to 
+   toggle nightvision/x-ray/hide or use F-hotkeys whet chat has focus
+ * added separate study window. Accessible through X->Y
+
+18.06.11
+ * optimized object hiding
+ * optimized hidden object highlight
+ * fixed bug with hidden object not being highlighted if it has not been drawn at least once
+
+16.06.11
+ * various small optimization
+
 14.06.11
  * fixed inability to place objects aligned to grid
  * fixed item popup resizing when hover for more then half second
