@@ -1321,19 +1321,21 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		Coord oc = viewoffset(sz, mc);
 		Coord pc, cc;
 		Gob player = glob.oc.getgob(playergob);
-		Moving m = player.getattr(Moving.class);
-		g.chcolor(Color.GREEN);
-		if((m != null) && (m instanceof LinMove)){
-		    LinMove lm = (LinMove)m;
-		    pc = m2s(lm.t).add(oc);
-		    g.line(player.sc, pc, 2);
-		    for(Coord c:glob.oc.movequeue){
-			cc = m2s(c).add(oc);
-			g.line(pc, cc, 2);
-			pc = cc;
+		if(player != null){
+		    Moving m = player.getattr(Moving.class);
+		    g.chcolor(Color.GREEN);
+		    if((m != null) && (m instanceof LinMove)){
+			LinMove lm = (LinMove)m;
+			pc = m2s(lm.t).add(oc);
+			g.line(player.sc, pc, 2);
+			for(Coord c:glob.oc.movequeue){
+			    cc = m2s(c).add(oc);
+			    g.line(pc, cc, 2);
+			    pc = cc;
+			}
 		    }
+		    g.chcolor();
 		}
-		g.chcolor();
 	    }
 	    //###############
 	    
