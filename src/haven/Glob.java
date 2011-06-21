@@ -59,6 +59,7 @@ public class Glob {
 	paginae.add(Resource.load("paginae/add/plants"));
 	paginae.add(Resource.load("paginae/add/global"));
 	paginae.add(Resource.load("paginae/add/timer"));
+	paginae.add(Resource.load("paginae/add/study"));
 	paginae.add(Resource.load("paginae/add/hide"));
 	paginae.add(Resource.load("paginae/add/hide/tree"));
 	paginae.add(Resource.load("paginae/add/hide/flav"));

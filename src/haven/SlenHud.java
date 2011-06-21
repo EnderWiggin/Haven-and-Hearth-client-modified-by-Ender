@@ -287,7 +287,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	    wdgmsg("equ");
 	    return;
 	} else if(sender == chrb) {
-	    wdgmsg("chr");
+	    CharWnd.instance.toggle();
 	    return;
 	} else if(sender == budb) {
 	    BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
@@ -301,6 +301,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     
     public void binded() {
 	wdgmsg("bud");
+	wdgmsg("chr");
     }
     
     public void uimsg(String msg, Object... args) {

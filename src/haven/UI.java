@@ -26,6 +26,8 @@
 
 package haven;
 
+import haven.CharWnd.Study;
+
 import java.util.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -37,6 +39,7 @@ public class UI {
     public SlenHud slen;
     public MenuGrid mnu;
     public Speedget spd;
+    public Study study;
     public WikiBrowser wiki;
     private Widget keygrab, mousegrab;
     public Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
@@ -197,9 +200,9 @@ public class UI {
 	    mousegrab = null;
 	if((keygrab != null) && keygrab.hasparent(wdg))
 	    keygrab = null;
-	removeid(wdg);
 	wdg.destroy();
 	wdg.unlink();
+	removeid(wdg);
     }
     
     public void destroy(int id) {

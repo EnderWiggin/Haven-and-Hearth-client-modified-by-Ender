@@ -53,7 +53,6 @@ public class RootWidget extends ConsoleHost {
 	    int code = ev.getKeyCode();
 	    boolean ctrl = ev.isControlDown();
 	    boolean alt = ev.isAltDown();
-	    
 	    if(Config.profile && (key == '`')) {
 		new Profwnd(ui.slen, ui.mainview.prof, "MV prof");
 	    } else if(Config.profile && (key == '~')) {
@@ -78,6 +77,8 @@ public class RootWidget extends ConsoleHost {
 		Config.grid = !Config.grid;
 	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
 		BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
+	    } else if(((int)key == 20)&ctrl) {//CTRL-T have code of 20
+		CharWnd.instance.toggle();
 	    } else if(code == KeyEvent.VK_HOME) {
 		ui.mainview.resetcam();
 	    } else if(code == KeyEvent.VK_END) {

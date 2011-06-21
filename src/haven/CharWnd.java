@@ -26,23 +26,26 @@
 
 package haven;
 
+import haven.Text.Foundry;
+
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.awt.font.TextAttribute;
 import java.util.*;
 
-import com.sun.org.apache.bcel.internal.generic.LLOAD;
-
 public class CharWnd extends Window {
-    Widget cattr, skill, belief, study;
+    public static CharWnd instance;
+    Widget cattr, skill, belief;
     Worship ancw;
     Label cost, skcost;
-    Label explbl, snlbl, sllbl;
+    Label explbl;
     int exp;
     int btime = 0;
     SkillList psk, nsk;
     SkillInfo ski;
     FoodMeter foodm;
+    Study study;
     Map<String, Attr> attrs = new TreeMap<String, Attr>();
     public static final Tex missing = Resource.loadtex("gfx/invobjs/missing");
     public static final Tex foodmimg = Resource.loadtex("gfx/hud/charsh/foodm");
@@ -163,8 +166,8 @@ public class CharWnd extends Window {
 	
 	public void update() {
 	    lbl.settext(Integer.toString(attr.comp));
-	    if((nm == "intel") && (sllbl != null)){
-		sllbl.settext(lbl.texts);
+	    if((nm == "intel") && study != null){
+		study.setattnlimit(attr.comp);
 	    }
 	    if(attr.comp < attr.base) {
 		lbl.setcolor(debuff);
@@ -528,7 +531,87 @@ public class CharWnd extends Window {
 	    sel = -1;
 	}
     }
-
+    
+    public class Study extends Widget {
+	Label attlbl;
+	Window wnd;
+	boolean svis, attached = true;
+	private Coord detsz =  new Coord(110, 130);
+	private Coord detc = new Coord(-145, -75);
+	int attlimit, attused = 0;
+	public Study(Widget parent) {
+	    super(Coord.z, new Coord(400, 275), parent);
+	    ui.study = this;
+	    Foundry fnd = new Foundry(new Font("SansSerif", Font.PLAIN, 12));
+	    new Label(new Coord(138, 202), this, "Attention:", fnd);
+	    attlimit = ui.sess.glob.cattr.get("intel").comp;
+	    attlbl = new Label(new Coord(200, 202), this, "", fnd);
+	    
+	    canhastrash = false;
+	    visible = false;
+	}
+	
+	private void upd(){
+	    attlbl.settext(attused+"/"+attlimit);
+	    attlbl.c.x = 263 - attlbl.sz.x;
+	}
+	
+	public void toggle(){
+	    if(wnd == null){
+		wnd = new Window(new Coord(150, 150), detsz, ui.root, "Study"){
+		    public void destroy(){
+			wnd = null;
+			Study.this.unlink();
+			super.destroy();
+		    }
+		};
+		wnd.justclose = true;
+		if(!attached){
+		    this.visible = svis;
+		    detach();
+		}
+		wnd.visible = !attached;
+	    } else {
+		ui.destroy(wnd);
+	    }
+	}
+	
+	public void detach(){
+	    svis = this.visible;
+	    if(wnd != null){
+		this.unlink();
+		this.parent = wnd;
+		this.link();
+		this.c = detc;
+		wnd.show();
+		this.visible = true;
+	    }
+	    attached = false;
+	}
+	
+	public void attach(){
+	    if(wnd != null){
+		wnd.hide();
+	    }
+	    this.c = Coord.z;
+	    this.unlink();
+	    this.parent = CharWnd.this;
+	    this.link();
+	    this.visible = svis;
+	    attached = true;
+	}
+	
+	public void setattnlimit(int val){
+	    attlimit = val;
+	    upd();
+	}
+	
+	public void setattnused(int val){
+	    attused = val;
+	    upd();
+	}
+    }
+    
     private void buysattrs() {
 	ArrayList<Object> args = new ArrayList<Object>();
 	for(Attr attr : attrs.values()) {
@@ -560,7 +643,7 @@ public class CharWnd extends Window {
 
     public CharWnd(Coord c, Widget parent, int studyid) {
 	super(c, new Coord(400, 340), parent, "Character Sheet");
-	
+	instance = this;
 	int y;
 	cattr = new Widget(Coord.z, new Coord(400, 300), this);
 	new Label(new Coord(10, 10), cattr, "Base Attributes:");
@@ -652,13 +735,7 @@ public class CharWnd extends Window {
 	
 	belief.visible = false;
 
-	study = new Widget(Coord.z, new Coord(400, 275), this);
-	study.canhastrash = false;
-	new Label(new Coord(138, 210), study, "Used attention:");
-	new Label(new Coord(138, 225), study, "Attention limit:");
-	snlbl = new Label(new Coord(240, 210), study, "");
-	sllbl = new Label(new Coord(240, 225), study, Integer.toString(ui.sess.glob.cattr.get("intel").comp));
-	study.visible = false;
+	study = new Study( this);
 	if(studyid >= 0)
 	    ui.bind(study, studyid);
 	
@@ -697,6 +774,8 @@ public class CharWnd extends Window {
 		study.visible = false;
 	    }
 	}.tooltip = "Personal Beliefs";
+	
+	hide();
     }
     
     public void uimsg(String msg, Object... args) {
@@ -704,7 +783,7 @@ public class CharWnd extends Window {
 	    exp = (Integer)args[0];
 	    updexp();
 	} else if(msg == "studynum") {
-	    snlbl.settext(Integer.toString((Integer)args[0]));
+	    study.setattnused((Integer)args[0]);
 	} else if(msg == "reset") {
 	    updexp();
 	} else if(msg == "nsk") {
@@ -744,7 +823,31 @@ public class CharWnd extends Window {
 	}
     }
     
+    @Override
+    public void hide() {
+	study.detach();
+	super.hide();
+    }
+
+    @Override
+    public void show() {
+	study.attach();
+	super.show();
+    }
+
+    public void toggle(){
+	if(visible){
+	    hide();
+	} else {
+	    show();
+	}
+    }
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
+	if(sender == cbtn){
+	    hide();
+	    return;
+	}
 	if(ui.rwidgets.containsKey(sender)) {
 	    super.wdgmsg(sender, msg, args);
 	    return;

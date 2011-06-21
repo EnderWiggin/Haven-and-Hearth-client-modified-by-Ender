@@ -1,5 +1,7 @@
 package haven;
 
+import haven.Resource.Image;
+
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
@@ -207,12 +209,17 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		Slot s = layout[x+y];
 		Resource btn = (s==null)?null:s.getres();
 		if(btn != null) {
-		    Tex btex = btn.layer(Resource.imgc).tex();
-		    g.image(btex, p.add(1, 1));
-		    if(s == pressed) {
-			g.chcolor(new Color(0, 0, 0, 128));
-			g.frect(p.add(1, 1), btex.sz());
-			g.chcolor();
+		    Image img = btn.layer(Resource.imgc);
+		    if(img != null){
+			Tex btex = img.tex();
+			g.image(btex, p.add(1, 1));
+			if(s == pressed) {
+			    g.chcolor(new Color(0, 0, 0, 128));
+			    g.frect(p.add(1, 1), btex.sz());
+			    g.chcolor();
+			}
+		    } else {
+			System.out.println(btn.name);
 		    }
 		}
 		g.aimage(nums[slot], p.add(bg.sz()), 1, 1);

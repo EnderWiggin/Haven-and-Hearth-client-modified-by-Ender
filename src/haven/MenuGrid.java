@@ -315,6 +315,8 @@ public class MenuGrid extends Widget {
 	    ui.cons.out.println(str);
 	    ui.slen.error(str);
 	    Config.saveOptions();
+	} else if(list[1].equals("study")) {
+	    ui.study.toggle();
 	} else if(list[1].equals("globalchat")) {
 	    ui.root.wdgmsg("gk", 3);
 	} else if(list[1].equals("wiki")) {
