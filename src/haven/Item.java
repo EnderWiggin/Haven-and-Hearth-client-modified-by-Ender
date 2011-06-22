@@ -353,6 +353,8 @@ public class Item extends Widget implements DTarget {
 	    resettt();
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
+	    shorttip = null;
+	    longtip = null;
 	}
     }
 	
