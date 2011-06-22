@@ -26,13 +26,20 @@
 
 package haven;
 
+import haven.Text.Foundry;
+
+import java.awt.Font;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Equipory extends Window implements DTarget {
+    static final Pattern patt = Pattern.compile("Armor class: (\\d+)/(\\d+)", Pattern.CASE_INSENSITIVE);
     List<Inventory> epoints;
     List<Item> equed;
     static final Tex bg = Resource.loadtex("gfx/hud/equip/bg");
     int avagob = -1;
+    private Label aclbl;
 	
     static Coord ecoords[] = {
 	new Coord(0, 0),
@@ -72,6 +79,9 @@ public class Equipory extends Window implements DTarget {
 	    equed.add(null);
 	}
 	pack();
+	Foundry fnd = new Foundry(new Font("SansSerif", Font.PLAIN, 12));
+	int x = new Label(new Coord(0, 249), this, "Armor class: ", fnd).sz.x;
+	aclbl = new Label(new Coord(x, 249), this, "0/0", fnd);
     }
 	
     public void uimsg(String msg, Object... args) {
@@ -93,19 +103,43 @@ public class Equipory extends Window implements DTarget {
 		    }
 		}
 	    }
+	    calcAC();
 	} else if(msg == "setres") {
 	    int i = (Integer)args[0];
 	    Indir<Resource> res = ui.sess.getres((Integer)args[1]);
 	    equed.get(i).chres(res, (Integer)args[2]);
+	    calcAC();
 	} else if(msg == "settt") {
 	    int i = (Integer)args[0];
 	    String tt = (String)args[1];
 	    equed.get(i).settip(tt);
+	    calcAC();
 	} else if(msg == "ava") {
 	    avagob = (Integer)args[0];
 	}
     }
-	
+    
+    private void calcAC(){
+	int abs = 0, def = 0;
+	for(Item itm : equed){
+	    if(itm != null){
+		String t = itm.tooltip;
+		if(t != null){
+		    try{
+			Matcher m =patt.matcher(t); 
+			if(m.find()){
+			    def += Integer.parseInt(m.group(1));
+			    abs += Integer.parseInt(m.group(2));
+			}
+		    } catch(IllegalStateException e){
+			System.out.println(e.getMessage());
+		    }
+		}
+	    }
+	}
+	aclbl.settext(def+"/"+abs+" ("+(def+abs)+")");
+    }
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	int ep;
 	if((ep = epoints.indexOf(sender)) != -1) {

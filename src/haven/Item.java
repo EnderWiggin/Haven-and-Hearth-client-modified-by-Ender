@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
-    static Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
+    static final Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
     static Color outcol = new Color(0,0,0,255);
