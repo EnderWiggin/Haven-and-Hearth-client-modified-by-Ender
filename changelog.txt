@@ -1,5 +1,12 @@
 Change log
 
+22.06.11
+ * fixed rare crash when changing location with path highlighting turned on.
+ * update item tooltips when meter changes
+ * reverse-quality transfer now works with CTRL+ALT+Mousewheel, SHIFT is unnecessary. This should fix some problems on linux systems.
+ * Alt Gr now can be used instead of ALT
+ * added displaying of total AC to Equipment screen
+
 21.06.11
  * small fixes
  * chat focuses input field if clicked everywhere on chat panel
