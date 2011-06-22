@@ -843,6 +843,14 @@ public class CharWnd extends Window {
 	}
     }
     
+    public boolean type(char key, java.awt.event.KeyEvent ev) {
+	if(key == 27) {
+	    toggle();
+	    return(true);
+	}
+	return(super.type(key, ev));
+    }
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == cbtn){
 	    hide();
