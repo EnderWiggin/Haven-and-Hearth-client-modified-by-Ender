@@ -79,10 +79,14 @@ public class Inventory extends Widget implements DTarget {
     }
     
     public boolean mousewheel(Coord c, int amount) {
+	int mod = ui.modflags();
+	if((mod & 6) == 6) { //
+	    mod = 7;
+	}
 	if(amount < 0)
-	    wdgmsg("xfer", -1, ui.modflags());
+	    wdgmsg("xfer", -1, mod);
 	if(amount > 0)
-	    wdgmsg("xfer", 1, ui.modflags());
+	    wdgmsg("xfer", 1, mod);
 	return(true);
     }
     
