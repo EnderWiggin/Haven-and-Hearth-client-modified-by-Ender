@@ -1,9 +1,17 @@
 Change log
 
+08.07.11
+ * added reset button to Character Sheet  it resets all unspent LPs from numeric skills
+ * holding SHIFT while pressing + or - buttons at numeric skills changes them by 10
+ * holding CTRL while clicking on + button at numeric skill sets it to maximum that can be 
+   bought with current unspent LP
+ * holding CTRL while clicking on - button at numeric skill resets unspent LP from this skill
+
 22.06.11
  * fixed rare crash when changing location with path highlighting turned on.
  * update item tooltips when meter changes
- * reverse-quality transfer now works with CTRL+ALT+Mousewheel, SHIFT is unnecessary. This should fix some problems on linux systems.
+ * reverse-quality transfer now works with CTRL+ALT+Mousewheel, SHIFT is unnecessary.
+   This should fix some problems on linux systems.
  * Alt Gr now can be used instead of ALT
  * added displaying of total AC to Equipment screen
 
