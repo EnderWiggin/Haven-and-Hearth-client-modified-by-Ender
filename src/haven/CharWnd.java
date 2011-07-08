@@ -251,15 +251,43 @@ public class CharWnd extends Window {
 	}
 
 	boolean inc() {
-	    tvalb++; tvalc++;
-	    cost += tvalb * 100;
+	    int k;
+	    int n;
+	    if(ui.modctrl){
+		k = 2*attr.base + 1;
+		n = (int) ((Math.sqrt(k*k + 2*exp/25)-k)/2);
+		tvalb = attr.base + n;
+		tvalc = attr.comp + n;
+		cost = 50*(k+n)*n;
+	    } else if (ui.modshift){
+		k = 2*tvalb + 1;
+		n = 10;
+		tvalb += n;
+		tvalc += n;
+		cost += 50*(k+n)*n;
+	    } else {
+		tvalb++; tvalc++;
+		cost += tvalb * 100;
+	    }
 	    return(true);
 	}
 	
 	boolean dec() {
 	    if(tvalb > attr.base) {
-		cost -= tvalb * 100;
-		tvalb--; tvalc--;
+		if(ui.modctrl){
+		    tvalb = attr.base;
+		    tvalc = attr.comp;
+		    cost = 0;
+		} else if (ui.modshift){
+		    int n = Math.min(10,tvalb-attr.base);
+		    tvalb -= n;
+		    tvalc -= n;
+		    int k = 2*tvalb + 1;
+		    cost -= 50*(k+n)*n;
+		} else {
+		    cost -= tvalb * 100;
+		    tvalb--; tvalc--;
+		}
 		return(true);
 	    }
 	    return(false);
@@ -680,7 +708,17 @@ public class CharWnd extends Window {
 		buysattrs();
 	    }
 	};
-
+	
+	new Button(new Coord(295, expbase + 45), 75, cattr, "Reset"){
+	    public void click() {
+		for(Attr attr : attrs.values()) {
+		    if(attr instanceof SAttr)
+			((SAttr)attr).update();
+		}
+		updexp();
+	    }
+	};
+	
 	y = 25;
 	new Label(new Coord(210, 10), cattr, "Skill Values:");
 	skillval(y += 15, "unarmed", "Unarmed Combat");
