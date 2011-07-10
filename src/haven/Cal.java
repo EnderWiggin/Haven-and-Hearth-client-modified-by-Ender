@@ -33,6 +33,7 @@ import java.awt.image.BufferedImage;
 public class Cal extends SSWidget {
     public static final double hbr = 23;
     static BufferedImage bg = Resource.loadimg("gfx/hud/calendar/setting");
+    private static final int dx = Utils.imgsz(bg).x / 2;
     static BufferedImage dlnd = Resource.loadimg("gfx/hud/calendar/dayscape");
     static BufferedImage dsky = Resource.loadimg("gfx/hud/calendar/daysky");
     static BufferedImage nlnd = Resource.loadimg("gfx/hud/calendar/nightscape");
@@ -40,6 +41,7 @@ public class Cal extends SSWidget {
     static BufferedImage sun = Resource.loadimg("gfx/hud/calendar/sun");
     static BufferedImage moon[];
     long update = 0;
+    Text ttip = null;
     Astronomy current;
 	
     static {
@@ -60,9 +62,11 @@ public class Cal extends SSWidget {
 	g.drawImage(bg, 0, 0, null);
 	g.drawImage(a.night?nsky:dsky, 0, 0, null);
 	int mp = (int)(a.mp * (double)moon.length);
+	String tt = String.format("Day %d,   %02d:%02d\nMoon: %s", a.day, a.hh, a.mm, Astronomy.phase[mp]);
+	ttip = RichText.render(tt, 200);
 	BufferedImage moon = Cal.moon[mp];
-	Coord mc = Coord.sc((a.dt + 0.25) * 2 * PI, hbr).add(sz.div(2)).add(Utils.imgsz(moon).div(2).inv());
-	Coord sc = Coord.sc((a.dt + 0.75) * 2 * PI, hbr).add(sz.div(2)).add(Utils.imgsz(sun).div(2).inv());
+	Coord mc = Coord.sc((a.dt + 0.25) * 2 * PI, hbr).add(sz.sub(Utils.imgsz(moon)).div(2));
+	Coord sc = Coord.sc((a.dt + 0.75) * 2 * PI, hbr).add(sz.sub(Utils.imgsz(sun)).div(2));
 	g.drawImage(moon, mc.x, mc.y, null);
 	g.drawImage(sun, sc.x, sc.y, null);
 	g.drawImage(a.night?nlnd:dlnd, 0, 0, null);
@@ -76,9 +80,13 @@ public class Cal extends SSWidget {
     }
 	
     public void draw(GOut g) {
-        c.x = MainFrame.centerPoint.x - (Utils.imgsz(bg).x / 2);
+        c.x = MainFrame.centerPoint.x - dx;
 	if(!current.equals(ui.sess.glob.ast))
 	    render();
 	super.draw(g);
+    }
+    
+    public Object tooltip(Coord c, boolean again) {
+	return ttip;
     }
 }
