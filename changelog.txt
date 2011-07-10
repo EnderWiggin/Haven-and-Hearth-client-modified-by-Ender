@@ -1,5 +1,8 @@
 Change log
 
+11.07.11
+ * added tooltip to day cycle widget. it shows current day, time and moon phase
+
 08.07.11
  * added reset button to Character Sheet  it resets all unspent LPs from numeric skills
  * holding SHIFT while pressing + or - buttons at numeric skills changes them by 10
