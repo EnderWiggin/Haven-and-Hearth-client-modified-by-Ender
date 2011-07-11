@@ -36,6 +36,7 @@ public class TextEntry extends Widget {
     static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12), Color.BLACK);
     Text.Line tcache = null;
     public String text;
+    public Color bgcolor;
 	
     static {
 	Widget.addtype("text", new WidgetFactory() {
@@ -79,11 +80,15 @@ public class TextEntry extends Widget {
 	if(cx > sx + (sz.x - 1)) sx = cx - (sz.x - 1);
 	g.image(tcache.tex(), new Coord(-sx, 0));
 	if(hasfocus && ((System.currentTimeMillis() % 1000) > 500)) {
-	    int lx = cx - sx + 1;
 	    g.chcolor(0, 0, 0, 255);
-	    g.line(new Coord(lx, 1), new Coord(lx, tcache.sz().y - 1), 1);
-	    g.chcolor();
+	    int lx = cx - sx + 1;
+	    g.line(new Coord(lx, 1), new Coord(lx, sz.y - 1), 1);
 	}
+	if(bgcolor != null){
+	    g.chcolor(bgcolor);
+	    g.rect(Coord.z, sz.add(1,1));
+	}
+	g.chcolor();
     }
 	
     public TextEntry(Coord c, Coord sz, Widget parent, String deftext) {

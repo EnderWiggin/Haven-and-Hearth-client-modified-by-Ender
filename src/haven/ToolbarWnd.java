@@ -378,7 +378,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	Slot s = layout[slot];
 	layout[slot] = null;
 	setBeltSlot(slot, "");
-	if(s.isitem){
+	if((s != null) && (s.isitem)){
 	    ui.slen.wdgmsg("belt", s.slot, 3, ui.modflags());
 	}
     }
