@@ -29,6 +29,8 @@ package haven;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ender.GoogleTranslator;
 
@@ -36,6 +38,7 @@ public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
     static final Collection<Integer> todarken = new ArrayList<Integer>();
+    static final Pattern hlpatt = Pattern.compile("@\\$\\[(\\d+)\\]");
     
     static {
 	Widget.addtype("slenchat", new WidgetFactory() {
@@ -53,7 +56,7 @@ public class ChatHW extends HWindow {
     }
 	
     public ChatHW(Widget parent, String title, boolean closable) {
-	super((Widget)ChatHWPanel.instance, title, closable);
+	super((Widget)UI.instance.chat, title, closable);
 	in = new TextEntry(new Coord(0, sz.y - 20), new Coord(sz.x, 20), this, "");
 	in.canactivate = true;
 	in.bgcolor = new Color(64, 64, 64, 192);
@@ -93,12 +96,24 @@ public class ChatHW extends HWindow {
 	    if(args.length > 2)
 		makeurgent((Integer)args[2]);
 	    String str = (String)args[0];
-	    if((col != null)&&(todarken.contains(col.getRGB())))
-		col = col.darker();
-	    str = GoogleTranslator.translate(str);
-	    if(Config.timestamp)
-		str = Utils.timestamp() + str;
-	    out.append(str, col);
+	    int id = 0;
+	    try{
+		Matcher m = hlpatt.matcher(str); 
+		if(m.find()){
+		    id = Integer.parseInt(m.group(1));
+		}
+	    } catch(IllegalStateException e){}
+	    Gob gob;
+	    if((id > 0) && ((gob = ui.sess.glob.oc.getgob(id)) != null)){
+		gob.highlight = new Gob.HlFx(System.currentTimeMillis());
+	    } else {
+		if((col != null)&&(todarken.contains(col.getRGB())))
+		    col = col.darker();
+		str = GoogleTranslator.translate(str);
+		if(Config.timestamp)
+		    str = Utils.timestamp() + str;
+		out.append(str, col);
+	    }
 	} else if(msg == "focusme") {
 	    shp.setawnd(this, true);
 	    setfocus(in);
@@ -106,7 +121,7 @@ public class ChatHW extends HWindow {
 	    super.uimsg(msg, args);
 	}
     }
-    
+
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == in) {
 	    if(msg == "activate") {

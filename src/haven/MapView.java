@@ -600,8 +600,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    glob.oc.clearqueue();
 		    wdgmsg("click", c0, mc, button, ui.modflags());
 		}
-	    } else
-		wdgmsg("click", c0, mc, button, ui.modflags(), hit.id, hit.getc());
+	    } else {
+		if(ui.modmeta){
+		    ChatHWPanel.instance.awnd.wdgmsg("msg","@$["+hit.id+"]");
+		} else {
+		    wdgmsg("click", c0, mc, button, ui.modflags(), hit.id, hit.getc());
+		}
+	    }
 	}
 	return(true);
     }
@@ -1079,6 +1084,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		fx = null;
 		if(hlt != null)
 		    fx = hlt.getfx();
+		if(cur.highlight != null){
+		    long t = System.currentTimeMillis() - cur.highlight.time;
+		    if(t > 5000){
+			cur.highlight = null;
+		    }
+		}
+		if(cur.highlight != null){
+		    fx = cur.highlight;
+		}
 		Following flw = cur.getattr(Following.class);
 		szo = 0;
 		if(flw != null)

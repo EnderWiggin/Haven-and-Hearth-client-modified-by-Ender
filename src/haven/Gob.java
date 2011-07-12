@@ -26,6 +26,7 @@
 
 package haven;
 
+import java.awt.Color;
 import java.util.*;
 
 public class Gob implements Sprite.Owner {
@@ -36,6 +37,7 @@ public class Gob implements Sprite.Owner {
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
     public Collection<Overlay> ols = new LinkedList<Overlay>();
     public boolean hide;
+    HlFx highlight = null;
 	
     public static class Overlay {
 	public Indir<Resource> res;
@@ -53,6 +55,24 @@ public class Gob implements Sprite.Owner {
 	
 	public static interface CDel {
 	    public void delete();
+	}
+    }
+    
+    public static class HlFx implements Sprite.Part.Effect {
+	public long time;
+	public HlFx(long t){
+	    time = t;
+	}
+	public GOut apply(GOut in) {
+	    return(new GOut(in) {
+		    {chcolor();}
+		    
+		    public void chcolor(Color col) {
+			double k = (System.currentTimeMillis() - time)/1000.0;
+			k = 1+Math.cos(10*k);
+			super.chcolor(Utils.blendcol(col, new Color(64,255,64,(int) (111*k))));
+		    }
+		});
 	}
     }
     

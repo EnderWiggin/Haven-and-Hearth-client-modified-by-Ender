@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ChatHWPanel extends Widget implements IHWindowParent {
 
-    public static IHWindowParent instance;
+    public static ChatHWPanel instance;
     static BufferedImage[] fbtni = new BufferedImage[] {
 	    Resource.loadimg("gfx/hud/fbtn"),
 	    Resource.loadimg("gfx/hud/fbtnd"),
@@ -31,7 +31,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     static final int sbtnw = 50;
     static final int btnh = 40;
     static final Coord minsz = new Coord(126, 126);
-    HWindow awnd;
+    public HWindow awnd;
     List<HWindow> wnds = new ArrayList<HWindow>();
     Map<HWindow, Button> btns = new HashMap<HWindow, Button>();
     Button sub, sdb;
@@ -46,7 +46,7 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
     
     public ChatHWPanel(Coord c, Coord sz, Widget parent) {
 	super(c, sz, parent);
-	instance = this;
+	ui.chat = instance = this;
 	btnc = sz.sub(sz.x, btnh);
 	sub = new Button(new Coord(300, 260), sbtnw, this,
 		Resource.loadimg("gfx/hud/slen/sau")) {
