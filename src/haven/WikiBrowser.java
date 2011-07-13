@@ -289,4 +289,9 @@ public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindo
 	    b.c = btnc.add(bw * (i % k), ((int) i / k) * 20);
 	}
     }
+
+    @Override
+    public HWindow getawnd() {
+	return awnd;
+    }
 }

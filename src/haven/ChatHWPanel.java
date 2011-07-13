@@ -351,4 +351,9 @@ public class ChatHWPanel extends Widget implements IHWindowParent {
 	}
 	return false;
     }
+
+    @Override
+    public HWindow getawnd() {
+	return awnd;
+    }
 }

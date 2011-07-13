@@ -602,7 +602,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		}
 	    } else {
 		if(ui.modmeta){
-		    ChatHWPanel.instance.awnd.wdgmsg("msg","@$["+hit.id+"]");
+		    ui.chat.getawnd().wdgmsg("msg","@$["+hit.id+"]");
 		} else {
 		    wdgmsg("click", c0, mc, button, ui.modflags(), hit.id, hit.getc());
 		}

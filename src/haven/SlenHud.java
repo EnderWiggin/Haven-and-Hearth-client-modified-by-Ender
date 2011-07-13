@@ -397,6 +397,11 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	setawnd(wnd, false);
     }
     
+    @Override
+    public HWindow getawnd() {
+	return awnd;
+    }
+    
     public void addwnd(final HWindow wnd) {
 	wnds.add(wnd);
 	setawnd(wnd);

@@ -104,8 +104,10 @@ public class ChatHW extends HWindow {
 		}
 	    } catch(IllegalStateException e){}
 	    Gob gob;
-	    if((id > 0) && ((gob = ui.sess.glob.oc.getgob(id)) != null)){
-		gob.highlight = new Gob.HlFx(System.currentTimeMillis());
+	    if(id > 0) {
+		if ((gob = ui.sess.glob.oc.getgob(id)) != null){
+		    gob.highlight = new Gob.HlFx(System.currentTimeMillis());
+		}
 	    } else {
 		if((col != null)&&(todarken.contains(col.getRGB())))
 		    col = col.darker();
