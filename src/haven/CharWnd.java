@@ -589,7 +589,7 @@ public class CharWnd extends Window {
 		wnd = new Window(new Coord(150, 150), detsz, ui.root, "Study"){
 		    public void destroy(){
 			wnd = null;
-			Study.this.unlink();
+			if(!attached){Study.this.unlink();}
 			super.destroy();
 		    }
 		};
