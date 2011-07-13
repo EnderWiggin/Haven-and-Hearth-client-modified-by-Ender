@@ -99,6 +99,10 @@ public class Textlog extends Widget {
 	rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
 	synchronized(lines) {
 	    lines.add(rl);
+	    if(lines.size() > 150){
+		Text tl = lines.remove(0);
+		maxy -= tl.sz().y;
+	    }
 	}
 	if(cury == maxy)
 	    cury += rl.sz().y;
