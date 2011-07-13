@@ -1,5 +1,15 @@
 Change log
 
+13.07.11
+ * fixed minor glitch with study
+ * chat log now displays only last 150 messages - done to prevent lags caused by large chat log
+ * added ability to point object to others - use ALT-CLICK on object and it will be highlighted for 5 seconds
+   for all people who use current client version and are in current chat channel. Everyone who uses another 
+   client, or older version will see special message in chat looking like @$[1234567]
+
+12.07.11
+ * fixed possible crash with belts
+
 11.07.11
  * added tooltip to day cycle widget. it shows current day, time and moon phase
 
