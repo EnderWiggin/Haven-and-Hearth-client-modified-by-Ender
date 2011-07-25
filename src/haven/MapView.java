@@ -122,6 +122,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	void mmousemove(Coord mc);
     }
     
+    @SuppressWarnings("serial")
+    public static class GrabberException extends RuntimeException{}
+    
     public static class Camera {
 	public void setpos(MapView mv, Gob player, Coord sz) {}
 	
@@ -583,8 +586,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Gob hit = gobatpos(c);
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
-	    grab.mmousedown(mc, button);
-	} else if((cam != null) && cam.click(this, c, mc, button)) {
+	    try{
+		grab.mmousedown(mc, button);
+		return true;
+	    } catch (GrabberException e){}
+	}
+	
+	if((cam != null) && cam.click(this, c, mc, button)) {
 	    /* Nothing */
 	} else if(plob != null) {
 	    Gob gob = null;
@@ -615,9 +623,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	if(grab != null) {
-	    grab.mmouseup(mc, button);
-	    return(true);
-	} else if((cam != null) && cam.release(this, c, mc, button)) {
+	    try {
+		grab.mmouseup(mc, button);
+		return(true);
+	    } catch (GrabberException e){}
+	}
+	if((cam != null) && cam.release(this, c, mc, button)) {
 	    return(true);
 	} else {
 	    return(true);
@@ -632,9 +643,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Collection<Gob> plob = this.plob;
 	if(cam != null)
 	    cam.move(this, c, mc);
+	
 	if(grab != null) {
-	    grab.mmousemove(mc);
-	} else if(plob != null) {
+	    try{
+		grab.mmousemove(mc);
+		return;
+	    } catch (GrabberException e){}
+	}
+	if(plob != null) {
 	    Gob gob = null;
 	    for(Gob g : plob)
 		gob = g;
