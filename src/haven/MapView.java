@@ -1278,7 +1278,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private void checkplmove() {
 	Gob pl;
 	long now = System.currentTimeMillis();
-	if((playergob >= 0) && ((pl = glob.oc.getgob(playergob)) != null) && (pl.sc != null)) {
+	if((playergob != -1) && ((pl = glob.oc.getgob(playergob)) != null) && (pl.sc != null)) {
 	    Coord plp = pl.getc();
 	    if((plfpos == null) || !plfpos.equals(plp)) {
 		lastmove = now;
@@ -1445,7 +1445,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    else
 			sdt = new Message(0);
 		    Gob pl;
-		    if((playergob >= 0) && ((pl = glob.oc.getgob(playergob)) != null))
+		    if((playergob != -1) && ((pl = glob.oc.getgob(playergob)) != null))
 			pl.ols.add(new Gob.Overlay(-1, res, sdt));
 		}
 	    });

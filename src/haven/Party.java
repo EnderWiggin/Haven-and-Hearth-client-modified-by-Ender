@@ -65,7 +65,7 @@ public class Party {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		while(true) {
 		    int id = msg.int32();
-		    if(id < 0)
+		    if((id == 0)||(id == -1))
 			break;
 		    ids.add(id);
 		}

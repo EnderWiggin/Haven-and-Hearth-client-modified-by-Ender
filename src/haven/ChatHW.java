@@ -38,7 +38,7 @@ public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
     static final Collection<Integer> todarken = new ArrayList<Integer>();
-    static final Pattern hlpatt = Pattern.compile("@\\$\\[(\\d+)\\]");
+    static final Pattern hlpatt = Pattern.compile("@\\$\\[(-?\\d+)\\]");
     
     static {
 	Widget.addtype("slenchat", new WidgetFactory() {
@@ -104,7 +104,7 @@ public class ChatHW extends HWindow {
 		}
 	    } catch(IllegalStateException e){}
 	    Gob gob;
-	    if(id > 0) {
+	    if(id != 0) {
 		if ((gob = ui.sess.glob.oc.getgob(id)) != null){
 		    gob.highlight = new Gob.HlFx(System.currentTimeMillis());
 		}
