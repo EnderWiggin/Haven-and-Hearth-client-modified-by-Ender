@@ -424,6 +424,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public boolean dropthing(Coord c, Object thing) {
 	if ((!locked)&&(thing instanceof Resource)) {
 	    int slot = index(c);
+	    if(slot < 0){return false;}
 	    Resource res = (Resource)thing;
 	    setBeltSlot(slot, res.name);
 	    layout[slot] = new Slot(res.name, belt, slot );
