@@ -146,7 +146,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	insetsSize = new Dimension(insets.left + insets.right, insets.top + insets.bottom);
 	setResizable(true);
 	setMinimumSize(new Dimension(800 + insetsSize.width, 600 + insetsSize.height));
-	p.requestFocus();
+	p.requestFocusInWindow();
 	seticon();
 	setVisible(true);
 	p.init();
