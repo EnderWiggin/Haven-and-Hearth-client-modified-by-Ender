@@ -1,5 +1,12 @@
 Change log
 
+04.08.11
+ * fixed issues with negative player id's
+ * fixed few belt related crashes
+
+26.07.11
+ * Land management window no longer captures all mouse buttons activity, only left button used.
+
 13.07.11
  * fixed minor glitch with study
  * chat log now displays only last 150 messages - done to prevent lags caused by large chat log
