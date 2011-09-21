@@ -58,7 +58,7 @@
 
   <target name="jar" depends="haven-client,buildinfo,lib-classes">
     <jar destfile="build/haven.jar" update="true">
-      <fileset dir="build/classes" />
+      <fileset dir="build/classes" excludes="*.class"/>
       <fileset dir="build/classes-lib" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
