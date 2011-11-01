@@ -1,5 +1,8 @@
 Change log
 
+01.11.11
+ * added displaying of FEPs for food items. FEP points configured in fep.conf file. Cutrrently it comntains data from FEP table from RoB wiki.
+
 04.08.11
  * fixed issues with negative player id's
  * fixed few belt related crashes
