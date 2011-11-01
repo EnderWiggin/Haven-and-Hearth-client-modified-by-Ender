@@ -101,7 +101,9 @@ public class Textlog extends Widget {
 	    lines.add(rl);
 	    if(lines.size() > 150){
 		Text tl = lines.remove(0);
-		maxy -= tl.sz().y;
+		int dy = tl.sz().y;
+		maxy -= dy;
+		cury -= dy;
 	    }
 	}
 	if(cury == maxy)
