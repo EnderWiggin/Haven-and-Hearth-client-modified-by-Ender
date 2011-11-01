@@ -40,6 +40,9 @@
     <copy todir="build/res" >
 	<fileset dir="resources/res"/>
     </copy>
+    <copy todir="build" >
+	<fileset file="fep.conf"/>
+    </copy>
   </target>
   
   <target name="appletview" depends="build-env">

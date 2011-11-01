@@ -90,6 +90,8 @@ public class Item extends Widget implements DTarget {
 		System.out.println(e.getMessage());
 	    }
 	}
+	calcFEP();
+	shorttip = longtip = null;
     }
     
     private void fixsize() {
@@ -203,9 +205,9 @@ public class Item extends Widget implements DTarget {
 		    if(hq)
 			tt = tt + "+";
 		}
-//		if(meter > 0) {
-//		    tt = tt + " (" + meter + "%)";
-//		}
+		if(FEP == null){
+		    calcFEP();
+		}
 		return(tt);
 	    }
 	}
@@ -214,6 +216,8 @@ public class Item extends Widget implements DTarget {
     
     long hoverstart;
     Text shorttip = null, longtip = null;
+    private double qmult;
+    private String FEP = null;
     public Object tooltip(Coord c, boolean again) {
 	long now = System.currentTimeMillis();
 	if(!again)
@@ -224,10 +228,14 @@ public class Item extends Widget implements DTarget {
 	    if(shorttip == null) {
 		String tt = shorttip();
 		if(tt != null) {
+		    tt = RichText.Parser.quote(tt);
 		    if(meter > 0) {
-			    tt = tt + " (" + meter + "%)";
-			}
-		    shorttip = Text.render(tt);
+			tt = tt + " (" + meter + "%)";
+		    }
+		    if(FEP != null){
+			tt += FEP;
+		    }
+		    shorttip = RichText.render(tt, 200);
 		}
 	    }
 	    return(shorttip);
@@ -239,6 +247,9 @@ public class Item extends Widget implements DTarget {
 		String tt = RichText.Parser.quote(tip);
 		if(meter > 0) {
 		    tt = tt + " (" + meter + "%)";
+		}
+		if(FEP != null){
+		    tt += FEP;
 		}
 		if(pg != null)
 		    tt += "\n\n" + pg.text;
@@ -278,6 +289,19 @@ public class Item extends Widget implements DTarget {
 	    doff = drag;
 	    ui.grabmouse(this);
 	    this.c = ui.mc.add(doff.inv());
+	}
+	qmult = Math.sqrt((float)q/10);
+	calcFEP();
+    }
+
+    private void calcFEP() {
+	Map<String, Float> fep;
+	String name = name();
+	if((name != null)&&(fep = Config.FEPMap.get(name().toLowerCase())) != null){
+	    FEP = "\n";
+	    for(String key:fep.keySet()){
+		FEP += String.format("%s:%.1f ", key, (float) fep.get(key)*qmult);
+	    }
 	}
     }
 

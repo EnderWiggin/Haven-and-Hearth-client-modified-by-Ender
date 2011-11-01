@@ -41,6 +41,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -94,6 +95,7 @@ public class Config {
     public static boolean newclaim;
     public static boolean showq;
     public static boolean showpath;
+    public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
     
     static {
 	try {
@@ -132,6 +134,7 @@ public class Config {
 	    loadOptions();
 	    loadWindowOptions();
 	    loadSmileys();
+	    loadFEP();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -147,6 +150,34 @@ public class Config {
 	return str;
     }
     
+    private static void loadFEP() {
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("fep.conf");
+	    DataInputStream in = new DataInputStream(fstream);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		Map<String, Float> fep = new HashMap<String, Float>();
+		String [] tmp = strLine.split("=");
+		String name;
+		name = tmp[0].toLowerCase();
+		tmp = tmp[1].split(" ");
+		for(String itm : tmp){
+		    String tmp2[] = itm.split(":");
+		    fep.put(tmp2[0], Float.valueOf(tmp2[1]).floatValue());
+		}
+		FEPMap.put(name, fep);
+	    }
+	    br.close();
+	    in.close();
+	    fstream.close();
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	}
+	
+    }
+
     private static void usage(PrintStream out) {
 	out.println("usage: haven.jar [-hdPf] [-u USER] [-C HEXCOOKIE] [-r RESDIR] [-U RESURL] [-A AUTHSERV] [SERVER]");
     }
@@ -223,7 +254,9 @@ public class Config {
 		res = "\\$img\\[smiley\\/"+tmp[1]+"\\]";
 		smileys.put(Pattern.compile(smile, Pattern.CASE_INSENSITIVE|Pattern.LITERAL), res);
 	    }
+	    br.close();
 	    in.close();
+	    fstream.close();
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
 	}
