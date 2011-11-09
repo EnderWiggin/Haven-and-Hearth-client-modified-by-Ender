@@ -641,6 +641,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	this.pmousepos = c;
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	this.mousepos = mc;
+	Gob hit = gobatpos(c);
+	if(hit == null){
+	    tip = null;
+	    tips = null;
+	}
 	Collection<Gob> plob = this.plob;
 	if(cam != null)
 	    cam.move(this, c, mc);
@@ -657,7 +662,39 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		gob = g;
 	    boolean plontile = this.plontile ^ ui.modshift;
 	    gob.move(plontile?tilify(mc):mc);
+	} else if(hit != null && ui.modshift){
+	    String s;
+	    s = "Res found on gob " + hit.id;
+	    Layered l = hit.getattr(Layered.class);
+	    if(l != null && l.layers != null){
+		for(Indir<Resource> res : l.layers){
+		    if(res.get() != null){
+			String r = res.get().name.replace("gfx/borka/","");
+			if(r.contains("/"))
+			    r = r.substring(0,r.indexOf("/"));
+			if(r.equals("body") || r.startsWith("hair") || s.contains(r))
+			    continue;
+			s += "\n"+r;
+		    }
+		}
+	    }
+	    if(tip == null || !tips.equals(s)){
+		tips = s;
+		tip = null;
+		tooltip(null,false);
+	    }
+	} 
+    }
+    
+    String tips;
+    Text tip = null;
+    public Object tooltip(Coord c,boolean again){
+	if(tip != null)
+	    return(tip);
+	if(tips != null && !tips.equals("")){
+	    tip = RichText.render(tips,200);
 	}
+	return(tip);
     }
     
     public boolean mousewheel(Coord c, int amount) {
