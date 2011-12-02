@@ -27,10 +27,34 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.Font;
 
 public class ComWin extends HWindow {
     static Tex iptex = Resource.loadtex("gfx/hud/combat/ip");
+    static Tex sword = Resource.loadtex("gfx/hud/combat/off");
+    static Tex shield = Resource.loadtex("gfx/hud/combat/def");
+    static Tex bal = Resource.loadtex("gfx/hud/combat/bal");
+    static Tex intns = Resource.loadtex("gfx/hud/combat/intns");
+    
+    static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.BOLD, 12));
     Fightview fv;
+
+    static Coord
+        moc = new Coord(305, 10),
+        mdc = new Coord(305, 30),
+        ooc = new Coord(325, 10),
+        odc = new Coord(325, 30),
+        inic = new Coord(220, 60),
+        balc = new Coord(270, 60),
+        intc = new Coord(320, 60),
+        swc = new Coord(315, 17),
+        shc = new Coord(315, 37);
+    
+    static Color 
+    	offcol = new Color(255, 0, 0),
+    	offemty = new Color(128,64,64),
+    	defcol = new Color(0, 0, 255),
+    	defemty = new Color(64,64,128);
     
     public ComWin(Widget parent, Fightview fv) {
 	super(parent, "Combat", false);
@@ -76,17 +100,60 @@ public class ComWin extends HWindow {
 	    g.atext(name, new Coord(50, 85), 0, 0.5);
 	    g.chcolor();
 	}
-	g.image(iptex, new Coord(200, 32));
 	Fightview.Relation rel = fv.current;
+	
+	g.chcolor(offemty);
+	g.frect(moc, new Coord(-100, 14));
+	g.frect(ooc, new Coord(100, 14));
+	g.chcolor(defemty);
+	g.frect(mdc, new Coord(-100, 14));
+	g.frect(odc, new Coord(100, 14));
+	
+	if(fv.off >= 200) {
+	    g.chcolor(offcol);
+	    g.frect(moc, new Coord(-fv.off / 100, 14));
+	}
+	if(fv.def >= 200) {
+	    g.chcolor(defcol);
+	    g.frect(mdc, new Coord(-fv.def / 100, 14));
+	}
+	g.chcolor();
+	g.aimage(sword, swc, 0.5, 0.5);
+	g.aimage(shield, shc, 0.5, 0.5);
+	
+	g.aimage(fnd.render(String.format("%d", fv.off/100)).tex(), moc.sub(50, -7), 0.5, 0.5);
+	g.aimage(fnd.render(String.format("%d", fv.def/100)).tex(), mdc.sub(50, -7), 0.5, 0.5);
 	if(rel != null) {
+	    if(rel.off >= 200) {
+		g.chcolor(offcol);
+		g.frect(ooc, new Coord(rel.off / 100, 14));
+	    }
+	    if(rel.def >= 200) {
+		g.chcolor(defcol);
+		g.frect(odc, new Coord(rel.def / 100, 14));
+	    }
+	    g.chcolor();
+	    g.aimage(fnd.render(String.format("%d", rel.off/100)).tex(), ooc.add(50, 7), 0.5, 0.5);
+	    g.aimage(fnd.render(String.format("%d", rel.def/100)).tex(), odc.add(50, 7), 0.5, 0.5);
+	    
+	    
+	    g.chcolor();
+	    g.aimage(iptex, inic, 1.5, 0.5);
+	    g.aimage(bal, balc, 1.5, 0.5);
+	    g.aimage(intns, intc, 1.5, 0.5);
+	    
 	    g.chcolor(0, 0, 0, 255);
-	    g.text(rel.ip+"/"+rel.oip, new Coord(205 + iptex.sz().x, 30));
+	    g.atext(rel.ip+"/"+rel.oip, inic, 0, 0.5);
+	    g.atext(String.format("%d", rel.intns), intc, 0, 0.5);
+	    g.atext(String.format("%d", rel.bal), balc, 0, 0.5);
 	    g.chcolor();
 	}
+	
+	
 	long now = System.currentTimeMillis();
 	if(now < fv.atkc) {
 	    g.chcolor(255, 0, 128, 255);
-	    g.frect(new Coord(200, 55), new Coord((int)(fv.atkc - now) / 100, 20));
+	    g.frect(new Coord(200, 70), new Coord((int)(fv.atkc - now) / 100, 20));
 	    g.chcolor();
 	}
     }
