@@ -154,10 +154,11 @@ public class MenuGrid extends Widget {
 	Resource.Pagina pg = res.layer(Resource.pagina);
 	String tt = ad.name;
 	int pos = tt.toUpperCase().indexOf(Character.toUpperCase(ad.hk));
+	String format = "$col[255,255,0]{%s}";
 	if(pos >= 0)
-	    tt = tt.substring(0, pos) + "$col[255,255,0]{" + tt.charAt(pos) + "}" + tt.substring(pos + 1);
+	    tt = tt.substring(0, pos) + String.format(format, tt.charAt(pos)) + tt.substring(pos + 1);
 	else if(ad.hk != 0)
-	    tt += " [$col[255,255,0]{" + ad.hk + "}]";
+	    tt += " [" + String.format(format, ad.hk) + "]";
 	if(withpg && (pg != null)) {
 	    tt += "\n\n" + pg.text;
 	}

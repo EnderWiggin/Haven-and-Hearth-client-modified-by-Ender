@@ -297,12 +297,12 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	if(tt != null) {
 	    Coord sz = tt.sz();
 	    Coord pos = mousepos.add(sz.inv());
-	    if(pos.x < 0)
-		pos.x = 0;
-	    if(pos.y < 0)
-		pos.y = 0;
+	    if(pos.x < 6)
+		pos.x = 6;
+	    if(pos.y < 6)
+		pos.y = 6;
 	    g.chcolor(244, 247, 21, 192);
-	    g.rect(pos.add(-3, -3), sz.add(6, 6));
+	    g.rect(pos.add(-3, -3), sz.add(7, 6));
 	    g.chcolor(35, 35, 35, 192);
 	    g.frect(pos.add(-2, -2), sz.add(4, 4));
 	    g.chcolor();
