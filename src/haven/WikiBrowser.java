@@ -52,7 +52,16 @@ public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindo
 	sub.visible = sdb.visible = false;
 	fbtn = new IButton(Coord.z, this, fbtni[0], fbtni[1], fbtni[2]);
 	
+	loadOpts();
 	pack();
+    }
+    
+    private void loadOpts() {
+	synchronized (Config.window_props) {
+	    ssz = new Coord(Config.window_props.getProperty("wiki_size", sz.toString()));
+	    c = new Coord(Config.window_props.getProperty("wiki_pos", c.toString()));
+	    deltasz();
+	}	
     }
 
     private void sup() {
@@ -97,8 +106,10 @@ public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindo
 	    ui.grabmouse(null);
 	    rsm = false;
 	    deltasz();
+	    Config.setWindowOpt("wiki_size", this.sz.toString());
 	} else {
 	    super.mouseup(c, button);
+	    Config.setWindowOpt("wiki_pos", this.c.toString());
 	}
 	return (true);
     }
