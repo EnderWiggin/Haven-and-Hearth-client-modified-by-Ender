@@ -1,5 +1,16 @@
 Change log
 
+02.12.11
+ * small fixes for tooltip positioning.
+ * Show raised attributes in system message log.
+ * Wiki now remembers size and position
+ * wiki now saves it's tabs
+ * Added all combat info to combat panel.
+ * Removed all meters from ComMeter, now it only indicates whether combat in progress or no.
+
+02.11.11
+ * fixed scrolling issue when chat log is big and older entries are deleted.
+
 01.11.11
  * added displaying of FEPs for food items. FEP points configured in fep.conf file. Cutrrently it comntains data from FEP table from RoB wiki.
 
