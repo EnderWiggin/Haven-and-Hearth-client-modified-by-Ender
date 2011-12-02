@@ -5,10 +5,15 @@ import haven.Resource.Tooltip;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindowParent {
     static final BufferedImage grip = Resource.loadimg("gfx/hud/gripbr");
@@ -53,15 +58,24 @@ public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindo
 	fbtn = new IButton(Coord.z, this, fbtni[0], fbtni[1], fbtni[2]);
 	
 	loadOpts();
-	pack();
     }
     
     private void loadOpts() {
 	synchronized (Config.window_props) {
 	    ssz = new Coord(Config.window_props.getProperty("wiki_size", sz.toString()));
 	    c = new Coord(Config.window_props.getProperty("wiki_pos", c.toString()));
-	    deltasz();
-	}	
+	}
+	deltasz();
+	pack();
+	Properties tabs = new Properties();
+	try {
+	    tabs.load(new FileInputStream("wiki.conf"));
+	    for(int i=0; i<tabs.size(); i++){
+		open(tabs.getProperty("tab"+i));
+	    }
+	} catch (IOException e) {
+	    System.out.println(e);
+	}
     }
 
     private void sup() {
@@ -160,8 +174,18 @@ public class WikiBrowser extends Window implements DTarget2, DropTarget, IHWindo
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if (sender == cbtn) {
+	    Properties tabs = new Properties();
+	    int i=0;
 	    while(wnds.size() > 0) {
-		ui.destroy(wnds.get(0));
+		HWindow wnd = wnds.get(0);
+		tabs.setProperty("tab"+i, wnd.title);
+		ui.destroy(wnd);
+		i++;
+	    }
+	    try {
+		tabs.store(new FileOutputStream("wiki.conf"), "Saved wiki tabs");
+	    } catch (IOException e) {
+		System.out.println(e);
 	    }
 	    ui.destroy(this);
 	    ui.wiki = null;
