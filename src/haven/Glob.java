@@ -86,6 +86,12 @@ public class Glob {
 	public void update(int base, int comp) {
 	    if((base == this.base) && (comp == this.comp))
 		return;
+	    int delta = (this.base>0)?base - this.base:0;
+	    if(delta > 0){
+		String str = "Your "+nm.toUpperCase()+" raised by "+delta+" points";
+		UI.instance.cons.out.println(str);
+		UI.instance.slen.error(str);
+	    }
 	    this.base = base;
 	    this.comp = comp;
 	    setChanged();
