@@ -77,6 +77,7 @@ public class Config {
     public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
+    public static String currentVersion;
     public static Properties options, window_props;
     public static int sfxVol;
     public static int musicVol;
@@ -312,6 +313,7 @@ public class Config {
         showpath = options.getProperty("showpath", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
+        currentVersion = options.getProperty("version", "");
         hideObjectList.clear();
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -389,6 +391,7 @@ public class Config {
         options.setProperty("newclaim", newclaim?"true":"false");
         options.setProperty("showq", showq?"true":"false");
         options.setProperty("showpath", showpath?"true":"false");
+        options.setProperty("version", currentVersion);
         
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

@@ -56,7 +56,7 @@ public class Window extends Widget implements DTarget {
     public boolean justclose = false;
     Text cap;
     boolean dm = false;
-    public Coord atl, asz, wsz;
+    public Coord atl, asz, wsz = new Coord();
     public Coord tlo, rbo;
     public Coord mrgn = new Coord(13, 13);
     public Coord doff;

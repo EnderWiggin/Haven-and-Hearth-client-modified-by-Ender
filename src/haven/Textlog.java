@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Textlog extends Widget {
+    public int maxLines = 150;
     static Tex texpap = Resource.loadtex("gfx/hud/texpap");
     static Tex schain = Resource.loadtex("gfx/hud/schain");
     static Tex sflarp = Resource.loadtex("gfx/hud/sflarp");
@@ -99,7 +100,7 @@ public class Textlog extends Widget {
 	rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
 	synchronized(lines) {
 	    lines.add(rl);
-	    if(lines.size() > 150){
+	    if((maxLines > 0)&&(lines.size() > maxLines)){
 		Text tl = lines.remove(0);
 		int dy = tl.sz().y;
 		maxy -= dy;
@@ -154,7 +155,15 @@ public class Textlog extends Widget {
 	    cury = (int)(a * (maxy - sz.y)) + sz.y;
 	}
     }
-        
+    
+    public void setprog(double a){
+	if(a < 0)
+	    a = 0;
+	if(a > 1)
+	    a = 1;
+	cury = (int)(a * (maxy - sz.y)) + sz.y;
+    }
+    
     public boolean mouseup(Coord c, int button) {
 	if((button == 1) && sdrag) {
 	    sdrag = false;
