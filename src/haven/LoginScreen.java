@@ -56,7 +56,8 @@ public class LoginScreen extends Widget {
 	new Img(new Coord(420, 215).add(logo.sz().div(2).inv()), logo, this);
 	
 	//show changelog on first run after update;
-	if(!Config.currentVersion.equals(MainFrame.VERSION)){
+	boolean same = Config.currentVersion.equals(MainFrame.VERSION); 
+	if(!same){
 	    Config.currentVersion = MainFrame.VERSION;
 	    Config.saveOptions();
 	    showChangelog();
