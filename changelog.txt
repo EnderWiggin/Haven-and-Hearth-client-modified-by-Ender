@@ -4,6 +4,7 @@ Change log
  * change log is displayed at login screen when game first run after update.
  * Ported ComMeter changes from boshaw's client
  * Revert "Removed all meters from ComMeter, now it only indicates whether combat in progress or no."
+ THOSE WHO UPDATED TO PREVIOUS VERSION - REMOVE FILE res/gfx/hud/combat/com/offdef.res 
  
 02.12.11
  * small fixes for tooltip positioning.
