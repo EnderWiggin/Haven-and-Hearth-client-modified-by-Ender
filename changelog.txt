@@ -1,5 +1,10 @@
 Change log
  
+06.12.11
+ * added displaying of curio LP, weight and study time. Values are read from curio.conf file
+ * added combat skill readiness highlight. Can be toggled in Options->General->Highlight combat skills
+ * added displaying of FPS, toggled by CTRL-F
+ 
 05.12.11
  * change log is displayed at login screen when game first run after update.
  * Ported ComMeter changes from boshaw's client
