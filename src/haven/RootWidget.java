@@ -41,6 +41,7 @@ public class RootWidget extends ConsoleHost {
     boolean afk = false;
     public static boolean screenshot = false;
     public static boolean names_ready = false;
+    private long last = 0;
 	
     public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
@@ -63,6 +64,8 @@ public class RootWidget extends ConsoleHost {
 		Config.nightvision = !Config.nightvision;
 	    } else if((code == KeyEvent.VK_X)&&ctrl) {
 		Config.xray = !Config.xray;
+	    } else if((code == KeyEvent.VK_F)&&ctrl) {
+		Config.fps = !Config.fps;
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
 	    } else if((code == KeyEvent.VK_Q)&&alt) {
@@ -118,6 +121,12 @@ public class RootWidget extends ConsoleHost {
 //	} else if(afk && (System.currentTimeMillis() - ui.lastevent < 300000)) {
 //	    afk = false;
 //	}
+	if(Config.fps){
+	    long now = System.currentTimeMillis();
+	    int fps = (int) (1000/(now - last));
+	    last = now;
+	    g.text("FPS: "+fps, Coord.z);
+	}
     }
     
     public void error(String msg) {

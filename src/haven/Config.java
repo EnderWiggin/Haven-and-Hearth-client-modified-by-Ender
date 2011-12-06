@@ -103,6 +103,7 @@ public class Config {
     public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
     public static Map<String, SkillAvailability> skills;
     public static boolean highlightSkills;
+    public static boolean fps = false;
     static {
 	try {
 	    String p;
