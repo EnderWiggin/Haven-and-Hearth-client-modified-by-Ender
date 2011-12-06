@@ -1,5 +1,11 @@
 Change log
-
+ 
+05.12.11
+ * change log is displayed at login screen when game first run after update.
+ * Ported ComMeter changes from boshaw's client
+ * Revert "Removed all meters from ComMeter, now it only indicates whether combat in progress or no."
+ THOSE WHO UPDATED TO PREVIOUS VERSION - REMOVE FILE res/gfx/hud/combat/com/offdef.res 
+ 
 02.12.11
  * small fixes for tooltip positioning.
  * Show raised attributes in system message log.
@@ -7,40 +13,40 @@ Change log
  * wiki now saves it's tabs
  * Added all combat info to combat panel.
  * Removed all meters from ComMeter, now it only indicates whether combat in progress or no.
-
+ 
 02.11.11
  * fixed scrolling issue when chat log is big and older entries are deleted.
-
+ 
 01.11.11
  * added displaying of FEPs for food items. FEP points configured in fep.conf file. Cutrrently it comntains data from FEP table from RoB wiki.
-
+ 
 04.08.11
  * fixed issues with negative player id's
  * fixed few belt related crashes
-
+ 
 26.07.11
  * Land management window no longer captures all mouse buttons activity, only left button used.
-
+ 
 13.07.11
  * fixed minor glitch with study
  * chat log now displays only last 150 messages - done to prevent lags caused by large chat log
  * added ability to point object to others - use ALT-CLICK on object and it will be highlighted for 5 seconds
    for all people who use current client version and are in current chat channel. Everyone who uses another 
    client, or older version will see special message in chat looking like @$[1234567]
-
+ 
 12.07.11
  * fixed possible crash with belts
-
+ 
 11.07.11
  * added tooltip to day cycle widget. it shows current day, time and moon phase
-
+ 
 08.07.11
  * added reset button to Character Sheet  it resets all unspent LPs from numeric skills
  * holding SHIFT while pressing + or - buttons at numeric skills changes them by 10
  * holding CTRL while clicking on + button at numeric skill sets it to maximum that can be 
    bought with current unspent LP
  * holding CTRL while clicking on - button at numeric skill resets unspent LP from this skill
-
+ 
 22.06.11
  * fixed rare crash when changing location with path highlighting turned on.
  * update item tooltips when meter changes
@@ -48,106 +54,106 @@ Change log
    This should fix some problems on linux systems.
  * Alt Gr now can be used instead of ALT
  * added displaying of total AC to Equipment screen
-
+ 
 21.06.11
  * small fixes
  * chat focuses input field if clicked everywhere on chat panel
  * chat now does not grab input it cannot handle. As a result it's now possible to 
    toggle nightvision/x-ray/hide or use F-hotkeys whet chat has focus
  * added separate study window. Accessible through X->Y
-
+ 
 18.06.11
  * optimized object hiding
  * optimized hidden object highlight
  * fixed bug with hidden object not being highlighted if it has not been drawn at least once
-
+ 
 16.06.11
  * various small optimization
-
+ 
 14.06.11
  * fixed inability to place objects aligned to grid
  * fixed item popup resizing when hover for more then half second
  * few small improvements
-
+ 
 13.06.11
  * movement speed now automatically returns to value set by player when possible
  * added movement queuing with SHIFT
  * added option to show player path
-
+ 
 12.06.11
  * Window title now shows current character name
  * attention limit now correctly updates with change of INT
  * added reverse quality transfer (low to high) transfer with CTRL+ALT+SHIFT+Mousewheel
-
+ 
 11.06.11
  * buckets/jars/flasks etc. now show quality of liquids inside them if any
-
+ 
 06.06.11
  * fixed crash when dropping item to Barter Stand
  * made Inventory, Equipment, Kin, Character Sheet and Cupboard windows remember their position.
-
+ 
 05.06.11
  * made possible to hotkey items from inventory
  * made minimap to remember it's position and size
-
+ 
 04.06.11
  * made possible dragging item from inventory into wiki browser to open search for item name
-
+ 
 03.06.11
  * changed kin group colors
-
+ 
 02.06.11
  * moved count number on item (leafs eaten, etc.) to upper-left corner.
- 
+  
 01.06.11
  * separated options to show hearthling names and other names (hearthfires, skeletons)
  * added option to show item quality on it's icon
  * fixed bug with right-clicking when zoomed in
  * added option to exclude names from screenshots
-
+ 
 26.05.11
  * various small fixes. Among them tried to fix deadlock reported by novaalpha
-
+ 
 19.05.11
  * added additional toolbar for numpad keys
  * added options to show/hide toolbars
-
+ 
 16.05.11
  * optimized claim highlight drawing. Can be toggled at general options.
  * added possibility to make screenshots with END key. Can be configured
    at general options - use PNG or JPEG and whether exclude UI from
    screenshots or no.
-
+ 
 13.05.11
  * added options for right-click menus to appear instantly
  * made doors to not hide
-
+ 
 11.05.11
  * tried to make party member icons clickeble past first six
-
+ 
 03.05.11
  * added timers. They can be accessed through lower-right menu (X->T)
-
+ 
 24.04.11
  * fixed crash when pressing ESC while Confirmation window has focus
  * added digital representation of offense, defense and balance
  * added displaying of combat info and name of non-current targets
-
+ 
 23.04.11.2
  * added button to drop all items to ground.
-
+ 
 23.04.11
  * various fixes for text rendering and layout. They decrease chances of 'smiley hanging'
  * added option to turn smileys off.
-
+ 
 20.04.11
  * made global chat part of chat panel
  * added button to menu grid to show global chat
  * added smileys support
-
+ 
 19.04.11
  * partly fixed camera jumping and cave map cache cleaning
-
+ 
 18.04.11
  * tracking direction slice now stays on screen for as long as window with it's direction is open.
  * added displaying opponent's IP after slash in combat view.
@@ -155,38 +161,38 @@ Change log
  * added custom_res folder as source for client resources modifications
  * res folder now added as source by default. No more need for bat-file option
  * fixed plants simplification turn-off bug
-
+ 
 10.04.11
  * buffs now display their strength as percentage in braces (e.g. (100%))
    and time left as percentage or (if available) in minutes and seconds
    in square braces (e.g. [1m 25s] or [50%])
-
+ 
 08.04.11
  * made quick-fix for Dodge skill related crash during combat.
  * added option to toggle no borders for camera
-
+ 
 07.04.11
  * made cameras borderless. HOME button centers on player.
  * made swimming, tracking and criminal acts display in buff list when turned on.
-
+ 
 01.04.11
  * added possibility to simplify plants (X->P)
-
+ 
 30.03.11
  * more fixes to dowsing effect.
-
+ 
 29.03.11
  * added new art for mansion. Art by SacreDoom.
  * optimized grid drawing
  * fixed crash due to incorrect resource images
-
+ 
 28.03.11
  * added flavor objects, stones, wooden houses and thiket to hide object list
  * added hide object list items to menu grid
-
+ 
 25.03.11
  * removed declaiming verification. loftar already implemented it on server-side.
-
+ 
 24.03.11
  * made study interface display modified INT as attention limit.
  * fixed crash when dragging icons from toolbar
