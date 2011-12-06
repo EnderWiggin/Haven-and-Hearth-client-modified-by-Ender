@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ender.CurioInfo;
+
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
     static final Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
@@ -50,6 +52,7 @@ public class Item extends Widget implements DTarget {
     Color olcol = null;
     Tex mask = null;
     int meter = 0;
+    String curioStr = null;
 	
     static {
 	Widget.addtype("item", new WidgetFactory() {
@@ -91,6 +94,7 @@ public class Item extends Widget implements DTarget {
 	    }
 	}
 	calcFEP();
+	calcCurio();
 	shorttip = longtip = null;
     }
     
@@ -205,9 +209,8 @@ public class Item extends Widget implements DTarget {
 		    if(hq)
 			tt = tt + "+";
 		}
-		if(FEP == null){
-		    calcFEP();
-		}
+		if(FEP == null){calcFEP();}
+		if(curioStr == null){calcFEP();}
 		return(tt);
 	    }
 	}
@@ -235,6 +238,9 @@ public class Item extends Widget implements DTarget {
 		    if(FEP != null){
 			tt += FEP;
 		    }
+		    if(curioStr != null){
+			tt += curioStr;
+		    }
 		    shorttip = RichText.render(tt, 200);
 		}
 	    }
@@ -250,6 +256,9 @@ public class Item extends Widget implements DTarget {
 		}
 		if(FEP != null){
 		    tt += FEP;
+		}
+		if(curioStr != null){
+		    tt += curioStr;
 		}
 		if(pg != null)
 		    tt += "\n\n" + pg.text;
@@ -292,6 +301,7 @@ public class Item extends Widget implements DTarget {
 	}
 	qmult = Math.sqrt((float)q/10);
 	calcFEP();
+	calcCurio();
     }
 
     private void calcFEP() {
@@ -302,6 +312,18 @@ public class Item extends Widget implements DTarget {
 	    for(String key:fep.keySet()){
 		FEP += String.format("%s:%.1f ", key, (float) fep.get(key)*qmult);
 	    }
+	}
+    }
+    
+    private void calcCurio(){
+	String name = name();
+	CurioInfo curio;
+	if((name != null)&&(curio = Config.curios.get(name().toLowerCase())) != null){
+	    int LP = (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
+	    int time = curio.time*(100 - meter)/100;
+	    int h = time/60;
+	    int m = time%60;
+	    curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm", LP,curio.weight,h,m);
 	}
     }
 
@@ -379,6 +401,7 @@ public class Item extends Widget implements DTarget {
 	    meter = (Integer)args[0];
 	    shorttip = null;
 	    longtip = null;
+	    calcCurio();
 	}
     }
 	

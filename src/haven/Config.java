@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import ender.CurioInfo;
 import ender.GoogleTranslator;
 
 public class Config {
@@ -97,7 +98,7 @@ public class Config {
     public static boolean showq;
     public static boolean showpath;
     public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
-    
+    public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
     static {
 	try {
 	    String p;
@@ -136,6 +137,7 @@ public class Config {
 	    loadWindowOptions();
 	    loadSmileys();
 	    loadFEP();
+	    loadCurios();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -151,6 +153,28 @@ public class Config {
 	return str;
     }
     
+    private static void loadCurios() {
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("curio.conf");
+	    DataInputStream in = new DataInputStream(fstream);
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		CurioInfo curio = new CurioInfo();
+		String [] tmp = strLine.split(":");
+		String name = tmp[0].toLowerCase();
+		curio.LP = Integer.parseInt(tmp[1]);
+		curio.time = (int) (60*Float.parseFloat(tmp[2]));
+		curio.weight = Integer.parseInt(tmp[3]);
+		curios.put(name, curio);
+	    }
+	    br.close();
+	    in.close();
+	    fstream.close();
+	} catch (Exception e) {}
+    }
+
     private static void loadFEP() {
 	try {
 	    FileInputStream fstream;
