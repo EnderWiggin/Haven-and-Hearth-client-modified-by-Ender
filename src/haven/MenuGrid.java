@@ -33,6 +33,7 @@ import haven.Resource.AButton;
 import java.util.*;
 
 public class MenuGrid extends Widget {
+    private static final Color pressedColor = new Color(196, 196, 196, 196);
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
     public final static Coord bgsz = bg.sz().add(-1, -1);
     public final static Resource next = Resource.load("gfx/hud/sc-next");
@@ -162,6 +163,7 @@ public class MenuGrid extends Widget {
 	if(withpg && (pg != null)) {
 	    tt += "\n\n" + pg.text;
 	}
+	tt += "\n\n" + res.name;
 	return(ttfnd.render(tt, 0));
     }
 
@@ -174,12 +176,13 @@ public class MenuGrid extends Widget {
 		Resource btn = layout[x][y];
 		if(btn != null) {
 		    Tex btex = btn.layer(Resource.imgc).tex();
-		    g.image(btex, p.add(1, 1));
 		    if(btn == pressed) {
-			g.chcolor(new Color(0, 0, 0, 128));
-			g.frect(p.add(1, 1), btex.sz());
-			g.chcolor();
+			g.chcolor(pressedColor);
 		    }
+		    if(Config.highlightSkills)
+			g.chcolor(btn.getStateColor());
+		    g.image(btex, p.add(1, 1));
+		    g.chcolor();
 		}
 	    }
 	}

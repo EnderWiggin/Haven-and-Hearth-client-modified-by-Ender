@@ -46,12 +46,14 @@ public class Fightview extends Widget {
     private GiveButton curgive;
     private Avaview curava;
     private Widget comwdg, comwin;
+    public static Fightview instance;
+    public static long changed = 0;
     
     public class Relation {
         int gobid;
-        int bal, intns;
-	int off, def;
-	int ip, oip;
+        public int bal, intns;
+        public int off, def;
+	public int ip, oip;
         Avaview ava;
 	GiveButton give;
         
@@ -114,9 +116,11 @@ public class Fightview extends Widget {
 	    };
 	comwdg = new ComMeter(meterc, ui.root, this);
 	comwin = new ComWin(s, this);
+	instance = this;
     }
     
     public void destroy() {
+	instance = null;
 	ui.destroy(curgive);
 	ui.destroy(curava);
 	ui.destroy(comwdg);
@@ -197,6 +201,7 @@ public class Fightview extends Widget {
     }
 
     public void uimsg(String msg, Object... args) {
+	changed = System.currentTimeMillis();
         if(msg == "new") {
             Relation rel = new Relation((Integer)args[0]);
             rel.bal = (Integer)args[1];

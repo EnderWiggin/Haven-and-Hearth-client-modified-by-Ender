@@ -48,6 +48,8 @@ import java.util.regex.Pattern;
 
 import ender.CurioInfo;
 import ender.GoogleTranslator;
+import ender.SkillAvailability;
+import ender.SkillAvailability.Combat;
 
 public class Config {
     public static byte[] authck;
@@ -99,6 +101,8 @@ public class Config {
     public static boolean showpath;
     public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
     public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
+    public static Map<String, SkillAvailability> skills;
+    public static boolean highlightSkills;
     static {
 	try {
 	    String p;
@@ -138,6 +142,7 @@ public class Config {
 	    loadSmileys();
 	    loadFEP();
 	    loadCurios();
+	    loadSkills();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -153,6 +158,38 @@ public class Config {
 	return str;
     }
     
+    private static void loadSkills() {
+	skills = new HashMap<String, SkillAvailability>();
+	
+	//Attacks
+	skills.put("paginae/atk/knockteeth", new Combat(6));
+	skills.put("paginae/atk/axe", new Combat(4));
+	skills.put("paginae/atk/cleave", new Combat(8));
+	skills.put("paginae/atk/sting", new Combat(2));
+	skills.put("paginae/atk/strangle", new Combat().maxINT(3));
+	skills.put("paginae/atk/valstr", new Combat(6));
+	
+	//Moves
+	skills.put("paginae/atk/feignflight", new Combat().maxDEF(10));
+	skills.put("paginae/atk/flex", new Combat(6));
+	skills.put("paginae/atk/padv", new Combat().minBAL(3));
+	skills.put("paginae/atk/seize", new Combat().minINT(5).minATK(75));
+	skills.put("paginae/atk/throwsand", new Combat(1));
+	
+	//Special Moves
+	skills.put("paginae/atk/roar", new Combat(14).minINT(10));
+	skills.put("paginae/atk/bloodshot", new Combat(2));
+	skills.put("paginae/atk/skuld", new Combat(10));
+	skills.put("paginae/atk/oppknock", new Combat(5));
+	skills.put("paginae/atk/sidestep", new Combat(4));
+	skills.put("paginae/atk/sternorder", new Combat(5));
+	skills.put("paginae/atk/bee", new Combat(6));
+	skills.put("paginae/atk/toarms", new Combat(3));
+	
+	skills.put("paginae/atk/quell", new Combat(2).maxINT(0).minBAL(3));
+	
+    }
+
     private static void loadCurios() {
 	try {
 	    FileInputStream fstream;
@@ -335,6 +372,7 @@ public class Config {
         newclaim = options.getProperty("newclaim", "true").equals("true");
         showq = options.getProperty("showq", "true").equals("true");
         showpath = options.getProperty("showpath", "false").equals("true");
+        highlightSkills = options.getProperty("highlightSkills", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         currentVersion = options.getProperty("version", "");
@@ -415,6 +453,7 @@ public class Config {
         options.setProperty("newclaim", newclaim?"true":"false");
         options.setProperty("showq", showq?"true":"false");
         options.setProperty("showpath", showpath?"true":"false");
+        options.setProperty("highlightSkills", highlightSkills?"true":"false");
         options.setProperty("version", currentVersion);
         
         try {

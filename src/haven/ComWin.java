@@ -109,11 +109,11 @@ public class ComWin extends HWindow {
 	g.frect(mdc, new Coord(-100, 14));
 	g.frect(odc, new Coord(100, 14));
 	
-	if(fv.off >= 200) {
+	if(fv.off >= 100) {
 	    g.chcolor(offcol);
 	    g.frect(moc, new Coord(-fv.off / 100, 14));
 	}
-	if(fv.def >= 200) {
+	if(fv.def >= 100) {
 	    g.chcolor(defcol);
 	    g.frect(mdc, new Coord(-fv.def / 100, 14));
 	}

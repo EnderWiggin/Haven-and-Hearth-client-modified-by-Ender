@@ -216,8 +216,9 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 			if(s == pressed) {
 			    g.chcolor(pressedColor);
 			}
+			if(Config.highlightSkills)
+			    g.chcolor(btn.getStateColor());
 			g.image(btex, p.add(1, 1));
-			g.chcolor(btn.getStateColor());
 		    } else {
 			System.out.println(btn.name);
 		    }

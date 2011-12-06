@@ -34,11 +34,15 @@ import java.net.*;
 import java.io.*;
 import javax.imageio.*;
 
+import ender.SkillAvailability;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Prioritized, Serializable {
+    private static final Color skillUnavailableColor = new Color(255, 64, 98, 225);
+    private static final Color skillAvailableColor = new Color(160, 255, 64, 255);
     private static Map<String, Resource> cache = new TreeMap<String, Resource>();
     private static Loader loader;
     private static CacheSource prscache;
@@ -94,6 +98,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public ResSource source;
     private transient Indir<Resource> indir = null;
     int prio = 0;
+    private Color skillColorCache;
+    private long cachedTime;
 
     private Resource(String name, int ver) {
 	this.name = name;
@@ -1201,11 +1207,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     }
 
     public Color getStateColor() {
-	//just testing hardcode
-	if(name.contains("flex")){
-	    return new Color(255, 64, 98, 225);
-	} else if(name.contains("berserk")){
-	    return new Color(160, 255, 64, 255);
+	if((skillColorCache != null)&&(cachedTime == Fightview.changed)){
+	    return skillColorCache;
+	}
+	SkillAvailability sa;
+	if(((sa = Config.skills.get(name))!=null)&&(sa.isActive())){
+	    cachedTime = Fightview.changed;
+	    return (skillColorCache = sa.isAvailable()?skillAvailableColor:skillUnavailableColor);
 	}
 	return Color.WHITE;
     }
