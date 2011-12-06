@@ -14,6 +14,7 @@ import java.util.Properties;
 
 
 public class ToolbarWnd extends Window implements DTarget, DropTarget {
+    private static final Color pressedColor = new Color(196, 196, 196, 196);
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
     private static final int BELTS_NUM = 15;
     private static final BufferedImage ilockc = Resource.loadimg("gfx/hud/lockc");
@@ -212,17 +213,17 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		    Image img = btn.layer(Resource.imgc);
 		    if(img != null){
 			Tex btex = img.tex();
-			g.image(btex, p.add(1, 1));
 			if(s == pressed) {
-			    g.chcolor(new Color(0, 0, 0, 128));
-			    g.frect(p.add(1, 1), btex.sz());
-			    g.chcolor();
+			    g.chcolor(pressedColor);
 			}
+			g.image(btex, p.add(1, 1));
+			g.chcolor(btn.getStateColor());
 		    } else {
 			System.out.println(btn.name);
 		    }
 		}
 		g.aimage(nums[slot], p.add(bg.sz()), 1, 1);
+		g.chcolor();
 	    }
 	}
 	g.chcolor();

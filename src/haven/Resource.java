@@ -33,6 +33,8 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 import javax.imageio.*;
+
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -1196,5 +1198,15 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	if(cmd == "update") {
 	    updateloadlist(new File(args[1]));
 	}
+    }
+
+    public Color getStateColor() {
+	//just testing hardcode
+	if(name.contains("flex")){
+	    return new Color(255, 64, 98, 225);
+	} else if(name.contains("berserk")){
+	    return new Color(160, 255, 64, 255);
+	}
+	return Color.WHITE;
     }
 }
