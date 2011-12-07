@@ -183,6 +183,9 @@ public class Gob implements Sprite.Owner {
     
     public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
 	Resource res = getres();
+	if(Config.TEST && !dc.isect(Coord.z, sz)){
+	    return;
+	}
 	hide = (res != null) && res.hide && res.once && !res.skiphide && Config.hide;
 	if(hide)
 	    return;

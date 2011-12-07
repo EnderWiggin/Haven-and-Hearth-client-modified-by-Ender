@@ -68,6 +68,12 @@ public class RootWidget extends ConsoleHost {
 		Config.xray = !Config.xray;
 	    } else if((code == KeyEvent.VK_F)&&ctrl) {
 		Config.fps = !Config.fps;
+	    } else if((code == KeyEvent.VK_K)&&ctrl) {
+		Config.TEST = !Config.TEST;
+	    } else if((code == KeyEvent.VK_D)&&ctrl) {
+		Config.dbtext = !Config.dbtext;
+	    } else if((code == KeyEvent.VK_P)&&ctrl) {
+		Config.profile = !Config.profile;
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
 	    } else if((code == KeyEvent.VK_Q)&&alt) {

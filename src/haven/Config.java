@@ -104,6 +104,7 @@ public class Config {
     public static Map<String, SkillAvailability> skills;
     public static boolean highlightSkills;
     public static boolean fps = false;
+    public static boolean TEST = false;
     static {
 	try {
 	    String p;
