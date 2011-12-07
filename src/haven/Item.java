@@ -312,7 +312,7 @@ public class Item extends Widget implements DTarget {
 	if(name == null){return;}
 	if(name.equals("Ring of Brodgar")){
 	    if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Baking)";}
-	    //if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Seafood)";}
+	    if(res.get().name.equals("gfx/invobjs/feast-rob")){name = "Ring of Brodgar (Seafood)";}
 	}
 	name = name.toLowerCase();
 	boolean isItem = false;
