@@ -1,5 +1,16 @@
 Change log
  
+07.12.11
+ * Fixed curio info not showing on first time
+ * Fixed FEP not showing for RoB(Baked), RoB (Seafood) and Honeybun
+ * Fixed reading UTF-8 encoded configs, this fixes curio info not showing for Edelweiss
+ * Added displaying of equipment bonuses. They are configured in fep.conf, but with @ in the beginning of the line. 
+   Unfortunately, bonuses from Barbarism/Civilization are not factored in.
+ * changed how FPS meter is work. It's much easier to read, as it updates once per second, and not each frame.
+ * added hotkey to toggle experimental performance improvements - CTRL-K. Right now it does not much - 1-5 FPS boost,
+   depends on window size and zoom level. This may be removed or improved later.
+
+ 
 06.12.11
  * added displaying of curio LP, weight and study time. Values are read from curio.conf file
  * added combat skill readiness highlight. Can be toggled in Options->General->Highlight combat skills
@@ -23,7 +34,8 @@ Change log
  * fixed scrolling issue when chat log is big and older entries are deleted.
  
 01.11.11
- * added displaying of FEPs for food items. FEP points configured in fep.conf file. Cutrrently it comntains data from FEP table from RoB wiki.
+ * added displaying of FEPs for food items. FEP points configured in fep.conf file. 
+   Cutrrently it contains data from FEP table from RoB wiki.
  
 04.08.11
  * fixed issues with negative player id's
