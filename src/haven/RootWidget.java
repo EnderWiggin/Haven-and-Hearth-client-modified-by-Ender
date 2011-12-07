@@ -42,6 +42,8 @@ public class RootWidget extends ConsoleHost {
     public static boolean screenshot = false;
     public static boolean names_ready = false;
     private long last = 0;
+    private int ticks = 0;
+    private int fps = 0;
 	
     public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
@@ -123,8 +125,12 @@ public class RootWidget extends ConsoleHost {
 //	}
 	if(Config.fps){
 	    long now = System.currentTimeMillis();
-	    int fps = (int) (1000/(now - last));
-	    last = now;
+	    ticks++;
+	    if((now - last)>1000){
+		fps = (int) (ticks*(now - last)/1000);
+		last = now;
+		ticks = 0;
+	    }
 	    g.text("FPS: "+fps, Coord.z);
 	}
     }
