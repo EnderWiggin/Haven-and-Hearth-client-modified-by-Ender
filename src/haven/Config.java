@@ -195,8 +195,7 @@ public class Config {
 	try {
 	    FileInputStream fstream;
 	    fstream = new FileInputStream("curio.conf");
-	    DataInputStream in = new DataInputStream(fstream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 	    String strLine;
 	    while ((strLine = br.readLine()) != null)   {
 		CurioInfo curio = new CurioInfo();
@@ -208,7 +207,6 @@ public class Config {
 		curios.put(name, curio);
 	    }
 	    br.close();
-	    in.close();
 	    fstream.close();
 	} catch (Exception e) {}
     }
@@ -217,8 +215,7 @@ public class Config {
 	try {
 	    FileInputStream fstream;
 	    fstream = new FileInputStream("fep.conf");
-	    DataInputStream in = new DataInputStream(fstream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 	    String strLine;
 	    while ((strLine = br.readLine()) != null)   {
 		Map<String, Float> fep = new HashMap<String, Float>();
@@ -233,7 +230,6 @@ public class Config {
 		FEPMap.put(name, fep);
 	    }
 	    br.close();
-	    in.close();
 	    fstream.close();
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
@@ -307,8 +303,7 @@ public class Config {
 	try {
 	    FileInputStream fstream;
 	    fstream = new FileInputStream("smileys.conf");
-	    DataInputStream in = new DataInputStream(fstream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 	    String strLine;
 	    while ((strLine = br.readLine()) != null)   {
 		String [] tmp = strLine.split("\t");
@@ -318,7 +313,6 @@ public class Config {
 		smileys.put(Pattern.compile(smile, Pattern.CASE_INSENSITIVE|Pattern.LITERAL), res);
 	    }
 	    br.close();
-	    in.close();
 	    fstream.close();
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {

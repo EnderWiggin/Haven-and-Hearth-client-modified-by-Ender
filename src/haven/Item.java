@@ -210,7 +210,7 @@ public class Item extends Widget implements DTarget {
 			tt = tt + "+";
 		}
 		if(FEP == null){calcFEP();}
-		if(curioStr == null){calcFEP();}
+		if(curioStr == null){calcCurio();}
 		return(tt);
 	    }
 	}
@@ -307,7 +307,13 @@ public class Item extends Widget implements DTarget {
     private void calcFEP() {
 	Map<String, Float> fep;
 	String name = name();
-	if((name != null)&&(fep = Config.FEPMap.get(name().toLowerCase())) != null){
+	if(name == null){return;}
+	if(name.equals("Ring of Brodgar")){
+	    if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Baking)";}
+	    //if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Seafood)";}
+	}
+	name = name.toLowerCase();
+	if((fep = Config.FEPMap.get(name)) != null){
 	    FEP = "\n";
 	    for(String key:fep.keySet()){
 		FEP += String.format("%s:%.1f ", key, (float) fep.get(key)*qmult);
