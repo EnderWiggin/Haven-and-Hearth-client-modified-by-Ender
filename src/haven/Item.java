@@ -313,10 +313,18 @@ public class Item extends Widget implements DTarget {
 	    //if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Seafood)";}
 	}
 	name = name.toLowerCase();
+	boolean isItem = false;
 	if((fep = Config.FEPMap.get(name)) != null){
+	    if(fep.containsKey("isItem")){
+		isItem = true;
+	    }
 	    FEP = "\n";
 	    for(String key:fep.keySet()){
-		FEP += String.format("%s:%.1f ", key, (float) fep.get(key)*qmult);
+		float val = (float) (fep.get(key)*qmult);
+		if(isItem){
+		    val = (float) Math.floor(val);
+		}
+		FEP += String.format("%s:%.1f ", key, val);
 	    }
 	}
     }

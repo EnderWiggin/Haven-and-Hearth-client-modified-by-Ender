@@ -222,6 +222,10 @@ public class Config {
 		String [] tmp = strLine.split("=");
 		String name;
 		name = tmp[0].toLowerCase();
+		if(name.charAt(0)=='@'){
+		    name = name.substring(1);
+		    fep.put("isItem",(float) 1.0);
+		}
 		tmp = tmp[1].split(" ");
 		for(String itm : tmp){
 		    String tmp2[] = itm.split(":");
