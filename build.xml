@@ -43,6 +43,7 @@
     <copy todir="build" >
 	<fileset file="fep.conf"/>
 	<fileset file="curio.conf"/>
+	<fileset file="changelog.txt"/>
     </copy>
   </target>
   

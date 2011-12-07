@@ -157,6 +157,8 @@ public class Item extends Widget implements DTarget {
 		g.chcolor();
 	    }
 	}
+	if(FEP == null){calcFEP();}
+	if(curioStr == null){calcCurio();}
     }
 
     static Tex getqtex(int q){
@@ -188,11 +190,13 @@ public class Item extends Widget implements DTarget {
     }
     
     public String name() {
-	if(this.tooltip != null)
-	    return(this.tooltip);
 	Resource res = this.res.get();
-	if((res != null) && (res.layer(Resource.tooltip) != null)) {
-	    return res.layer(Resource.tooltip).t;
+	if(res != null){
+	    if(res.layer(Resource.tooltip) != null) {
+		return res.layer(Resource.tooltip).t;
+	    } else {
+		return(this.tooltip);
+	    }
 	}
 	return null;
     }
@@ -209,8 +213,6 @@ public class Item extends Widget implements DTarget {
 		    if(hq)
 			tt = tt + "+";
 		}
-		if(FEP == null){calcFEP();}
-		if(curioStr == null){calcCurio();}
 		return(tt);
 	    }
 	}
@@ -321,23 +323,30 @@ public class Item extends Widget implements DTarget {
 	    FEP = "\n";
 	    for(String key:fep.keySet()){
 		float val = (float) (fep.get(key)*qmult);
+		if(key.equals("isItem")){continue;}
 		if(isItem){
 		    val = (float) Math.floor(val);
+		    FEP += String.format("%s:%.0f ", key, val);
+		} else {
+		    FEP += String.format("%s:%.1f ", key, val);
 		}
-		FEP += String.format("%s:%.1f ", key, val);
 	    }
+	    shorttip = longtip = null;
 	}
     }
     
     private void calcCurio(){
 	String name = name();
+	if(name == null){return;}
+	name = name.toLowerCase();
 	CurioInfo curio;
-	if((name != null)&&(curio = Config.curios.get(name().toLowerCase())) != null){
+	if((curio = Config.curios.get(name)) != null){
 	    int LP = (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
 	    int time = curio.time*(100 - meter)/100;
 	    int h = time/60;
 	    int m = time%60;
 	    curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm", LP,curio.weight,h,m);
+	    shorttip = longtip = null;
 	}
     }
 
