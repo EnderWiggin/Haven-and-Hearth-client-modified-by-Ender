@@ -26,6 +26,7 @@
 
 package haven;
 
+import java.awt.Color;
 import java.util.LinkedList;
 
 public class Fightview extends Widget {
@@ -72,6 +73,17 @@ public class Fightview extends Widget {
 		}
 	    }
 	    return null;
+        }
+        
+        public Color color(){
+            Gob gob = ui.sess.glob.oc.getgob(gobid);
+	    if(gob != null){
+		KinInfo k = gob.getattr(KinInfo.class);
+		if(k != null){
+		    return BuddyWnd.gc[k.group];
+		}
+	    }
+	    return Color.WHITE;
         }
         
 	public void give(int state) {
@@ -138,7 +150,9 @@ public class Fightview extends Widget {
 		rel.show(false);
                 continue;
 	    }
+            g.chcolor(rel.color());
             g.image(bg, new Coord(0, y));
+            g.chcolor();
             rel.ava.c = new Coord(25, ((bg.sz().y - rel.ava.sz.y) / 2) + y);
 	    rel.give.c = new Coord(5, 4 + y);
 	    rel.show(true);
@@ -150,7 +164,7 @@ public class Fightview extends Widget {
 	    str += "$img[gfx/hud/combat/off]"+((int)rel.off/100);
 	    str += " $img[gfx/hud/combat/def]"+((int)rel.def/100);
 	    Tex text = RichText.render(str, 0).tex();
-	    g.image(text, new Coord(65, y + 10));
+	    g.image(text, new Coord(65, y + 11));
 	    text.dispose();
             //g.text(String.format("%d %d %d/%d", rel.bal, rel.intns, new Coord(65, y + 10));
             y += bg.sz().y + ymarg;
