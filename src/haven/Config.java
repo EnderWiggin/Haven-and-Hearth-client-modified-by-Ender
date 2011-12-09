@@ -102,6 +102,7 @@ public class Config {
     public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
     public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
     public static Map<String, SkillAvailability> skills;
+    public static Map<String, String> crafts = new HashMap<String, String>();
     public static boolean highlightSkills;
     public static boolean fps = false;
     public static boolean TEST = false;
@@ -145,6 +146,7 @@ public class Config {
 	    loadFEP();
 	    loadCurios();
 	    loadSkills();
+	    loadCraft();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -160,6 +162,25 @@ public class Config {
 	return str;
     }
     
+    private static void loadCraft() {
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("craft.conf");
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		String [] tmp = strLine.split("=");
+		String name = tmp[0].toLowerCase(), resources = tmp[1].replace("\\n", "\n");
+		crafts.put(name, resources);
+	    }
+	    br.close();
+	    fstream.close();
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	}
+
+    }
+
     private static void loadSkills() {
 	skills = new HashMap<String, SkillAvailability>();
 	

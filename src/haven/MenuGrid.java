@@ -149,7 +149,7 @@ public class MenuGrid extends Widget {
 	    }
 	}
     }
-	
+    
     private static Text rendertt(Resource res, boolean withpg) {
 	Resource.AButton ad = res.layer(Resource.action);
 	Resource.Pagina pg = res.layer(Resource.pagina);
@@ -163,8 +163,11 @@ public class MenuGrid extends Widget {
 	if(withpg && (pg != null)) {
 	    tt += "\n\n" + pg.text;
 	}
-	tt += "\n\n" + res.name;
-	return(ttfnd.render(tt, 0));
+	String mats, name = ad.name.toLowerCase();
+	if((mats = Config.crafts.get(name)) != null){
+	    tt += "\n\n" + mats;
+	}
+	return(ttfnd.render(tt, 200));
     }
 
     public void draw(GOut g) {
