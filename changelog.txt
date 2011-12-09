@@ -1,5 +1,13 @@
 Change log
  
+09.12.11
+ * added kin color highlight to fight view avatars and name to current target avatar
+ * added displaying of required materials for buildings. List provided by Scilly_guy
+ * fixed crash at startup if haven.conf is absent
+ 
+08.12.11
+ * Made background of combat portraits colored with kin list color.
+ 
 07.12.11
  * Fixed curio info not showing on first time
  * Fixed FEP not showing for RoB(Baked), RoB (Seafood) and Honeybun
