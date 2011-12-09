@@ -362,7 +362,11 @@ public class Config {
     private static void loadOptions() {
         File inputFile = new File("haven.conf");
         if (!inputFile.exists()) {
-            return;
+            try {
+		inputFile.createNewFile();
+	    } catch (IOException e) {
+		return;
+	    }
         }
         try {
             options.load(new FileInputStream("haven.conf"));
