@@ -126,6 +126,7 @@ public class Fightview extends Widget {
 			Fightview.this.wdgmsg("click", current.gobid, args[0]);
 		}
 	    };
+	curava.showname = true;
 	comwdg = new ComMeter(meterc, ui.root, this);
 	comwin = new ComWin(s, this);
 	instance = this;
@@ -150,7 +151,9 @@ public class Fightview extends Widget {
 		rel.show(false);
                 continue;
 	    }
-            g.chcolor(rel.color());
+            Color col = rel.color();
+            rel.ava.color = col;
+            g.chcolor(col);
             g.image(bg, new Coord(0, y));
             g.chcolor();
             rel.ava.c = new Coord(25, ((bg.sz().y - rel.ava.sz.y) / 2) + y);
@@ -218,6 +221,7 @@ public class Fightview extends Widget {
 	changed = System.currentTimeMillis();
         if(msg == "new") {
             Relation rel = new Relation((Integer)args[0]);
+            rel.ava.showname = false;
             rel.bal = (Integer)args[1];
             rel.intns = (Integer)args[2];
 	    rel.give((Integer)args[3]);
@@ -253,6 +257,7 @@ public class Fightview extends Widget {
 		current = rel;
 		curgive.state = rel.give.state;
 		curava.avagob = rel.gobid;
+		curava.color = rel.color();
             } catch(Notfound e) {
 		current = null;
 	    }

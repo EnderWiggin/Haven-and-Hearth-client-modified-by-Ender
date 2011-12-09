@@ -34,6 +34,7 @@ public class Avaview extends Widget {
     private Coord asz;
     int avagob;
     boolean none = false;
+    boolean showname = false;
     AvaRender myown = null;
     public Color color = Color.WHITE;
     public static final Coord unborder = new Coord(2, 2);
@@ -127,8 +128,24 @@ public class Avaview extends Widget {
 	g2.image(at, new Coord(tsz.x / 2 - asz.x / 2, yo).inv(), tsz);
 	g.chcolor(color);
 	Window.wbox.draw(g, Coord.z, asz.add(Window.wbox.bisz()).add(unborder.mul(2).inv()));
+	g.chcolor();
+	Tex name ;
+	if(showname && ((name = name()) != null)){
+	    g.aimage(name, new Coord(asz.x/2, 5), 0.5, 0);
+	}
     }
-	
+    
+    public Tex name(){
+        Gob gob = ui.sess.glob.oc.getgob(avagob);
+	    if(gob != null){
+		KinInfo k = gob.getattr(KinInfo.class);
+		if(k != null){
+		    return k.rendered();
+		}
+	    }
+	    return null;
+    }
+    
     public boolean mousedown(Coord c, int button) {
 	wdgmsg("click", button);
 	return(true);
