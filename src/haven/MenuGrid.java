@@ -263,6 +263,7 @@ public class MenuGrid extends Widget {
 	    AButton act = r.layer(Resource.action);
 	    if(act != null){
 		String [] ad = act.ad;
+		if((ad == null) || (ad.length < 1)){return;}
 		if(ad[0].equals("@")) {
 		    usecustom(ad);
 		} else {
