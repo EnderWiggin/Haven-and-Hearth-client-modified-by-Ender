@@ -339,7 +339,8 @@ public class MiniMap extends Widget {
 			    }
 			    if(!Config.simplemap){
 				tex = getgrid(mnm);
-			    } else {
+			    }
+			    if(Config.simplemap || tex == null){
 				tex = getsimple(mnm);
 			    }
 			} else {
