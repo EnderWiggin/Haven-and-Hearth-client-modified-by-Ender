@@ -20,7 +20,6 @@ public class MinimapPanel extends Window {
 	{
 	    new IButton(new Coord(-3, -2), this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
 		private boolean v = false;
-		
 		public void click() {
 		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
@@ -35,12 +34,17 @@ public class MinimapPanel extends Window {
 			v = true;
 		    }
 		}
+		
+		private Text tooltip = Text.render("Display village claims");
+		@Override
+		public Object tooltip(Coord c, boolean again) {
+		    return checkhit(c)?tooltip:null;
+		}
 	    };
 	}
 	{
 	    new IButton(new Coord(-3, 4), this, Resource.loadimg("gfx/hud/slen/dispclaim"), Resource.loadimg("gfx/hud/slen/dispclaimd")) {
 		private boolean v = false;
-		private Text tooltip = Text.render("Display claims");
 		public void click() {
 		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
@@ -55,7 +59,8 @@ public class MinimapPanel extends Window {
 			v = true;
 		    }
 		}
-
+		
+		private Text tooltip = Text.render("Display personal claims");
 		@Override
 		public Object tooltip(Coord c, boolean again) {
 		    return checkhit(c)?tooltip:null;
@@ -67,6 +72,7 @@ public class MinimapPanel extends Window {
 	mm = new MiniMap(new Coord(0, 32), minsz, this, ui.mainview);
 	
 	new IButton(new Coord(42, 8), this, Resource.loadimg("gfx/hud/buttons/gridu"), Resource.loadimg("gfx/hud/buttons/gridd")) {
+	    
 	    public void click() {
 		BufferedImage tmp = down;
 		down = up;
@@ -74,11 +80,21 @@ public class MinimapPanel extends Window {
 		hover = tmp;
 		mm.grid = !mm.grid;
 	    }
+	    private Text tooltip = Text.render("Toggle grid");
+	    @Override
+	    public Object tooltip(Coord c, boolean again) {
+		return checkhit(c)?tooltip:null;
+	    }
 	};
 	
 	new IButton(new Coord(62, 8), this, Resource.loadimg("gfx/hud/buttons/centeru"), Resource.loadimg("gfx/hud/buttons/centerd")) {
 	    public void click() {
 		mm.off = new Coord();
+	    }
+	    private Text tooltip = Text.render("Center map");
+	    @Override
+	    public Object tooltip(Coord c, boolean again) {
+		return checkhit(c)?tooltip:null;
 	    }
 	};
 	
@@ -90,17 +106,33 @@ public class MinimapPanel extends Window {
 		hover = tmp;
 		Config.simplemap = !Config.simplemap;
 	    }
+	    private Text tooltip = Text.render("Toggle simplified map");
+	    @Override
+	    public Object tooltip(Coord c, boolean again) {
+		return checkhit(c)?tooltip:null;
+	    }
 	};
 	
 	new IButton(new Coord(103, 2), this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
 	    public void click() {
 		mm.setScale(mm.scale+1);
 	    }
+
+	    private Text tooltip = Text.render("Zoom in");
+	    @Override
+	    public Object tooltip(Coord c, boolean again) {
+		return checkhit(c)?tooltip:null;
+	    }
 	};
 	
 	new IButton(new Coord(103, 16), this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
 	    public void click() {
 		mm.setScale(mm.scale-1);
+	    }
+	    private Text tooltip = Text.render("Zoom out");
+	    @Override
+	    public Object tooltip(Coord c, boolean again) {
+		return checkhit(c)?tooltip:null;
 	    }
 	};
 	
@@ -111,6 +143,11 @@ public class MinimapPanel extends Window {
 		} else {
 		    mm.saveSimpleMaps();
 		}
+	    }
+	    private Text tooltip = Text.render("Save map");
+	    @Override
+	    public Object tooltip(Coord c, boolean again) {
+		return checkhit(c)?tooltip:null;
 	    }
 	};
 	pack();
