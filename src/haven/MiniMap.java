@@ -52,6 +52,7 @@ import javax.imageio.ImageIO;
 
 public class MiniMap extends Widget {
     static Map<String, Tex> grids = new WeakHashMap<String, Tex>();
+    static Map<String, Tex> simpleTex = new WeakHashMap<String, Tex>();
     static Set<String> loading = new HashSet<String>();
     static Loader loader = new Loader();
     static Coord mappingStartPoint = null;
@@ -245,7 +246,16 @@ public class MiniMap extends Widget {
 		}
 	    }));
     }
-
+    
+    public static Tex getsimple(final String nm){
+	synchronized(simpleTex) {
+	    if(simpleTex.containsKey(nm)){
+		return simpleTex.get(nm);
+	    }
+	    return null;
+	}
+    }
+    
     public Coord xlate(Coord c, boolean in) {
 	if(in) {
 	    return c.div(getScale());
@@ -279,71 +289,74 @@ public class MiniMap extends Widget {
 	g.scale(scale);
 	
 	synchronized(caveTex){
-
-	    for(int y = ulg.y; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
-		for(int x = ulg.x; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
-		    Coord cg = new Coord(x, y);
-		    if (mappingStartPoint == null) {
-			mappingStartPoint = new Coord(cg);
-		    }
-		    Grid grid;
-		    synchronized(ui.sess.glob.map.req) {
-			synchronized(ui.sess.glob.map.grids) {
-			    grid = ui.sess.glob.map.grids.get(cg);
-			    if(grid == null)
-				ui.sess.glob.map.request(cg);
+	    synchronized(simpleTex){
+		for(int y = ulg.y; (y * cmaps.y) - tc.y + (hsz.y / 2) < hsz.y; y++) {
+		    for(int x = ulg.x; (x * cmaps.x) - tc.x + (hsz.x / 2) < hsz.x; x++) {
+			Coord cg = new Coord(x, y);
+			if (mappingStartPoint == null) {
+			    mappingStartPoint = new Coord(cg);
 			}
-		    }
-		    Coord relativeCoordinates = cg.sub(mappingStartPoint);
-		    String mnm = null;
-
-		    if(grid == null) {
-			mnm = coordHashes.get(relativeCoordinates);
-		    } else {
-			mnm = grid.mnm;
-		    }
-
-		    Tex tex = null;
-
-		    if (mnm != null) {
-			caveTex.clear();
-			if (!gridsHashes.containsKey(mnm)) {
-			    if ((Math.abs(relativeCoordinates.x) > 450)
-				    || (Math.abs(relativeCoordinates.y) > 450)) {
-				newMappingSession();
-				mappingStartPoint = cg;
-				relativeCoordinates = new Coord(0, 0);
-			    }
-			    gridsHashes.put(mnm, relativeCoordinates);
-			    coordHashes.put(relativeCoordinates, mnm);
-			}
-			else {
-			    Coord coordinates = gridsHashes.get(mnm);
-			    if (!coordinates.equals(relativeCoordinates)) {
-				mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
+			Grid grid;
+			synchronized(ui.sess.glob.map.req) {
+			    synchronized(ui.sess.glob.map.grids) {
+				grid = ui.sess.glob.map.grids.get(cg);
+				if(grid == null)
+				    ui.sess.glob.map.request(cg);
 			    }
 			}
+			Coord relativeCoordinates = cg.sub(mappingStartPoint);
+			String mnm = null;
 
-			tex = getgrid(mnm);
-			if((tex == null)&&(grid!=null)){
-			    tex = grid.getTex();
+			if(grid == null) {
+			    mnm = coordHashes.get(relativeCoordinates);
+			} else {
+			    mnm = grid.mnm;
 			}
-		    } else {
-			if(grid != null) {
-			    tex = grid.getTex();
-			    if(tex != null) {
-				caveTex.put(cg, tex);
+
+			Tex tex = null;
+
+			if (mnm != null) {
+			    caveTex.clear();
+			    if (!gridsHashes.containsKey(mnm)) {
+				if ((Math.abs(relativeCoordinates.x) > 450)
+					|| (Math.abs(relativeCoordinates.y) > 450)) {
+				    newMappingSession();
+				    mappingStartPoint = cg;
+				    relativeCoordinates = new Coord(0, 0);
+				}
+				gridsHashes.put(mnm, relativeCoordinates);
+				coordHashes.put(relativeCoordinates, mnm);
 			    }
+			    else {
+				Coord coordinates = gridsHashes.get(mnm);
+				if (!coordinates.equals(relativeCoordinates)) {
+				    mappingStartPoint = mappingStartPoint.add(relativeCoordinates.sub(coordinates));
+				}
+			    }
+
+			    if(grid!=null){
+				simpleTex.put(mnm, grid.getTex());
+			    }
+			    if(!Config.simplemap){
+				tex = getgrid(mnm);
+			    } else {
+				tex = getsimple(mnm);
+			    }
+			} else {
+			    if(grid != null) {
+				tex = grid.getTex();
+				if(tex != null) {
+				    caveTex.put(cg, tex);
+				}
+			    }
+			    tex = caveTex.get(cg);
 			}
-			tex = caveTex.get(cg);
+
+			if (tex == null)
+			    continue;
+
+			if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(hsz.div(2)));
 		    }
-
-		    //caveTex.isEmpty();
-
-		    if (tex == null)
-			continue;
-
-		    if(!hidden) g.image(tex, cg.mul(cmaps).add(tc.inv()).add(hsz.div(2)));
 		}
 	    }
 	}
@@ -411,6 +424,34 @@ public class MiniMap extends Widget {
 		c = c.sub(rc);
 		String fileName = "tile_" + c.x + "_" + c.y;
 		outputfile = new File("cave/"	+ sess + "/" + fileName + ".png");
+		try {
+		    ImageIO.write(tex.back, "png", outputfile);
+		} catch (IOException e) { }
+	    }
+	}
+    }
+    
+    public void saveSimpleMaps() {
+	synchronized (simpleTex) {
+	    Coord rc = null;
+	    String sess = Utils.sessdate(System.currentTimeMillis());
+	    File outputfile = new File("simplemap/" + sess);
+	    try {
+		Writer currentSessionFile = new FileWriter("simplemap/currentsession.js");
+		currentSessionFile.write("var currentSession = '" + sess + "';\n");
+		currentSessionFile.close();
+	    } catch (IOException e1) { }
+	    outputfile.mkdirs();
+	    for(String sc:simpleTex.keySet()) {
+		Coord c = gridsHashes.get(sc);
+		if(c == null){continue;}
+		if(rc == null){
+		    rc = c;
+		}
+		TexI tex = (TexI) simpleTex.get(sc);
+		c = c.sub(rc);
+		String fileName = "tile_" + c.x + "_" + c.y;
+		outputfile = new File("simplemap/"	+ sess + "/" + fileName + ".png");
 		try {
 		    ImageIO.write(tex.back, "png", outputfile);
 		} catch (IOException e) { }

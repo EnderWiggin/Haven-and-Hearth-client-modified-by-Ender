@@ -105,6 +105,7 @@ public class Config {
     public static boolean highlightSkills;
     public static boolean fps = false;
     public static boolean TEST = false;
+    public static boolean simplemap = false;
     static {
 	try {
 	    String p;

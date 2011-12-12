@@ -59,7 +59,6 @@ public class MCache {
     static {
 	colors.put(0, new Color(0x3152a2));	//deep water
 	colors.put(1, new Color(0x4480c8));	//shallow water
-	//colors.put(5, new Color(125,125,125));	//mountain
 	colors.put(8, new Color(160,160,160));	//stone paving
 	colors.put(9, new Color(200,200,200));	//plowed
 	colors.put(10, new Color(0x497937));	//coniferous forest
@@ -74,8 +73,10 @@ public class MCache {
 	colors.put(19, new Color(0xa67936));	//dirt
 	colors.put(20, new Color(212,164,81));	//sand
 	colors.put(21, new Color(212,212,212));	//house
+	colors.put(22, new Color(85,85,85));	//house cellar
 	colors.put(24, new Color(80,80,80));	//mine
 	colors.put(25, new Color(112,116,112));	//cave
+	colors.put(26, new Color(125,125,125));	//mountain
 	colors.put(255, new Color(0,0,0));	//void
     }
     

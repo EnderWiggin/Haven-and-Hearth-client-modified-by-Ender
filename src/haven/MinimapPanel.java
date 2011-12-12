@@ -18,7 +18,7 @@ public class MinimapPanel extends Window {
 	fbtn.visible = true;
 	cbtn.visible = false;
 	{
-	    new IButton(new Coord(0, -2), this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
+	    new IButton(new Coord(-3, -2), this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
 		private boolean v = false;
 		
 		public void click() {
@@ -38,9 +38,9 @@ public class MinimapPanel extends Window {
 	    };
 	}
 	{
-	    new IButton(new Coord(0, 4), this, Resource.loadimg("gfx/hud/slen/dispclaim"), Resource.loadimg("gfx/hud/slen/dispclaimd")) {
+	    new IButton(new Coord(-3, 4), this, Resource.loadimg("gfx/hud/slen/dispclaim"), Resource.loadimg("gfx/hud/slen/dispclaimd")) {
 		private boolean v = false;
-		
+		private Text tooltip = Text.render("Display claims");
 		public void click() {
 		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
@@ -55,12 +55,18 @@ public class MinimapPanel extends Window {
 			v = true;
 		    }
 		}
+
+		@Override
+		public Object tooltip(Coord c, boolean again) {
+		    return checkhit(c)?tooltip:null;
+		}
+		
 	    };
 	}
 	
 	mm = new MiniMap(new Coord(0, 32), minsz, this, ui.mainview);
 	
-	new IButton(new Coord(45, 8), this, Resource.loadimg("gfx/hud/buttons/gridu"), Resource.loadimg("gfx/hud/buttons/gridd")) {
+	new IButton(new Coord(42, 8), this, Resource.loadimg("gfx/hud/buttons/gridu"), Resource.loadimg("gfx/hud/buttons/gridd")) {
 	    public void click() {
 		BufferedImage tmp = down;
 		down = up;
@@ -70,19 +76,29 @@ public class MinimapPanel extends Window {
 	    }
 	};
 	
-	new IButton(new Coord(65, 8), this, Resource.loadimg("gfx/hud/buttons/centeru"), Resource.loadimg("gfx/hud/buttons/centerd")) {
+	new IButton(new Coord(62, 8), this, Resource.loadimg("gfx/hud/buttons/centeru"), Resource.loadimg("gfx/hud/buttons/centerd")) {
 	    public void click() {
 		mm.off = new Coord();
 	    }
 	};
 	
-	new IButton(new Coord(88, 12), this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
+	new IButton(new Coord(83, 8), this, Resource.loadimg("gfx/hud/buttons/simpleu"), Resource.loadimg("gfx/hud/buttons/simpled")) {
+	    public void click() {
+		BufferedImage tmp = down;
+		down = up;
+		up = tmp;
+		hover = tmp;
+		Config.simplemap = !Config.simplemap;
+	    }
+	};
+	
+	new IButton(new Coord(103, 2), this, Resource.loadimg("gfx/hud/charsh/plusup"), Resource.loadimg("gfx/hud/charsh/plusdown")) {
 	    public void click() {
 		mm.setScale(mm.scale+1);
 	    }
 	};
 	
-	new IButton(new Coord(103, 12), this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
+	new IButton(new Coord(103, 16), this, Resource.loadimg("gfx/hud/charsh/minusup"), Resource.loadimg("gfx/hud/charsh/minusdown")) {
 	    public void click() {
 		mm.setScale(mm.scale-1);
 	    }
@@ -90,7 +106,11 @@ public class MinimapPanel extends Window {
 	
 	btncave = new IButton(new Coord(121, 8), this, Resource.loadimg("gfx/hud/buttons/saveu"), Resource.loadimg("gfx/hud/buttons/saved")) {
 	    public void click() {
-		mm.saveCaveMaps();
+		if(mm.isCave()){
+		    mm.saveCaveMaps();
+		} else {
+		    mm.saveSimpleMaps();
+		}
 	    }
 	};
 	pack();
@@ -113,7 +133,7 @@ public class MinimapPanel extends Window {
     
     public void draw(GOut g) {
 	super.draw(g);
-	btncave.visible = !folded && mm.isCave();
+	btncave.visible = !folded && (mm.isCave() || Config.simplemap);
 	if(!folded)
 	    g.image(grip, sz.sub(gzsz));
     }
