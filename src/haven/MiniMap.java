@@ -30,6 +30,9 @@ import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
 import haven.MCache.Grid;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,6 +72,21 @@ public class MiniMap extends Widget {
     boolean dm = false;
     public int scale = 4;
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2};
+    private static Tex icnbg;
+    
+    static {
+	BufferedImage icnimg = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = icnimg.createGraphics();
+        g.setRenderingHint(
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        // icon background
+        g.setColor(Color.GRAY);
+        g.fillOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
+        g.setColor(Color.DARK_GRAY);
+        g.drawOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
+        icnbg = new TexI(icnimg);
+    }
     
     public double getScale() {
         return scales[scale];
@@ -384,6 +402,22 @@ public class MiniMap extends Widget {
 	//end of grid
 	
 	if((!plx.loading)&&(!hidden)) {
+	    //highlight items
+	    Coord isz = new Coord(16,16);
+	    synchronized (ui.sess.glob.oc) {
+		for (Gob gob : ui.sess.glob.oc) {
+		    if(gob.sc == null){continue;}
+		    if(gob.isHighlight()){
+			Coord c = gob.getc().div(tilesz).add(tc.inv()).add(hsz.div(2));
+			Tex tx = Resource.loadtex(gob.resname());
+			isz = tx.sz();
+			isz = isz.mul(16.0 / Math.max(16, Math.max(isz.x, isz.y)));
+			g.aimage(icnbg, c, 0.5, 0.5);
+			g.aimage(tx, c, isz, 0.5, 0.5);
+		    }
+		}
+	    }
+	    
 	    synchronized(ui.sess.glob.party.memb) {
 		for(Party.Member m : ui.sess.glob.party.memb.values()) {
 		    Coord ptc = m.getc();

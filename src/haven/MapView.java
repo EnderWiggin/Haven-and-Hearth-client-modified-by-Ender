@@ -878,13 +878,24 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     
     private void drawbeastradius(GOut g) {
 	String name;
-	g.chcolor(255, 0, 0, 96);
 	synchronized (glob.oc) {
 	    for (Gob tg : glob.oc) {
 		name = tg.resname();
-		if ((tg.sc!=null)&&(name.indexOf("/cdv")<0)&&((name.indexOf("kritter/boar")>=0)
+		if(tg.sc == null){continue;}
+		if ((name.indexOf("/cdv")<0)&&((name.indexOf("kritter/boar")>=0)
 			|| (name.indexOf("kritter/bear")>=0))) {
+		    g.chcolor(255, 0, 0, 96);
 		    drawradius(g, tg.sc, 100);
+		}
+		
+		if(tg.isHuman()){
+		    g.chcolor(255, 0, 255, 96);
+		    drawradius(g, tg.sc, 10);
+		}
+		
+		if(tg.isHighlight()){
+		    g.chcolor(255, 128, 64, 96);
+		    drawradius(g, tg.sc, 10);
 		}
 	    }
 	}

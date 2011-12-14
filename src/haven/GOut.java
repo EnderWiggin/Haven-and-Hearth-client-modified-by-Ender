@@ -60,6 +60,7 @@ public class GOut {
 	this.sh.root = this;
     }
     
+    @SuppressWarnings("serial")
     public static class GLException extends RuntimeException {
 	public int code;
 	public String str;
@@ -117,6 +118,10 @@ public class GOut {
     public void aimage(Tex tex, Coord c, double ax, double ay) {
 	Coord sz = tex.sz();
 	image(tex, c.add((int)((double)sz.x * -ax), (int)((double)sz.y * -ay)));
+    }
+    
+    public void aimage(Tex tex, Coord c, Coord sz, double ax, double ay) {
+	image(tex, c.add((int)((double)sz.x * -ax), (int)((double)sz.y * -ay)), sz);
     }
 	
     public void image(Tex tex, Coord c, Coord sz) {

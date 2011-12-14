@@ -76,6 +76,7 @@ public class Config {
     public static boolean new_minimap;
     public static boolean simple_plants = false;
     public static Set<String> hideObjectList;
+    public static Set<String> highlightItemList;
     public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
@@ -140,6 +141,7 @@ public class Config {
 	    options = new Properties();
 	    window_props = new Properties();
 	    hideObjectList = Collections.synchronizedSet(new HashSet<String>());
+	    highlightItemList = Collections.synchronizedSet(new HashSet<String>());
 	    loadOptions();
 	    loadWindowOptions();
 	    loadSmileys();
@@ -147,6 +149,7 @@ public class Config {
 	    loadCurios();
 	    loadSkills();
 	    loadCraft();
+	    loadHighlight();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -162,6 +165,22 @@ public class Config {
 	return str;
     }
     
+    private static void loadHighlight() {
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("highlight.conf");
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		highlightItemList.add(strLine);
+	    }
+	    br.close();
+	    fstream.close();
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	}
+    }
+
     private static void loadCraft() {
 	try {
 	    FileInputStream fstream;

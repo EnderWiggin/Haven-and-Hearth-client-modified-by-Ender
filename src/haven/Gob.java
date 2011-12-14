@@ -38,6 +38,9 @@ public class Gob implements Sprite.Owner {
     public Collection<Overlay> ols = new LinkedList<Overlay>();
     public boolean hide;
     HlFx highlight = null;
+    private boolean isHuman = false;
+    private boolean flagsinit = false;
+    private boolean isHighlight;
 	
     public static class Overlay {
 	public Indir<Resource> res;
@@ -226,6 +229,29 @@ public class Gob implements Sprite.Owner {
 	    name = res.name;
 	}
 	return name;
+    }
+    
+    private void initflags(){
+	if(flagsinit){return;}
+	String name = resname();
+	if(name.length() == 0){return;}
+	flagsinit = true;
+	
+	//checking humanity...
+	isHuman = name.contains("/borka/");
+	
+	isHighlight = Config.highlightItemList.contains(name);
+	
+    }
+    
+    public boolean isHuman(){
+	initflags();
+	return isHuman;
+    }
+    
+    public boolean isHighlight(){
+	initflags();
+	return isHighlight;
     }
     
     public Random mkrandoom() {
