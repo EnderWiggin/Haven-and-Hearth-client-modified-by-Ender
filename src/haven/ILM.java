@@ -32,6 +32,7 @@ import javax.media.opengl.GL;
 
 public class ILM extends TexRT {
     public final static BufferedImage ljusboll;
+    private double scale = 1;
     OCache oc;
     TexI lbtex;
     Color amb;
@@ -60,7 +61,11 @@ public class ILM extends TexRT {
 	}
 	ljusboll = lb;
     }
-	
+    
+    public void setScale(double value){
+	scale = value;
+    }
+    
     public ILM(Coord sz, OCache oc) {
 	super(sz);
 	this.oc = oc;
@@ -89,8 +94,8 @@ public class ILM extends TexRT {
 		Lumin lum = gob.getattr(Lumin.class);
 		if(lum == null)
 		    continue;
-		Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz);
-		g.image(lbtex, sc, new Coord(lum.sz * 2, lum.sz * 2));
+		Coord sc = gob.sc.add(lum.off).add(-lum.sz, -lum.sz).mul(scale);
+		g.image(lbtex, sc, new Coord(lum.sz * 2, lum.sz * 2).mul(scale));
 	    }
 	}
 	return(true);

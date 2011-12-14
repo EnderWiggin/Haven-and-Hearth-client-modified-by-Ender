@@ -87,8 +87,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     
     public void setScale(double value) {
 	_scale = value;
-	//mask.dispose();
-	//mask = new ILM(MainFrame.getScreenSize().div(_scale), glob.oc);
+	mask.setScale(value);
     }
 
     public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
@@ -1200,7 +1199,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    
 	    if(curf != null)
 		curf.tick("draw");
-	    g.image(mask, Coord.z);
+	    //Illumination
+	    g.gl.glPopMatrix();
+	    GOut gilm = g.reclip(Coord.z, hsz);
+	    gilm.image(mask, Coord.z);
+	    g.gl.glPushMatrix();
+	    g.scale(getScale());
+	    //*****************
 	    long now = System.currentTimeMillis();
 	    RootWidget.names_ready = (RootWidget.screenshot && Config.sshot_nonames);
 	    if(!RootWidget.names_ready){
