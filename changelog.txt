@@ -1,5 +1,15 @@
 Change log
  
+14.12.11
+ * fixed illumination cutting off when zooming out.
+ 
+12.12.11
+ * added button to minimap panel to toggle map drawing between normal and simple
+ * added tooltips for minimap panel buttons
+ 
+11.12.11
+ * fixed crash when clicking on action in toolbar, if this action is unavailable for this character.
+ 
 09.12.11
  * added kin color highlight to fight view avatars and name to current target avatar
  * added displaying of required materials for buildings. List provided by Scilly_guy
