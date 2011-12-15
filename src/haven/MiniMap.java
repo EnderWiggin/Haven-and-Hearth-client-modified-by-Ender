@@ -429,6 +429,11 @@ public class MiniMap extends Widget {
 			g.fellipse(c, new Coord(5,5));
 			g.chcolor();
 		    }
+		    
+		    if(Config.showBeast && gob.isBeast()){
+			Tex tx = Config.hlcfg.get(gob.beastname).geticon();
+			g.aimage(tx, c, 0.5, 0.5);
+		    }
 		}
 	    }
 	    

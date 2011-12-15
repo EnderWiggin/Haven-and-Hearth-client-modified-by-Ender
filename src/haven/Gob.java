@@ -42,6 +42,7 @@ public class Gob implements Sprite.Owner {
     private boolean flagsinit = false;
     private boolean isHighlight;
     private boolean isBeast;
+    String beastname;
 	
     public static class Overlay {
 	public Indir<Resource> res;
@@ -265,9 +266,10 @@ public class Gob implements Sprite.Owner {
 	if(isHighlight){return;}
 	
 	if(!name.contains("/cdv")){
-	    for(String pat : Config.beasts.values()){
+	    for(String pat : Config.beasts.keySet()){
 		if(name.contains(pat)){
 		    isBeast = true;
+		    beastname = pat;
 		    return;
 		}
 	    }

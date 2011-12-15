@@ -23,27 +23,28 @@ public class HLInfo {
     
     public Tex geticon(){
 	if(icon == null){
+	    BufferedImage img;
 	    if(icnname != null){
-		icon = Resource.loadtex(icnname);
+		img = Resource.loadimg(icnname);
 	    } else {
-		BufferedImage icnimg = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
-	        Graphics2D g = icnimg.createGraphics();
-	        g.setRenderingHint(
-	                RenderingHints.KEY_INTERPOLATION,
-	                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-	        // icon background
-	        g.setColor(col);
-	        g.fillOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
-	        g.setColor(Color.DARK_GRAY);
-	        g.drawOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
-	        
-	        BufferedImage img = Resource.loadimg(name);
-		Coord isz = Utils.imgsz(img);
-		isz = isz.mul(16.0 / Math.max(16, Math.max(isz.x, isz.y)));
-		g.drawImage(img, 10-isz.x/2, 10-isz.y/2, isz.x, isz.y ,null);
-
-	        icon = new TexI(icnimg);
+		img = Resource.loadimg(name);
 	    }
+	    BufferedImage icnimg = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g = icnimg.createGraphics();
+	    g.setRenderingHint(
+		    RenderingHints.KEY_INTERPOLATION,
+		    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+	    // icon background
+	    g.setColor(col);
+	    g.fillOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
+	    g.setColor(Color.DARK_GRAY);
+	    g.drawOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
+
+	    Coord isz = Utils.imgsz(img);
+	    isz = isz.mul(16.0 / Math.max(16, Math.max(isz.x, isz.y)));
+	    g.drawImage(img, 10-isz.x/2, 10-isz.y/2, isz.x, isz.y ,null);
+
+	    icon = new TexI(icnimg);
 	}
 	return icon;
     }

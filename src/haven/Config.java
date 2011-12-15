@@ -179,9 +179,19 @@ public class Config {
     }
     
     private static void loadBeasts() {
-	beasts.put("kritter/bear", "Bear");
-	beasts.put("kritter/boar", "Boar");
-	
+	//bear
+	String pat = "kritter/bear";
+	HLInfo inf = new HLInfo(pat, "mmap/bear");
+	Color col = new Color(0xff797c);
+	inf.setColor(col);
+	beasts.put(pat, "Bear");
+	hlcfg.put(pat, inf);
+	//boar
+	pat = "kritter/boar";
+	inf = new HLInfo(pat, "mmap/boar");
+	inf.setColor(col);
+	beasts.put(pat, "Boar");
+	hlcfg.put(pat, inf);
     }
 
     private static void loadHighlight() {
@@ -196,6 +206,7 @@ public class Config {
 	    }
 	    try {
 		JSONObject cfg = new JSONObject(data);
+		@SuppressWarnings("unchecked")
 		Iterator<String> keys = cfg.keys();
 		while(keys.hasNext()){
 		    String key = keys.next();
