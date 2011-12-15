@@ -131,7 +131,15 @@ public class Glob {
 		if(act == '+') {
 		    String nm = msg.string();
 		    int ver = msg.uint16();
-		    paginae.add(Resource.load(nm, ver)); 
+		    Resource res = Resource.load(nm, ver);
+		    paginae.add(res);
+		    UI ui = UI.instance;
+		    if(ui.slen != null){
+			res.loadwait();
+			String str = String.format("You have gained access to '%s'", res.layer(Resource.action).name);
+			ui.cons.out.println(str);
+			ui.slen.error(str);
+		    }
 		} else if(act == '-') {
 		    String nm = msg.string();
 		    int ver = msg.uint16();
