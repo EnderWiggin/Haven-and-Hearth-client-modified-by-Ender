@@ -41,6 +41,7 @@ public class Gob implements Sprite.Owner {
     private boolean isHuman = false;
     private boolean flagsinit = false;
     private boolean isHighlight;
+    private boolean isBeast;
 	
     public static class Overlay {
 	public Indir<Resource> res;
@@ -263,6 +264,15 @@ public class Gob implements Sprite.Owner {
 	isHighlight = Config.hlcfg.keySet().contains(name);
 	if(isHighlight){return;}
 	
+	if(!name.contains("/cdv")){
+	    for(String pat : Config.beasts.values()){
+		if(name.contains(pat)){
+		    isBeast = true;
+		    return;
+		}
+	    }
+	}
+	
 	//checking humanity...
 	if(name.contains("/borka/")){
 	    isHuman = checkHumanity();
@@ -281,6 +291,11 @@ public class Gob implements Sprite.Owner {
     public boolean isHuman(){
 	initflags();
 	return isHuman;
+    }
+    
+    public boolean isBeast(){
+	initflags();
+	return isBeast;
     }
     
     public boolean isHighlight(){

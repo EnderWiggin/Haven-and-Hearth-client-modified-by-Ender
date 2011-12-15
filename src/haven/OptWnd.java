@@ -416,23 +416,19 @@ public class OptWnd extends Window {
 
 	{ /* HIGHLIGHT OPTIONS TAB */
 	    tab = body.new Tab(new Coord(300, 0), 80, "Highlight");
-	    int i = 0;
-	    ArrayList<String> objs = new ArrayList<String>(Config.hlcfg.keySet());
-	    Collections.sort(objs);
-	    for (final String res : objs) {
-		String name = res.substring(res.lastIndexOf("/")+1);
-		CheckBox chkbox = new CheckBox(new Coord(10+(i%3)*150, 30*((int)i/3 + 1)), tab, name) {
-
+	    int i = 1;
+	    for (final String group : Config.hlgroups.keySet()) {
+		CheckBox chkbox = new CheckBox(new Coord(10, 30*i), tab, group) {
 		    public void changed(boolean val) {
 			if (val) {
-			    Config.highlightItemList.add(res);
+			    Config.highlightItemList.addAll(Config.hlgroups.get(group));
 			} else {
-			    Config.highlightItemList.remove(res);
+			    Config.highlightItemList.removeAll(Config.hlgroups.get(group));
 			}
 			Config.saveOptions();
 		    }
 		};
-		chkbox.a = Config.highlightItemList.contains(res);
+		chkbox.a = Config.highlightItemList.containsAll(Config.hlgroups.get(group));
 		i++;
 	    }
 	}

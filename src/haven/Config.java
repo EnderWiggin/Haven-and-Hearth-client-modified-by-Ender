@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -85,6 +86,7 @@ public class Config {
     public static Set<String> hideObjectList;
     public static Set<String> highlightItemList;
     public static Map<String, HLInfo> hlcfg = new HashMap<String, HLInfo>();
+    public static Map<String, Set<String>> hlgroups = new HashMap<String, Set<String>>();
     public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
@@ -111,6 +113,8 @@ public class Config {
     public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
     public static Map<String, SkillAvailability> skills;
     public static Map<String, String> crafts = new HashMap<String, String>();
+    public static Map<String, String> beasts = new HashMap<String, String>();
+    //public static 
     public static boolean highlightSkills;
     public static boolean fps = false;
     public static boolean TEST = false;
@@ -158,6 +162,7 @@ public class Config {
 	    loadSkills();
 	    loadCraft();
 	    loadHighlight();
+	    loadBeasts();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -173,6 +178,12 @@ public class Config {
 	return str;
     }
     
+    private static void loadBeasts() {
+	beasts.put("kritter/bear", "Bear");
+	beasts.put("kritter/boar", "Boar");
+	
+    }
+
     private static void loadHighlight() {
 	try {
 	    FileInputStream fstream;
@@ -184,22 +195,31 @@ public class Config {
 		data += strLine;
 	    }
 	    try {
-		JSONArray arr = new JSONArray(data);
-		for(int i=0; i<arr.length(); i++){
-		    JSONObject o = arr.getJSONObject(i);
-		    String name = o.getString("name");
-		    String icon = null;
-		    if(!o.isNull("icon")){
-			icon = o.getString("icon");
+		JSONObject cfg = new JSONObject(data);
+		Iterator<String> keys = cfg.keys();
+		while(keys.hasNext()){
+		    String key = keys.next();
+		    Set<String> group = new HashSet<String>();
+		    hlgroups.put(key, group);
+		    JSONArray arr = cfg.getJSONArray(key);
+		    for(int i=0; i<arr.length(); i++){
+			JSONObject o = arr.getJSONObject(i);
+			String name = o.getString("name");
+			String icon = null;
+			if(!o.isNull("icon")){
+			    icon = o.getString("icon");
+			}
+			HLInfo inf = new HLInfo(name, icon);
+			if(!o.isNull("color")){
+			    inf.setColor(new Color(Integer.parseInt(o.getString("color"), 16)));
+			}
+			hlcfg.put(name, inf);
+			group.add(name);
 		    }
-		    HLInfo inf = new HLInfo(name, icon);
-		    if(!o.isNull("color")){
-			inf.setColor(new Color(Integer.parseInt(o.getString("color"), 16)));
-		    }
-		    hlcfg.put(name, inf);
 		}
 		
 	    } catch (JSONException e) {
+		e.printStackTrace();
 	    }
 	    br.close();
 	    fstream.close();

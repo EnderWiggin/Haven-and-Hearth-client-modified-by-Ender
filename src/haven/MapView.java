@@ -876,26 +876,24 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	g.chcolor();
     }
     
-    private void drawbeastradius(GOut g) {
-	String name;
+    private void drawobjradius(GOut g) {
 	synchronized (glob.oc) {
-	    for (Gob tg : glob.oc) {
-		name = tg.resname();
-		if(tg.sc == null){continue;}
-		if ((name.indexOf("/cdv")<0)&&((name.indexOf("kritter/boar")>=0)
-			|| (name.indexOf("kritter/bear")>=0))) {
+	    for (Gob gob : glob.oc) {
+		if(gob.sc == null){continue;}
+		
+		if (Config.showBeast && gob.isBeast()) {
 		    g.chcolor(255, 0, 0, 96);
-		    drawradius(g, tg.sc, 100);
+		    drawradius(g, gob.sc, 100);
 		}
 		
-		if(tg.isHuman()){
+		if(gob.isHuman() && !ui.sess.glob.party.memb.keySet().contains(gob.id)){
 		    g.chcolor(255, 0, 255, 96);
-		    drawradius(g, tg.sc, 10);
+		    drawradius(g, gob.sc, 10);
 		}
 		
-		if(tg.isHighlight()){
+		if(gob.isHighlight() && Config.highlightItemList.contains(gob.resname())){
 		    g.chcolor(255, 128, 64, 96);
-		    drawradius(g, tg.sc, 10);
+		    drawradius(g, gob.sc, 10);
 		}
 	    }
 	}
@@ -1087,10 +1085,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	else
 	    drawplobeffect(g);
 	
-	if(Config.showBeast){
-	    drawbeastradius(g);
-	}
-	
+	drawobjradius(g);
 	drawtracking(g);
 	
 	if(curf != null)
