@@ -28,6 +28,7 @@ package haven;
 
 import static haven.Utils.getprop;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,8 +47,13 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import ender.CurioInfo;
 import ender.GoogleTranslator;
+import ender.HLInfo;
 import ender.SkillAvailability;
 import ender.SkillAvailability.Combat;
 
@@ -77,6 +84,7 @@ public class Config {
     public static boolean simple_plants = false;
     public static Set<String> hideObjectList;
     public static Set<String> highlightItemList;
+    public static Map<String, HLInfo> hlcfg = new HashMap<String, HLInfo>();
     public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
@@ -170,9 +178,28 @@ public class Config {
 	    FileInputStream fstream;
 	    fstream = new FileInputStream("highlight.conf");
 	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+	    String data = "";
 	    String strLine;
 	    while ((strLine = br.readLine()) != null)   {
-		highlightItemList.add(strLine);
+		data += strLine;
+	    }
+	    try {
+		JSONArray arr = new JSONArray(data);
+		for(int i=0; i<arr.length(); i++){
+		    JSONObject o = arr.getJSONObject(i);
+		    String name = o.getString("name");
+		    String icon = null;
+		    if(!o.isNull("icon")){
+			icon = o.getString("icon");
+		    }
+		    HLInfo inf = new HLInfo(name, icon);
+		    if(!o.isNull("color")){
+			inf.setColor(new Color(Integer.parseInt(o.getString("color"), 16)));
+		    }
+		    hlcfg.put(name, inf);
+		}
+		
+	    } catch (JSONException e) {
 	    }
 	    br.close();
 	    fstream.close();
@@ -393,7 +420,6 @@ public class Config {
         catch (IOException e) {
             System.out.println(e);
         }
-        String hideObjects = options.getProperty("hideObjects", "");
         GoogleTranslator.apikey = options.getProperty("GoogleAPIKey", "AIzaSyCuo-ukzI_J5n-inniu2U7729ZfadP16_0");
         zoom = options.getProperty("zoom", "false").equals("true");
         noborders = options.getProperty("noborders", "false").equals("true");
@@ -421,10 +447,19 @@ public class Config {
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         currentVersion = options.getProperty("version", "");
         hideObjectList.clear();
+        String hideObjects = options.getProperty("hideObjects", "");
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
                 if (!objectName.isEmpty()) {
                     hideObjectList.add(objectName);
+                }
+            }
+        }
+        String highlightObjects = options.getProperty("highlightObjects", "");
+        if (!highlightObjects.isEmpty()) {
+            for (String objectName : highlightObjects.split(",")) {
+                if (!objectName.isEmpty()) {
+                    highlightItemList.add(objectName);
                 }
             }
         }
@@ -471,7 +506,12 @@ public class Config {
         for (String objectName : hideObjectList) {
             hideObjects += objectName+",";
         }
+        String highlightObjects = "";
+        for (String objectName : highlightItemList) {
+            highlightObjects += objectName+",";
+        }
         options.setProperty("hideObjects", hideObjects);
+        options.setProperty("highlightObjects", highlightObjects);
         options.setProperty("GoogleAPIKey", GoogleTranslator.apikey);
         options.setProperty("timestamp", (timestamp)?"true":"false");
         options.setProperty("zoom", zoom?"true":"false");

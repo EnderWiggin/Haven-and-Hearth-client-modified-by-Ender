@@ -44,7 +44,7 @@ public class Utils {
     public static java.awt.image.ColorModel rgbm = java.awt.image.ColorModel.getRGBdefault();
     private static Background bgworker = null;
 
-    static Coord imgsz(BufferedImage img) {
+    public static Coord imgsz(BufferedImage img) {
 	return(new Coord(img.getWidth(), img.getHeight()));
     }
 	

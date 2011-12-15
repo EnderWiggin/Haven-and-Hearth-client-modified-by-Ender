@@ -63,9 +63,9 @@ public class OptWnd extends Window {
     }
 
     public OptWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 445), parent, "Options");
+	super(c, new Coord(550, 445), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(400, 445), this) {
+	body = new Tabs(Coord.z, new Coord(530, 445), this) {
 	    public void changed(Tab from, Tab to) {
 		Utils.setpref("optwndtab", to.btn.text.text);
 		from.btn.c.y = 0;
@@ -414,38 +414,30 @@ public class OptWnd extends Window {
 	    }
 	}
 
-	{ /* TRANSLATE OPTIONS TAB */
-	    tab = body.new Tab(new Coord(300, 0), 80, "Translation");
-	    (new CheckBox(new Coord(10, 30), tab, "Turn on") {
-		public void changed(boolean val) {
-		    GoogleTranslator.turnedon = val;
-		}
-	    }).a = GoogleTranslator.turnedon;
+	{ /* HIGHLIGHT OPTIONS TAB */
+	    tab = body.new Tab(new Coord(300, 0), 80, "Highlight");
+	    int i = 0;
+	    ArrayList<String> objs = new ArrayList<String>(Config.hlcfg.keySet());
+	    Collections.sort(objs);
+	    for (final String res : objs) {
+		String name = res.substring(res.lastIndexOf("/")+1);
+		CheckBox chkbox = new CheckBox(new Coord(10+(i%3)*150, 30*((int)i/3 + 1)), tab, name) {
 
-	    new Label(new Coord(150, 35), tab, "Target Language:");
-
-	    final RadioGroup langs = new RadioGroup(tab) {
-		public void changed(int btn, String lbl) {
-		    GoogleTranslator.lang = lbl;
-		}
-	    };
-	    langs.add("en", new Coord(150, 45));
-	    langs.add("ru", new Coord(150, 70));
-	    langs.check(GoogleTranslator.lang);
-	    
-	    new Label(new Coord(25, 125), tab, "Google API Key:");
-	    final TextEntry te = new TextEntry(new Coord(25, 150), new Coord(300, 20), tab, GoogleTranslator.apikey);
-	    new Button(new Coord(330, 150), 50, tab, "set") {
-		public void click() {
-		    GoogleTranslator.apikey = te.text;
-		    Config.saveOptions();
-		}
-	    };
-	    
-	    new Label(new Coord(100, 190), tab, "Powered by Google Translate");
+		    public void changed(boolean val) {
+			if (val) {
+			    Config.highlightItemList.add(res);
+			} else {
+			    Config.highlightItemList.remove(res);
+			}
+			Config.saveOptions();
+		    }
+		};
+		chkbox.a = Config.highlightItemList.contains(res);
+		i++;
+	    }
 	}
 
-	new Frame(new Coord(-10, 20), new Coord(420, 430), this);
+	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
 	String last = Utils.getpref("optwndtab", "");
 	for (Tabs.Tab t : body.tabs) {
 	    if (t.btn.text.text.equals(last))

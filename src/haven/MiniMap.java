@@ -403,17 +403,23 @@ public class MiniMap extends Widget {
 	
 	if((!plx.loading)&&(!hidden)) {
 	    //highlight items
-	    Coord isz = new Coord(16,16);
+	    Coord c0 = hsz.div(2).sub(tc);
+	    
 	    synchronized (ui.sess.glob.oc) {
 		for (Gob gob : ui.sess.glob.oc) {
-		    if(gob.sc == null){continue;}
-		    if(gob.isHighlight()){
-			Coord c = gob.getc().div(tilesz).add(tc.inv()).add(hsz.div(2));
-			Tex tx = Resource.loadtex(gob.resname());
-			isz = tx.sz();
-			isz = isz.mul(16.0 / Math.max(16, Math.max(isz.x, isz.y)));
-			g.aimage(icnbg, c, 0.5, 0.5);
-			g.aimage(tx, c, isz, 0.5, 0.5);
+		    Coord c = gob.getc();
+		    String name = gob.resname();
+		    if(name == null){continue;};
+		    if(c == null){continue;}
+		    c = c0.add(c.div(tilesz));
+		    if(gob.isHighlight() && Config.highlightItemList.contains(name)){
+			Tex tx = Config.hlcfg.get(name).geticon();
+			g.aimage(tx, c, 0.5, 0.5);
+		    }
+		    if(gob.isHuman()){
+			g.chcolor(255,64,64,255);
+			g.fellipse(c, new Coord(5,5));
+			g.chcolor();
 		    }
 		}
 	    }
@@ -423,7 +429,7 @@ public class MiniMap extends Widget {
 		    Coord ptc = m.getc();
 		    if(ptc == null)
 			continue;
-		    ptc = ptc.div(tilesz).add(tc.inv()).add(hsz.div(2));
+		    ptc = c0.add(ptc.div(tilesz));
 		    g.chcolor(m.col.getRed(), m.col.getGreen(), m.col.getBlue(), 128);
 		    g.image(plx.layer(Resource.imgc).tex(), ptc.add(plx.layer(Resource.negc).cc.inv()));
 		    g.chcolor();

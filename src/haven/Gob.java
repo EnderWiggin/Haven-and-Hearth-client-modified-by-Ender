@@ -231,19 +231,53 @@ public class Gob implements Sprite.Owner {
 	return name;
     }
     
+    public String[] resnames(){
+	List<String> names = new ArrayList<String>();
+	ResDrawable dw = getattr(ResDrawable.class);
+	Resource res;
+	if(dw != null){
+	    res = dw.res.get();
+	    if(res != null){
+		names.add(res.name);
+	    }
+	} else {
+	    Layered ld = getattr(Layered.class);
+	    if(ld != null){
+		for (Indir<Resource> ir : ld.layers){
+		    res = ir.get();
+		    if(res != null){
+			names.add(res.name);
+		    }
+		}
+	    }
+	}
+	return names.toArray(new String[names.size()]);
+    }
+    
     private void initflags(){
 	if(flagsinit){return;}
 	String name = resname();
 	if(name.length() == 0){return;}
 	flagsinit = true;
 	
+	isHighlight = Config.hlcfg.keySet().contains(name);
+	if(isHighlight){return;}
+	
 	//checking humanity...
-	isHuman = name.contains("/borka/");
-	
-	isHighlight = Config.highlightItemList.contains(name);
-	
+	if(name.contains("/borka/")){
+	    isHuman = checkHumanity();
+	}
     }
     
+    private boolean checkHumanity() {
+	for(String name : resnames()){
+	    if(name.contains("/borka/body")){
+		return true;
+	    }
+	}
+	return false;
+    }
+
     public boolean isHuman(){
 	initflags();
 	return isHuman;
