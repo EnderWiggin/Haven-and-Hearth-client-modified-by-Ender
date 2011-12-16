@@ -26,10 +26,16 @@
 
 package haven;
 
-import java.awt.image.BufferedImage;
 import java.awt.Graphics;
-import java.util.*;
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public abstract class Sprite {
     public final Resource res;

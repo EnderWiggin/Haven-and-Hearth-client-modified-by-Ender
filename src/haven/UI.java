@@ -28,10 +28,14 @@ package haven;
 
 import haven.CharWnd.Study;
 
-import java.util.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.InputEvent;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class UI {
     static public UI instance;

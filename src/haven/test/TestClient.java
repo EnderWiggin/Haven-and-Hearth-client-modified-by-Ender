@@ -26,9 +26,16 @@
 
 package haven.test;
 
-import haven.*;
-import java.util.*;
+import haven.Coord;
+import haven.HackThread;
+import haven.RemoteUI;
+import haven.Session;
+import haven.UI;
+import haven.Widget;
+
 import java.net.InetAddress;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class TestClient implements Runnable {
     public Session sess;

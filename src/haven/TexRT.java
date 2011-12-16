@@ -26,8 +26,12 @@
 
 package haven;
 
-import java.util.*;
-import javax.media.opengl.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import javax.media.opengl.GL;
 
 public abstract class TexRT extends TexGL {
     static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();

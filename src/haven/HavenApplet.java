@@ -26,12 +26,18 @@
 
 package haven;
 
-import java.applet.*;
+import java.applet.Applet;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HavenApplet extends Applet {
     public static Map<ThreadGroup, HavenApplet> applets = new HashMap<ThreadGroup, HavenApplet>();

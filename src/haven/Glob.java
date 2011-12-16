@@ -26,7 +26,12 @@
 
 package haven;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Observable;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import ender.timer.Timer;
 

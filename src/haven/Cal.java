@@ -27,6 +27,7 @@
 package haven;
 
 import static java.lang.Math.PI;
+
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 

@@ -28,7 +28,9 @@ package haven;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import javax.media.opengl.*;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GLContext;
 
 public class GOut {
     GL gl;

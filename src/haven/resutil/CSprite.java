@@ -26,10 +26,19 @@
 
 package haven.resutil;
 
-import haven.*;
-import java.util.*;
+import haven.Coord;
+import haven.GOut;
+import haven.Resource;
+import haven.SimpleSprite;
+import haven.Sprite;
+import haven.Tex;
+import haven.TexI;
+import haven.Utils;
+
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class CSprite extends Sprite {
     Collection<Part> frame = new LinkedList<Part>();

@@ -26,9 +26,6 @@
 
 package haven;
 
-import haven.RichText.Part;
-import haven.RichText.TextPart;
-
 import java.awt.Color;
 
 public class RichTextBox extends Widget {

@@ -30,9 +30,6 @@ import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
 import haven.MCache.Grid;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;

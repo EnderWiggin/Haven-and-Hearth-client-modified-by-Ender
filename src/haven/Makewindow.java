@@ -26,8 +26,9 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.Font;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Makewindow extends HWindow {
     Widget obtn, cbtn;

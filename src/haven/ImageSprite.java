@@ -29,7 +29,7 @@ package haven;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.Collection;
 
 public abstract class ImageSprite extends Sprite {
     public Coord cc;

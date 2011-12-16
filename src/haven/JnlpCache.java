@@ -26,10 +26,18 @@
 
 package haven;
 
-import java.lang.reflect.*;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
-import javax.jnlp.*;
+
+import javax.jnlp.BasicService;
+import javax.jnlp.FileContents;
+import javax.jnlp.PersistenceService;
+import javax.jnlp.ServiceManager;
 
 public class JnlpCache implements ResCache {
     private PersistenceService back;

@@ -26,8 +26,10 @@
 
 package haven;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+
 import javax.media.opengl.GL;
 
 public class ILM extends TexRT {

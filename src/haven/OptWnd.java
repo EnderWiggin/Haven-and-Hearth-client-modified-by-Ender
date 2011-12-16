@@ -34,8 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ender.GoogleTranslator;
-
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     private Tabs body;

@@ -28,7 +28,8 @@ package haven;
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Listbox extends Widget {
     public List<Option> opts;

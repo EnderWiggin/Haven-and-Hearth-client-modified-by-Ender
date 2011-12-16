@@ -26,10 +26,27 @@
 
 package haven;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.LinkedList;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {

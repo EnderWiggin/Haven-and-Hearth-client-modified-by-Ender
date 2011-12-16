@@ -26,8 +26,10 @@
 
 package haven;
 
-import java.util.*;
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Console {
     static private Map<String, Command> scommands = new TreeMap<String, Command>();

@@ -26,8 +26,8 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class Message implements java.io.Serializable {
     public static final int RMSG_NEWWDG = 0;

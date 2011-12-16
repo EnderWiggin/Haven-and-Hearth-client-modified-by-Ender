@@ -26,8 +26,10 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Party {
     Map<Integer, Member> memb = new TreeMap<Integer, Member>();

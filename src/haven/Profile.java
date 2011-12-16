@@ -26,9 +26,10 @@
 
 package haven;
 
-import java.awt.Graphics;
 import java.awt.Color;
-import java.util.*;
+import java.awt.Graphics;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Profile {
     public Frame[] hist;

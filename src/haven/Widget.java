@@ -26,9 +26,10 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Widget {
     public UI ui;

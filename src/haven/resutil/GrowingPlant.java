@@ -26,9 +26,16 @@
 
 package haven.resutil;
 
-import haven.*;
+import haven.Config;
+import haven.Coord;
+import haven.MapView;
+import haven.Message;
+import haven.Resource;
+import haven.Sprite;
+import haven.Tex;
+import haven.Utils;
 
-import java.util.*;
+import java.util.Random;
 
 public class GrowingPlant extends CSprite {
     public static class Factory implements Sprite.Factory {

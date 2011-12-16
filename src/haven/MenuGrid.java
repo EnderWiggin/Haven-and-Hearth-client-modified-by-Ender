@@ -26,11 +26,17 @@
 
 package haven;
 
+import haven.Resource.AButton;
+
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.font.TextAttribute;
-import haven.Resource.AButton;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MenuGrid extends Widget {
     private static final Color pressedColor = new Color(196, 196, 196, 196);

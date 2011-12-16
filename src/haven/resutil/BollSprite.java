@@ -26,7 +26,10 @@
 
 package haven.resutil;
 
-import haven.*;
+import haven.Coord;
+import haven.GOut;
+import haven.Resource;
+import haven.Sprite;
 
 public abstract class BollSprite extends Sprite {
     public Boll bollar = null;

@@ -26,10 +26,15 @@
 
 package haven;
 
-import java.awt.Color;
-import java.util.*;
-import javax.media.opengl.*;
 import static haven.GOut.checkerr;
+
+import java.awt.Color;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import javax.media.opengl.GL;
 
 public abstract class TexGL extends Tex {
     protected int id = -1;

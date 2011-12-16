@@ -27,7 +27,8 @@
 package haven;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Avaview extends Widget {
     public static final Coord dasz = new Coord(74, 74);

@@ -30,9 +30,19 @@ import haven.Text.Foundry;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.awt.font.TextAttribute;
-import java.util.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.TreeMap;
 
 public class CharWnd extends Window {
     public static CharWnd instance;

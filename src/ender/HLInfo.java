@@ -1,15 +1,15 @@
 package ender;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-
 import haven.Coord;
 import haven.Resource;
 import haven.Tex;
 import haven.TexI;
 import haven.Utils;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 
 public class HLInfo {
     private Tex icon = null;

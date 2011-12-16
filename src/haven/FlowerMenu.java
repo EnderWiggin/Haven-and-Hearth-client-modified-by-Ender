@@ -26,9 +26,10 @@
 
 package haven;
 
+import static java.lang.Math.PI;
+
 import java.awt.Color;
 import java.awt.Font;
-import static java.lang.Math.PI;
 
 public class FlowerMenu extends Widget {
     public static Color pink = new Color(255, 0, 128);
