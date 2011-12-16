@@ -1,5 +1,10 @@
 Change log
  
+16.12.11
+ * added displaying of actions you have gained access to (by discovering materials or learning skill) in system Messages tab.
+ * added object/beasts/humans highlight to minimap. What objects to highlight is configured in Options->Highlight.
+   For those who want to fiddle with object list - look at highlight.conf file.
+ 
 14.12.11
  * fixed illumination cutting off when zooming out.
  
