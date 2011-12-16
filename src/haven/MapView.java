@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ender.HLInfo;
+
 public class MapView extends Widget implements DTarget, Console.Directory {
     static Color[] olc = new Color[31];
     static Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
@@ -882,7 +884,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		if(gob.sc == null){continue;}
 		
 		if (Config.showBeast && gob.isBeast()) {
-		    g.chcolor(255, 0, 0, 96);
+		    HLInfo inf = Config.hlcfg.get(gob.beastname);
+		    g.chcolor(inf.col.getRed(), inf.col.getGreen(), inf.col.getBlue(), 96);
 		    drawradius(g, gob.sc, 100);
 		}
 		

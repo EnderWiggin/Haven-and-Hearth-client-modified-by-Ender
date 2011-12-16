@@ -72,21 +72,6 @@ public class MiniMap extends Widget {
     boolean dm = false;
     public int scale = 4;
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2};
-    private static Tex icnbg;
-    
-    static {
-	BufferedImage icnimg = new BufferedImage(20, 20, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = icnimg.createGraphics();
-        g.setRenderingHint(
-                RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        // icon background
-        g.setColor(Color.GRAY);
-        g.fillOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
-        g.setColor(Color.DARK_GRAY);
-        g.drawOval(0, 0, icnimg.getWidth() - 1, icnimg.getHeight() - 1);
-        icnbg = new TexI(icnimg);
-    }
     
     public double getScale() {
         return scales[scale];

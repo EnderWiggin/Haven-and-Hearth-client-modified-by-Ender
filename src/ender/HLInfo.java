@@ -15,7 +15,8 @@ public class HLInfo {
     private Tex icon = null;
     private String name;
     private String icnname = null;
-    private Color col = Color.GRAY;
+    public Color col = Color.GRAY;
+    
     public HLInfo(String name, String icon){
 	this.name = name;
 	icnname = icon;

@@ -265,20 +265,28 @@ public class Gob implements Sprite.Owner {
 	isHighlight = Config.hlcfg.keySet().contains(name);
 	if(isHighlight){return;}
 	
+	//checking bestiality
 	if(!name.contains("/cdv")){
-	    for(String pat : Config.beasts.keySet()){
-		if(name.contains(pat)){
-		    isBeast = true;
-		    beastname = pat;
-		    return;
-		}
-	    }
+	    isBeast = checkBeast();
+	    if(isBeast){return;}
 	}
 	
 	//checking humanity...
 	if(name.contains("/borka/")){
 	    isHuman = checkHumanity();
 	}
+    }
+    
+    private boolean checkBeast() {
+	for(String name : resnames()){
+	    for(String pat : Config.beasts.keySet()){
+		if(name.contains(pat)){
+		    beastname = pat;
+		    return true;
+		}
+	    }
+	}
+	return false;
     }
     
     private boolean checkHumanity() {

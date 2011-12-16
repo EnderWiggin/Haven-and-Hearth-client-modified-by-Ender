@@ -192,6 +192,12 @@ public class Config {
 	inf.setColor(col);
 	beasts.put(pat, "Boar");
 	hlcfg.put(pat, inf);
+	//deer
+	pat = "kritter/deer";
+	inf = new HLInfo(pat, "mmap/deer");
+	inf.setColor(new Color(0x7BAF8E));
+	beasts.put(pat, "Deer");
+	hlcfg.put(pat, inf);
     }
 
     private static void loadHighlight() {
