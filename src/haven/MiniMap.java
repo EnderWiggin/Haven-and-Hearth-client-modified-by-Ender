@@ -382,39 +382,47 @@ public class MiniMap extends Widget {
 	    g.chcolor();
 	}
 	//end of grid
-	
 	if((!plx.loading)&&(!hidden)) {
 	    //highlight items
 	    Coord c0 = hsz.div(2).sub(tc);
+	    Coord isz = new Coord(20, 20);
+	    Coord psz = new Coord(5, 5);
 	    
-	    synchronized (ui.sess.glob.oc) {
-		for (Gob gob : ui.sess.glob.oc) {
-		    Coord c = gob.getc();
-		    if(c == null){continue;}
-		    String name = gob.resname();
-		    if(name == null){continue;};
-		    c = c0.add(c.div(tilesz));
-		    
-		    if(gob.isHighlight() && Config.highlightItemList.contains(name)){
-			Tex tx = Config.hlcfg.get(name).geticon();
-			g.aimage(tx, c, 0.5, 0.5);
-		    }
-		    
-		    if(gob.isHuman()){
-			if(gob.id == ui.mainview.playergob){continue;}
-			KinInfo kin = gob.getattr(KinInfo.class);
-			if(kin != null){
-			    g.chcolor(BuddyWnd.gc[kin.group]);
-			} else {
+	    if(Config.radar){
+		if(Config.dontScaleMMIcons){
+		    isz = isz.div(scale);
+		    psz = psz.div(scale);
+		}
+
+		synchronized (ui.sess.glob.oc) {
+		    for (Gob gob : ui.sess.glob.oc) {
+			Coord c = gob.getc();
+			if(c == null){continue;}
+			String name = gob.resname();
+			if(name == null){continue;};
+			c = c0.add(c.div(tilesz));
+
+			if(gob.isHighlight() && Config.highlightItemList.contains(name)){
+			    Tex tx = Config.hlcfg.get(name).geticon();
+			    g.aimage(tx, c, isz, 0.5, 0.5);
+			}
+
+			if(gob.isHuman()){
+			    if(gob.id == ui.mainview.playergob){continue;}
+			    KinInfo kin = gob.getattr(KinInfo.class);
+			    if(kin != null){
+				g.chcolor(BuddyWnd.gc[kin.group]);
+			    } else {
+				g.chcolor();
+			    }
+			    g.fellipse(c, psz);
 			    g.chcolor();
 			}
-			g.fellipse(c, new Coord(5,5));
-			g.chcolor();
-		    }
-		    
-		    if(Config.showBeast && gob.isBeast()){
-			Tex tx = Config.hlcfg.get(gob.beastname).geticon();
-			g.aimage(tx, c, 0.5, 0.5);
+
+			if(Config.showBeast && gob.isBeast()){
+			    Tex tx = Config.hlcfg.get(gob.beastname).geticon();
+			    g.aimage(tx, c, isz, 0.5, 0.5);
+			}
 		    }
 		}
 	    }

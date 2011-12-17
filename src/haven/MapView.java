@@ -1088,7 +1088,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	else
 	    drawplobeffect(g);
 	
-	drawobjradius(g);
+	if(Config.radar){drawobjradius(g);}
 	drawtracking(g);
 	
 	if(curf != null)

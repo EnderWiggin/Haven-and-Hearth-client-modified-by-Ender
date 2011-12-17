@@ -26,7 +26,10 @@
 
 package haven;
 
+import haven.SelectorWnd.Callback;
+
 import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,6 +39,8 @@ import java.util.Map;
 
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
+    private static final BufferedImage cfgimgu = Resource.loadimg("gfx/hud/buttons/centeru");
+    private static final BufferedImage cfgimgd = Resource.loadimg("gfx/hud/buttons/centerd");
     private Tabs body;
     private String curcam;
     private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
@@ -416,19 +421,56 @@ public class OptWnd extends Window {
 	    tab = body.new Tab(new Coord(300, 0), 80, "Highlight");
 	    int i = 1;
 	    for (final String group : Config.hlgroups.keySet()) {
-		CheckBox chkbox = new CheckBox(new Coord(10, 30*i), tab, group) {
+		final CheckBox chkbox = new CheckBox(new Coord(20, 30*i), tab, group) {
 		    public void changed(boolean val) {
 			if (val) {
-			    Config.highlightItemList.addAll(Config.hlgroups.get(group));
+			    Config.highlightItemList.addAll(Config.hlcgroups.get(group));
 			} else {
 			    Config.highlightItemList.removeAll(Config.hlgroups.get(group));
 			}
 			Config.saveOptions();
 		    }
 		};
-		chkbox.a = Config.highlightItemList.containsAll(Config.hlgroups.get(group));
+		chkbox.a = Config.highlightItemList.containsAll(Config.hlcgroups.get(group));
+		
+		new IButton(new Coord(1, 30*i + 17), this, cfgimgu, cfgimgd){
+		    private boolean v = false;
+		    public void click() {
+			if(v){return;}
+			v = true;
+			SelectorWnd wnd = new SelectorWnd(ui.root, group);
+			wnd.setData(Config.hlgroups.get(group), Config.hlcgroups.get(group), new Callback() {
+			    
+			    @Override
+			    public void callback() {
+				v = false;
+				Config.highlightItemList.removeAll(Config.hlgroups.get(group));
+				if(chkbox.a){
+				    Config.highlightItemList.addAll(Config.hlcgroups.get(group));
+				}
+				Config.saveCurrentHighlights();
+				Config.saveOptions();
+			    }
+			});
+		    }
+
+		    private Text tooltip = Text.render("Config group");
+		    @Override
+		    public Object tooltip(Coord c, boolean again) {
+			return checkhit(c)?tooltip:null;
+		    }
+		};
+		
 		i++;
 	    }
+	    
+	    CheckBox chkbox = new CheckBox(new Coord(150, 30), tab, "Don't scale minimap icons") {
+		public void changed(boolean val) {
+		    Config.dontScaleMMIcons = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.dontScaleMMIcons;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

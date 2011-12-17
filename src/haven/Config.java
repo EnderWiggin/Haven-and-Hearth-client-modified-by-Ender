@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
@@ -86,6 +87,7 @@ public class Config {
     public static Set<String> highlightItemList;
     public static Map<String, HLInfo> hlcfg = new HashMap<String, HLInfo>();
     public static Map<String, Set<String>> hlgroups = new HashMap<String, Set<String>>();
+    public static Map<String, Set<String>> hlcgroups = new HashMap<String, Set<String>>();
     public static HashMap<Pattern, String> smileys;
     public static boolean nightvision;
     public static String currentCharName;
@@ -118,6 +120,8 @@ public class Config {
     public static boolean fps = false;
     public static boolean TEST = false;
     public static boolean simplemap = false;
+    public static boolean dontScaleMMIcons = true;
+    public static boolean radar;
     static {
 	try {
 	    String p;
@@ -161,6 +165,7 @@ public class Config {
 	    loadSkills();
 	    loadCraft();
 	    loadHighlight();
+	    loadCurrentHighlight();
 	    loadBeasts();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
@@ -175,6 +180,24 @@ public class Config {
 	    }
 	}
 	return str;
+    }
+    
+    public static void saveCurrentHighlights(){
+	try {
+	    JSONObject cfg = new JSONObject();
+	    for(String group : hlcgroups.keySet()){
+		cfg.put(group, hlcgroups.get(group));
+	    }
+	    try {
+		FileWriter fw = new FileWriter("highlight.cfg");
+		cfg.write(fw);
+		fw.close();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	} catch (JSONException e) {
+	    e.printStackTrace();
+	}
     }
     
     private static void loadBeasts() {
@@ -216,7 +239,9 @@ public class Config {
 		while(keys.hasNext()){
 		    String key = keys.next();
 		    Set<String> group = new HashSet<String>();
+		    Set<String> group2 = new HashSet<String>();
 		    hlgroups.put(key, group);
+		    hlcgroups.put(key, group2);
 		    JSONArray arr = cfg.getJSONArray(key);
 		    for(int i=0; i<arr.length(); i++){
 			JSONObject o = arr.getJSONObject(i);
@@ -231,6 +256,7 @@ public class Config {
 			}
 			hlcfg.put(name, inf);
 			group.add(name);
+			group2.add(name);
 		    }
 		}
 		
@@ -241,6 +267,43 @@ public class Config {
 	    fstream.close();
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
+	}
+    }
+    
+    private static void loadCurrentHighlight() {
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("highlight.cfg");
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+	    String data = "";
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		data += strLine;
+	    }
+	    try {
+		JSONObject cfg = new JSONObject(data);
+		@SuppressWarnings("unchecked")
+		Iterator<String> keys = cfg.keys();
+		while(keys.hasNext()){
+		    String key = keys.next();
+		    Set<String> group = new HashSet<String>();
+		    hlcgroups.put(key, group);
+		    JSONArray arr = cfg.getJSONArray(key);
+		    for(int i=0; i<arr.length(); i++){
+			String name = arr.getString(i);
+			group.add(name);
+		    }
+		}
+		
+	    } catch (JSONException e) {
+		e.printStackTrace();
+	    }
+	    br.close();
+	    fstream.close();
+	} catch (FileNotFoundException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -479,6 +542,8 @@ public class Config {
         showq = options.getProperty("showq", "true").equals("true");
         showpath = options.getProperty("showpath", "false").equals("true");
         highlightSkills = options.getProperty("highlightSkills", "false").equals("true");
+        dontScaleMMIcons = options.getProperty("dontScaleMMIcons", "false").equals("true");
+        radar = options.getProperty("radar", "true").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         currentVersion = options.getProperty("version", "");
@@ -574,6 +639,8 @@ public class Config {
         options.setProperty("showq", showq?"true":"false");
         options.setProperty("showpath", showpath?"true":"false");
         options.setProperty("highlightSkills", highlightSkills?"true":"false");
+        options.setProperty("dontScaleMMIcons", dontScaleMMIcons?"true":"false");
+        options.setProperty("radar", radar?"true":"false");
         options.setProperty("version", currentVersion);
         
         try {
