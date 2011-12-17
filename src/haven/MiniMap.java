@@ -30,6 +30,7 @@ import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
 import haven.MCache.Grid;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,6 +52,9 @@ import java.util.WeakHashMap;
 import javax.imageio.ImageIO;
 
 public class MiniMap extends Widget {
+    private static final Coord VRSZ = new Coord(84,84);
+    private static final Color VRFILL = new Color(128,128,128,96);
+    private static final Color VRBORDER = new Color(200,96,200,216);
     static Map<String, Tex> grids = new WeakHashMap<String, Tex>();
     static Map<String, Tex> simpleTex = new WeakHashMap<String, Tex>();
     static Set<String> loading = new HashSet<String>();
@@ -382,11 +386,26 @@ public class MiniMap extends Widget {
 	    g.chcolor();
 	}
 	//end of grid
+	
 	if((!plx.loading)&&(!hidden)) {
+	    
 	    //highlight items
 	    Coord c0 = hsz.div(2).sub(tc);
 	    Coord isz = new Coord(20, 20);
 	    Coord psz = new Coord(5, 5);
+	    Coord c;
+
+	    if(Config.showViewDistance){
+		Gob player = ui.sess.glob.oc.getgob(mv.playergob);
+		if(player != null && (c = player.getc()) != null){
+		    c = c0.add(c.div(tilesz)).sub(42,42);
+		    g.chcolor(VRFILL);
+		    g.frect(c, VRSZ);
+		    g.chcolor(VRBORDER);
+		    g.rect(c, VRSZ);
+		    g.chcolor();
+		}
+	    }
 	    
 	    if(Config.radar){
 		if(Config.dontScaleMMIcons){
@@ -396,7 +415,7 @@ public class MiniMap extends Widget {
 
 		synchronized (ui.sess.glob.oc) {
 		    for (Gob gob : ui.sess.glob.oc) {
-			Coord c = gob.getc();
+			c = gob.getc();
 			if(c == null){continue;}
 			String name = gob.resname();
 			if(name == null){continue;};

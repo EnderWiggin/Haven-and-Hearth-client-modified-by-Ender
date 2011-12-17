@@ -122,6 +122,7 @@ public class Config {
     public static boolean simplemap = false;
     public static boolean dontScaleMMIcons = true;
     public static boolean radar;
+    public static boolean showViewDistance;
     static {
 	try {
 	    String p;
@@ -234,7 +235,6 @@ public class Config {
 	    }
 	    try {
 		JSONObject cfg = new JSONObject(data);
-		@SuppressWarnings("unchecked")
 		Iterator<String> keys = cfg.keys();
 		while(keys.hasNext()){
 		    String key = keys.next();
@@ -282,7 +282,6 @@ public class Config {
 	    }
 	    try {
 		JSONObject cfg = new JSONObject(data);
-		@SuppressWarnings("unchecked")
 		Iterator<String> keys = cfg.keys();
 		while(keys.hasNext()){
 		    String key = keys.next();
@@ -544,6 +543,7 @@ public class Config {
         highlightSkills = options.getProperty("highlightSkills", "false").equals("true");
         dontScaleMMIcons = options.getProperty("dontScaleMMIcons", "false").equals("true");
         radar = options.getProperty("radar", "true").equals("true");
+        showViewDistance = options.getProperty("showViewDistance", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         currentVersion = options.getProperty("version", "");
@@ -641,6 +641,7 @@ public class Config {
         options.setProperty("highlightSkills", highlightSkills?"true":"false");
         options.setProperty("dontScaleMMIcons", dontScaleMMIcons?"true":"false");
         options.setProperty("radar", radar?"true":"false");
+        options.setProperty("showViewDistance", showViewDistance?"true":"false");
         options.setProperty("version", currentVersion);
         
         try {

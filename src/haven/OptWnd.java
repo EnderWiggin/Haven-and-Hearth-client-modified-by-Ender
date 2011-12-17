@@ -471,6 +471,13 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.dontScaleMMIcons;
+	    chkbox = new CheckBox(new Coord(150, 60), tab, "Show view distance") {
+		public void changed(boolean val) {
+		    Config.showViewDistance = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.showViewDistance;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
