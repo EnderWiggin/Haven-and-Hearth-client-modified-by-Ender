@@ -665,19 +665,20 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	} else if(hit != null && ui.modshift){
 	    String s;
 	    s = "Res found on gob " + hit.id;
-	    Layered l = hit.getattr(Layered.class);
-	    if(l != null && l.layers != null){
-		for(Indir<Resource> res : l.layers){
-		    if(res.get() != null){
-			String r = res.get().name.replace("gfx/borka/","");
-			if(r.contains("/"))
-			    r = r.substring(0,r.indexOf("/"));
-			if(r.equals("body") || r.startsWith("hair") || s.contains(r))
+	    String names[] = hit.resnames();
+	    if(names.length > 0){
+		for(String name : names){
+		    if(name.contains("gfx/borka")){
+			name = name.replace("gfx/borka/","");
+			if(name.contains("/"))
+			    name = name.substring(0,name.indexOf("/"));
+			if(name.equals("body") || name.startsWith("hair") || s.contains(name))
 			    continue;
-			s += "\n"+r;
 		    }
+		    s += "\n"+name;
 		}
 	    }
+
 	    if(tip == null || !tips.equals(s)){
 		tips = s;
 		tip = null;
