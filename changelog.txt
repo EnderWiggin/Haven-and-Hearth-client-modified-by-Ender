@@ -1,5 +1,11 @@
 Change log
  
+17.12.11
+ * added possibility to configure what objects in a group get highlighted
+ * added option to disable icon scaling on minimap (Options->Highlight)
+ * added button to toggle radar (X->D) to extended menu
+ * added option to Options->Highlight for toggling show view distance on minimap.
+ 
 16.12.11
  * added displaying of actions you have gained access to (by discovering materials or learning skill) in system Messages tab.
  * added object/beasts/humans highlight to minimap. What objects to highlight is configured in Options->Highlight.
