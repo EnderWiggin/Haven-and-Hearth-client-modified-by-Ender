@@ -433,7 +433,7 @@ public class OptWnd extends Window {
 		};
 		chkbox.a = Config.highlightItemList.containsAll(Config.hlcgroups.get(group));
 		
-		new IButton(new Coord(1, 30*i + 17), this, cfgimgu, cfgimgd){
+		new IButton(new Coord(1, 30*i + 17), tab, cfgimgu, cfgimgd){
 		    private boolean v = false;
 		    public void click() {
 			if(v){return;}
