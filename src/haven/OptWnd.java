@@ -235,7 +235,7 @@ public class OptWnd extends Window {
 			}
 		    }).a = Config.hearthunknown;
 	    
-		(new CheckBox(new Coord(455, 190), tab, "Red") {
+		(new CheckBox(new Coord(455, 195), tab, "Red") {
 			public void changed(boolean val) {
 			    Config.hearthred = val;
 			    Config.saveOptions();
