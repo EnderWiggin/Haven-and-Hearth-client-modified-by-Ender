@@ -123,6 +123,10 @@ public class Config {
     public static boolean dontScaleMMIcons = true;
     public static boolean radar;
     public static boolean showViewDistance;
+	public static boolean autohearth;
+	public static boolean hearthunknown;
+	public static boolean hearthred;
+	
     static {
 	try {
 	    String p;
@@ -547,6 +551,9 @@ public class Config {
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         currentVersion = options.getProperty("version", "");
+		autohearth = options.getProperty("autohearth", "true").equals("true");
+		hearthunknown = options.getProperty("heathunknown", "true").equals("true");
+		hearthred = options.getProperty("hearthred", "true").equals("true");
         hideObjectList.clear();
         String hideObjects = options.getProperty("hideObjects", "");
         if (!hideObjects.isEmpty()) {
@@ -641,6 +648,9 @@ public class Config {
         options.setProperty("highlightSkills", highlightSkills?"true":"false");
         options.setProperty("dontScaleMMIcons", dontScaleMMIcons?"true":"false");
         options.setProperty("radar", radar?"true":"false");
+		options.setProperty("autohearth", radar?"true":"false");
+		options.setProperty("hearthunknown", radar?"true":"false");
+		options.setProperty("hearthred", radar?"true":"false");
         options.setProperty("showViewDistance", showViewDistance?"true":"false");
         options.setProperty("version", currentVersion);
         

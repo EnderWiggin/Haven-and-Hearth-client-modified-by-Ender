@@ -220,7 +220,28 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.highlightSkills;
+		
+		(new CheckBox(new Coord(440, 130), tab, "Auto-hearth") {
+		public void changed(boolean val) {
+		    Config.autohearth = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.autohearth;
+		
+		(new CheckBox(new Coord(455, 165), tab, "Unknown") {
+			public void changed(boolean val) {
+			    Config.hearthunknown = val;
+			    Config.saveOptions();
+			}
+		    }).a = Config.hearthunknown;
 	    
+		(new CheckBox(new Coord(455, 190), tab, "Red") {
+			public void changed(boolean val) {
+			    Config.hearthred = val;
+			    Config.saveOptions();
+			}
+		    }).a = Config.hearthred;
+		
 	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {

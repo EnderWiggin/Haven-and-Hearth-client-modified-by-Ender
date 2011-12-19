@@ -82,6 +82,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.25, 1.5, 1.75, 2};
     Map<String, Integer> radiuses;
     int beast_check_delay = 0;
+	long lastah = 0;
     
     public double getScale() {
         return Config.zoom?_scale:1;
@@ -930,6 +931,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		if(gob.isHuman() && !ui.sess.glob.party.memb.keySet().contains(gob.id)){
 		    g.chcolor(255, 0, 255, 96);
 		    drawradius(g, gob.sc, 10);
+			if (Config.autohearth) {
+				autohearth(gob);
+			}
 		}
 		
 		if(gob.isHighlight() && Config.highlightItemList.contains(gob.resname())){
@@ -940,6 +944,28 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor();
     }
+	
+	private void autohearth(Gob gob) {
+		if (System.currentTimeMillis() > lastah) {
+			KinInfo kin = gob.getattr(KinInfo.class);
+			if(kin == null){
+				if (Config.hearthunknown) {
+					hearth();
+				}
+			} else {
+				if (kin.group == 2) {
+					if (Config.hearthred)
+						hearth();
+				}
+			}
+		}
+	}
+	
+	private void hearth() {
+		String[] action = {"theTrav", "hearth"};
+		UI.instance.mnu.wdgmsg("act", (Object[])action);
+		lastah = System.currentTimeMillis() + 5000;
+	}
     
     private void drawtracking(GOut g) {
 	g.chcolor(255, 0, 255, 128);
