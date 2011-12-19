@@ -1,5 +1,12 @@
 Change log
  
+19.12.11
+ * added autohearth by algeralith, but with fix to options saving and changed defaults to false.
+ 
+18.12.11
+ * added viewing of gob equips made by boshaw\
+ * fixed highlight detailed config buttons do not disappear when changing tabs
+ 
 17.12.11
  * added possibility to configure what objects in a group get highlighted
  * added option to disable icon scaling on minimap (Options->Highlight)

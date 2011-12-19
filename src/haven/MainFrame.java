@@ -50,7 +50,7 @@ import java.util.LinkedList;
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
-    public static String VERSION = "17.12.11";
+    public static String VERSION = "19.12.11";
     private static final String TITLE = String.format("Haven and Hearth (modified by Ender v%s)", VERSION);
     HavenPanel p;
     ThreadGroup g;
