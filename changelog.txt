@@ -1,4 +1,7 @@
 Change log
+
+25.01.12
+ * added combination to mute chat (ALT-C)
  
 19.12.11
  * added autohearth by algeralith, but with fix to options saving and changed defaults to false.
