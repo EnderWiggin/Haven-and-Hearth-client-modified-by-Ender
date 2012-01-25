@@ -66,6 +66,11 @@ public class RootWidget extends ConsoleHost {
 		Config.nightvision = !Config.nightvision;
 	    } else if((code == KeyEvent.VK_X)&&ctrl) {
 		Config.xray = !Config.xray;
+	    } else if((code == KeyEvent.VK_C)&&alt) {
+		Config.muteChat = !Config.muteChat;
+		String str = "Chat mute is turned "+((Config.muteChat)?"ON":"OFF");
+		ui.cons.out.println(str);
+		ui.slen.error(str);
 	    } else if((code == KeyEvent.VK_F)&&ctrl) {
 		Config.fps = !Config.fps;
 	    } else if((code == KeyEvent.VK_K)&&ctrl) {

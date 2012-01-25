@@ -1309,8 +1309,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    }
 		}
 	    }
-	    for(Speaking s : speaking) {
-		s.draw(g, s.gob.sc.add(s.off));
+	    if(!Config.muteChat){
+		for(Speaking s : speaking) {
+		    s.draw(g, s.gob.sc.add(s.off));
+		}
 	    }
 	    if(curf != null) {
 		curf.tick("aux");

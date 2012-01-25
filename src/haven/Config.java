@@ -123,10 +123,11 @@ public class Config {
     public static boolean dontScaleMMIcons = true;
     public static boolean radar;
     public static boolean showViewDistance;
-	public static boolean autohearth;
-	public static boolean hearthunknown;
-	public static boolean hearthred;
-	
+    public static boolean autohearth;
+    public static boolean hearthunknown;
+    public static boolean hearthred;
+    public static boolean muteChat = false;
+
     static {
 	try {
 	    String p;
