@@ -105,7 +105,7 @@ public class ChatHW extends HWindow {
 		if(m.find()){
 		    id = Integer.parseInt(m.group(1));
 		}
-	    } catch(IllegalStateException e){}
+	    } catch(Exception e){}
 	    Gob gob;
 	    if(id != 0) {
 		if ((gob = ui.sess.glob.oc.getgob(id)) != null){
