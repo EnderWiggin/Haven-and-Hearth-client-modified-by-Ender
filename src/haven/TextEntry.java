@@ -65,6 +65,7 @@ public class TextEntry extends Widget {
 	
     public void draw(GOut g) {
 	super.draw(g);
+	if(buf == null){return;}
 	String dtext;
 	if(pw) {
 	    dtext = "";
