@@ -1,10 +1,14 @@
-Change log
-
-27.02.212
+﻿Change log
+ 
+28.02.12
+ * fixed visibility range drawn outside of minimap
+ * added displaying of total LP of curios in study window
+ 
+27.02.12
  * fixes to fep and curio configs fro Oddity (Apple pie and Völva's Wand)
  * fixed crash after receiving @$[123123123123123123] in chat
  * fixed crash with kin list on slow computers (needs testing) 
-
+ 
 25.01.12
  * added combination to mute chat (ALT-C)
  

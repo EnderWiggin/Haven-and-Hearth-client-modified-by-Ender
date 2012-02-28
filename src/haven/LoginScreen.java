@@ -74,7 +74,7 @@ public class LoginScreen extends Widget {
 	    FileInputStream fstream;
 	    fstream = new FileInputStream("changelog.txt");
 	    DataInputStream in = new DataInputStream(fstream);
-	    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	    BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
 	    String strLine;
 	    int count = 0;
 	    while ((count<maxlines)&&(strLine = br.readLine()) != null)   {
