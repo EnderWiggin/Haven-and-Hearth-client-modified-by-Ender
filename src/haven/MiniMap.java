@@ -31,6 +31,8 @@ import static haven.MCache.tilesz;
 import haven.MCache.Grid;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,6 +75,7 @@ public class MiniMap extends Widget {
     boolean dm = false;
     public int scale = 4;
     double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2};
+    private Tex VR;
     
     public double getScale() {
         return scales[scale];
@@ -233,6 +236,14 @@ public class MiniMap extends Widget {
 	super(c, sz, parent);
 	this.mv = mv;
 	off = new Coord();
+	BufferedImage bi = new BufferedImage(VRSZ.x, VRSZ.y, BufferedImage.TYPE_INT_ARGB); 
+	Graphics2D gr = bi.createGraphics();
+	gr.setColor(VRFILL);
+	gr.fillRect(0, 0, VRSZ.x, VRSZ.y);
+	gr.setColor(VRBORDER);
+	gr.drawRect(0, 0, VRSZ.x, VRSZ.y);
+	gr.drawImage(bi, null, 0, 0);
+	VR = new TexI(bi);
 	newMappingSession();
     }
     
@@ -398,12 +409,14 @@ public class MiniMap extends Widget {
 	    if(Config.showViewDistance){
 		Gob player = ui.sess.glob.oc.getgob(mv.playergob);
 		if(player != null && (c = player.getc()) != null){
-		    c = c0.add(c.div(tilesz)).sub(42,42);
-		    g.chcolor(VRFILL);
-		    g.frect(c, VRSZ);
-		    g.chcolor(VRBORDER);
-		    g.rect(c, VRSZ);
-		    g.chcolor();
+		    c = c0.add(c.div(tilesz));
+		    g.aimage(VR, c, 0.5, 0.5);
+//		    c = c0.add(c.div(tilesz)).sub(42,42);
+//		    g.chcolor(VRFILL);
+//		    g.frect(c, VRSZ);
+//		    g.chcolor(VRBORDER);
+//		    g.rect(c, VRSZ);
+//		    g.chcolor();
 		}
 	    }
 	    
