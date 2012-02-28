@@ -571,10 +571,10 @@ public class CharWnd extends Window {
     }
     
     public class Study extends Widget {
-	Label attlbl;
+	Label attlbl, total;
 	Window wnd;
 	boolean svis, attached = true;
-	private Coord detsz =  new Coord(110, 130);
+	private Coord detsz =  new Coord(110, 145);
 	private Coord detc = new Coord(-145, -75);
 	int attlimit, attused = 0;
 	public Study(Widget parent) {
@@ -584,7 +584,7 @@ public class CharWnd extends Window {
 	    new Label(new Coord(138, 202), this, "Attention:", fnd);
 	    attlimit = ui.sess.glob.cattr.get("intel").comp;
 	    attlbl = new Label(new Coord(200, 202), this, "", fnd);
-	    
+	    total = new Label(new Coord(138, 217), this, "Total LP:", fnd);
 	    canhastrash = false;
 	    visible = false;
 	}
@@ -592,6 +592,19 @@ public class CharWnd extends Window {
 	private void upd(){
 	    attlbl.settext(attused+"/"+attlimit);
 	    attlbl.c.x = 263 - attlbl.sz.x;
+	    Inventory inv = findchild(Inventory.class);
+	    int LP = 0;
+	    if(inv != null){
+		Widget wdg = inv.child;
+		while(wdg != null){
+		    if(wdg instanceof Item){
+			Item itm = (Item) wdg;
+			LP += itm.getLP();
+		    }
+		    wdg = wdg.next;
+		}
+		total.settext("Total LP: "+LP);
+	    }
 	}
 	
 	public void toggle(){

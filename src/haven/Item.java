@@ -221,7 +221,7 @@ public class Item extends Widget implements DTarget {
     
     long hoverstart;
     Text shorttip = null, longtip = null;
-    private double qmult;
+    public double qmult;
     private String FEP = null;
     public Object tooltip(Coord c, boolean again) {
 	long now = System.currentTimeMillis();
@@ -333,6 +333,17 @@ public class Item extends Widget implements DTarget {
 	    }
 	    shorttip = longtip = null;
 	}
+    }
+    
+    public int getLP() {
+	String name = name();
+	if(name == null){return 0;}
+	name = name.toLowerCase();
+	CurioInfo curio;
+	if((curio = Config.curios.get(name)) != null){
+	    return (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
+	}
+	return 0;
     }
     
     private void calcCurio(){

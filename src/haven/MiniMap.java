@@ -236,7 +236,7 @@ public class MiniMap extends Widget {
 	super(c, sz, parent);
 	this.mv = mv;
 	off = new Coord();
-	BufferedImage bi = new BufferedImage(VRSZ.x, VRSZ.y, BufferedImage.TYPE_INT_ARGB); 
+	BufferedImage bi = new BufferedImage(VRSZ.x+1, VRSZ.y+1, BufferedImage.TYPE_INT_ARGB); 
 	Graphics2D gr = bi.createGraphics();
 	gr.setColor(VRFILL);
 	gr.fillRect(0, 0, VRSZ.x, VRSZ.y);
@@ -411,12 +411,6 @@ public class MiniMap extends Widget {
 		if(player != null && (c = player.getc()) != null){
 		    c = c0.add(c.div(tilesz));
 		    g.aimage(VR, c, 0.5, 0.5);
-//		    c = c0.add(c.div(tilesz)).sub(42,42);
-//		    g.chcolor(VRFILL);
-//		    g.frect(c, VRSZ);
-//		    g.chcolor(VRBORDER);
-//		    g.rect(c, VRSZ);
-//		    g.chcolor();
 		}
 	    }
 	    

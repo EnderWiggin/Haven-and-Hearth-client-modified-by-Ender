@@ -305,7 +305,7 @@ public class Config {
 	    br.close();
 	    fstream.close();
 	} catch (FileNotFoundException e) {
-	    e.printStackTrace();
+	    //e.printStackTrace();
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
