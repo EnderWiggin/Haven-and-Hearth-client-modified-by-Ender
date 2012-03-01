@@ -127,6 +127,7 @@ public class Config {
     public static boolean hearthunknown;
     public static boolean hearthred;
     public static boolean muteChat = false;
+    public static boolean showgobpath;
 
     static {
 	try {
@@ -545,6 +546,7 @@ public class Config {
         newclaim = options.getProperty("newclaim", "true").equals("true");
         showq = options.getProperty("showq", "true").equals("true");
         showpath = options.getProperty("showpath", "false").equals("true");
+        showgobpath = options.getProperty("showgobpath", "false").equals("true");
         highlightSkills = options.getProperty("highlightSkills", "false").equals("true");
         dontScaleMMIcons = options.getProperty("dontScaleMMIcons", "false").equals("true");
         radar = options.getProperty("radar", "true").equals("true");
@@ -646,6 +648,7 @@ public class Config {
         options.setProperty("newclaim", newclaim?"true":"false");
         options.setProperty("showq", showq?"true":"false");
         options.setProperty("showpath", showpath?"true":"false");
+        options.setProperty("showgobpath", showgobpath?"true":"false");
         options.setProperty("highlightSkills", highlightSkills?"true":"false");
         options.setProperty("dontScaleMMIcons", dontScaleMMIcons?"true":"false");
         options.setProperty("radar", radar?"true":"false");

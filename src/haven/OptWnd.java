@@ -94,134 +94,142 @@ public class OptWnd extends Window {
 			else               ui.fsm.setfs();
 		    }
 		}};
-
-	    (new CheckBox(new Coord(10, 130), tab, "Use new minimap (restart required)") {
+		
+	    int y = 95;
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Use new minimap (restart required)") {
 		public void changed(boolean val) {
 		    Config.new_minimap = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.new_minimap;
 	    
-	    (new CheckBox(new Coord(10, 165), tab, "Use new chat (restart required)") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Use new chat (restart required)") {
 		public void changed(boolean val) {
 		    Config.new_chat = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.new_chat;
 	    
-	    (new CheckBox(new Coord(10, 200), tab, "Add timestamp in chat") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Add timestamp in chat") {
 		public void changed(boolean val) {
 		    Config.timestamp = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.timestamp;
 	    
-	    (new CheckBox(new Coord(10, 235), tab, "Show dowsing direcion") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show dowsing direcion") {
 		public void changed(boolean val) {
 		    Config.showDirection = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showDirection;
 	    
-	    (new CheckBox(new Coord(10, 270), tab, "Always show heartling names") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Always show heartling names") {
 		public void changed(boolean val) {
 		    Config.showNames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showNames;
 	    
-	    (new CheckBox(new Coord(10, 305), tab, "Always show other kin names") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Always show other kin names") {
 		public void changed(boolean val) {
 		    Config.showOtherNames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showOtherNames;
 	    
-	    (new CheckBox(new Coord(10, 340), tab, "Show smileys in chat") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show smileys in chat") {
 		public void changed(boolean val) {
 		    Config.use_smileys = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.use_smileys;
 	    
-	    (new CheckBox(new Coord(10, 375), tab, "Show item quality") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show item quality") {
 		public void changed(boolean val) {
 		    Config.showq = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showq;
 	    
-	    (new CheckBox(new Coord(10, 410), tab, "Show player path") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show player path") {
 		public void changed(boolean val) {
 		    Config.showpath = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showpath;
-	    
-	    (new CheckBox(new Coord(220, 130), tab, "Fast menu") {
+	    y = -10;
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Fast menu") {
 		public void changed(boolean val) {
 		    Config.fastFlowerAnim = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.fastFlowerAnim;
 	    
-	    (new CheckBox(new Coord(220, 165), tab, "Compress screenshots") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Compress screenshots") {
 		public void changed(boolean val) {
 		    Config.sshot_compress = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.sshot_compress;
 	    
-	    (new CheckBox(new Coord(220, 200), tab, "Exclude UI from screenshot") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Exclude UI from screenshot") {
 		public void changed(boolean val) {
 		    Config.sshot_noui = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.sshot_noui;
 	    
-	    (new CheckBox(new Coord(220, 235), tab, "Exclude names from screenshot") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Exclude names from screenshot") {
 		public void changed(boolean val) {
 		    Config.sshot_nonames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.sshot_nonames;
 	    
-	    (new CheckBox(new Coord(220, 270), tab, "Use optimized claim higlighting") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Use optimized claim higlighting") {
 		public void changed(boolean val) {
 		    Config.newclaim = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.newclaim;
 	    
-	    (new CheckBox(new Coord(220, 305), tab, "Show digit toolbar") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Show digit toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.digitbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.digitbar.name, val);
 		}
 	    }).a = ui.mnu.digitbar.visible;
 	    
-	    (new CheckBox(new Coord(220, 340), tab, "Show F-button toolbar") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Show F-button toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.functionbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.functionbar.name, val);
 		}
 	    }).a = ui.mnu.functionbar.visible;
 	    
-	    (new CheckBox(new Coord(220, 375), tab, "Show numpad toolbar") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Show numpad toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.numpadbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.numpadbar.name, val);
 		}
 	    }).a = ui.mnu.numpadbar.visible;
 	    
-	    (new CheckBox(new Coord(220, 410), tab, "Highlight combat skills") {
+	    (new CheckBox(new Coord(220, (y+=35)), tab, "Highlight combat skills") {
 		public void changed(boolean val) {
 		    Config.highlightSkills = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.highlightSkills;
+	    
+	    (new CheckBox(new Coord(220, 410), tab, "Show gob path") {
+		public void changed(boolean val) {
+		    Config.showgobpath = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showgobpath;
 		
-		(new CheckBox(new Coord(440, 130), tab, "Auto-hearth") {
+	    (new CheckBox(new Coord(440, 130), tab, "Auto-hearth") {
 		public void changed(boolean val) {
 		    Config.autohearth = val;
 		    Config.saveOptions();
@@ -242,7 +250,7 @@ public class OptWnd extends Window {
 			}
 		    }).a = Config.hearthred;
 		
-	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
+	    Widget editbox = new Frame(new Coord(440, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
 		public void changed(int btn, String lbl) {

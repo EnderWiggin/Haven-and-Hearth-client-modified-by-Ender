@@ -1427,25 +1427,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    drawmap(g);
 	    
 	    //movement highlight
+	    if(Config.showgobpath){
+		drawGobPath(g);
+	    }
 	    if(Config.showpath){
-		Coord oc = viewoffset(sz, mc);
-		Coord pc, cc;
-		Gob player = glob.oc.getgob(playergob);
-		if(player != null){
-		    Moving m = player.getattr(Moving.class);
-		    g.chcolor(Color.GREEN);
-		    if((m != null) && (m instanceof LinMove)){
-			LinMove lm = (LinMove)m;
-			pc = m2s(lm.t).add(oc);
-			g.line(player.sc, pc, 2);
-			for(Coord c:glob.oc.movequeue){
-			    cc = m2s(c).add(oc);
-			    g.line(pc, cc, 2);
-			    pc = cc;
-			}
-		    }
-		    g.chcolor();
-		}
+		drawPlayerPath(g);
 	    }
 	    //###############
 	    
@@ -1475,6 +1461,47 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.gl.glPopMatrix();
 	super.draw(og);
+    }
+
+    private void drawPlayerPath(GOut g) {
+	Coord oc = viewoffset(sz, mc);
+	Coord pc, cc;
+	Moving m;
+	LinMove lm;
+	Gob player = glob.oc.getgob(playergob);
+	if(player != null){
+	    m = player.getattr(Moving.class);
+	    g.chcolor(Color.GREEN);
+	    if((m != null) && (m instanceof LinMove)){
+		lm = (LinMove)m;
+		pc = m2s(lm.t).add(oc);
+		g.line(player.sc, pc, 2);
+		for(Coord c:glob.oc.movequeue){
+		    cc = m2s(c).add(oc);
+		    g.line(pc, cc, 2);
+		    pc = cc;
+		}
+	    }
+	    g.chcolor();
+	}
+    }
+
+    private void drawGobPath(GOut g) {
+	Moving m;
+	LinMove lm;
+	Coord oc = viewoffset(sz, mc);
+	g.chcolor(Color.ORANGE);
+	synchronized (glob.oc) {
+	    for (Gob gob : glob.oc){
+		if(gob.sc == null){continue;}
+		m = gob.getattr(Moving.class);
+		if((m!=null)&&(m instanceof LinMove)){
+		    lm = (LinMove) m;
+		    g.line(gob.sc, m2s(lm.t).add(oc), 2);
+		}
+	    }
+	}
+	g.chcolor();
     }
 	
     public boolean drop(Coord cc, Coord ul) {
