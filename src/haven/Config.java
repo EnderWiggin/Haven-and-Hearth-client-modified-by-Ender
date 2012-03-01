@@ -227,6 +227,18 @@ public class Config {
 	inf.setColor(new Color(0x7BAF8E));
 	beasts.put(pat, "Deer");
 	hlcfg.put(pat, inf);
+	//fox
+	pat = "kritter/fox";
+	inf = new HLInfo(pat, "mmap/fox");
+	inf.setColor(new Color(0xAF8E5B));
+	beasts.put(pat, "Fox");
+	hlcfg.put(pat, inf);
+	//rabbit
+	pat = "kritter/hare";
+	inf = new HLInfo(pat, "mmap/rabbit");
+	inf.setColor(new Color(0x8E8E8E));
+	beasts.put(pat, "Rabbit");
+	hlcfg.put(pat, inf);
     }
 
     private static void loadHighlight() {
