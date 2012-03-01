@@ -1,0 +1,17 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\global.res
+#String pr
+paginae/act/add
+#uint16 pver
+2
+#String name
+Global Chat
+#String preq
+
+#uint16 hk
+103
+#uint16 ad length
+2
+#String ad[0]
+@
+#String ad[1]
+globalchat

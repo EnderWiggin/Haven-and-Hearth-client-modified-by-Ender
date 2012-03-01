@@ -1,0 +1,17 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\study.res
+#String pr
+paginae/act/add
+#uint16 pver
+2
+#String name
+Study
+#String preq
+
+#uint16 hk
+121
+#uint16 ad length
+2
+#String ad[0]
+@
+#String ad[1]
+study

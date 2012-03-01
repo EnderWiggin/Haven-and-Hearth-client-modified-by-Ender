@@ -1,0 +1,17 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\animal.res
+#String pr
+paginae/act/add
+#uint16 pver
+2
+#String name
+Show Animals
+#String preq
+
+#uint16 hk
+97
+#uint16 ad length
+2
+#String ad[0]
+@
+#String ad[1]
+animal

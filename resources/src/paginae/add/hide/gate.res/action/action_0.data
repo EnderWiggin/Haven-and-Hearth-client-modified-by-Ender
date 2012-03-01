@@ -1,0 +1,19 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\hide\gate.res
+#String pr
+paginae/add/hide
+#uint16 pver
+2
+#String name
+Gates
+#String preq
+
+#uint16 hk
+103
+#uint16 ad length
+3
+#String ad[0]
+@
+#String ad[1]
+hide
+#String ad[2]
+gfx/arch/gates

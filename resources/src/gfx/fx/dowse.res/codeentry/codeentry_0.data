@@ -1,0 +1,7 @@
+#CODEENTRY LAYER FOR RES src//\gfx\fx\dowse.res
+#int32 length
+1
+#String key[0]
+spr
+#String value[0]
+DowseFx

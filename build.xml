@@ -17,6 +17,12 @@
       git-rev = ${gitrev}
     </echo>
   </target>
+	
+  <target name="resources">
+	  	<exec executable="java" failifexecutionfails="false">
+	  	  <arg line="-jar resources/LayerUtil.jar -re resources/src build/res" />
+	  	</exec>
+  </target>
 
   <target name="haven-client" depends="build-env">
     <javac srcdir="src" destdir="build/classes" debug="on"
@@ -37,9 +43,6 @@
     <copy todir="build/classes/haven" file="etc/res-bgload" />
     <copy todir="build/classes/haven" file="etc/icon.png" />
     <mkdir dir="build/res" />
-    <copy todir="build/res" >
-	<fileset dir="resources/res"/>
-    </copy>
     <copy todir="build" >
 	<fileset file="fep.conf"/>
 	<fileset file="curio.conf"/>
@@ -63,7 +66,7 @@
     </unjar>
   </target>
 
-  <target name="jar" depends="haven-client,buildinfo,lib-classes">
+  <target name="jar" depends="haven-client,buildinfo,lib-classes,resources">
     <jar destfile="build/haven.jar" update="true">
       <fileset dir="build/classes" excludes="*.class"/>
       <fileset dir="build/classes-lib" />

@@ -1,0 +1,13 @@
+#ABUTTON LAYER FOR RES src//\paginae\act\add.res
+#String pr
+
+#uint16 pver
+2
+#String name
+Xtended
+#String preq
+
+#uint16 hk
+120
+#uint16 ad length
+0

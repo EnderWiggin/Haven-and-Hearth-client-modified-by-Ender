@@ -1,0 +1,17 @@
+#ABUTTON LAYER FOR RES src//\paginae\craft\rustroot.res
+#String pr
+paginae/craft/potions
+#uint16 pver
+1
+#String name
+Rustroot Extract
+#String preq
+geo
+#uint16 hk
+82
+#uint16 ad length
+2
+#String ad[0]
+craft
+#String ad[1]
+rustroot

@@ -1,0 +1,13 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\hide.res
+#String pr
+paginae/act/add
+#uint16 pver
+2
+#String name
+Hide
+#String preq
+
+#uint16 hk
+104
+#uint16 ad length
+0

@@ -1,0 +1,19 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\hide\mans.res
+#String pr
+paginae/add/hide
+#uint16 pver
+2
+#String name
+Mansions
+#String preq
+
+#uint16 hk
+109
+#uint16 ad length
+3
+#String ad[0]
+@
+#String ad[1]
+hide
+#String ad[2]
+gfx/arch/inn

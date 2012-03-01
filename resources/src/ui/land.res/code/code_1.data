@@ -1,0 +1,4 @@
+#CODE LAYER FOR RES src//\ui\land.res
+#String class_name
+#Note: the .class file will have the same name as this file
+Landwindow

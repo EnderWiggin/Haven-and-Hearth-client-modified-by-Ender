@@ -1,0 +1,19 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\hide\plan.res
+#String pr
+paginae/add/hide
+#uint16 pver
+2
+#String name
+Plants
+#String preq
+
+#uint16 hk
+112
+#uint16 ad length
+3
+#String ad[0]
+@
+#String ad[1]
+hide
+#String ad[2]
+gfx/terobjs/plants

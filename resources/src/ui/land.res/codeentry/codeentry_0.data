@@ -1,0 +1,7 @@
+#CODEENTRY LAYER FOR RES src//\ui\land.res
+#int32 length
+1
+#String key[0]
+wdg
+#String value[0]
+Landwindow$Maker
