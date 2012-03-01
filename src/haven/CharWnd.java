@@ -57,6 +57,10 @@ public class CharWnd extends Window {
     FoodMeter foodm;
     Study study;
     Map<String, Attr> attrs = new TreeMap<String, Attr>();
+    private static final BufferedImage ilockc = Resource.loadimg("gfx/hud/lockc");
+    private static final BufferedImage ilockch = Resource.loadimg("gfx/hud/lockch");
+    private static final BufferedImage ilocko = Resource.loadimg("gfx/hud/locko");
+    private static final BufferedImage ilockoh = Resource.loadimg("gfx/hud/lockoh");
     public static final Tex missing = Resource.loadtex("gfx/invobjs/missing");
     public static final Tex foodmimg = Resource.loadtex("gfx/hud/charsh/foodm");
     public static final Color debuff = new Color(255, 128, 128);
@@ -577,6 +581,9 @@ public class CharWnd extends Window {
 	private Coord detsz =  new Coord(110, 145);
 	private Coord detc = new Coord(-145, -75);
 	int attlimit, attused = 0;
+	private IButton lockbtn;
+	private boolean locked;
+	
 	public Study(Widget parent) {
 	    super(Coord.z, new Coord(400, 275), parent);
 	    ui.study = this;
@@ -587,8 +594,35 @@ public class CharWnd extends Window {
 	    total = new Label(new Coord(138, 217), this, "Total LP:", fnd);
 	    canhastrash = false;
 	    visible = false;
+	    locked = Config.window_props.getProperty("study_locked", "false").equals("true");
+	    
+	    lockbtn = new IButton(Coord.z, this, locked?ilockc:ilocko, locked?ilocko:ilockc, locked?ilockch:ilockoh) {
+		public void click() {
+		    locked = !locked;
+		    if(locked) {
+			up = ilockc;
+			down = ilocko;
+			hover = ilockch;
+		    } else {
+			up = ilocko;
+			down = ilockc;
+			hover = ilockoh;
+		    }
+		    Config.setWindowOpt("study_locked", locked);
+		}
+	    };
+	    lockbtn.recthit = true;
+	    lockbtn.c = new Coord(257, 220);
 	}
 	
+	@Override
+	public boolean mousedown(Coord c, int button) {
+	    if(locked && !c.isect(lockbtn.c, lockbtn.sz)){
+		return false;
+	    }
+	    return super.mousedown(c, button);
+	}
+
 	private void upd(){
 	    attlbl.settext(attused+"/"+attlimit);
 	    attlbl.c.x = 263 - attlbl.sz.x;
