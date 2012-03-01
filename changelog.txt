@@ -1,5 +1,10 @@
 ﻿Change log
  
+01.03.12
+ * added option to show path of every object (Options->General->Show gob path).
+ * added lock button to study window. If locked, you can't pick curios, but can place them inside.
+ * added foxes and rabbits to animal highlight
+ 
 28.02.12
  * fixed visibility range drawn outside of minimap
  * added displaying of total LP of curios in study window
