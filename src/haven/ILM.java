@@ -28,9 +28,10 @@ package haven;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import javax.media.opengl.GL;
+import ender.screen.Screen;
 
 public class ILM extends TexRT {
     public final static BufferedImage ljusboll;
@@ -75,8 +76,7 @@ public class ILM extends TexRT {
 	lbtex = new TexI(ljusboll);
     }
 	
-    protected Color setenv(GL gl) {
-	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+    protected Color setenv(Graphics2D gl) {
 	return(amb);
     }
 	
@@ -84,9 +84,7 @@ public class ILM extends TexRT {
 	if(Config.nightvision){
 	    return false;
 	}
-	GL gl = g.gl;
-	gl.glClearColor(255, 255, 255, 255);
-	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+	Screen gl = g.gl;
 	synchronized(oc) {
 	    for(Gob gob : oc) {
 		if(gob.sc == null) {

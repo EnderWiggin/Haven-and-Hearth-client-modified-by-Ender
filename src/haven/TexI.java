@@ -26,7 +26,9 @@
 
 package haven;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentColorModel;
@@ -34,33 +36,67 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.nio.ByteBuffer;
 
-import javax.media.opengl.GL;
+import ender.screen.Bitmap;
+import ender.screen.Screen;
 
-public class TexI extends TexGL {
+public class TexI extends Tex {
     public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
     protected byte[] pixels;
     public BufferedImage back;
-    private int fmt = GL.GL_RGBA;
+//    public Bitmap bmp;
+    protected Graphics2D mygl = null;
+    protected Coord tdim;
+    private Object fmt;
+    public static boolean disableall = false;
 
     public TexI(BufferedImage img) {
 	super(Utils.imgsz(img));
+	tdim = new Coord(nextp2(sz().x), nextp2(sz().y));
 	back = img;
+	//bmp = new Bitmap(back);
 	pixels = convert(img, tdim);
+	mygl = img.createGraphics();
     }
 
     public TexI(Coord sz) {
 	super(sz);
+	tdim = new Coord(nextp2(sz.x), nextp2(sz.y));
 	pixels = new byte[tdim.x * tdim.y * 4];
     }
     
-    protected void fill(GOut g) {
-	GL gl = g.gl;
-	ByteBuffer data = ByteBuffer.wrap(pixels);
-	gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, fmt, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+    protected Color setenv(Screen gl) {
+	return(Color.WHITE);
     }
 	
+    Color blend(GOut g, Color amb) {
+	Color c = g.getcolor();
+	Color n = new Color((c.getRed() * amb.getRed()) / 255,
+			    (c.getGreen() * amb.getGreen()) / 255,
+			    (c.getBlue() * amb.getBlue()) / 255,
+			    (c.getAlpha() * amb.getAlpha()) / 255);
+	return(n);
+    }
+	
+    public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
+	Screen gl = g.gl;
+	Color amb = blend(g, setenv(gl));
+//	checkerr(gl);
+	if(!disableall) {
+	    gl.gl.drawImage(back, c.x, c.y, c.x+sz.x, c.y+sz.y, ul.x, ul.y, br.x, br.y, null);
+	    
+//	    gl.blit(bmp, c.x, c.y);
+	}
+    }
+	
+    public void dispose() {
+	    //dispose(mygl, id);
+    }
+	
+    protected void finalize() {
+	dispose();
+    }
+    
     protected void update(byte[] n) {
 	if(n.length != pixels.length)
 	    throw(new RuntimeException("Illegal new texbuf size (" + n.length + " != " + pixels.length + ")"));
@@ -76,7 +112,6 @@ public class TexI extends TexGL {
 	TexI n = new TexI(dim);
 	n.pixels = new byte[pixels.length];
 	System.arraycopy(pixels, 0, n.pixels, 0, pixels.length);
-	n.fmt = GL.GL_ALPHA;
 	return(n);
     }
 	

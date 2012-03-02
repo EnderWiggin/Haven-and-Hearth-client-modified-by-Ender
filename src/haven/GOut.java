@@ -27,16 +27,15 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GLContext;
+import ender.screen.Screen;
 
 public class GOut {
-    GL gl;
+    Screen gl;
     public Coord ul, sz;
     private Color color = Color.WHITE;
-    final GLContext ctx;
     private Shared sh;
 	
     private static class Shared {
@@ -49,36 +48,18 @@ public class GOut {
 	this.ul = o.ul;
 	this.sz = o.sz;
 	this.color = o.color;
-	this.ctx = o.ctx;
 	this.sh = o.sh;
     }
 
-    public GOut(GL gl, GLContext ctx, Coord sz) {
+    public GOut(Screen gl, Coord sz) {
 	this.gl = gl;
 	this.ul = Coord.z;
 	this.sz = sz;
-	this.ctx = ctx;
 	this.sh = new Shared();
 	this.sh.root = this;
     }
     
-    @SuppressWarnings("serial")
-    public static class GLException extends RuntimeException {
-	public int code;
-	public String str;
-	private static javax.media.opengl.glu.GLU glu = new javax.media.opengl.glu.GLU();
-	
-	public GLException(int code) {
-	    super("GL Error: " + code + " (" + glu.gluErrorString(code) + ")");
-	    this.code = code;
-	    this.str = glu.gluErrorString(code);
-	}
-    }
-
-    public static void checkerr(GL gl) {
-	int err = gl.glGetError();
-	if(err != 0)
-	    throw(new GLException(err));
+    public static void checkerr(Screen gl2) {
     }
 
     private void checkerr() {
@@ -86,10 +67,10 @@ public class GOut {
     }
 	
     private void glcolor() {
-	gl.glColor4f((float)color.getRed() / 255.0f,
-		     (float)color.getGreen() / 255.0f,
-		     (float)color.getBlue() / 255.0f,
-		     (float)color.getAlpha() / 255.0f);
+//	gl.glColor4f((float)color.getRed() / 255.0f,
+//		     (float)color.getGreen() / 255.0f,
+//		     (float)color.getBlue() / 255.0f,
+//		     (float)color.getAlpha() / 255.0f);
     }
 
     public GOut root() {
@@ -141,32 +122,29 @@ public class GOut {
     }
 	
     private void vertex(Coord c) {
-	gl.glVertex2i(c.x + ul.x, c.y + ul.y);
+	//gl.glVertex2i(c.x + ul.x, c.y + ul.y);
     }
 	
     void texsel(int id) {
-	if(id != sh.curtex) {
-	    HavenPanel.texmiss++;
-	    if(id == -1) {
-		gl.glDisable(GL.GL_TEXTURE_2D);
-	    } else {
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
-	    }
-	    sh.curtex = id;
-	} else {
-	    HavenPanel.texhit++;
-	}
+//	if(id != sh.curtex) {
+//	    HavenPanel.texmiss++;
+//	    if(id == -1) {
+//		gl.glDisable(GL.GL_TEXTURE_2D);
+//	    } else {
+//		gl.glEnable(GL.GL_TEXTURE_2D);
+//		gl.glBindTexture(GL.GL_TEXTURE_2D, id);
+//	    }
+//	    sh.curtex = id;
+//	} else {
+//	    HavenPanel.texhit++;
+//	}
     }
 	
     public void line(Coord c1, Coord c2, double w) {
 	texsel(-1);
-	gl.glLineWidth((float)w);
-	gl.glBegin(GL.GL_LINES);
 	glcolor();
 	vertex(c1);
 	vertex(c2);
-	gl.glEnd();
 	checkerr();
     }
     
@@ -186,31 +164,26 @@ public class GOut {
     public void frect(Coord ul, Coord sz) {
 	glcolor();
 	texsel(-1);
-	gl.glBegin(GL.GL_QUADS);
 	vertex(ul);
 	vertex(ul.add(new Coord(sz.x, 0)));
 	vertex(ul.add(sz));
 	vertex(ul.add(new Coord(0, sz.y)));
-	gl.glEnd();
 	checkerr();
     }
 	
     public void frect(Coord c1, Coord c2, Coord c3, Coord c4) {
 	glcolor();
 	texsel(-1);
-	gl.glBegin(GL.GL_QUADS);
 	vertex(c1);
 	vertex(c2);
 	vertex(c3);
 	vertex(c4);
-	gl.glEnd();
 	checkerr();
     }
 	
     public void fellipse(Coord c, Coord r, int a1, int a2) {
 	glcolor();
 	texsel(-1);
-	gl.glBegin(GL.GL_TRIANGLE_FAN);
 	vertex(c);
 	for(int i = a1; i < a2; i += 5) {
 	    double a = (i * Math.PI * 2) / 360.0;
@@ -218,7 +191,6 @@ public class GOut {
 	}
 	double a = (a2 * Math.PI * 2) / 360.0;
 	vertex(c.add((int)(Math.cos(a) * r.x), -(int)(Math.sin(a) * r.y)));
-	gl.glEnd();
 	checkerr();
     }
 	
@@ -261,6 +233,5 @@ public class GOut {
     }
     
     public void scale(double d) {
-	gl.glScaled(d, d, d);
     }
 }

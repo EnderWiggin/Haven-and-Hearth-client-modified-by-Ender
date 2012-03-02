@@ -300,7 +300,7 @@ public class MiniMap extends Widget {
 	}
 	
 	GOut g = og.reclip(og.ul.mul((1-scale)/scale), hsz);
-	g.gl.glPushMatrix();
+//	g.gl.glPushMatrix();
 	g.scale(scale);
 	
 	synchronized(caveTex){
@@ -465,7 +465,8 @@ public class MiniMap extends Widget {
 		}
 	    }
 	}
-	g.gl.glPopMatrix();
+	//TODO: reset zoom
+//	g.gl.glPopMatrix();
 	super.draw(og);
     }
     

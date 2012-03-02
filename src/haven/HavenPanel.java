@@ -26,7 +26,11 @@
 
 package haven;
 
+import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
@@ -37,19 +41,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
+import ender.screen.Screen;
 
-public class HavenPanel extends GLCanvas implements Runnable {
+public class HavenPanel extends Canvas implements Runnable {
     UI ui;
     boolean inited = false, rdr = false;
     int w, h;
@@ -63,59 +63,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
     public Profile prof = new Profile(300);
     private Profile.Frame curf = null;
     private SyncFSM fsm = null;
-    private static final GLCapabilities caps;
-    static {
-	caps = new GLCapabilities();
-	caps.setDoubleBuffered(true);
-	caps.setAlphaBits(8);
-	caps.setRedBits(8);
-	caps.setGreenBits(8);
-	caps.setBlueBits(8);
-    }
-	
+    
     public HavenPanel(int w, int h) {
-	super(caps);
+	super();
 	setSize(this.w = w, this.h = h);
-	initgl();
 	if(Toolkit.getDefaultToolkit().getMaximumCursorColors() >= 256)
 	    cursmode = "awt";
 	setCursor(Toolkit.getDefaultToolkit().createCustomCursor(TexI.mkbuf(new Coord(1, 1)), new java.awt.Point(), ""));
-    }
-	
-    private void initgl() {
-	final Thread caller = Thread.currentThread();
-	addGLEventListener(new GLEventListener() {
-		public void display(GLAutoDrawable d) {
-		    GL gl = d.getGL();
-		    if(inited && rdr)
-			redraw(gl);
-		    TexGL.disposeall(gl);
-		}
-			
-		public void init(GLAutoDrawable d) {
-		    GL gl = d.getGL();
-		    if(caller.getThreadGroup() instanceof haven.error.ErrorHandler) {
-			haven.error.ErrorHandler h = (haven.error.ErrorHandler)caller.getThreadGroup();
-			h.lsetprop("gl.vendor", gl.glGetString(GL.GL_VENDOR));
-			h.lsetprop("gl.version", gl.glGetString(GL.GL_VERSION));
-			h.lsetprop("gl.renderer", gl.glGetString(GL.GL_RENDERER));
-			h.lsetprop("gl.exts", Arrays.asList(gl.glGetString(GL.GL_EXTENSIONS).split(" ")));
-			h.lsetprop("gl.caps", d.getChosenGLCapabilities().toString());
-		    }
-		    gl.glColor3f(1, 1, 1);
-		    gl.glPointSize(4);
-		    gl.setSwapInterval(1);
-		    gl.glEnable(GL.GL_BLEND);
-		    //gl.glEnable(GL.GL_LINE_SMOOTH);
-		    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		    GOut.checkerr(gl);
-		}
-
-		public void reshape(GLAutoDrawable d, int x, int y, int w, int h) {
-		}
-			
-		public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
-	    });
     }
 	
     public void init() {
@@ -247,21 +201,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	return(Toolkit.getDefaultToolkit().createCustomCursor(buf, new java.awt.Point(hs.x, hs.y), ""));
     }
 
-    void redraw(GL gl) {
-	GOut g = new GOut(gl, getContext(), MainFrame.getInnerSize());
+    void redraw(Screen gl) {
+	GOut g = new GOut(gl, MainFrame.getInnerSize());
 
-	gl.glMatrixMode(GL.GL_PROJECTION);
-	gl.glLoadIdentity();
-	gl.glOrtho(0, getWidth(), 0, getHeight(), -1, 1);
 	TexRT.renderall(g);
 	if(curf != null)
 	    curf.tick("texrt");
 
-	gl.glMatrixMode(GL.GL_PROJECTION);
-	gl.glLoadIdentity();
-	gl.glOrtho(0, getWidth(), getHeight(), 0, -1, 1);
-	gl.glClearColor(0, 0, 0, 1);
-	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 	if(curf != null)
 	    curf.tick("cls");
 	synchronized(ui) {
@@ -272,13 +218,11 @@ public class HavenPanel extends GLCanvas implements Runnable {
 
 	if(Config.dbtext) {
 	    g.atext("FPS: " + fps, new Coord(10, 545), 0, 1);
-	    g.atext("Texhit: " + dth, new Coord(10, 530), 0, 1);
-	    g.atext("Texmiss: " + dtm, new Coord(10, 515), 0, 1);
 	    Runtime rt = Runtime.getRuntime();
 	    long free = rt.freeMemory(), total = rt.totalMemory();
 	    g.atext(String.format("Mem: %,011d/%,011d/%,011d/%,011d", free, total - free, total, rt.maxMemory()), new Coord(10, 500), 0, 1);
 	    g.atext(String.format("LCache: %d/%d", Layered.cache.size(), Layered.cache.cached()), new Coord(10, 485), 0, 1);
-	    g.atext(String.format("RT-current: %d", TexRT.current.get(gl).size()), new Coord(10, 470), 0, 1);
+	    //g.atext(String.format("RT-current: %d", TexRT.current.get(gl).size()), new Coord(10, 470), 0, 1);
 	    if(Resource.qdepth() > 0)
 		g.atext(String.format("RQ depth: %d (%d)", Resource.qdepth(), Resource.numloaded()), new Coord(10, 455), 0, 1);
 	}
@@ -324,6 +268,17 @@ public class HavenPanel extends GLCanvas implements Runnable {
 		g.image(curs.layer(Resource.imgc), dc);
 	    }
 	}
+	 BufferStrategy bs = getBufferStrategy();
+	    if (bs == null) {
+		createBufferStrategy(3);
+		return;
+	    }
+	    Graphics gr = bs.getDrawGraphics();
+	    gr.setColor(Color.BLACK);
+	    gr.fillRect(0, 0, getWidth(), getHeight());
+	    gr.drawImage(MainFrame.screen.image, 0, 0, MainFrame.screen.w, MainFrame.screen.h, null);
+	    bs.show();
+	    MainFrame.screen.clear(0xff000000);
     }
 	
     void dispatch() {
@@ -358,19 +313,20 @@ public class HavenPanel extends GLCanvas implements Runnable {
     }
 	
     public void uglyjoglhack() throws InterruptedException {
-	try {
-	    rdr = true;
-	    display();
-	} catch(GLException e) {
-	    if(e.getCause() instanceof InterruptedException) {
-		throw((InterruptedException)e.getCause());
-	    } else {
-		e.printStackTrace();
-		throw(e);
-	    }
-	} finally {
-	    rdr = false;
-	}
+	redraw(MainFrame.screen);
+//	try {
+//	    rdr = true;
+//	    display();
+//	} catch(Exception e) {
+//	    if(e.getCause() instanceof InterruptedException) {
+//		throw((InterruptedException)e.getCause());
+//	    } else {
+//		e.printStackTrace();
+//		throw(e);
+//	    }
+//	} finally {
+//	    rdr = false;
+//	}
     }
 	
     public void run() {

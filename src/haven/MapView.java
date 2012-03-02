@@ -1273,11 +1273,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(curf != null)
 		curf.tick("draw");
 	    //Illumination
-	    g.gl.glPopMatrix();
-	    GOut gilm = g.reclip(Coord.z, hsz);
-	    gilm.image(mask, Coord.z);
-	    g.gl.glPushMatrix();
-	    g.scale(getScale());
+	    //TODO: fix illumination zooming
+	    //g.gl.glPopMatrix();
+	    //GOut gilm = g.reclip(Coord.z, hsz);
+	    //gilm.image(mask, Coord.z);
+	    g.image(mask, Coord.z);
+	    //g.gl.glPushMatrix();
+	    //g.scale(getScale());
 	    //*****************
 	    long now = System.currentTimeMillis();
 	    RootWidget.names_ready = (RootWidget.screenshot && Config.sshot_nonames);
@@ -1404,7 +1406,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	hsz = MainFrame.getInnerSize();
 	sz = hsz.mul(1/getScale());
 	GOut g = og.reclip(Coord.z, sz);
-	g.gl.glPushMatrix();
+//	g.gl.glPushMatrix();
 	g.scale(getScale());
 	checkmappos();
 	Coord requl = mc.add(-500, -500).div(tilesz).div(cmaps);
@@ -1459,7 +1461,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.aimage(polownert.tex(), sz.div(2), 0.5, 0.5);
 	    g.chcolor();
 	}
-	g.gl.glPopMatrix();
+	//TODO: reset zoom
+//	g.gl.glPopMatrix();
 	super.draw(og);
     }
 

@@ -62,7 +62,7 @@ public class HtmlReporter {
     };
     public static final Class[] boring = {
 	RuntimeException.class,
-	javax.media.opengl.GLException.class,
+	//javax.media.opengl.GLException.class,
     };
     
     public static class ErrorIdentity implements Comparable<ErrorIdentity> {

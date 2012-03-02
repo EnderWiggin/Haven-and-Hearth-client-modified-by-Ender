@@ -48,6 +48,8 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import ender.screen.Screen;
+
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
     public static String VERSION = "01.03.12";
@@ -60,6 +62,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
     public static Point centerPoint;
     public static Coord screenSZ;
     public static MainFrame instance;
+    public static Screen screen;
 	
     static {
 	try {
@@ -154,6 +157,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	setTitle(null);
 	instance = this;
 	innerSize = new Dimension(w, h);
+	screen = new Screen(innerSize.width, innerSize.height);
 	centerPoint = new Point(innerSize.width / 2, innerSize.height / 2);
 	screenSZ = new Coord(Toolkit.getDefaultToolkit().getScreenSize());
 	p = new HavenPanel(w, h);
@@ -193,6 +197,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
         public void componentResized(ComponentEvent evt) {
             innerSize.setSize(getWidth() - insetsSize.width, getHeight() - insetsSize.height);
             centerPoint.setLocation(innerSize.width / 2, innerSize.height / 2);
+            screen = new Screen(innerSize.width, innerSize.height);
         }
     });
 	Thread ui = new HackThread(p, "Haven UI thread");

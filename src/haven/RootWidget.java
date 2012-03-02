@@ -30,10 +30,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.opengl.GLException;
-
-import com.sun.opengl.util.Screenshot;
-
 public class RootWidget extends ConsoleHost {
     public static Resource defcurs = Resource.load("gfx/hud/curs/arw");
     Logout logout = null;
@@ -115,15 +111,13 @@ public class RootWidget extends ConsoleHost {
 	if(screenshot && (!Config.sshot_nonames || names_ready)){
 	    visible = true;
 	    screenshot = false;
-	    try {
-		Coord s = MainFrame.getInnerSize();
-		String stamp = Utils.sessdate(System.currentTimeMillis());
-		String ext = Config.sshot_compress?".jpg":".png";
-		File f = new File("screenshots/SS_"+stamp+ext);
-		f.mkdirs();
-		Screenshot.writeToFile(f, s.x, s.y);
-	    } catch (GLException e){e.printStackTrace();}
-	    catch (IOException e){e.printStackTrace();}
+	    Coord s = MainFrame.getInnerSize();
+	    String stamp = Utils.sessdate(System.currentTimeMillis());
+	    String ext = Config.sshot_compress?".jpg":".png";
+	    File f = new File("screenshots/SS_"+stamp+ext);
+	    f.mkdirs();
+	    //TODO: add screenshotting
+	    //Screenshot.writeToFile(f, s.x, s.y);
 	}
 	
 //	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
