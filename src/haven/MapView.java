@@ -1493,11 +1493,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	g.chcolor(Color.ORANGE);
 	synchronized (glob.oc) {
 	    for (Gob gob : glob.oc){
-		if(gob.sc == null){continue;}
-		m = gob.getattr(Moving.class);
-		if((m!=null)&&(m instanceof LinMove)){
-		    lm = (LinMove) m;
-		    g.line(gob.sc, m2s(lm.t).add(oc), 2);
+		if (gob.isHuman()) {    	
+			if(gob.sc == null){continue;}
+			m = gob.getattr(Moving.class);
+			if((m!=null)&&(m instanceof LinMove)){
+			    lm = (LinMove) m;
+			    g.line(gob.sc, m2s(lm.t).add(oc), 2);
+			}
 		}
 	    }
 	}
