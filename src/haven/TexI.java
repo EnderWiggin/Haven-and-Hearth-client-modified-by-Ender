@@ -48,19 +48,21 @@ public class TexI extends Tex {
     protected Graphics2D mygl = null;
     protected Coord tdim;
     private Object fmt;
+    private Bitmap bmp;
     public static boolean disableall = false;
 
     public TexI(BufferedImage img) {
 	super(Utils.imgsz(img));
 	tdim = new Coord(nextp2(sz().x), nextp2(sz().y));
 	back = img;
-	//bmp = new Bitmap(back);
+	bmp = new Bitmap(back);
 	pixels = convert(img, tdim);
 	mygl = img.createGraphics();
     }
 
     public TexI(Coord sz) {
 	super(sz);
+	bmp = new Bitmap(sz.x, sz.y);
 	tdim = new Coord(nextp2(sz.x), nextp2(sz.y));
 	pixels = new byte[tdim.x * tdim.y * 4];
     }
@@ -83,9 +85,9 @@ public class TexI extends Tex {
 	Color amb = blend(g, setenv(gl));
 //	checkerr(gl);
 	if(!disableall) {
-	    gl.gl.drawImage(back, c.x, c.y, c.x+sz.x, c.y+sz.y, ul.x, ul.y, br.x, br.y, null);
+	    //gl.gl.drawImage(back, c.x, c.y, c.x+sz.x, c.y+sz.y, ul.x, ul.y, br.x, br.y, null);
 	    
-//	    gl.blit(bmp, c.x, c.y);
+	    gl.blit(bmp, c.x, c.y);
 	}
     }
 	

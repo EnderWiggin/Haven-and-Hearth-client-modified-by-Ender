@@ -1,45 +1,30 @@
 package ender.screen;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
-import java.util.*;
+import java.util.Arrays;
 
 public class Bitmap {
     public int w, h;
     public int[] pixels;
+    public BufferedImage bi;
 
     public Bitmap(int w, int h) {
         this.w = w;
         this.h = h;
-        pixels = new int[w * h];
+        bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        pixels = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
     }
 
     public Bitmap(BufferedImage image) {
 	w = image.getWidth();
 	h = image.getHeight();
-	//pixels = new int[w*h];
-	int type = image.getType();
-	BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-	img.createGraphics().drawImage(image, null, 0, 0);
-	pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-//	byte px[] = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-//	if(type == BufferedImage.TYPE_3BYTE_BGR){
-//	    for(int i=0; i<pixels.length; i++){
-//		int k = 3*i;
-//		pixels[i] = ((0xff000000) | (px[k+2]<<16) | (px[k+1]<<8) | (px[k+0])); 
-//	    }
-//	} else if(type == BufferedImage.TYPE_4BYTE_ABGR){
-//	    for(int i=0; i<pixels.length; i++){
-//		int k = 4*i;
-//		pixels[i] = ((px[k+0]<<24) | (px[k+3]<<16) | (px[k+2]<<8) | (px[k+1])); 
-//	    }
-//	} else {
-//	    for(int i=0; i<pixels.length; i++){
-//		int k = 3*i;
-//		pixels[i] = ((0xff000000) | (px[k+1]<<16) | (px[k+2]<<8) | (px[k+0])); 
-//	    }
-//	}
+	bi = new BufferedImage(w,  h, BufferedImage.TYPE_INT_ARGB);
+	Graphics g = bi.createGraphics();
+	g.drawImage(image, 0, 0, null);
+	g.dispose();
+	pixels = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
     }
 
     public void clear(int color) {
