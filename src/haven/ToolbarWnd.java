@@ -377,6 +377,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     }
     
     public void clearslot(int slot){
+	if((slot<0)||(slot>=layout.length)){return;}
 	Slot s = layout[slot];
 	layout[slot] = null;
 	setBeltSlot(slot, "");
