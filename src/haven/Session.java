@@ -89,6 +89,7 @@ public class Session {
     LinkedList<Message> pending = new LinkedList<Message>();
     Map<Integer, ObjAck> objacks = new TreeMap<Integer, ObjAck>();
     String username;
+	public String charname;
     byte[] cookie;
     final Map<Integer, Indir<Resource>> rescache = new TreeMap<Integer, Indir<Resource>>();
     public final Glob glob;
