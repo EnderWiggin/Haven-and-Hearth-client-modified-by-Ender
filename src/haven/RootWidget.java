@@ -93,9 +93,7 @@ public class RootWidget extends ConsoleHost {
 	    } else if((code == KeyEvent.VK_G)&&ctrl) {
 		Config.grid = !Config.grid;
 	    } else if((code == KeyEvent.VK_G)&&alt) {
-			if (ircchat == null) {
-				ircchat = new ChatHW(ui.slen, "Global", false);
-			}
+		IRChatHW.open();
 	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
 		BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
 	    } else if(((int)key == 20)&ctrl) {//CTRL-T have code of 20

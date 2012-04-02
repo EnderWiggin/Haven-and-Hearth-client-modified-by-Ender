@@ -343,7 +343,7 @@ public class MenuGrid extends Widget {
 	} else if(list[1].equals("study")) {
 	    ui.study.toggle();
 	} else if(list[1].equals("globalchat")) {
-	    ui.root.wdgmsg("gk", 3);
+	    IRChatHW.open();
 	} else if(list[1].equals("wiki")) {
 	    if(ui.wiki == null) {
 		new WikiBrowser(MainFrame.getCenterPoint().sub(115, 75), Coord.z, ui.root);

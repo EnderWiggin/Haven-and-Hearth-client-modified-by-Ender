@@ -32,39 +32,29 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-
 import ender.GoogleTranslator;
-import jerklib.ConnectionManager;
-import jerklib.Profile;
-import jerklib.Session;
-import jerklib.events.*;
-import jerklib.events.IRCEvent.Type;
-import jerklib.listeners.IRCEventListener;
 
 public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
     static final Collection<Integer> todarken = new ArrayList<Integer>();
     static final Pattern hlpatt = Pattern.compile("@\\$\\[(-?\\d+)\\]");
-	boolean irc = false;
-	GlobalChat gc = null;
-    
+
     static {
 	Widget.addtype("slenchat", new WidgetFactory() {
-		public Widget create(Coord c, Widget parent, Object[] args) {
-		    String t = (String)args[0];
-		    boolean cl = false;
-		    if(args.length > 1)
-			cl = (Integer)args[1] != 0;
-		    return(new ChatHW(parent, t, cl));
-		}
-	    });
+	    public Widget create(Coord c, Widget parent, Object[] args) {
+		String t = (String)args[0];
+		boolean cl = false;
+		if(args.length > 1)
+		    cl = (Integer)args[1] != 0;
+		return(new ChatHW(parent, t, cl));
+	    }
+	});
 	todarken.add(Color.GREEN.getRGB());
 	todarken.add(Color.CYAN.getRGB());
 	todarken.add(Color.YELLOW.getRGB());
     }
-	
+
     public ChatHW(Widget parent, String title, boolean closable) {
 	super((Widget)UI.instance.chat, title, closable);
 	in = new TextEntry(new Coord(0, sz.y - 20), new Coord(sz.x, 20), this, "");
@@ -72,15 +62,11 @@ public class ChatHW extends HWindow {
 	in.bgcolor = new Color(64, 64, 64, 192);
 	out = new Textlog(Coord.z, new Coord(sz.x, sz.y - 20), this);
 	out.drawbg = false;
-	
+
 	if(cbtn != null) {
 	    cbtn.raise();
 	    if (title.equals("Area Chat"))
 		cbtn.hide();
-	}
-	if (title.equals("Global")) {
-		irc = true;
-		gc = new GlobalChat(this, ui.sess.charname);
 	}
 	setsz(sz);
     }
@@ -104,9 +90,9 @@ public class ChatHW extends HWindow {
 
     public void uimsg(String msg, Object... args) {
 	if(msg == "log") {
-	    
+
 	    if(Config.muteChat){return;}
-	    
+
 	    Color col = null;
 	    if(args.length > 1)
 		col = (Color)args[1];
@@ -140,30 +126,20 @@ public class ChatHW extends HWindow {
 	    super.uimsg(msg, args);
 	}
     }
-	
-	public void gcrcv(String text) {
-		out.append(text, new Color(0, 0, 0));
-	}
 
     public void wdgmsg(Widget sender, String msg, Object... args) {
-		if (!irc) {
-			if(sender == in) {
-				if(msg == "activate") {
-				wdgmsg("msg", args[0]);
-				in.settext("");
-				return;
-				}
-			}
-			super.wdgmsg(sender, msg, args);
-		} else {
-			gc.gcsnd(args[0].toString());
-			in.settext("");
-			return;
-		}
+	if(sender == in) {
+	    if(msg == "activate") {
+		wdgmsg("msg", args[0]);
+		in.settext("");
+		return;
+	    }
+	}
+	super.wdgmsg(sender, msg, args);
     }
-	
+
     public boolean mousewheel(Coord c, int amount)
     {
-    	return(out.mousewheel(c, amount));
+	return(out.mousewheel(c, amount));
     }
 }
