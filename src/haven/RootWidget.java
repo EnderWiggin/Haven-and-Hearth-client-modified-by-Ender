@@ -40,7 +40,7 @@ public class RootWidget extends ConsoleHost {
     Profile gprof;
     boolean afk = false;
     public static boolean screenshot = false;
-    public static boolean names_ready = false;
+    public static boolean names_ready = true;
     private long last = 0;
     private int ticks = 0;
     private int fps = 0;
