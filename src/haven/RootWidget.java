@@ -44,6 +44,7 @@ public class RootWidget extends ConsoleHost {
     private long last = 0;
     private int ticks = 0;
     private int fps = 0;
+	public ChatHW ircchat = null;
 	
     public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
@@ -91,6 +92,10 @@ public class RootWidget extends ConsoleHost {
 		ui.spd.setspeed(3, true);
 	    } else if((code == KeyEvent.VK_G)&&ctrl) {
 		Config.grid = !Config.grid;
+	    } else if((code == KeyEvent.VK_G)&&alt) {
+			if (ircchat == null) {
+				ircchat = new ChatHW(ui.slen, "Global", false);
+			}
 	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
 		BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
 	    } else if(((int)key == 20)&ctrl) {//CTRL-T have code of 20

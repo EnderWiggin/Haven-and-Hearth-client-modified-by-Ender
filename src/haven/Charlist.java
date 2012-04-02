@@ -123,6 +123,7 @@ public class Charlist extends Widget {
 		    if(sender == c.plb) {
 			Config.currentCharName = c.name;
 			MainFrame.instance.setTitle(c.name);
+			ui.sess.charname = c.name;
 			wdgmsg("play", c.name);
 		    }
 	    }
