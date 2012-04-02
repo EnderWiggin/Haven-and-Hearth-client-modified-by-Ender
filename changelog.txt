@@ -1,5 +1,16 @@
 ﻿Change log
  
+02.04.12
+ * fix for client hang-up if pressed screenshot on char select screen with hide names and ui are toggled on
+ * merged(and refactored/improved a bit) ArvinJA's "Global" chat: irc.synirc.net, channel #haven2. To open it press ALT-G or Global chat from Extended actions menu
+ * fixed bear cape (and all other theoretical items taking more than 1 slot) counted twice towards AC in equip screen.
+ 
+07.03.12
+ * fixed another toolbar crash
+ 
+06.03.12
+ * Restricting the drawGobPath to humans (ArvinJA)
+ 
 01.03.12
  * added option to show path of every object (Options->General->Show gob path).
  * added lock button to study window. If locked, you can't pick curios, but can place them inside.
