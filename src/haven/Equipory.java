@@ -30,7 +30,9 @@ import haven.Text.Foundry;
 
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,8 +124,10 @@ public class Equipory extends Window implements DTarget {
     
     private void calcAC(){
 	int abs = 0, def = 0;
+	Set<String> names = new HashSet<String>();
 	for(Item itm : equed){
-	    if(itm != null){
+	    if((itm != null)&&(!names.contains(itm.name()))){
+		names.add(itm.name());
 		String t = itm.tooltip;
 		if(t != null){
 		    try{
