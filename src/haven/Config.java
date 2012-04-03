@@ -567,7 +567,7 @@ public class Config {
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
         currentVersion = options.getProperty("version", "");
         autohearth = options.getProperty("autohearth", "false").equals("true");
-        hearthunknown = options.getProperty("heathunknown", "false").equals("true");
+        hearthunknown = options.getProperty("hearthunknown", "false").equals("true");
         hearthred = options.getProperty("hearthred", "false").equals("true");
         hideObjectList.clear();
         String hideObjects = options.getProperty("hideObjects", "");
