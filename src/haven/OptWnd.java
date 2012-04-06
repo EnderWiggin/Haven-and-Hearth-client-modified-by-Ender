@@ -222,12 +222,19 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.highlightSkills;
 	    
-	    (new CheckBox(new Coord(220, 410), tab, "Show gob path") {
+	    (new CheckBox(new Coord(220, 375), tab, "Show human gob path") {
 		public void changed(boolean val) {
 		    Config.showgobpath = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showgobpath;
+	    
+	    (new CheckBox(new Coord(220, 410), tab, "Show other gob path") {
+		public void changed(boolean val) {
+		    Config.showothergobpath = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.showothergobpath;
 		
 	    (new CheckBox(new Coord(440, 130), tab, "Auto-hearth") {
 		public void changed(boolean val) {

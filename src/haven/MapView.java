@@ -1427,7 +1427,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    drawmap(g);
 	    
 	    //movement highlight
-	    if(Config.showgobpath){
+	    if(Config.showgobpath||Config.showothergobpath){
 		drawGobPath(g);
 	    }
 	    if(Config.showpath){
@@ -1493,7 +1493,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	g.chcolor(Color.ORANGE);
 	synchronized (glob.oc) {
 	    for (Gob gob : glob.oc){
-		if (gob.isHuman()) {    	
+		if ((Config.showgobpath && gob.isHuman()) || (Config.showothergobpath && !gob.isHuman())) {
 			if(gob.sc == null){continue;}
 			m = gob.getattr(Moving.class);
 			if((m!=null)&&(m instanceof LinMove)){
