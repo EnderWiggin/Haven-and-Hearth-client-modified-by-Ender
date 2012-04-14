@@ -45,13 +45,13 @@ public class RootWidget extends ConsoleHost {
     private int ticks = 0;
     private int fps = 0;
 	public ChatHW ircchat = null;
-	
+
     public RootWidget(UI ui, Coord sz) {
 	super(ui, new Coord(0, 0), sz);
 	setfocusctl(true);
 	cursor = defcurs;
     }
-	
+
     public boolean globtype(char key, KeyEvent ev) {
 	if(!super.globtype(key, ev)) {
 	    int code = ev.getKeyCode();
@@ -72,6 +72,12 @@ public class RootWidget extends ConsoleHost {
 		String str = "Chat mute is turned "+((Config.muteChat)?"ON":"OFF");
 		ui.cons.out.println(str);
 		ui.slen.error(str);
+	    } else if((code == KeyEvent.VK_A)&&alt&&shift) {
+		Config.alpha = !Config.alpha;
+		String str = "Alpha color channel is turned "+((Config.alpha)?"ON":"OFF");
+		ui.cons.out.println(str);
+		ui.slen.error(str);
+	    } else if((code == KeyEvent.VK_F)&&ctrl) {
 	    } else if((code == KeyEvent.VK_F)&&ctrl) {
 		Config.fps = !Config.fps;
 	    } else if((code == KeyEvent.VK_K)&&ctrl) {
@@ -128,7 +134,7 @@ public class RootWidget extends ConsoleHost {
 	    } catch (GLException e){e.printStackTrace();}
 	    catch (IOException e){e.printStackTrace();}
 	}
-	
+
 //	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
 //	    afk = true;
 //	    Widget slen = findchild(SlenHud.class);
@@ -148,7 +154,7 @@ public class RootWidget extends ConsoleHost {
 	    g.text("FPS: "+fps, Coord.z);
 	}
     }
-    
+
     public void error(String msg) {
     }
 }

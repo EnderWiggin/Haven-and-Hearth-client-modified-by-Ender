@@ -83,11 +83,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     Map<String, Integer> radiuses;
     int beast_check_delay = 0;
 	long lastah = 0;
-    
+
     public double getScale() {
         return Config.zoom?_scale:1;
     }
-    
+
     public void setScale(double value) {
 	_scale = value;
 	mask.setScale(value);
@@ -98,7 +98,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    return(-Sprite.partidcmp.compare(a, b));
 	}
     };
-    
+
     static {
 	Widget.addtype("mapview", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
@@ -117,31 +117,31 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	olc[16] = new Color(0, 255, 0);
 	olc[17] = new Color(255, 255, 0);
     }
-    
+
     public interface Grabber {
 	void mmousedown(Coord mc, int button);
 	void mmouseup(Coord mc, int button);
 	void mmousemove(Coord mc);
     }
-    
+
     @SuppressWarnings("serial")
     public static class GrabberException extends RuntimeException{}
-    
+
     public static class Camera {
 	public void setpos(MapView mv, Gob player, Coord sz) {}
-	
+
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
 	    return(false);
 	}
-	
+
 	public void move(MapView mv, Coord sc, Coord mc) {}
-	
+
 	public boolean release(MapView mv, Coord sc, Coord mc, int button) {
 	    return(false);
 	}
-	
+
 	public void moved(MapView mv) {}
-	
+
 	public static void borderize(MapView mv, Gob player, Coord sz, Coord border) {
 	    if(Config.noborders){return;}
 	    Coord mc = mv.mc;
@@ -164,12 +164,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
 	public void reset() {}
     }
-    
+
     private static abstract class DragCam extends Camera {
 	Coord o, mo;
 	boolean dragging = false;
 	boolean needreset = false;
-	
+
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
 	    if(button == 2) {
 		mv.ui.grabmouse(mv);
@@ -180,7 +180,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    return(false);
 	}
-	
+
 	public void move(MapView mv, Coord sc, Coord mc) {
 	    if(dragging) {
 		Coord off = sc.add(o.inv());
@@ -192,11 +192,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		}
 	    }
 	}
-	
+
 	public void reset(){
 	    needreset = true;
 	}
-	
+
 	public boolean release(MapView mv, Coord sc, Coord mc, int button) {
 	    if((button == 2) && dragging) {
 		mv.ui.grabmouse(null);
@@ -210,14 +210,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    return(false);
 	}
     }
-    
+
     static class OrigCam extends Camera {
 	public final Coord border = new Coord(250, 150);
-	
+
 	public void setpos(MapView mv, Gob player, Coord sz) {
 	    borderize(mv, player, sz, border);
 	}
-	
+
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
 	    if(button == 1)
 		mv.mc = mc;
@@ -231,26 +231,26 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	private final double v;
 	private Coord tgt = null;
 	private long lmv;
-	
+
 	public OrigCam2(double v) {
 	    this.v = Math.log(v) / 0.02; /* 1 / 50 FPS = 0.02 s */
 	}
-	
+
 	public OrigCam2() {
 	    this(0.9);
 	}
-	
+
 	public OrigCam2(String... args) {
 	    this((args.length < 1)?0.9:Double.parseDouble(args[0]));
 	}
-	
+
 	public void setpos(MapView mv, Gob player, Coord sz) {
-	    
+
 	    if(needreset){
 		needreset = false;
 		mv.mc = player.getc();
 	    }
-	    
+
 	    if(tgt != null) {
 		if(mv.mc.dist(tgt) < 10) {
 		    tgt = null;
@@ -263,7 +263,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    borderize(mv, player, sz, border);
 	}
-	
+
 	public boolean click(MapView mv, Coord sc, Coord mc, int button) {
 	    if((button == 1) && (mv.ui.root.cursor == RootWidget.defcurs)) {
 		tgt = mc;
@@ -271,11 +271,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    return(super.click(mv, sc, mc, button));
 	}
-	
+
 	public void moved(MapView mv) {
 	    tgt = null;
 	}
-	
+
 	public void reset() {
 	    super.reset();
 	    tgt = null;
@@ -285,7 +285,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
     static class WrapCam extends Camera {
 	public final Coord region = new Coord(200, 150);
-	
+
 	public void setpos(MapView mv, Gob player, Coord sz) {
 	    Coord sc = m2s(player.getc().add(mv.mc.inv()));
 	    if(sc.x < -region.x)
@@ -312,24 +312,24 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
     }
     static {camtypes.put("border", BorderCam.class);}
-    
+
     static class PredictCam extends DragCam {
 	private double xa = 0, ya = 0;
 	private boolean reset = true;
 	private final double speed = 0.15, rspeed = 0.15;
 	private double sincemove = 0;
 	private long last = System.currentTimeMillis();
-	
+
 	public void setpos(MapView mv, Gob player, Coord sz) {
 	    long now = System.currentTimeMillis();
 	    double dt = ((double)(now - last)) / 1000.0;
 	    last = now;
-	    
+
 	    if(needreset){
 		needreset = false;
 		mv.mc = player.getc();
 	    }
-	    
+
 	    Coord mc = mv.mc.add(s2m(sz.add(mv.sz.inv()).div(2)));
 	    Coord sc = m2s(player.getc()).add(m2s(mc).inv());
 	    if(reset) {
@@ -385,11 +385,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    mv.mc = mc.add(s2m(mv.sz.add(sz.inv()).div(2)));
 	}
-	
+
 	public void moved(MapView mv) {
 	    reset = true;
 	}
-	
+
 	public void reset(){
 	    reset = true;
 	    xa = ya = 0;
@@ -397,12 +397,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
     }
     static {camtypes.put("predict", PredictCam.class);}
-    
+
     static class FixedCam extends DragCam {
 	public final Coord border = new Coord(250, 150);
 	private Coord off = Coord.z;
 	private boolean setoff = false;
-	
+
 	public void setpos(MapView mv, Gob player, Coord sz) {
 	    if(setoff) {
 		borderize(mv, player, sz, border);
@@ -411,17 +411,17 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    mv.mc = player.getc().add(off);
 	}
-	
+
 	public void moved(MapView mv) {
 	    setoff = true;
 	}
-	
+
 	public void reset() {
 	    off = Coord.z;
 	}
     }
     static {camtypes.put("fixed", FixedCam.class);}
-    
+
     static class CakeCam extends Camera {
 	private Coord border = new Coord(250, 150);
 	private Coord size, center, diff;
@@ -479,15 +479,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public void moved(MapView mv) {
 	    setoff = true;
 	}
-	
+
 	public void reset(){
 	    off = new Coord();
 	}
     }
     static {camtypes.put("fixedcake", FixedCakeCam.class);}
-    
+
     private class Loading extends Exception {}
-    
+
     private static Camera makecam(Class<? extends Camera> ct, String... args) throws ClassNotFoundException {
 	try {
 	    try {
@@ -535,34 +535,34 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	mask = new ILM(MainFrame.getScreenSize(), glob.oc);
 	radiuses = new HashMap<String, Integer>();
     }
-    
+
     public void resetcam(){
 	if(cam != null){
 	    cam.reset();
 	}
     }
-    
+
     public static Coord m2s(Coord c) {
 	return(new Coord((c.x * 2) - (c.y * 2), c.x + c.y));
     }
-	
+
     public static Coord s2m(Coord c) {
 	return(new Coord((c.x / 4) + (c.y / 2), (c.y / 2) - (c.x / 4)));
     }
-	
+
     static Coord viewoffset(Coord sz, Coord vc) {
 	return(m2s(vc).inv().add(sz.div(2)));
     }
-	
+
     public void grab(Grabber grab) {
 	this.grab = grab;
     }
-	
+
     public void release(Grabber grab) {
 	if(this.grab == grab)
 	    this.grab = null;
     }
-	
+
     private Gob gobatpos(Coord c) {
 	for(Sprite.Part d : obscured) {
 	    Gob gob = (Gob)d.owner;
@@ -593,7 +593,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		return true;
 	    } catch (GrabberException e){}
 	}
-	
+
 	if((cam != null) && cam.click(this, c, mc, button)) {
 	    /* Nothing */
 	} else if(plob != null) {
@@ -620,7 +620,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	return(true);
     }
-	
+
     public boolean mouseup(Coord c, int button) {
 	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
@@ -636,7 +636,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    return(true);
 	}
     }
-	
+
     public void mousemove(Coord c) {
 	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	this.pmousepos = c;
@@ -650,7 +650,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Collection<Gob> plob = this.plob;
 	if(cam != null)
 	    cam.move(this, c, mc);
-	
+
 	if(grab != null) {
 	    try{
 		grab.mmousemove(mc);
@@ -685,9 +685,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		tip = null;
 		tooltip(null,false);
 	    }
-	} 
+	}
     }
-    
+
     String tips;
     Text tip = null;
     public Object tooltip(Coord c,boolean again){
@@ -698,7 +698,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	return(tip);
     }
-    
+
     public boolean mousewheel(Coord c, int amount) {
 	if(!Config.zoom)
 	    return false;
@@ -706,18 +706,18 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	setScale(scales[si]);
 	return(true);
     }
-	
+
     public void move(Coord mc) {
 	this.mc = mc;
     }
-	
+
     private static Coord tilify(Coord c) {
 	c = c.div(tilesz);
 	c = c.mul(tilesz);
 	c = c.add(tilesz.div(2));
 	return(c);
     }
-	
+
     private void unflashol() {
 	for(int i = 0; i < visol.length; i++) {
 	    if((olflash & (1 << i)) != 0)
@@ -782,31 +782,31 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    super.uimsg(msg, args);
 	}
     }
-	
+
     public void enol(int... overlays) {
 	for(int ol : overlays)
 	    visol[ol]++;
     }
-	
+
     public void disol(int... overlays) {
 	for(int ol : overlays)
 	    visol[ol]--;
     }
-	
+
     private int gettilen(Coord tc) throws Loading {
 	int r = map.gettilen(tc);
 	if(r == -1)
 	    throw(new Loading());
 	return(r);
     }
-	
+
     private Tile getground(Coord tc) throws Loading {
 	Tile r = map.getground(tc);
 	if(r == null)
 	    throw(new Loading());
 	return(r);
     }
-	
+
     private Tile[] gettrans(Coord tc) throws Loading {
 	Tile[] r = map.gettrans(tc);
 	if(r == null)
@@ -820,10 +820,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    throw(new Loading());
 	return(ol);
     }
-	
+
     private void drawtile(GOut g, Coord tc, Coord sc) {
 	Tile t;
-		
+
 	try {
 	    t = getground(tc);
 	    //t = gettile(tc).ground.pick(0);
@@ -835,12 +835,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	} catch (Loading e) {}
     }
-    
+
     private void drawol(GOut g, Coord tc, Coord sc) {
 	int ol;
 	int i;
 	double w = 2;
-		
+
 	try {
 	    ol = getol(tc);
 
@@ -878,11 +878,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor(Color.WHITE);
 	} catch (Loading e) {}
     }
-    
+
     private void drawradius(GOut g, Coord c, int radius) {
 	g.fellipse(c, new Coord((int)(radius * 4 * Math.sqrt(0.5)), (int)(radius * 2 * Math.sqrt(0.5))));
     }
-    
+
     private void drawplobeffect(GOut g) {
 	if(plob == null)
 	    return;
@@ -902,7 +902,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor();
 	}
     }
-    
+
     private void draweffectradius(GOut g) {
 	String name;
 	g.chcolor(0, 255, 0, 32);
@@ -916,18 +916,18 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor();
     }
-    
+
     private void drawobjradius(GOut g) {
 	synchronized (glob.oc) {
 	    for (Gob gob : glob.oc) {
 		if(gob.sc == null){continue;}
-		
+
 		if (Config.showBeast && gob.isBeast()) {
 		    HLInfo inf = Config.hlcfg.get(gob.beastname);
 		    g.chcolor(inf.col.getRed(), inf.col.getGreen(), inf.col.getBlue(), 96);
 		    drawradius(g, gob.sc, 100);
 		}
-		
+
 		if(gob.isHuman() && !ui.sess.glob.party.memb.keySet().contains(gob.id)){
 		    g.chcolor(255, 0, 255, 96);
 		    drawradius(g, gob.sc, 10);
@@ -935,7 +935,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				autohearth(gob);
 			}
 		}
-		
+
 		if(gob.isHighlight() && Config.highlightItemList.contains(gob.resname())){
 		    g.chcolor(255, 128, 64, 96);
 		    drawradius(g, gob.sc, 10);
@@ -944,7 +944,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor();
     }
-	
+
 	private void autohearth(Gob gob) {
 		if (System.currentTimeMillis() > lastah) {
 			KinInfo kin = gob.getattr(KinInfo.class);
@@ -960,13 +960,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			}
 		}
 	}
-	
+
 	private void hearth() {
 		String[] action = {"theTrav", "hearth"};
 		UI.instance.mnu.wdgmsg("act", (Object[])action);
 		lastah = System.currentTimeMillis() + 5000;
 	}
-    
+
     private void drawtracking(GOut g) {
 	g.chcolor(255, 0, 255, 128);
 	Coord oc = viewoffset(sz, mc);
@@ -978,7 +978,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor();
     }
-    
+
     private boolean follows(Gob g1, Gob g2) {
 	Following flw;
 	if((flw = g1.getattr(Following.class)) != null) {
@@ -1012,7 +1012,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	return(obsc);
     }
-    
+
     private void drawols(GOut g, Coord sc) {
 	synchronized(map.grids){
 	    for(Coord gc : map.grids.keySet()){
@@ -1036,7 +1036,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor();
     }
-    
+
     private int getolid(int mask){
 	for(int i=0; i<olc.length; i++){
 	    if((mask & (1 << i)) != 0){
@@ -1045,14 +1045,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	return 0;
     }
-    
+
     private void drawol2(GOut g, int id, Coord c0, Coord cx, Coord sc){
 	cx = cx.add(1,1);
 	Coord c1 = m2s(c0.mul(tilesz)).add(sc);
 	Coord c2 = m2s(new Coord(c0.x, cx.y).mul(tilesz)).add(sc);
 	Coord c3 = m2s(cx.mul(tilesz)).add(sc);
 	Coord c4 = m2s(new Coord(cx.x, c0.y).mul(tilesz)).add(sc);
-	
+
 	Color fc = new Color(olc[id].getRed(), olc[id].getGreen(), olc[id].getBlue(), 32);
 	g.chcolor(fc);
 	g.frect(c1, c2, c3, c4);
@@ -1063,9 +1063,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	drawline(g, new Coord(-1,0), c0.x, id, c0, cx, sc);
 	g.chcolor();
     }
-    
+
     private void drawline(GOut g, Coord d, int med, int id, Coord c0, Coord cx, Coord sc){
-	
+
 	Coord m = d.abs();
 	Coord r = m.swap();
 	Coord off = m.mul(med).add(d.add(m).div(2));
@@ -1094,12 +1094,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	}
     }
-    
+
     public void drawmap(GOut g) {
 	int x, y, i;
 	int stw, sth;
 	Coord oc, tc, ctc, sc;
-	
+
 	if(Config.profile)
 	    curf = prof.new Frame();
 	stw = (tilesz.x * 4) - 2;
@@ -1136,7 +1136,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	    c1 = d.add(0, -hy);
 	    c2 = d.add(0, hy);
-	    
+
 	    for(x = d.x; x < d.x + 5*hx/2; x = x + tilesz.x){
 		c1.x = x;
 		c2.x = c1.x;
@@ -1151,13 +1151,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    draweffectradius(g);
 	else
 	    drawplobeffect(g);
-	
+
 	if(Config.radar){drawobjradius(g);}
 	drawtracking(g);
-	
+
 	if(curf != null)
 	    curf.tick("plobeff");
-		
+
 	final List<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
 	ArrayList<KinInfo> kin = new ArrayList<KinInfo>();
@@ -1165,7 +1165,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    Gob cur = null;
 	    Sprite.Part.Effect fx = null;
 	    int szo = 0;
-	    
+
 	    public void chcur(Gob cur) {
 		this.cur = cur;
 		GobHealth hlt = cur.getattr(GobHealth.class);
@@ -1199,9 +1199,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		p.szo = szo;
 	    }
 	}
-	
+
 	if(Config.showHidden && Config.hide) {
-		g.chcolor(255, 0, 0, 128);
+		String[] col = Config.hhc.split (",");
+		int rv=Integer.parseInt(col[0]);
+		int gv=Integer.parseInt(col[1]);
+		int bv=Integer.parseInt(col[2]);
+		int av=128;
+		if (Config.alpha) av=Integer.parseInt(col[3]);
+		g.chcolor(rv, gv, bv, av);
 		synchronized(glob.oc) {
 		    for(Gob gob : glob.oc) {
 			Resource res = gob.getres();
@@ -1222,7 +1228,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		}
 		g.chcolor();
 	    }
-	
+
 	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
 	    for(Gob gob : glob.oc) {
@@ -1269,7 +1275,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    g2.chcolor(255, 255, 0, 255);
 		part.drawol(g2);
 	    }
-	    
+
 	    if(curf != null)
 		curf.tick("draw");
 	    //Illumination
@@ -1286,7 +1292,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    Tex t = k.rendered();
 		    Coord gc = k.gob.sc;
 		    String name = k.gob.resname();
-		    boolean isother = name.contains("hearth") 
+		    boolean isother = name.contains("hearth")
 		    	|| name.contains("skeleton");
 		    if(gc.isect(Coord.z, sz)) {
 			if(k.seen == 0)
@@ -1322,7 +1328,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    //System.out.println(curf);
 	}
     }
-	
+
     public void drawarrows(GOut g) {
 	Coord oc = viewoffset(sz, mc);
 	Coord hsz = sz.div(2);
@@ -1354,7 +1360,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	}
     }
-	
+
     private void checkplmove() {
 	Gob pl;
 	long now = System.currentTimeMillis();
@@ -1425,7 +1431,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(((mask.amb = glob.amblight) == null) || Config.nightvision)
 		mask.amb = new Color(0, 0, 0, 0);
 	    drawmap(g);
-	    
+
 	    //movement highlight
 	    if(Config.showgobpath||Config.showothergobpath){
 		drawGobPath(g);
@@ -1434,7 +1440,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		drawPlayerPath(g);
 	    }
 	    //###############
-	    
+
 	    drawarrows(g);
 	    g.chcolor(Color.WHITE);
 	    if(Config.dbtext)
@@ -1505,12 +1511,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	g.chcolor();
     }
-	
+
     public boolean drop(Coord cc, Coord ul) {
 	wdgmsg("drop", ui.modflags());
 	return(true);
     }
-	
+
     public boolean iteminteract(Coord cc, Coord ul) {
 	Coord cc0 = cc;
 	cc = new Coord((int) (cc.x/getScale()), (int)(cc.y/getScale()));
@@ -1522,7 +1528,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    wdgmsg("itemact", cc0, mc, ui.modflags(), hit.id, hit.getc());
 	return(true);
     }
-    
+
     private Map<String, Console.Command> cmdmap = new TreeMap<String, Console.Command>();
     {
 	cmdmap.put("cam", new Console.Command() {
