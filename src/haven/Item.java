@@ -42,7 +42,7 @@ public class Item extends Widget implements DTarget {
     static Resource missing = Resource.load("gfx/invobjs/missing");
     static Color outcol = new Color(0,0,0,255);
     boolean dm = false;
-    int q, q2;
+    public int q, q2;
     boolean hq;
     Coord doff;
     String tooltip;
@@ -443,14 +443,28 @@ public class Item extends Widget implements DTarget {
 	if(!dm) {
 	    if(button == 1) {
 		if(ui.modshift)
-		    wdgmsg("transfer", c);
+		    if(ui.modmeta)
+			wdgmsg("transfer-same", name(), false);
+		    else
+			wdgmsg("transfer", c);
 		else if(ui.modctrl)
-		    wdgmsg("drop", c);
+		    if(ui.modmeta)
+			wdgmsg("drop-same", name(), false);
+		    else
+			wdgmsg("drop", c);
 		else
 		    wdgmsg("take", c);
 		return(true);
 	    } else if(button == 3) {
-		wdgmsg("iact", c);
+		if(ui.modmeta){
+		    if(ui.modshift){
+			wdgmsg("transfer-same", name(), true);
+		    } else if(ui.modctrl){
+			wdgmsg("drop-same", name(), true);
+		    }
+		} else {
+		    wdgmsg("iact", c);
+		}
 		return(true);
 	    }
 	} else {

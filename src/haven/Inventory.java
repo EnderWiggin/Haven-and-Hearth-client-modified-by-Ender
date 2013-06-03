@@ -27,12 +27,28 @@
 package haven;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Inventory extends Widget implements DTarget {
     public static final Tex invsq;  // InvisibleSquare = 1x1 cell
     public static final Coord invSqSize; //size of invsq
-    public static final Coord invSqSizeSubOne; //size of invsq.sub(1,1)    
+    public static final Coord invSqSizeSubOne; //size of invsq.sub(1,1)
+    private static final Comparator<Item> cmp_asc = new Comparator<Item>() {
+	@Override
+	public int compare(Item o1, Item o2) {
+	    return o1.q - o2.q;
+	}
+    };
+    private static final Comparator<Item> cmp_desc = new Comparator<Item>() {
+	@Override
+	public int compare(Item o1, Item o2) {
+	    return o2.q - o1.q;
+	}
+    };
     protected static BufferedImage[] tbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/trashu"),
 	Resource.loadimg("gfx/hud/trashd"),
@@ -118,25 +134,32 @@ public class Inventory extends Widget implements DTarget {
 		    }
 		}
 	    });
+	} else if(msg.equals("transfer-same")){
+	    process(getSame((String) args[0], (Boolean) args[1]), "transfer");
+	} else if(msg.equals("drop-same")){
+	    process(getSame((String) args[0], (Boolean) args[1]), "drop");
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
     }
-  
-//    Commented out because not used  
-//    public void showtrash(boolean visible){
-//        if (visible) {
-//            if (trash == null) {
-//                trash = new IButton(Coord.z, this, trashButtonImages);
-//            }
-//            trash.visible = visible;
-//        } else {
-//            if (trash != null) {
-//                trash.visible = visible;
-//            }
-//        }
-//        recalculateSize();
-//    }
+    
+    private void process(List<Item> items, String action) {
+	for (Item item : items){
+	    item.wdgmsg(action, Coord.z);
+	}
+    }
+
+    private List<Item> getSame(String name, boolean ascending) {
+	List<Item> items = new ArrayList<Item>();
+	for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+	    if (wdg.visible && wdg instanceof Item) {
+		if (((Item) wdg).name().equals(name))
+		    items.add((Item) wdg);
+	    }
+	}
+	Collections.sort(items, ascending?cmp_asc:cmp_desc);
+	return items;
+    }
     
     private String getmsg(){
 	if(parent instanceof Window){
