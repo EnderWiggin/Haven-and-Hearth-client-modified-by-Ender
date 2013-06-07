@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class Gob implements Sprite.Owner {
     public Coord rc, sc;
@@ -115,8 +116,10 @@ public class Gob implements Sprite.Owner {
 	for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
-		if(((getattr(Drawable.class) == null) || (getneg() != null)) && (ol.res.get() != null))
+		if(((getattr(Drawable.class) == null) || (getneg() != null)) && (ol.res.get() != null)){
+		    checkol(ol);		    
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
+		}
 	    } else {
 		boolean done = ol.spr.tick(dt);
 		if((!ol.delign || (ol.spr instanceof Overlay.CDel)) && done)
@@ -125,6 +128,52 @@ public class Gob implements Sprite.Owner {
 	}
     }
 	
+    public static class DmgInfo {
+	public static final Text.Foundry fnd = new Text.Foundry("SansSerif", 10);
+	private Color col;
+	private int val;
+	public Tex img;
+
+	public DmgInfo(int c, int value){
+	    this.col = new Color(dup((c & 0xF000) >> 12), dup((c & 0xF00) >> 8), dup((c & 0xF0) >> 4), dup((c & 0xF) >> 0));;
+	    val = 0;
+	    update(value);
+	}
+	
+	public void update(int value){
+	    this.val += value;
+	    img = new TexI(Utils.outline2(fnd.render(String.format("%d", val), col).img, Utils.contrast(col)));
+	}
+	private static int dup(int v)
+	{
+	    return v << 4 | v;
+	}
+    }
+    
+    public Map<Integer, DmgInfo> dmgmap = new TreeMap<Integer, Gob.DmgInfo>();
+    private void checkol(Overlay ol) {
+	Resource res = ol.res.get();
+	if(res == null){return;}
+	Message msg = ol.sdt;
+	int off = msg.off;
+	if(res.name.indexOf("score")>=0){
+	    int val = msg.int32();
+	    int j = msg.uint8();
+	    int col = msg.uint16();
+	    System.out.println(String.format("gob: %d, val: %d, j: %d, col: %d", id, val, j, col));
+	    if(col != 65535){
+		DmgInfo inf = dmgmap.get(col);
+		if(inf == null){
+		    inf = new DmgInfo(col, val);
+		    dmgmap.put(col, inf);
+		} else {
+		    inf.update(val);
+		}
+	    }
+	}
+	msg.off = off;
+    }
+
     public Overlay findol(int id) {
 	for(Overlay ol : ols) {
 	    if(ol.id == id)
