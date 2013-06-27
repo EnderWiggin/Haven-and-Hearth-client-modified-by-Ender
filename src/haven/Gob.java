@@ -117,7 +117,7 @@ public class Gob implements Sprite.Owner {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
 		if(((getattr(Drawable.class) == null) || (getneg() != null)) && (ol.res.get() != null)){
-		    checkol(ol);		    
+		    //checkol(ol);
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 		}
 	    } else {
