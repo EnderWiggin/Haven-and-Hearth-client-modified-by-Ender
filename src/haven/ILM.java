@@ -31,6 +31,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 public class ILM extends TexRT {
     public final static BufferedImage ljusboll;
@@ -75,8 +76,8 @@ public class ILM extends TexRT {
 	lbtex = new TexI(ljusboll);
     }
 	
-    protected Color setenv(GL gl) {
-	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+    protected Color setenv(GL2 gl) {
+	gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
 	return(amb);
     }
 	
