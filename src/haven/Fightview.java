@@ -176,12 +176,14 @@ public class Fightview extends Widget {
         }
         super.draw(g);
         //draw DMG over cur ava
-//        Gob gob = ui.sess.glob.oc.getgob(current.gobid);
-//        if(gob != null){
-//            Coord cc = curava.c.add(3, curava.sz.y-3).sub(c);
-//            for(DmgInfo i:gob.dmgmap.values()){
-//        	g.aimage(i.img, cc, 0, 1);
-//        	cc.y -= i.img.sz().y +2;
+//        if (ui.sess != null) {
+//            Gob gob = ui.sess.glob.oc.getgob(current.gobid);
+//            if(gob != null){
+//                Coord cc = curava.c.add(3, curava.sz.y-3).sub(c);
+//                for(DmgInfo i:gob.dmgmap.values()){
+//        	    g.aimage(i.img, cc, 0, 1);
+//        	    cc.y -= i.img.sz().y +2;
+//                }
 //            }
 //        }
         
