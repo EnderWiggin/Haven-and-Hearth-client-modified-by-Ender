@@ -182,8 +182,18 @@ public class UI {
 	}
     }
 	
-    public void grabmouse(Widget wdg) {
-	mousegrab = wdg;
+    public void grabmouse(Widget wdg) { // new
+		if(wdg == null){
+			for(Widget w = root.child; w != null; w = w.next){
+				if(w instanceof Item){
+					mousegrab = w;
+					return;
+				}
+			}
+			mousegrab = wdg;
+		}else{
+			mousegrab = wdg;
+		}
     }
 	
     public void grabkeys(Widget wdg) {
@@ -297,47 +307,73 @@ public class UI {
 	}
 	return(false);
     }
-
-    public void mousedown(MouseEvent ev, Coord c, int button) {
-	setmods(ev);
-	lcc = mc = c;
-	if(mousegrab == null)
-	    root.mousedown(c, button);
-	else
-	    mousegrab.mousedown(wdgxlate(c, mousegrab), button);
+	
+	
+	Widget temp = null; // new
+	
+    public void mousedown(MouseEvent ev, Coord c, int button) { // new
+		addons.MainScript.stop(button); // new
+		
+		setmods(ev);
+		lcc = mc = c;
+		
+		if(mousegrab == null){
+			root.mousedown(c, button);
+		}else if(modflags() == 5 && mousegrab instanceof Item){
+			temp = mousegrab;
+			mousegrab.hide();
+			mousegrab = null;
+			
+			root.mousedown(c, button);
+		}else{
+			mousegrab.mousedown(wdgxlate(c, mousegrab), button);
+		}
     }
 	
-    public void mouseup(MouseEvent ev, Coord c, int button) {
-	setmods(ev);
-	mc = c;
-	if(mousegrab == null)
-	    root.mouseup(c, button);
-	else
-	    mousegrab.mouseup(wdgxlate(c, mousegrab), button);
+    public void mouseup(MouseEvent ev, Coord c, int button) { // new
+		setmods(ev);
+		mc = c;
+		
+		if(temp != null){
+			root.mouseup(c, button);
+			mousegrab = temp;
+			temp = null;
+			mousegrab.show();
+		}else if(mousegrab == null){
+			root.mouseup(c, button);
+		}else{
+			mousegrab.mouseup(wdgxlate(c, mousegrab), button);
+		}
     }
 	
     public void mousemove(MouseEvent ev, Coord c) {
-	setmods(ev);
-	mc = c;
-	if(mousegrab == null)
-	    root.mousemove(c);
-	else
-	    mousegrab.mousemove(wdgxlate(c, mousegrab));
+		setmods(ev);
+		mc = c;
+		if(mousegrab == null){
+			root.mousemove(c);
+		}else{
+			mousegrab.mousemove(wdgxlate(c, mousegrab));
+			root.mousemove(c); // new
+		}
     }
 	
     public void mousewheel(MouseEvent ev, Coord c, int amount) {
 	setmods(ev);
 	lcc = mc = c;
-	if(mousegrab == null)
+	//if(mousegrab == null)  // new
 	    root.mousewheel(c, amount);
-	else
-	    mousegrab.mousewheel(wdgxlate(c, mousegrab), amount);
+	//else // new
+	    //mousegrab.mousewheel(wdgxlate(c, mousegrab), amount);
     }
     
-    public int modflags() {
-	return((modshift?1:0) |
-	       (modctrl?2:0) |
-	       (modmeta?4:0) |
-	       (modsuper?8:0));
+    public int modflags() { // new
+		int num;
+	
+		num = ((modshift?1:0) |
+				(modctrl?2:0) |
+				(modmeta?4:0) |
+				(modsuper?8:0));
+		
+		return num;
     }
 }

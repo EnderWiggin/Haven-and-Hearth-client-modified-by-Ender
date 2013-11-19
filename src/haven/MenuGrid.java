@@ -288,6 +288,13 @@ public class MenuGrid extends Widget {
 			    }
 			}
 		    }
+			
+			for(int i = 0; i < ad.length; i++){ // new
+				if(ad[i].contains("atk") ){
+					if(doubleTapAttack(ad)) return;
+				}
+			}
+			
 		    wdgmsg("act", (Object[])ad);
 		}
 	    } else {
@@ -402,4 +409,69 @@ public class MenuGrid extends Widget {
 	}
 	return(false);
     }
+	
+	///////////
+	
+	long doubleTapTime = 0; // new
+	boolean soakAttack = false;
+	
+	public static String[] moveAttacks = {
+		"thunder",
+		"berserk",
+		"dash",
+		"feignflight",
+		"flex",
+		"butterfly",
+		"jump",
+		"advpush",
+		"seize",
+		"slide",
+		"throwsand"
+	};
+	
+	boolean doubleTapAttack(String[] ad){ // new
+		Config.runFlaskSuppression = true;
+		long tapTime = 400;
+		
+		//String attackName = getAttackName(ad);
+		
+		if(System.currentTimeMillis() - doubleTapTime < tapTime){
+			//System.out.println("double tapped");
+			if(soakAttack) return true;
+			
+			for(Widget w = ui.root.child; w != null; w = w.next){
+				if(w instanceof Fightview){
+					soakAttack = true;
+					((Fightview)w).attackCurrent(/*attackName*/);
+				}
+			}
+			
+			//doubleTapTime = 0;
+			return true;
+		}
+		
+		soakAttack = false;
+		doubleTapTime = System.currentTimeMillis();
+		return false;
+    }
+	
+	/*String getAttackName(String[] ad){
+		String name = null;
+		for(int i = 0; i < ad.length; i++){ // new
+			if(!ad[i].contains("atk") ){
+				name = soakAttackCandidates(ad[i]);
+			}
+		}
+		
+		return name;
+	}
+	
+	String soakAttackCandidates(String name){
+		for(int i = 0; i < moveAttacks.length; i++){ // new
+			if(moveAttacks[i].contains(name) ){
+				return name;
+			}
+		}
+		return null;
+	}*/
 }

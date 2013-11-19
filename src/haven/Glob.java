@@ -77,6 +77,11 @@ public class Glob {
 	paginae.add(Resource.load("paginae/add/hide/mans"));
 	paginae.add(Resource.load("paginae/add/hide/plan"));
 	paginae.add(Resource.load("paginae/add/hide/ston"));
+	
+	paginae.add(Resource.load("paginae/add/hide/vidol")); // new
+	paginae.add(Resource.load("paginae/add/hide/blood")); // new
+	paginae.add(Resource.load("paginae/add/hide/ridge")); // new
+	paginae.add(Resource.load("paginae/add/hide/support")); // new
     }
     
     public static class CAttr extends Observable {

@@ -117,7 +117,7 @@ public class Gob implements Sprite.Owner {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
 		if(((getattr(Drawable.class) == null) || (getneg() != null)) && (ol.res.get() != null)){
-		    //checkol(ol);
+		    checkol(ol);		    
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 		}
 	    } else {
@@ -160,7 +160,7 @@ public class Gob implements Sprite.Owner {
 	    int val = msg.int32();
 	    int j = msg.uint8();
 	    int col = msg.uint16();
-	    System.out.println(String.format("gob: %d, val: %d, j: %d, col: %d", id, val, j, col));
+	    //System.out.println(String.format("gob: %d, val: %d, j: %d, col: %d", id, val, j, col));
 	    if(col != 65535){
 		DmgInfo inf = dmgmap.get(col);
 		if(inf == null){
@@ -382,5 +382,14 @@ public class Gob implements Sprite.Owner {
 	    return(r.layer(Resource.negc));
 	}
 	return(null);
+    }
+	
+	public boolean checkWalking() { // new
+		for(String name : resnames()){
+			if(name.contains("/walking/")){
+			return true;
+			}
+		}
+		return false;
     }
 }

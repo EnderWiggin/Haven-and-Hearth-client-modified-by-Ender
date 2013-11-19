@@ -48,10 +48,12 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import addons.MainScript; // new
+
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
-    public static String VERSION = "02.04.12";
-    private static final String TITLE = String.format("Haven and Hearth (modified by Ender v%s)", VERSION);
+    public static String VERSION = "11.19.13";
+    private static final String TITLE = String.format("Haven and Hearth (modified by Ender edited by Xcom v%s)", VERSION);
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;
@@ -168,7 +170,13 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	seticon();
 	setVisible(true);
 	p.init();
-	setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+	
+	new MainScript(p); // new
+	
+	if(Config.maxWindow){ // new
+		setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+	}
+	
     }
 
     public static Coord getScreenSize() {

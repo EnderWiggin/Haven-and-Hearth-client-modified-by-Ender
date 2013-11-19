@@ -20,12 +20,8 @@
 	
   <target name="resources">
 	  	<exec executable="java" failifexecutionfails="false">
-	  	  <arg line="-jar resources/LayerUtil.jar -re resources/src resources/compiled/res" />
+	  	  <arg line="-jar resources/LayerUtil.jar -re resources/src build/res" />
 	  	</exec>
-  	
-  		<jar destfile="build/client-res.jar" update="true">
-  			<fileset dir="resources/compiled" />
-  		</jar>
   </target>
 
   <target name="haven-client" depends="build-env">

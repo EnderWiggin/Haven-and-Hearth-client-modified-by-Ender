@@ -57,6 +57,7 @@ public class RootWidget extends ConsoleHost {
 	    int code = ev.getKeyCode();
 	    boolean ctrl = ev.isControlDown();
 	    boolean alt = ev.isAltDown();
+		boolean shift = ev.isShiftDown();
 	    if(Config.profile && (key == '`')) {
 		new Profwnd(ui.slen, ui.mainview.prof, "MV prof");
 	    } else if(Config.profile && (key == '~')) {
@@ -102,7 +103,34 @@ public class RootWidget extends ConsoleHost {
 		ui.mainview.resetcam();
 	    } else if(code == KeyEvent.VK_END) {
 		screenshot = true;
-	    } else if(key == ':') {
+		} else if(code == KeyEvent.VK_UP) { // new
+			for(Widget w = ui.root.child; w != null; w = w.next){
+				if(w instanceof Fightview){
+					((Fightview)w).currentUp();
+				}
+			}
+	    } else if(code == KeyEvent.VK_DOWN) { // new
+			for(Widget w = ui.root.child; w != null; w = w.next){
+				if(w instanceof Fightview){
+					((Fightview)w).currentDown();
+				}
+			}
+	    } else if((code == KeyEvent.VK_A)&&ctrl) { // new
+			Config.pathDrinker = !Config.pathDrinker;
+			String str = "Auto drinker: "+((Config.pathDrinker)?"ON":"OFF");
+			ui.cons.out.println(str);
+			ui.slen.error(str);
+			addons.MainScript.flaskScript();
+	    } else if((code == KeyEvent.VK_B)&&ctrl) { // new
+			Config.minerSafety = !Config.minerSafety;
+			String str = "Mining safety: "+((Config.pathDrinker)?"ON":"OFF");
+			ui.cons.out.println(str);
+			ui.slen.error(str);
+	    } else if((code == KeyEvent.VK_S)&&alt) { // new
+			addons.MainScript.cleanupItems(1, ui.mainview.gobAtMouse);
+	    } else if((code == KeyEvent.VK_S)&&shift) { // new
+			addons.MainScript.cleanupItems(1000, ui.mainview.gobAtMouse);
+	    }else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {
 		wdgmsg("gk", (int)key);

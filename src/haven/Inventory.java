@@ -53,7 +53,7 @@ public class Inventory extends Widget implements DTarget {
 	Resource.loadimg("gfx/hud/trashu"),
 	Resource.loadimg("gfx/hud/trashd"),
 	Resource.loadimg("gfx/hud/trashh")};
-    Coord isz;
+    public Coord isz;
     private final IButton trash;
     private final AtomicBoolean wait = new AtomicBoolean(false);
 
@@ -207,4 +207,13 @@ public class Inventory extends Widget implements DTarget {
     protected boolean checkTrashButton(Widget w) {
         return trash != null && w == trash;
     }
+	
+	void skoopItems(String name){ // new
+		for(Widget wdg = child; wdg != null; wdg = wdg.next){
+			if(wdg instanceof Item){
+				Item i = (Item)wdg;
+				if(name.equals(i.GetResName() ) ) i.wdgmsg("transfer", Coord.z);
+			}
+		}
+	}
 }

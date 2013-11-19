@@ -62,6 +62,8 @@ public class RemoteUI implements UI.Receiver {
 		    		c = MainFrame.getCenterPoint().add(-400, -300);
 		    	if(((String)args[0]).equals("gfx/logo2"))
 		    		c = MainFrame.getCenterPoint().add(-415, -300);
+				if(((String)args[0]).indexOf("gfx/hud/prog/") >= 0) // new
+					addons.HavenUtil.HourglassID = id; // new
 		    }else if(type.equals("charlist") && args.length >= 1){
 		    	c = MainFrame.getCenterPoint().add(-380, -50);
 		    }else if(type.equals("ibtn") && args.length >= 2){
@@ -79,6 +81,7 @@ public class RemoteUI implements UI.Receiver {
 		} else if(msg.type == Message.RMSG_DSTWDG) {
 		    int id = msg.uint16();
 		    ui.destroy(id);
+			if(id == addons.HavenUtil.HourglassID) addons.HavenUtil.HourglassID = -1; // new
 		}
 	    }
 	    synchronized(sess) {

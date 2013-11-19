@@ -45,14 +45,17 @@ public class Item extends Widget implements DTarget {
     public int q, q2;
     boolean hq;
     Coord doff;
-    String tooltip;
+    public String tooltip;
     int num = -1;
     Indir<Resource> res;
     Tex sh;
-    Color olcol = null;
+    public Color olcol = null;
     Tex mask = null;
     int meter = 0;
     String curioStr = null;
+	
+	public static int idCounter = 0; // new
+	public int id = 0; // new
 	
     static {
 	Widget.addtype("item", new WidgetFactory() {
@@ -290,6 +293,8 @@ public class Item extends Widget implements DTarget {
     public Item(Coord c, Indir<Resource> res, int q, Widget parent, Coord drag, int num) {
 	super(c, Coord.z, parent);
 	this.res = res;
+	idCounter++; // new
+	id = idCounter; // new
 	decq(q);
 	fixsize();
 	this.num = num;
@@ -439,7 +444,24 @@ public class Item extends Widget implements DTarget {
 	}
     }
 	
+	public String GetResName(){ // new
+		if (this.res.get() != null) {
+			return ((Resource)this.res.get()).name;
+		}
+		return "";
+	}
+	
+	void sortedSkoop(){ // new
+		String name = GetResName();
+		if(parent instanceof Inventory ) ((Inventory)parent).skoopItems(name);
+	}
+	
     public boolean mousedown(Coord c, int button) {
+	if(button == 3 && ui.modflags() == 4){ // new
+		sortedSkoop();
+		return(true);
+	}
+	
 	if(!dm) {
 	    if(button == 1) {
 		if(ui.modshift)

@@ -26,7 +26,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
     public final static Coord bgsz = bg.sz().add(-1, -1);
     private static final Properties beltsConfig = new Properties();
     private Coord gsz, off, beltNumC;
-    Slot pressed, dragging, layout[];
+    public Slot pressed, dragging, layout[];
     private IButton lockbtn, flipbtn, minus, plus;
     public boolean flipped = false, locked = false;
     public int belt, key;
@@ -574,12 +574,12 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	saveBelts();
     }
     
-    private static class Slot {
+    public static class Slot {
 	public boolean isitem;
 	public String action;
 	public int slot;
-	private Resource res;
-	private int belt, ind;
+	public Resource res;
+	public int belt, ind;
 	
 	public Slot(String str, int belt, int ind){
 	    this.ind = ind;

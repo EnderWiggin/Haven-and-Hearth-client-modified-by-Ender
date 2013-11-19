@@ -236,6 +236,27 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.showothergobpath;
 		
+		(new CheckBox(new Coord(370, 340), tab, "Broadleaf tile fix") { // new
+		public void changed(boolean val) {
+		    Config.broadleafTile = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.broadleafTile;
+		
+		(new CheckBox(new Coord(370, 375), tab, "Open in maximised window") { // new
+		public void changed(boolean val) {
+		    Config.maxWindow = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.maxWindow;
+		
+		(new CheckBox(new Coord(370, 410), tab, "Edged tiles") { // new
+		public void changed(boolean val) {
+		    Config.edgedTiles = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.edgedTiles;
+		
 	    (new CheckBox(new Coord(440, 130), tab, "Auto-hearth") {
 		public void changed(boolean val) {
 		    Config.autohearth = val;

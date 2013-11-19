@@ -129,7 +129,20 @@ public class Config {
     public static boolean muteChat = false;
     public static boolean showgobpath;
     public static boolean showothergobpath = true;
-
+	
+	public static boolean edgedTiles = false; // new
+    public static boolean maxWindow = true; // new
+	public static boolean broadleafTile = false; // new
+	
+	// script bools
+	public static boolean runFlaskRunning = false;
+	public static boolean runFlask = true;
+	public static boolean forcemod = false;
+	public static boolean pathDrinker = false;
+	public static boolean runFlaskSuppression = false;
+	public static boolean minerSafety = false;
+	// script bools
+	
     static {
 	try {
 	    String p;
@@ -215,30 +228,51 @@ public class Config {
 	Color col = new Color(0xff797c);
 	inf.setColor(col);
 	beasts.put(pat, "Bear");
+	inf.show = true; // new
 	hlcfg.put(pat, inf);
 	//boar
 	pat = "kritter/boar";
 	inf = new HLInfo(pat, "mmap/boar");
 	inf.setColor(col);
 	beasts.put(pat, "Boar");
+	inf.show = true; // new
 	hlcfg.put(pat, inf);
 	//deer
 	pat = "kritter/deer";
 	inf = new HLInfo(pat, "mmap/deer");
 	inf.setColor(new Color(0x7BAF8E));
 	beasts.put(pat, "Deer");
+	inf.show = false; // new
 	hlcfg.put(pat, inf);
 	//fox
 	pat = "kritter/fox";
 	inf = new HLInfo(pat, "mmap/fox");
 	inf.setColor(new Color(0xAF8E5B));
 	beasts.put(pat, "Fox");
+	inf.show = false;
 	hlcfg.put(pat, inf);
 	//rabbit
 	pat = "kritter/hare";
 	inf = new HLInfo(pat, "mmap/rabbit");
 	inf.setColor(new Color(0x8E8E8E));
 	beasts.put(pat, "Rabbit");
+	inf.show = false; // new
+	hlcfg.put(pat, inf);
+	
+	
+	//aurochs ////// new
+	pat = "kritter/aurochs";
+	inf = new HLInfo(pat, "mmap/aurochs");
+	inf.setColor(new Color(0x8E8E8E));
+	beasts.put(pat, "Aurochs");
+	inf.show = false; 
+	hlcfg.put(pat, inf);
+	//mufflon
+	pat = "kritter/mufflon";
+	inf = new HLInfo(pat, "mmap/mufflon");
+	inf.setColor(new Color(0x8E8E8E));
+	beasts.put(pat, "Mufflon");
+	inf.show = false;
 	hlcfg.put(pat, inf);
     }
 
@@ -573,6 +607,11 @@ public class Config {
         hearthred = options.getProperty("hearthred", "false").equals("true");
         hideObjectList.clear();
         String hideObjects = options.getProperty("hideObjects", "");
+		
+		edgedTiles = options.getProperty("edgedTiles", "false").equals("true"); // new
+		maxWindow = options.getProperty("maxWindow", "false").equals("true"); // new
+		broadleafTile = options.getProperty("broadleafTile", "false").equals("true"); // new
+		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
                 if (!objectName.isEmpty()) {
@@ -671,6 +710,11 @@ public class Config {
         options.setProperty("hearthunknown", hearthunknown?"true":"false");
         options.setProperty("hearthred", hearthred?"true":"false");
         options.setProperty("showViewDistance", showViewDistance?"true":"false");
+        
+		options.setProperty("edgedTiles", edgedTiles?"true":"false"); // new
+		options.setProperty("maxWindow", maxWindow?"true":"false"); // new
+		options.setProperty("broadleafTile", broadleafTile?"true":"false"); // new
+		
         options.setProperty("version", currentVersion);
         
         try {

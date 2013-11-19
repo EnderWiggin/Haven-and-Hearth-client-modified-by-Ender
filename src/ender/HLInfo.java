@@ -16,6 +16,7 @@ public class HLInfo {
     private String name;
     private String icnname = null;
     public Color col = Color.GRAY;
+	public boolean show = true; // new
     
     public HLInfo(String name, String icon){
 	this.name = name;

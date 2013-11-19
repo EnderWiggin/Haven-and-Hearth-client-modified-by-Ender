@@ -176,14 +176,14 @@ public class Fightview extends Widget {
         }
         super.draw(g);
         //draw DMG over cur ava
-//        Gob gob = ui.sess.glob.oc.getgob(current.gobid);
-//        if(gob != null){
-//            Coord cc = curava.c.add(3, curava.sz.y-3).sub(c);
-//            for(DmgInfo i:gob.dmgmap.values()){
-//        	g.aimage(i.img, cc, 0, 1);
-//        	cc.y -= i.img.sz().y +2;
-//            }
-//        }
+        Gob gob = ui.sess.glob.oc.getgob(current.gobid);
+        if(gob != null){
+            Coord cc = curava.c.add(3, curava.sz.y-3).sub(c);
+            for(DmgInfo i:gob.dmgmap.values()){
+        	g.aimage(i.img, cc, 0, 1);
+        	cc.y -= i.img.sz().y +2;
+            }
+        }
         
     }
     
@@ -262,7 +262,14 @@ public class Fightview extends Widget {
 	    rel.def = (Integer)args[2];
 	    return;
         } else if(msg == "cur") {
-            try {
+			try {
+				Relation rel = getrel((Integer)args[0]);
+				if(current != null && rel.gobid == current.gobid) return; // new
+				makeCurrent(rel); // new
+			} catch(Notfound e) {
+				current = null;
+			}
+           /* try {
                 Relation rel = getrel((Integer)args[0]);
                 lsrel.remove(rel);
                 lsrel.addFirst(rel);
@@ -272,7 +279,7 @@ public class Fightview extends Widget {
 		curava.color = rel.color();
             } catch(Notfound e) {
 		current = null;
-	    }
+		   }*/
             return;
         } else if(msg == "atkc") {
 	    long now = System.currentTimeMillis();
@@ -295,4 +302,72 @@ public class Fightview extends Widget {
 	}
         super.uimsg(msg, args);
     }
+	
+	/////////
+	
+
+	public void makeCurrent(Relation rel){ // new
+		lsrel.remove(rel);
+		lsrel.addFirst(rel);
+		current = rel;
+		curgive.state = rel.give.state;
+		curava.avagob = rel.gobid;
+		curava.color = rel.color();
+	}
+	
+	public void currentUp(){ // new
+		if(lsrel.size() > 1){
+			Relation relFirst = lsrel.get(0);
+			Relation relSecond = lsrel.get(1);
+			
+			lsrel.remove(relFirst);
+			lsrel.addLast(relFirst);
+			current = relSecond;
+			curgive.state = relSecond.give.state;
+			curava.avagob = relSecond.gobid;
+			curava.color = relSecond.color();
+		}
+	}
+	
+	public void currentDown(){ // new
+		if(lsrel.size() > 1){
+			Relation relLast = lsrel.get(lsrel.size() - 1);
+			
+			lsrel.remove(relLast);
+			lsrel.addFirst(relLast);
+			current = relLast;
+			curgive.state = relLast.give.state;
+			curava.avagob = relLast.gobid;
+			curava.color = relLast.color();
+		}
+	}
+	
+	public Relation getRelation(int gobid){ // new
+		for(Relation rel : lsrel){
+			if(rel.gobid == gobid)
+				return rel;
+		}
+		return null;
+	}
+	
+	//String memAttack = null;
+	public void attackCurrent(/*String attackName*/){// new
+		/*boolean memorized = false;
+		
+		if(batk != null && attackName != null && attackName.equals(memAttack) ){
+			memorized = true;
+		}
+		
+		memAttack = attackName;
+		//System.out.println(memorized);
+		if(current != null && !memorized){
+			current.ava.mousedown(Coord.z, 1);
+		}*/
+		boolean suppress = false;
+		if(batk != null) suppress = true;
+		
+		if(current != null && !suppress){
+			current.ava.mousedown(Coord.z, 1);
+		}
+	}
 }

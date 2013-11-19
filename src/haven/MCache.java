@@ -511,6 +511,12 @@ public class MCache {
 	    int id = msg.uint8();
 	    String resnm = msg.string();
 	    int resver = msg.uint16();
+		
+		if(id == 11 && Config.broadleafTile){ // new
+			resnm = "gfx/tiles/wald/leaf";
+			resver = 6;
+		}
+		
 	    sets[id] = loadset(resnm, resver);
 	}
     }

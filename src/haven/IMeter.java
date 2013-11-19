@@ -34,8 +34,8 @@ public class IMeter extends Widget {
     static Coord off = new Coord(13, 7);
     static Coord fsz = new Coord(63, 18);
     static Coord msz = new Coord(49, 4);
-    Resource bg;
-    List<Meter> meters;
+    public Resource bg;
+    public List<Meter> meters;
     
     static {
 	Widget.addtype("im", new WidgetFactory() {
@@ -57,7 +57,7 @@ public class IMeter extends Widget {
     
     public static class Meter {
 	Color c;
-	int a;
+	public int a;
 	
 	public Meter(Color c, int a) {
 	    this.c = c;
