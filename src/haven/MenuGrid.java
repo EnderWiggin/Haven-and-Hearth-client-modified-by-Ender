@@ -357,6 +357,19 @@ public class MenuGrid extends Widget {
 	    } else {
 		ui.wiki.wdgmsg(ui.wiki.cbtn, "click");
 	    }
+	} else if(list[1].equals("pickup")) {
+		addons.MainScript.cleanupItems(1000, ui.mainview.gobAtMouse);
+	} else if(list[1].equals("msafe")) {
+		Config.minerSafety = !Config.minerSafety;
+		String str = "Mining safety: "+((Config.minerSafety)?"ON":"OFF");
+		ui.cons.out.println(str);
+		ui.slen.error(str);
+	} else if(list[1].equals("runflask")) {
+		Config.pathDrinker = !Config.pathDrinker;
+		String str = "Auto drinker: "+((Config.pathDrinker)?"ON":"OFF");
+		ui.cons.out.println(str);
+		ui.slen.error(str);
+		addons.MainScript.flaskScript();
 	}
 	use(null);
     }

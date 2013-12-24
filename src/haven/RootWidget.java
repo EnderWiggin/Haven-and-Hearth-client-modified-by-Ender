@@ -123,7 +123,7 @@ public class RootWidget extends ConsoleHost {
 			addons.MainScript.flaskScript();
 	    } else if((code == KeyEvent.VK_B)&&ctrl) { // new
 			Config.minerSafety = !Config.minerSafety;
-			String str = "Mining safety: "+((Config.pathDrinker)?"ON":"OFF");
+			String str = "Mining safety: "+((Config.minerSafety)?"ON":"OFF");
 			ui.cons.out.println(str);
 			ui.slen.error(str);
 	    } else if((code == KeyEvent.VK_S)&&alt) { // new
