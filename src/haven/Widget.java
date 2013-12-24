@@ -496,4 +496,12 @@ public class Widget {
     public void show() {
 	visible = true;
     }
+	
+	UI getRootUI(){
+		for(Widget wdg = this; wdg != null; wdg = wdg.parent) {
+			if(wdg instanceof RootWidget) return wdg.ui;
+		}
+		
+		return null;
+	}
 }

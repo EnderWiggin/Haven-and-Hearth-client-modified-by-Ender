@@ -39,6 +39,9 @@ public class Bootstrap implements UI.Receiver {
     String inituser = null;
     byte[] initcookie = null;
 	
+	int type = -1;
+	String charname = "";
+	
     public static class Message {
 	int id;
 	String name;
@@ -132,12 +135,19 @@ public class Bootstrap implements UI.Receiver {
 			    msgs.wait();
 		    }
 		    if(msg.id == 1) {
-			if(msg.name == "login") {
-			    username = (String)msg.args[0];
-			    password = (String)msg.args[1];
-			    savepw = (Boolean)msg.args[2];
-			    break;
-			}
+				if(msg.name == "login") {
+					username = (String)msg.args[0];
+					password = (String)msg.args[1];
+					savepw = (Boolean)msg.args[2];
+					break;
+				}else if(msg.name == "loginauto"){
+					username = (String)msg.args[0];
+					password = (String)msg.args[1];
+					savepw = (Boolean)msg.args[2];
+					type = (Integer)msg.args[3];
+					charname = (String)msg.args[4];
+					break;
+				}
 		    }
 		}
 		ui.uimsg(1, "prg", "Authenticating...");
@@ -215,6 +225,7 @@ public class Bootstrap implements UI.Receiver {
 	    }
 	} while(true);
 	haven.error.ErrorHandler.setprop("usr", sess.username);
+	sess.autoLogin(type, charname);
 	return(sess);
 	//(new RemoteUI(sess, ui)).start();
     }

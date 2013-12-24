@@ -78,7 +78,7 @@ public class Session {
 	
     DatagramSocket sk;
     InetAddress server;
-    Thread rworker, sworker, ticker;
+    Thread rworker, sworker, ticker, auto;
     public int connfailed = 0;
     public String state = "conn";
     int tseq = 0, rseq = 0;
@@ -93,6 +93,7 @@ public class Session {
     byte[] cookie;
     final Map<Integer, Indir<Resource>> rescache = new TreeMap<Integer, Indir<Resource>>();
     public final Glob glob;
+	UI ui;
 	
     @SuppressWarnings("serial")
 	public class MessageException extends RuntimeException {
@@ -717,4 +718,11 @@ public class Session {
 	} catch(IOException e) {
 	}
     }
+	
+	public void autoLogin(int t, String c){
+		if(t >= 0){
+			auto = new LoginAuto(t, username, c, this);
+			auto.start();
+		}
+	}
 }
