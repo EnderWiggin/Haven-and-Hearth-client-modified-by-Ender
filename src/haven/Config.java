@@ -141,6 +141,7 @@ public class Config {
 	public static boolean pathDrinker = false;
 	public static boolean runFlaskSuppression = false;
 	public static boolean minerSafety = false;
+	public static int flaskNum = 113;
 	// script bools
 	
     static {
@@ -611,6 +612,7 @@ public class Config {
 		edgedTiles = options.getProperty("edgedTiles", "false").equals("true"); // new
 		maxWindow = options.getProperty("maxWindow", "false").equals("true"); // new
 		broadleafTile = options.getProperty("broadleafTile", "false").equals("true"); // new
+		flaskNum = Integer.parseInt(options.getProperty("flaskNum", "100"));
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -714,6 +716,7 @@ public class Config {
 		options.setProperty("edgedTiles", edgedTiles?"true":"false"); // new
 		options.setProperty("maxWindow", maxWindow?"true":"false"); // new
 		options.setProperty("broadleafTile", broadleafTile?"true":"false"); // new
+		options.setProperty("flaskNum", String.valueOf(flaskNum)); // new
 		
         options.setProperty("version", currentVersion);
         

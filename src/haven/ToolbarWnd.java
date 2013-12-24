@@ -436,7 +436,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	return false;
     }
     
-    private void setBeltSlot(int slot, String icon) {
+    public void setBeltSlot(int slot, String icon) {
 	setbeltslot(belt, slot, icon);
     }
     
@@ -567,7 +567,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	return -1;
     }
     
-    private static void setbeltslot(int belt, int slot, String value){
+    public static void setbeltslot(int belt, int slot, String value){
 	synchronized (beltsConfig) {
 	    beltsConfig.setProperty("belt_"+belt+"_"+slot, value);
 	}

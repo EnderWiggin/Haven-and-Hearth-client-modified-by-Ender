@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.awt.event.KeyEvent;
 
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
@@ -53,6 +54,8 @@ public class OptWnd extends Window {
 	    return (a.compareTo(b));
 	}
     };
+	
+	TextEntry flask;
 
     private static class CamInfo {
 	String name, desc;
@@ -277,6 +280,43 @@ public class OptWnd extends Window {
 			    Config.saveOptions();
 			}
 		    }).a = Config.hearthred;
+		
+		new Label(new Coord(440, 270), tab, "Flask Key:");
+		flask = new TextEntry(new Coord(440, 285), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
+			public void setFocus(){
+				hasfocus = false;
+			}
+			
+			public boolean type(char c, KeyEvent ev) {
+				return true;
+			}
+			
+			public boolean keydown(KeyEvent e) {
+				if(hasfocus){
+					int val = e.getExtendedKeyCode();
+					String str = addons.HavenUtil.flaskText(val);
+					if(str != ""){
+						settext(str);
+						
+						Config.flaskNum = val;
+						Config.saveOptions();
+					}else{
+						settext(text);
+					}
+				}
+				//System.out.println(e.getExtendedKeyCode() );
+				hasfocus = false;
+				return true;
+			}
+			
+			public void focus(){
+				String mem = text;
+				tcache = null;
+				hasfocus = true;
+				settext("");
+				text = mem;
+			}
+		};
 		
 	    Widget editbox = new Frame(new Coord(440, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");

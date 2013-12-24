@@ -56,6 +56,7 @@ public class Utils {
     private static Background bgworker = null;
 
     public static Coord imgsz(BufferedImage img) {
+	if(img == null) return Coord.z;
 	return(new Coord(img.getWidth(), img.getHeight()));
     }
 	

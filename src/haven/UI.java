@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
+import addons.HavenUtil;
 
 public class UI {
     static public UI instance;
@@ -59,6 +60,7 @@ public class UI {
     public FSMan fsm;
     public Console cons = new WidgetConsole();
     private Collection<AfterDraw> afterdraws = null;
+	public HavenUtil m_util;
 	
     public interface Receiver {
 	public void rcvmsg(int widget, String msg, Object... args);
@@ -128,6 +130,7 @@ public class UI {
 	widgets.put(0, root);
 	rwidgets.put(root, 0);
 	this.sess = sess;
+	m_util = new HavenUtil(this);
     }
 	
     public void setreceiver(Receiver rcvr) {

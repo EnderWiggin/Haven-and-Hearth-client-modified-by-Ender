@@ -171,8 +171,6 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	setVisible(true);
 	p.init();
 	
-	new MainScript(p); // new
-	
 	if(Config.maxWindow){ // new
 		setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 	}

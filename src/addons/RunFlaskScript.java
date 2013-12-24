@@ -21,6 +21,15 @@ public class RunFlaskScript extends Thread{
 		int flaskID = -1;
 		int cancelID = -1;
 		int count = 3;
+		int bar = 1;
+		int slot = 1;
+		
+		Coord flaskCoord = m_util.flaskToCoord(Config.flaskNum);
+		if(flaskCoord != null){
+			bar = flaskCoord.x;
+			slot = flaskCoord.y;
+		}
+		System.out.println(flaskCoord);
 		
 		while(Config.pathDrinker){
 			m_util.wait(300);
@@ -35,13 +44,15 @@ public class RunFlaskScript extends Thread{
 				
 				continue;
 			}else if(flask != null && cancelID != flask.id){
-				if(!m_util.findFlaskToolbar() ){
+				if(!m_util.findFlaskToolbar(bar, slot) ){
 					if(!findFlaskInBag(flaskID)){
 						flask = null;
 						flaskID = -1;
 						continue;
 					}
-					m_util.setBeltSlot(2, 1, flask);
+					
+					m_util.setBeltSlot(bar, slot, flask);
+					
 					cancelID = flask.id;
 					flaskID = flask.id;
 					flask = null;
@@ -49,13 +60,13 @@ public class RunFlaskScript extends Thread{
 			}
 			
 			//System.out.println(InfoWindow.runFlask);
-			if(m_util.checkPlayerWalking() && m_util.findFlaskToolbar() && Config.runFlask){
+			if(m_util.checkPlayerWalking() && m_util.findFlaskToolbar(bar, slot) && Config.runFlask){
 				if(fillFlasks()) count = 3;
 				
 				if(!m_util.hasHourglass() && m_util.getStamina() < 80 && count > 2){
 					Config.forcemod = false;
 					//System.out.println("acction");
-					m_util.useActionBar(HavenUtil.ACTIONBAR_F, 1);
+					//m_util.useActionBar(bar, slot);
 					count = 0;
 				}else
 					count++;

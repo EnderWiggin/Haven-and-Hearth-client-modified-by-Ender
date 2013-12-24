@@ -13,43 +13,9 @@ import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Color;
 
-import haven.HavenPanel;
-import haven.Coord;
-import haven.Gob;
-import haven.Glob;
-import haven.Sprite;
-import haven.RemoteUI;
-import haven.Resource;
-import haven.ResDrawable;
-import haven.Window;
-import haven.Widget;
-import haven.Inventory;
-import haven.Img;
-import haven.Button;
-import haven.ISBox;
-import haven.Item;
-import haven.IMeter;
+import haven.*;
 import haven.IMeter.Meter;
-import haven.Moving;
-import haven.UI;
-import haven.Label;
-import haven.IButton;
-import haven.Buff;
-import haven.Makewindow;
-import haven.LoginScreen;
-import haven.Charlist;
-import haven.MapView;
-import haven.VMeter;
-import haven.HackThread;
-import haven.Progress;
-import haven.Config;
-import haven.GOut;
-import haven.Utils;
-import haven.KinInfo;
-import haven.CharWnd;
 import haven.CharWnd.Study;
-import haven.Fightview;
-import haven.MCache;
 
 public class HavenUtil{
 	
@@ -59,10 +25,10 @@ public class HavenUtil{
 	
 	public static int HourglassID = -1;
 	
-	HavenPanel m_hPanel;
+	UI ui;
 	
-	public HavenUtil(HavenPanel hp){
-		m_hPanel = hp;
+	public HavenUtil(UI u){
+		ui = u;
 	}
 	
 	public void wait(int time){
@@ -73,11 +39,11 @@ public class HavenUtil{
 	}
 	
 	public void sendSlenMessage(String str){
-		m_hPanel.ui.slen.error(str);
+		ui.slen.error(str);
 	}
 	
 	public Gob getPlayerGob(){
-		return m_hPanel.ui.mainview.glob.oc.getgob(m_hPanel.ui.mainview.playergob);
+		return ui.mainview.glob.oc.getgob(ui.mainview.playergob);
 	}
 	
 	public Coord getPlayerCoord(){
@@ -91,12 +57,12 @@ public class HavenUtil{
 	public void clickWorldObject(int button, Gob object){
 		if(object == null) return;
 		
-		m_hPanel.ui.mainview.wdgmsg("click", new Coord(200,150), object.getc(), button, 0, object.id, object.getc());
+		ui.mainview.wdgmsg("click", new Coord(200,150), object.getc(), button, 0, object.id, object.getc());
 	}
 	
 	public Inventory getInventory(String name){
 		
-		Widget root = m_hPanel.ui.root;
+		Widget root = ui.root;
 		Widget inv = null;
 		
 		for(Widget w = root.child; w != null; w = w.next){
@@ -138,7 +104,7 @@ public class HavenUtil{
 	
 	public int getStamina(){
 		int stamina = 0;
-		Widget root = m_hPanel.ui.root;
+		Widget root = ui.root;
 		
 		for(Widget w = root.child; w != null; w = w.next){
 			if ((w instanceof IMeter)){
@@ -180,7 +146,7 @@ public class HavenUtil{
 	}
 	
 	public boolean mouseHoldingAnItem(){
-		/*if(m_hPanel.ui.mousegrab == null){
+		/*if(ui.mousegrab == null){
 			return false;
 		}
 		return true;*/
@@ -192,13 +158,13 @@ public class HavenUtil{
 	}
 	
 	public Item getMouseItem(){
-		Widget root = m_hPanel.ui.root;
+		Widget root = ui.root;
 		
 		for(Widget w = root.child; w != null; w = w.next){
 			if(w instanceof Item) return (Item)w;
 		}
-		/*if(m_hPanel.ui.mousegrab instanceof Item){
-			return (Item)m_hPanel.ui.mousegrab;
+		/*if(ui.mousegrab instanceof Item){
+			return (Item)ui.mousegrab;
 		}*/
 		return null;
 	}
@@ -217,7 +183,7 @@ public class HavenUtil{
 		if(i == null){
 			return;
 		}
-		i.wdgmsg("take", new Object[]{m_hPanel.mousepos});
+		i.wdgmsg("take", new Object[]{ui.mainview.mousepos});
 	}
 	
 	public void itemInteract(Item item){
@@ -241,22 +207,22 @@ public class HavenUtil{
 	
 	public void useActionBar(int bar, int button){
 		if(bar == 0){
-			if(m_hPanel.ui.mnu.numpadbar.layout[button] == null){
+			if(ui.mnu.numpadbar.layout[button] == null){
 				return;
 			}
-			m_hPanel.ui.mnu.numpadbar.layout[button].use();
+			ui.mnu.numpadbar.layout[button].use();
 		}
 		if(bar == 1){
-			if(m_hPanel.ui.mnu.functionbar.layout[button] == null){
+			if(ui.mnu.functionbar.layout[button] == null){
 				return;
 			}
-			m_hPanel.ui.mnu.functionbar.layout[button].use();
+			ui.mnu.functionbar.layout[button].use();
 		}
 		if(bar == 2){
-			if(m_hPanel.ui.mnu.digitbar.layout[button] == null){
+			if(ui.mnu.digitbar.layout[button] == null){
 				return;
 			}
-			m_hPanel.ui.mnu.digitbar.layout[button].use();
+			ui.mnu.digitbar.layout[button].use();
 		}
 	}
 	
@@ -272,53 +238,66 @@ public class HavenUtil{
 		return 0;
 	}
 	
-	boolean findFlaskToolbar(){
+	boolean findFlaskToolbar(int bar, int slot){
 		String quickname = "empty";
+		ToolbarWnd barPad = null;
 		
-		if(m_hPanel.ui.mnu.functionbar.layout[1] != null)
-			if(m_hPanel.ui.mnu.functionbar.layout[1].getres() != null)
-				quickname = m_hPanel.ui.mnu.functionbar.layout[1].getres().name;
+		if(bar == 0){
+			if(slot < 0 || slot > 9) return false;
+			barPad = ui.mnu.digitbar;
+		}else if(bar == 1){
+			if(slot < 0 || slot > 11) return false;
+			barPad = ui.mnu.functionbar;
+		}else if(bar == 2){
+			if(slot < 0 || slot > 9) return false;
+			barPad = ui.mnu.numpadbar;
+		}
+		
+		if(barPad == null) return false;
+		
+		if(barPad.layout[slot] != null)
+			if(barPad.layout[slot].getres() != null)
+				quickname = barPad.layout[slot].getres().name;
 		
 		if(!quickname.contains("waterskin") && !quickname.contains("waterflask") ){
-			//setBeltSlot(2, 1, flask);
 			return false;
 		}
-		//wait(100);
 		
 		return true;
 	}
 	
-	public void setBeltSlot(int slot, int bar, Item i){
-		if(i==null && slot > 0 && slot < 13)
-			return;
-		int jump = 0;
-		Coord c = new Coord(i.c);
+	public void setBeltSlot(int bar, int slot, Item i){
+		String quickname = "empty";
+		ToolbarWnd barPad = null;
+		
+		if(bar == 0){
+			if(slot < 0 || slot > 9) return;
+			barPad = ui.mnu.digitbar;
+		}else if(bar == 1){
+			if(slot < 0 || slot > 11) return;
+			barPad = ui.mnu.functionbar;
+		}else if(bar == 2){
+			if(slot < 0 || slot > 9) return;
+			barPad = ui.mnu.numpadbar;
+		}
+		
+		if(barPad == null) return;
+		
+		Coord c = i.c;
 		
 		if(mouseHoldingAnItem() )
 			dropItemInBag(c);
 		else
 			pickUpItem(i);
 		
-		//while(!mouseHoldingAnItem() && !InfoWindow.stop) wait(100);
-		if(slot > 5)
-			jump += 10;
+		int belt = barPad.belt;
+		int s = barPad.getbeltslot();
+		String val = "@"+s;
+		barPad.layout[slot] = new ToolbarWnd.Slot(val, belt, slot);
+		ui.slen.wdgmsg("setbelt", s, 0);
+		ToolbarWnd.setbeltslot(belt, slot, val);
 		
-		Coord slotCoord = new Coord(25, 22 + 30 * slot + jump);
-		
-		if(bar == 0){
-			m_hPanel.ui.mnu.digitbar.drop(slotCoord, new Coord(10,10));
-		}
-		if(bar == 1){
-			m_hPanel.ui.mnu.functionbar.drop(slotCoord, new Coord(10,10));
-		}
-		if(bar == 2){
-			m_hPanel.ui.mnu.numpadbar.drop(slotCoord, new Coord(10,10));
-		}
-		
-		Inventory bag = getInventory("Inventory");
-		//bag.drop(new Coord(0,0), c);
 		dropItemInBag(c);
-		//while(mouseHoldingAnItem() && !InfoWindow.stop) wait(100);
 	}
 	
 	public Gob getClosestObjectInArray(ArrayList<Gob> list){
@@ -348,8 +327,8 @@ public class HavenUtil{
 		
 		Rectangle rect = new Rectangle(smallestX, smallestY, largestX - smallestX, largestY - smallestY);
 		
-		synchronized(m_hPanel.ui.mainview.glob.oc){
-			for(Gob g : m_hPanel.ui.mainview.glob.oc){
+		synchronized(ui.mainview.glob.oc){
+			for(Gob g : ui.mainview.glob.oc){
 				if(rect.contains(g.getc().x, g.getc().y))
 					list.add(g);
 			}
@@ -376,7 +355,7 @@ public class HavenUtil{
 	}
 	
 	void togleInventory(){
-		m_hPanel.ui.root.wdgmsg("gk", 9);
+		ui.root.wdgmsg("gk", 9);
 	}
 	
 	public boolean isInventoryOpen(){
@@ -415,5 +394,38 @@ public class HavenUtil{
 		}
 		
 		return count;
+	}
+	
+	public static String flaskText(int val){
+		String str = "";
+		if(val >= 48 && val <= 57){
+			str = String.valueOf(val - 48);
+		}else if(val >= 112 && val <= 123){
+			str = "F"+String.valueOf(val - 111);
+		}else if(val >= 96 && val <= 105){
+			str = "N"+String.valueOf(val - 96);
+		}
+		
+		return str;
+	}
+	
+	public Coord flaskToCoord(int val){
+		Coord c = new Coord();
+		if(val >= 48 && val <= 57){
+			c.x = 0;
+			c.y = val - 49;
+			if(val == 48) c.y = 9;
+			return c;
+		}else if(val >= 112 && val <= 123){
+			c.x = 1;
+			c.y = val - 112;
+			return c;
+		}else if(val >= 96 && val <= 105){
+			c.x = 2;
+			c.y = val - 96;
+			return c;
+		}
+		
+		return null;
 	}
 }

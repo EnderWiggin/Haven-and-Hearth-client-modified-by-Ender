@@ -67,8 +67,11 @@ public class LoginAuto extends Thread {
 			}
 			
 			count++;
-			if(count > 100) break;
+			if(count > 30) break;
 		}
+		
+		Window wd = getClickWindow();
+		if(wd != null) charClick();
 		
 		return false;
 	}
@@ -86,10 +89,17 @@ public class LoginAuto extends Thread {
 		return false;
 	}
 	
+	void setName(){
+		sess.charname = charname;
+		Config.currentCharName = charname;
+		MainFrame.instance.setTitle(charname);
+	}
+	
 	boolean charClick(){
 		int count = 0;
 		int breakCount = 0;
-		sess.charname = charname;
+		setName();
+		
 		while(true){
 			try{Thread.sleep(200);}catch(Exception e){}
 			Window wd = getClickWindow();
@@ -105,13 +115,16 @@ public class LoginAuto extends Thread {
 				}
 				
 				count++;
-				if(count > 50) return false;
+				if(count > 10){
+					count = 0;
+					break;
+				}
 			}else if(findMapView() ){
 				return false;
 			}
 			
 			breakCount++;
-			if(breakCount > 50) break;
+			if(breakCount > 30) break;
 		}
 		
 		return false;
@@ -151,11 +164,11 @@ public class LoginAuto extends Thread {
 				}
 				
 				count++;
-				if(count > 50) return false;
+				if(count > 30) return false;
 			}
 			
 			breakCount++;
-			if(breakCount > 50) break;
+			if(breakCount > 30) break;
 		}
 		
 		return false;

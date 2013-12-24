@@ -31,7 +31,7 @@ import java.awt.Font;
 import java.awt.event.KeyEvent;
 
 public class TextEntry extends Widget {
-    LineEdit buf;
+	LineEdit buf;
     int sx;
     boolean pw = false;
     static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12), Color.BLACK);
@@ -102,16 +102,18 @@ public class TextEntry extends Widget {
 		
 		protected void changed() {
 		    TextEntry.this.text = line;
+			change(line);
 		}
 	    };
 	setcanfocus(true);
+	setFocus();
     }
 	
     public void activate(String text) {
 	if(canactivate)
 	    wdgmsg("activate", text);
     }
-
+	
     public boolean type(char c, KeyEvent ev) {
 	return(buf.key(ev));
     }
@@ -121,8 +123,18 @@ public class TextEntry extends Widget {
 	return true;
     }
 	
+	public void change(String str){
+	}
+	
+	public void focus(){
+	}
+	
+	public void setFocus(){
+	}
+	
     public boolean mousedown(Coord c, int button) {
 	parent.setfocus(this);
+	focus();
 	if(tcache != null) {
 	    buf.point = tcache.charat(c.x + sx);
 	}
