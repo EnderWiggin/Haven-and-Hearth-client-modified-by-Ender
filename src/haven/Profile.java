@@ -32,9 +32,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Profile {
-    public Frame[] hist;
+    private final Frame[] hist;
     private int i = 0;
-    private static Color[] cols;
+    private static final Color[] cols;
     
     static {
 	cols = new Color[16];
@@ -57,28 +57,34 @@ public class Profile {
     
     public class Frame {
 	public String nm[];
-	public long total, prt[];
-	private List<Long> pw = new LinkedList<Long>();
-	private List<String> nw = new LinkedList<String>();
+	private long total;
+	private long[] prt;
+	private final List<Long> pw = new LinkedList<Long>();
+	private final List<String> nw = new LinkedList<String>();
 	private long then, last;
+	private boolean finished = false;
 	
 	public Frame() {
 	    start();
 	}
 	
-	public void start() {
-	    last = then = System.nanoTime();
+	private void start() {
+	    last = then = System.currentTimeMillis() * 1000;
 	}
 	
-	public void tick(String nm) {
-	    long now = System.nanoTime();
+	public synchronized void tick(String nm) {
+	    if (finished) {
+	        return;
+	    }
+	    long now = System.currentTimeMillis() * 1000;
 	    pw.add(now - last);
 	    nw.add(nm);
 	    last = now;
 	}
 	
-	public void fin() {
-	    total = System.nanoTime() - then;
+	public synchronized void fin() {
+	    finished = true;
+	    total = System.currentTimeMillis() * 1000 - then;
 	    nm = new String[nw.size()];
 	    prt = new long[pw.size()];
 	    for(int i = 0; i < pw.size(); i++) {
@@ -88,10 +94,22 @@ public class Profile {
 	    hist[i] = this;
 	    if(++i >= hist.length)
 		i = 0;
-	    pw = null;
-	    nw = null;
+	    pw.clear();
+	    nw.clear();
 	}
-	
+
+	public long get(int index) {
+	    return prt[index];
+	}
+
+	public int size() {
+	    return prt.length;
+	}
+
+	public long getTotal() {
+	    return total;
+	}
+
 	public String toString() {
 	    StringBuilder buf = new StringBuilder();
 	    for(int i = 0; i < prt.length; i++) {
@@ -113,7 +131,15 @@ public class Profile {
 	    return(hist[hist.length - 1]);
 	return(hist[i - 1]);
     }
-    
+
+    public Frame get(int index) {
+        return hist[index];
+    }
+
+    public int size() {
+        return hist.length;
+    }
+
     public Tex draw(int h, long scale) {
 	TexIM ret = new TexIM(new Coord(hist.length, h));
 	Graphics g = ret.graphics();

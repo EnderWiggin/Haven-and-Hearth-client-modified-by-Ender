@@ -39,10 +39,10 @@ public class Profwnd extends HWindow {
     }
     
     public void draw(GOut g) {
-	long[] ttl = new long[prof.hist.length];
-	for(int i = 0; i < prof.hist.length; i++) {
-	    if(prof.hist[i] != null)
-		ttl[i] = prof.hist[i].total;
+	long[] ttl = new long[prof.size()];
+	for(int i = 0; i < prof.size(); i++) {
+	    if(prof.get(i) != null)
+		ttl[i] = prof.get(i).getTotal();
 	}
 	Arrays.sort(ttl);
 	int ti = ttl.length;
@@ -60,15 +60,15 @@ public class Profwnd extends HWindow {
     }
     
     public String tooltip(Coord c, boolean again) {
-	if((c.x >= 10) && (c.x < 10 + prof.hist.length) && (c.y >= 10) && (c.y < 10 + h)) {
+	if((c.x >= 10) && (c.x < 10 + prof.size()) && (c.y >= 10) && (c.y < 10 + h)) {
 	    int x = c.x - 10;
 	    int y = c.y - 10;
 	    long t = (h - y) * (mt / h);
-	    Profile.Frame f = prof.hist[x];
+	    Profile.Frame f = prof.get(x);
 	    if(f != null) {
-		for(int i = 0; i < f.prt.length; i++) {
-		    if((t -= f.prt[i]) < 0)
-			return(String.format("%.2f ms, %s: %.2f ms", (((double)f.total) / 1000000), f.nm[i], (((double)f.prt[i]) / 1000000)));
+		for(int i = 0; i < f.size(); i++) {
+		    if((t -= f.get(i)) < 0)
+			return(String.format("%.2f ms, %s: %.2f ms", (f.getTotal() / 1000000d), f.nm[i], (f.get(i) / 1000000d)));
 		}
 	    }
 	}

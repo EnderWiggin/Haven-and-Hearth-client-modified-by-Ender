@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 public abstract class TexGL extends Tex {
     protected int id = -1;
@@ -52,7 +53,7 @@ public abstract class TexGL extends Tex {
     protected abstract void fill(GOut gl);
 
     private void create(GOut g) {
-	GL gl = g.gl;
+	GL2 gl = g.gl;
 	int[] buf = new int[1];
 	gl.glGenTextures(1, buf, 0);
 	id = buf[0];
@@ -64,8 +65,8 @@ public abstract class TexGL extends Tex {
 	checkerr(gl);
     }
 	
-    protected Color setenv(GL gl) {
-	gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+    protected Color setenv(GL2 gl) {
+	gl.glTexEnvi(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
 	return(Color.WHITE);
     }
 	
@@ -79,7 +80,7 @@ public abstract class TexGL extends Tex {
     }
 	
     public void render(GOut g, Coord c, Coord ul, Coord br, Coord sz) {
-	GL gl = g.gl;
+	GL2 gl = g.gl;
 	synchronized(idmon) {
 	    if((id != -1) && (mygl != gl)) {
 		dispose(mygl, id);
@@ -92,7 +93,7 @@ public abstract class TexGL extends Tex {
 	Color amb = blend(g, setenv(gl));
 	checkerr(gl);
 	if(!disableall) {
-	    gl.glBegin(GL.GL_QUADS);
+	    gl.glBegin(GL2.GL_QUADS);
 	    float l = ((float)ul.x) / ((float)tdim.x);
 	    float t = ((float)ul.y) / ((float)tdim.y);
 	    float r = ((float)br.x) / ((float)tdim.x);

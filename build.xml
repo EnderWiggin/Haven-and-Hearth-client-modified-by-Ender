@@ -32,7 +32,7 @@
     <javac srcdir="src" destdir="build/classes" debug="on"
 	   source="1.5" target="1.5" includeantruntime="no">
       <classpath>
-	<pathelement path="lib/jogl.jar" />
+	<pathelement path="lib/jogl-all.jar" />
 	<pathelement path="lib/gluegen-rt.jar" />
 	<pathelement path="lib/jnlp.jar" />
 	<pathelement path="lib/jorbis.jar" />
@@ -76,7 +76,7 @@
       <fileset dir="build/classes-lib" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
+	<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar haven-res.jar" />
       </manifest>
     </jar>
     <chmod file="build/haven.jar" perm="a+x" />
@@ -90,7 +90,7 @@
   <target name="jars" depends="build-env, jar, res-jar">
     <copy todir="build">
       <fileset dir="lib">
-	<include name="jogl.jar" />
+	<include name="jogl-all.jar" />
 	<include name="gluegen-rt.jar" />
 	<include name="haven-res.jar" />
       </fileset>
