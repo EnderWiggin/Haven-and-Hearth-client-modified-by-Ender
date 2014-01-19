@@ -144,6 +144,10 @@ public class Config {
 	public static int flaskNum = 113;
 	public static boolean kinLines = false;
 	public static boolean flaskMeters = false;
+	
+	public static boolean smoothScale = false;
+	public static boolean persistantTiles = false;
+	public static boolean persistantObjects = false;
 	// script bools
 	
     static {
@@ -622,6 +626,10 @@ public class Config {
 		maxWindow = options.getProperty("maxWindow", "false").equals("true"); // new
 		broadleafTile = options.getProperty("broadleafTile", "false").equals("true"); // new
 		flaskNum = Integer.parseInt(options.getProperty("flaskNum", "100"));
+		hide = options.getProperty("hide", "false").equals("true"); // new
+		nightvision = options.getProperty("nightvision", "false").equals("true"); // new
+		kinLines = options.getProperty("kinLines", "false").equals("true"); // new
+		flaskMeters = options.getProperty("flaskMeters", "false").equals("true"); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -726,6 +734,10 @@ public class Config {
 		options.setProperty("maxWindow", maxWindow?"true":"false"); // new
 		options.setProperty("broadleafTile", broadleafTile?"true":"false"); // new
 		options.setProperty("flaskNum", String.valueOf(flaskNum)); // new
+		options.setProperty("hide", hide?"true":"false"); // new
+		options.setProperty("nightvision", nightvision?"true":"false"); // new
+		options.setProperty("kinLines", kinLines?"true":"false"); // new
+		options.setProperty("flaskMeters", flaskMeters?"true":"false"); // new
 		
         options.setProperty("version", currentVersion);
         

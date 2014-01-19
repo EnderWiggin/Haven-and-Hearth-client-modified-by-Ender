@@ -213,7 +213,7 @@ public class Session {
 		    while(true) {
 			int type = msg.uint8();
 			if(type == OD_REM) {
-			    oc.remove(id, frame);
+			    if(!Config.persistantObjects) oc.remove(id, frame);
 			} else if(type == OD_MOVE) {
 			    Coord c = msg.coord();
 			    oc.move(id, frame, c);
@@ -348,7 +348,7 @@ public class Session {
 		    uimsgs.add(msg);
 		}
 	    } else if(msg.type == Message.RMSG_MAPIV) {
-		glob.map.invalblob(msg);
+		if(!Config.persistantTiles) glob.map.invalblob(msg);
 	    } else if(msg.type == Message.RMSG_GLOBLOB) {
 		glob.blob(msg);
 	    } else if(msg.type == Message.RMSG_PAGINAE) {

@@ -431,6 +431,24 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.noborders;
+		
+		new Label(new Coord(360, 325), tab, "WARNING! use with care.");
+		new Label(new Coord(360, 335), tab, "Reboot client after use.");
+	    (new CheckBox(new Coord(380, 345), tab, "Persistant Tiles") {
+			public void changed(boolean val) {
+		    Config.persistantTiles = val;
+		}
+	    }).a = Config.persistantTiles;
+	    (new CheckBox(new Coord(380, 365), tab, "Persistant Objects") {
+		public void changed(boolean val) {
+		    Config.persistantObjects = val;
+		}
+	    }).a = Config.persistantObjects;
+		(new CheckBox(new Coord(380, 385), tab, "Smooth Zoom") {
+		public void changed(boolean val) {
+		    Config.smoothScale = val;
+		}
+	    }).a = Config.smoothScale;
 	}
 
 	{ /* AUDIO TAB */
@@ -575,6 +593,21 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.showViewDistance;
+		
+		chkbox = new CheckBox(new Coord(340, 30), tab, "Kin Colored Player Lines") {
+		public void changed(boolean val) {
+		    Config.kinLines = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.kinLines;
+		chkbox = new CheckBox(new Coord(340, 60), tab, "Show Liquid Meters") {
+		public void changed(boolean val) {
+		    Config.flaskMeters = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.flaskMeters;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

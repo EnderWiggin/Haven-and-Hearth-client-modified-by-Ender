@@ -79,7 +79,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     long polchtm = 0;
     int si = 4;
     double _scale = 1;
-    double scales[] = {0.5, 0.66, 0.8, 0.9, 1, 1.25, 1.5, 1.75, 2, 2.25}; // new
+    double scales[] = {0.4, 0.5, 0.66, 0.8, 0.9, 1, 1.25, 1.5, 1.75, 2, 2.25}; // new
+	double smoothScale = 1;
     Map<String, Integer> radiuses;
     int beast_check_delay = 0;
 	long lastah = 0;
@@ -748,8 +749,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     public boolean mousewheel(Coord c, int amount) {
 	if(!Config.zoom)
 	    return false;
-	si = Math.min(scales.length-1, Math.max(0, si - amount)); // new
-	setScale(scales[si]);
+	
+	if(Config.smoothScale){
+		smoothScale = smoothScale + smoothScale * 0.01 * amount * -1;
+		setScale(smoothScale);
+	}else{
+		si = Math.min(scales.length-1, Math.max(0, si - amount));
+		setScale(scales[si]);
+	}
+	
 	return(true);
     }
 	

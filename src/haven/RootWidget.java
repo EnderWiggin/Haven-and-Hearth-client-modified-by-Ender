@@ -66,6 +66,7 @@ public class RootWidget extends ConsoleHost {
 		new Profwnd(ui.slen, ui.mainview.mask.prof, "ILM prof");
 	    } else if((code == KeyEvent.VK_N)&&ctrl) {
 		Config.nightvision = !Config.nightvision;
+		Config.saveOptions();
 	    } else if((code == KeyEvent.VK_X)&&ctrl) {
 		Config.xray = !Config.xray;
 	    } else if((code == KeyEvent.VK_C)&&alt) {
@@ -80,9 +81,10 @@ public class RootWidget extends ConsoleHost {
 	    } else if((code == KeyEvent.VK_D)&&ctrl) {
 		Config.dbtext = !Config.dbtext;
 	    } else if((code == KeyEvent.VK_P)&&ctrl) {
-		Config.profile = !Config.profile;
+		//Config.profile = !Config.profile;
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
+		Config.saveOptions();
 	    } else if((code == KeyEvent.VK_Q)&&alt) {
 		ui.spd.setspeed(0, true);
 	    } else if((code == KeyEvent.VK_W)&&alt) {
