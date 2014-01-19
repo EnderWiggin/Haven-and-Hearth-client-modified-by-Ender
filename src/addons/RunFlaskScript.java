@@ -29,7 +29,7 @@ public class RunFlaskScript extends Thread{
 			bar = flaskCoord.x;
 			slot = flaskCoord.y;
 		}
-		System.out.println(flaskCoord);
+		//System.out.println(flaskCoord);
 		
 		while(Config.pathDrinker){
 			m_util.wait(300);
@@ -59,14 +59,12 @@ public class RunFlaskScript extends Thread{
 				}
 			}
 			
-			//System.out.println(InfoWindow.runFlask);
 			if(m_util.checkPlayerWalking() && m_util.findFlaskToolbar(bar, slot) && Config.runFlask){
 				if(fillFlasks()) count = 3;
 				
 				if(!m_util.hasHourglass() && m_util.getStamina() < 80 && count > 2){
 					Config.forcemod = false;
-					//System.out.println("acction");
-					//m_util.useActionBar(bar, slot);
+					m_util.useActionBar(bar, slot);
 					count = 0;
 				}else
 					count++;
@@ -85,7 +83,6 @@ public class RunFlaskScript extends Thread{
 			if(name.contains("waterskin") || name.contains("waterflask") ){
 				//System.out.println(i.olcol);
 				if(i.olcol == null) continue;
-				//System.out.println("gothrough");
 				
 				if(m_util.waterFlaskInfo(i) < 0.1){
 					flaskList.add(i);
@@ -94,7 +91,6 @@ public class RunFlaskScript extends Thread{
 		}
 		
 		if(flaskList.size() > 0 && !m_filling){
-			//System.out.println("fill stuff");
 			m_filling = true;
 			fillFlaskList(flaskList);
 			m_filling = false;

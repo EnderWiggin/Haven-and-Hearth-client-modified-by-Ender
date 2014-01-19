@@ -19,9 +19,9 @@ import haven.CharWnd.Study;
 
 public class HavenUtil{
 	
-	public static final int ACTIONBAR_NUMPAD = 0;
+	public static final int ACTIONBAR_NUMPAD = 2;
 	public static final int ACTIONBAR_F = 1;
-	public static final int ACTIONBAR_DIGIT = 2;
+	public static final int ACTIONBAR_DIGIT = 0;
 	
 	public static int HourglassID = -1;
 	
@@ -61,7 +61,6 @@ public class HavenUtil{
 	}
 	
 	public Inventory getInventory(String name){
-		
 		Widget root = ui.root;
 		Widget inv = null;
 		
@@ -205,24 +204,24 @@ public class HavenUtil{
 		return flask;
 	}
 	
-	public void useActionBar(int bar, int button){
+	public void useActionBar(int bar, int slot){
 		if(bar == 0){
-			if(ui.mnu.numpadbar.layout[button] == null){
+			if(ui.mnu.digitbar.layout[slot] == null){
 				return;
 			}
-			ui.mnu.numpadbar.layout[button].use();
+			ui.mnu.digitbar.layout[slot].use();
 		}
 		if(bar == 1){
-			if(ui.mnu.functionbar.layout[button] == null){
+			if(ui.mnu.functionbar.layout[slot] == null){
 				return;
 			}
-			ui.mnu.functionbar.layout[button].use();
+			ui.mnu.functionbar.layout[slot].use();
 		}
 		if(bar == 2){
-			if(ui.mnu.digitbar.layout[button] == null){
+			if(ui.mnu.numpadbar.layout[slot] == null){
 				return;
 			}
-			ui.mnu.digitbar.layout[button].use();
+			ui.mnu.numpadbar.layout[slot].use();
 		}
 	}
 	

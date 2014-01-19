@@ -238,6 +238,13 @@ public class Config {
 	beasts.put(pat, "Boar");
 	inf.show = true; // new
 	hlcfg.put(pat, inf);
+	//ram
+	pat = "kritter/bram";
+	inf = new HLInfo(pat, "paginae/build/bram");
+	inf.setColor(new Color(0xFF66CC));
+	beasts.put(pat, "Ram");
+	inf.show = false;
+	hlcfg.put(pat, inf);
 	//deer
 	pat = "kritter/deer";
 	inf = new HLInfo(pat, "mmap/deer");

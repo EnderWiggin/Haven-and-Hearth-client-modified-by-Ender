@@ -115,7 +115,7 @@ public class Charlist extends Widget {
 	try{
 	    super.draw(g);
 	} catch (Exception e) {
-	    System.out.println("qweqwe");
+	    //System.out.println("qweqwe");
 	}
     }
     

@@ -29,6 +29,7 @@ package haven;
 import java.awt.Color;
 
 public class VMeter extends Widget {
+	public static final Text.Foundry nfnd = new Text.Foundry("SansSerif", 12);
     static Tex bg = Resource.loadtex("gfx/hud/vm-frame");
     static Tex fg = Resource.loadtex("gfx/hud/vm-tex");
     Color cl;
@@ -73,5 +74,23 @@ public class VMeter extends Widget {
 	} else {
 	    super.uimsg(msg, args);
 	}
+    }
+	
+	@Override
+	public Object tooltip(Coord c, boolean again) {
+		//Object ret = super.tooltip(c, again);
+		Tex tooltip = null;
+		String text = null;
+		
+		if(amount >= 0 && cl != null)
+			text = Integer.toString(amount) + "%";
+		
+		if(text != null)
+			tooltip = new TexI(Utils.outline2(nfnd.render(text, cl).img, Color.BLACK));
+		
+		if(tooltip != null)
+			return(tooltip);
+		else
+			return("");
     }
 }
