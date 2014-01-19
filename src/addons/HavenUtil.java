@@ -427,4 +427,14 @@ public class HavenUtil{
 		
 		return null;
 	}
+	
+	public void moveAllWindowsToView(){
+		Widget root = ui.root;
+		
+		for(Widget w = root.child; w != null; w = w.next){
+			if (!(w instanceof Window))
+				continue;
+			((Window)w).moveWindowToView();
+		}
+	}
 }

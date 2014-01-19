@@ -307,4 +307,12 @@ public class Window extends Widget implements DTarget {
 	else
 	    return("");
     }
+	
+	public void moveWindowToView(){
+		Coord innerSZ = MainFrame.getInnerSize();
+		if(c.x < 0) c.x = 0;
+		if(c.y < 0) c.y = 0;
+		if( (c.x + wsz.x) > innerSZ.x ) c.x = innerSZ.x - wsz.x;
+		if( (c.y + wsz.y) > innerSZ.y ) c.y = innerSZ.y - wsz.y;
+	}
 }

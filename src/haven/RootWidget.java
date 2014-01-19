@@ -101,6 +101,8 @@ public class RootWidget extends ConsoleHost {
 		BuddyWnd.instance.visible = !BuddyWnd.instance.visible;
 	    } else if(((int)key == 20)&ctrl) {//CTRL-T have code of 20
 		CharWnd.instance.toggle();
+		} else if(code == KeyEvent.VK_HOME&&ctrl) {
+		UI.instance.m_util.moveAllWindowsToView();
 	    } else if(code == KeyEvent.VK_HOME) {
 		ui.mainview.resetcam();
 	    } else if(code == KeyEvent.VK_END) {
