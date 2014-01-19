@@ -170,6 +170,7 @@ public class UI {
 	    Resource res = Resource.load(type, ver);
 	    res.loadwaitint();
 	    f = res.layer(Resource.CodeEntry.class).get(WidgetFactory.class);
+		if(type.contains("ui/barterbox")) f = Widget.gettype(type);
 	} else {
 	    f = Widget.gettype(type);
 	}
