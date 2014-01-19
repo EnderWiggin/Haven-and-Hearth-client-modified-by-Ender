@@ -1322,9 +1322,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(curf != null)
 		curf.tick("obsc");
 	    for(Sprite.Part part : sprites) {
-		if(part.effect != null)
+		if(part.effect != null){
 		    part.draw(part.effect.apply(g));
-		else
+			if(Config.objectHealth)
+				drawObjectHealth(g, (Gob)part.owner);
+		}else
 		    part.draw(g);
 	    }
 	    for(Sprite.Part part : obscured) {
@@ -1643,10 +1645,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
 	public void drawTargetCross(GOut g){
-		Coord oc = viewoffset(sz, mc);
-		g.chcolor(255, 0, 0, 255);
 		if(ui.fight == null || ui.fight.current == null || ui.fight.lsrel.size() <= 0)
 			return;
+		
+		Coord oc = viewoffset(sz, mc);
+		g.chcolor(255, 0, 0, 255);
 		
 		Gob gob = glob.oc.getgob(ui.fight.current.gobid );
 		if(gob == null ) return;
@@ -1674,4 +1677,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	return;
     }
+	
+	void drawObjectHealth(GOut g, Gob gob){
+		GobHealth hlt = gob.getattr(GobHealth.class);
+		g.atext((int)(hlt.asfloat() * 100) + "%", gob.sc.add(-8, -15), 0, 1);
+	}
 }

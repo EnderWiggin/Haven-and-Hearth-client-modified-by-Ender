@@ -612,13 +612,13 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.flaskMeters;
-		/*chkbox = new CheckBox(new Coord(340, 90), tab, "Temp holder") {
+		chkbox = new CheckBox(new Coord(340, 90), tab, "Object Health") {
 		public void changed(boolean val) {
-		    Config.flaskMeters = val;
+		    Config.objectHealth = val;
 		    Config.saveOptions();
 		}
 	    };
-	    chkbox.a = Config.flaskMeters;*/
+	    chkbox.a = Config.objectHealth;
 		
 		new Label(new Coord(330, 150), tab, "Combat Highlights:");
 		chkbox = new CheckBox(new Coord(340, 170), tab, "Combat Cross") {
@@ -639,10 +639,12 @@ public class OptWnd extends Window {
 		public void changed(boolean val) {
 		    Config.combatSword = val;
 			
-			if(val) 
-				ui.fight.setTarget();
-			else
-				ui.fight.clearTarget();
+			if(ui.fight != null){
+				if(val) 
+					ui.fight.setTarget();
+				else
+					ui.fight.clearTarget();
+			}
 			
 		    Config.saveOptions();
 		}
