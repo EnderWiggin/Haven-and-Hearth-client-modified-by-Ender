@@ -1555,6 +1555,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			m = gob.getattr(Moving.class);
 			if((m!=null)&&(m instanceof LinMove)){
 			    lm = (LinMove) m;
+				
+				if(gob.isHuman() && Config.kinLines){
+					KinInfo kin = gob.getattr(KinInfo.class);
+					if(kin == null) g.chcolor(Color.WHITE);
+					else g.chcolor(BuddyWnd.gc[kin.group]);
+				}
+				
 			    g.line(gob.sc, m2s(lm.t).add(oc), 2);
 			}
 		}

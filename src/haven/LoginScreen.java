@@ -110,7 +110,7 @@ public class LoginScreen extends Widget {
 		new Button(new Coord(50, 440), 120, this, "Save Login") { public void click() {
 		Character c = new Character();
 		
-		if(user.text != "" && pass.text != ""){
+		if(user != null && pass != null && user.text != "" && pass.text != ""){
 			if(!checkIfNameExists(user.text) ){
 				c.group = 0;
 				c.loginName = user.text;

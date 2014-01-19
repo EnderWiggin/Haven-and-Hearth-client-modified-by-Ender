@@ -142,6 +142,7 @@ public class Config {
 	public static boolean runFlaskSuppression = false;
 	public static boolean minerSafety = false;
 	public static int flaskNum = 113;
+	public static boolean kinLines = false;
 	// script bools
 	
     static {
