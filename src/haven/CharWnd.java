@@ -589,23 +589,24 @@ public class CharWnd extends Window {
     }
     
     public class Study extends Widget {
-	Label attlbl, total;
+	Label attlbl, total, totalHour;
 	Window wnd;
 	boolean svis, attached = true;
-	private Coord detsz =  new Coord(110, 145);
+	private Coord detsz =  new Coord(110, 160);
 	private Coord detc = new Coord(-145, -75);
 	int attlimit, attused = 0;
 	private IButton lockbtn;
 	private boolean locked;
 	
 	public Study(Widget parent) {
-	    super(Coord.z, new Coord(400, 275), parent);
+	    super(Coord.z, new Coord(400, 295), parent);
 	    ui.study = this;
 	    Foundry fnd = new Foundry(new Font("SansSerif", Font.PLAIN, 12));
 	    new Label(new Coord(138, 202), this, "Attention:", fnd);
 	    attlimit = ui.sess.glob.cattr.get("intel").comp;
 	    attlbl = new Label(new Coord(200, 202), this, "", fnd);
 	    total = new Label(new Coord(138, 217), this, "Total LP:", fnd);
+		totalHour = new Label(new Coord(138, 232), this, "LP/Hour:", fnd);
 	    canhastrash = false;
 	    visible = false;
 	    locked = Config.window_props.getProperty("study_locked", "false").equals("true");
@@ -626,7 +627,7 @@ public class CharWnd extends Window {
 		}
 	    };
 	    lockbtn.recthit = true;
-	    lockbtn.c = new Coord(257, 220);
+	    lockbtn.c = new Coord(257, 235);
 	}
 	
 	@Override
@@ -642,16 +643,20 @@ public class CharWnd extends Window {
 	    attlbl.c.x = 263 - attlbl.sz.x;
 	    Inventory inv = findchild(Inventory.class);
 	    int LP = 0;
+		int LPM = 0;
 	    if(inv != null){
 		Widget wdg = inv.child;
 		while(wdg != null){
 		    if(wdg instanceof Item){
 			Item itm = (Item) wdg;
 			LP += itm.getLP();
+			LPM += itm.getLPMinut();
 		    }
 		    wdg = wdg.next;
 		}
 		total.settext("Total LP: "+LP);
+		int LPH = (int)( (double)LPM * (double)(60) );
+		totalHour.settext("Total LP/Hour: "+LPH);
 	    }
 	}
 	

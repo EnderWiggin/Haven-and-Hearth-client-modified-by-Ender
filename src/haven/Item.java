@@ -394,6 +394,21 @@ public class Item extends Widget implements DTarget {
 	}
 	return 0;
     }
+	
+	public int getLPMinut() {
+	int LP = 0;
+	int LPM = 0;
+	String name = name();
+	if(name == null){return 0;}
+	name = name.toLowerCase();
+	CurioInfo curio;
+	if((curio = Config.curios.get(name)) != null){
+		if(GetResName().contains("goldegg")) qmult = 1;
+	    LP = (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
+		LPM = (int)((double)LP / (double)curio.time);
+	}
+	return LPM;
+    }
     
     private void calcCurio(){
 	String name = name();
@@ -402,10 +417,12 @@ public class Item extends Widget implements DTarget {
 	CurioInfo curio;
 	if((curio = Config.curios.get(name)) != null){
 	    int LP = (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
-	    int time = curio.time*(100 - meter)/100;
+	    int time = curio.time*(100 - meter - 1)/100;
 	    int h = time/60;
 	    int m = time%60;
-	    curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm", LP,curio.weight,h,m);
+		int LPM = (int)( (double)LP / (double)(curio.time) );
+		int LPH = (int)( (double)LPM * (double)(60) );
+	    curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm\nLPH: %d", LP,curio.weight,h,m,LPH);
 	    shorttip = longtip = null;
 	}
     }
