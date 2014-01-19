@@ -154,14 +154,14 @@ public class LoginAuto extends Thread {
 			try{Thread.sleep(200);}catch(Exception e){}
 			Charlist cl = findLogin();
 			if(cl != null){
-				synchronized(cl.chars) {
+				//synchronized(cl.chars) {
 					for(Charlist.Char c : cl.chars) {
 						if(charname.equals(c.name)){
 							cl.wdgmsg("play", c.name);
 							return true;
 						}
 					}
-				}
+				//}
 				
 				count++;
 				if(count > 30) return false;

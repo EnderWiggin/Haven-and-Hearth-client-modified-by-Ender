@@ -293,7 +293,7 @@ public class LoginScreen extends Widget {
 		}
 		
 		if(sender == fire){
-			if(cur.enter() && CL.sel != null){
+			if(user != null && pass != null && CL.sel != null){
 				LL.clearSelection();
 				super.wdgmsg("loginauto", new Object[] {user.text, pass.text, false, 0, CL.sel.characterName});
 			}
@@ -301,7 +301,7 @@ public class LoginScreen extends Widget {
 		}
 		
 		if(sender == last){
-			if(cur.enter() && CL.sel != null){
+			if(user != null && pass != null && CL.sel != null){
 				LL.clearSelection();
 				super.wdgmsg("loginauto", new Object[] {user.text, pass.text, false, 1, CL.sel.characterName});
 			}
