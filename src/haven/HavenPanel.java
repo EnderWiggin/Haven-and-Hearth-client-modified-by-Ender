@@ -49,6 +49,11 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLException;
 
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
 public class HavenPanel extends GLCanvas implements Runnable {
     public UI ui;
     boolean inited = false, rdr = false;
@@ -187,6 +192,31 @@ public class HavenPanel extends GLCanvas implements Runnable {
 		}
 	    });
 	inited = true;
+	
+	this.addFocusListener(new FocusListener() {
+	private final KeyEventDispatcher altDisabler = new KeyEventDispatcher() {
+		@Override
+		public boolean dispatchKeyEvent(KeyEvent e) {
+			if((e.getID() == KeyEvent.KEY_RELEASED) && e.getKeyCode() == 18){
+				return true;
+			}else if((e.getID() == KeyEvent.KEY_RELEASED) && e.getKeyCode() == 121){
+				return true;
+			}
+			return false;
+		}
+	};
+	
+	@Override
+	public void focusGained(FocusEvent e) {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(altDisabler);
+	}
+	
+	@Override
+	public void focusLost(FocusEvent e) {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(altDisabler);
+	}
+	});
+	
     }
 	
     private class SyncFSM implements FSMan {
