@@ -128,7 +128,7 @@ public class Fightview extends Widget {
 			Fightview.this.wdgmsg("click", current.gobid, args[0]);
 		}
 	    };
-	curava.showname = true;
+		curava.showname = true;
 	comwdg = new ComMeter(meterc, ui.root, this);
 	comwin = new ComWin(s, this);
 	instance = this;
@@ -176,7 +176,7 @@ public class Fightview extends Widget {
         }
         super.draw(g);
         //draw DMG over cur ava
-		if(current != null){
+		/*if(current != null){
 			Gob gob = ui.sess.glob.oc.getgob(current.gobid);
 			if(gob != null){
 				Coord cc = curava.c.add(3, curava.sz.y-3).sub(c);
@@ -185,7 +185,7 @@ public class Fightview extends Widget {
 				cc.y -= i.img.sz().y +2;
 				}
 			}
-        }
+        }*/
     }
     
     @SuppressWarnings("serial")

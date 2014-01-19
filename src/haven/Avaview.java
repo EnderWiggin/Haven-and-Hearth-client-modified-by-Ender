@@ -131,10 +131,19 @@ public class Avaview extends Widget {
 	Window.wbox.draw(g, Coord.z, asz.add(Window.wbox.bisz()).add(unborder.mul(2).inv()));
 	g.chcolor();
 	Tex name ;
+	Tex dmg = dmgTex();
+	if(dmg != null) g.aimage(dmg, new Coord(10, 58), 0, 0);
 	if(showname && ((name = name()) != null)){
 	    g.aimage(name, new Coord(asz.x/2, 5), 0.5, 0);
 	}
     }
+	
+	Tex dmgTex(){
+		Gob.DmgInfo inf = Gob.dmgmap.get(avagob);
+		if(inf == null) return null;
+		
+		return inf.img;
+	}
     
     public Tex name(){
         Gob gob = ui.sess.glob.oc.getgob(avagob);

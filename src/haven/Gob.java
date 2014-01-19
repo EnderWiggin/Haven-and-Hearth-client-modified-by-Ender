@@ -51,6 +51,7 @@ public class Gob implements Sprite.Owner {
     private boolean isHighlight;
     private boolean isBeast;
     String beastname;
+	public static Map<Integer, DmgInfo> dmgmap = new TreeMap<Integer, Gob.DmgInfo>();
 	
     public static class Overlay {
 	public Indir<Resource> res;
@@ -128,52 +129,6 @@ public class Gob implements Sprite.Owner {
 	}
     }
 	
-    public static class DmgInfo {
-	public static final Text.Foundry fnd = new Text.Foundry("SansSerif", 10);
-	private Color col;
-	private int val;
-	public Tex img;
-
-	public DmgInfo(int c, int value){
-	    this.col = new Color(dup((c & 0xF000) >> 12), dup((c & 0xF00) >> 8), dup((c & 0xF0) >> 4), dup((c & 0xF) >> 0));;
-	    val = 0;
-	    update(value);
-	}
-	
-	public void update(int value){
-	    this.val += value;
-	    img = new TexI(Utils.outline2(fnd.render(String.format("%d", val), col).img, Utils.contrast(col)));
-	}
-	private static int dup(int v)
-	{
-	    return v << 4 | v;
-	}
-    }
-    
-    public Map<Integer, DmgInfo> dmgmap = new TreeMap<Integer, Gob.DmgInfo>();
-    private void checkol(Overlay ol) {
-	Resource res = ol.res.get();
-	if(res == null){return;}
-	Message msg = ol.sdt;
-	int off = msg.off;
-	if(res.name.indexOf("score")>=0){
-	    int val = msg.int32();
-	    int j = msg.uint8();
-	    int col = msg.uint16();
-	    //System.out.println(String.format("gob: %d, val: %d, j: %d, col: %d", id, val, j, col));
-	    if(col != 65535){
-		DmgInfo inf = dmgmap.get(col);
-		if(inf == null){
-		    inf = new DmgInfo(col, val);
-		    dmgmap.put(col, inf);
-		} else {
-		    inf.update(val);
-		}
-	    }
-	}
-	msg.off = off;
-    }
-
     public Overlay findol(int id) {
 	for(Overlay ol : ols) {
 	    if(ol.id == id)
@@ -392,4 +347,54 @@ public class Gob implements Sprite.Owner {
 		}
 		return false;
     }
+	
+	public static class DmgInfo {
+		public static final Text.Foundry fnd = new Text.Foundry("SansSerif", 16);
+		//private Color col;
+		public int val = 0;
+		public Tex img = null;
+		Color color = new Color(255, 64, 64);
+		
+		public DmgInfo(int value){
+			update(value);
+		}
+		
+		public void update(int value){
+			this.val += value;
+			if(val < 0) val = 0;
+			img = new TexI(Utils.outline2(fnd.render(String.format("%d", val), color).img, Utils.contrast(color)));
+		}
+	}
+	
+	private void checkol(Overlay ol) {
+		Resource res = ol.res.get();
+		if(res == null) return;
+		Message msg = ol.sdt;
+		int off = msg.off;
+		
+		if(res.name.indexOf("score")>=0){
+			int val = msg.int32();
+			int j = msg.uint8();
+			int col = msg.uint16();
+			//System.out.println(String.format("gob: %d, val: %d, j: %d, col: %d", id, val, j, col));
+			if(col == 61455){
+				DmgInfo inf = dmgmap.get(id);
+				if(inf == null){
+					inf = new DmgInfo(val);
+					dmgmap.put(id, inf);
+				} else {
+					inf.update(val);
+				}
+			}else if(col == 36751){
+				DmgInfo inf = dmgmap.get(id);
+				if(inf == null){
+					inf = new DmgInfo(val * -1);
+					dmgmap.put(id, inf);
+				} else {
+					inf.update(val * -1);
+				}
+			}
+		}
+		msg.off = off;
+	}
 }
