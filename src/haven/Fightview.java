@@ -51,14 +51,15 @@ public class Fightview extends Widget {
     private Widget comwdg, comwin;
     public static Fightview instance;
     public static long changed = 0;
+	Gob targeter;
     
     public class Relation {
         int gobid;
         public int bal, intns;
         public int off, def;
-	public int ip, oip;
+		public int ip, oip;
         Avaview ava;
-	GiveButton give;
+		GiveButton give;
         
         public Relation(int gobid) {
             this.gobid = gobid;
@@ -115,23 +116,24 @@ public class Fightview extends Widget {
     
     public Fightview(Coord c, Widget parent) {
         super(c.add(-bg.sz().x, 0), new Coord(bg.sz().x, (bg.sz().y + ymarg) * height), parent);
-	SlenHud s = ui.slen;
-	curgive = new GiveButton(cgivec, ui.root, 0) {
-		public void wdgmsg(String name, Object... args) {
-		    if(name == "click")
-			Fightview.this.wdgmsg("give", current.gobid, args[0]);
-		}
-	    };
-	curava = new Avaview(cavac, ui.root, -1) {
-		public void wdgmsg(String name, Object... args) {
-		    if(name == "click")
-			Fightview.this.wdgmsg("click", current.gobid, args[0]);
-		}
-	    };
+		SlenHud s = ui.slen;
+		curgive = new GiveButton(cgivec, ui.root, 0) {
+			public void wdgmsg(String name, Object... args) {
+				if(name == "click")
+				Fightview.this.wdgmsg("give", current.gobid, args[0]);
+			}
+		};
+		curava = new Avaview(cavac, ui.root, -1) {
+			public void wdgmsg(String name, Object... args) {
+				if(name == "click")
+				Fightview.this.wdgmsg("click", current.gobid, args[0]);
+			}
+		};
 		curava.showname = true;
-	comwdg = new ComMeter(meterc, ui.root, this);
-	comwin = new ComWin(s, this);
-	instance = this;
+		comwdg = new ComMeter(meterc, ui.root, this);
+		comwin = new ComWin(s, this);
+		instance = this;
+		ui.fight = this;
     }
     
     public void destroy() {
@@ -237,7 +239,7 @@ public class Fightview extends Widget {
             rel.ava.showname = false;
             rel.bal = (Integer)args[1];
             rel.intns = (Integer)args[2];
-	    rel.give((Integer)args[3]);
+			rel.give((Integer)args[3]);
             rel.ip = (Integer)args[4];
             rel.oip = (Integer)args[5];
             rel.off = (Integer)args[6];
@@ -246,16 +248,17 @@ public class Fightview extends Widget {
             return;
         } else if(msg == "del") {
             Relation rel = getrel((Integer)args[0]);
-	    rel.remove();
+			rel.remove();
             lsrel.remove(rel);
+			if(lsrel.size() <= 0) clearTarget();
             return;
         } else if(msg == "upd") {
             Relation rel = getrel((Integer)args[0]);
             rel.bal = (Integer)args[1];
             rel.intns = (Integer)args[2];
-	    rel.give((Integer)args[3]);
-	    rel.ip = (Integer)args[4];
-	    rel.oip = (Integer)args[5];
+			rel.give((Integer)args[3]);
+			rel.ip = (Integer)args[4];
+			rel.oip = (Integer)args[5];
             return;
 	} else if(msg == "updod") {
 	    Relation rel = getrel((Integer)args[0]);
@@ -263,26 +266,27 @@ public class Fightview extends Widget {
 	    rel.def = (Integer)args[2];
 	    return;
         } else if(msg == "cur") {
-			try {
-				Relation rel = getrel((Integer)args[0]);
-				if(current != null && rel.gobid == current.gobid) return; // new
-				makeCurrent(rel); // new
-			} catch(Notfound e) {
-				current = null;
-			}
-           /* try {
-                Relation rel = getrel((Integer)args[0]);
-                lsrel.remove(rel);
-                lsrel.addFirst(rel);
+		try {
+			Relation rel = getrel((Integer)args[0]);
+			if(current != null && rel.gobid == current.gobid) return; // new
+			makeCurrent(rel); // new
+		} catch(Notfound e) {
+			current = null;
+			clearTarget();
+		}
+		/*try {
+		Relation rel = getrel((Integer)args[0]);
+		lsrel.remove(rel);
+		lsrel.addFirst(rel);
 		current = rel;
 		curgive.state = rel.give.state;
 		curava.avagob = rel.gobid;
 		curava.color = rel.color();
-            } catch(Notfound e) {
+		} catch(Notfound e) {
 		current = null;
-		   }*/
-            return;
-        } else if(msg == "atkc") {
+		}*/
+		return;
+	} else if(msg == "atkc") {
 	    long now = System.currentTimeMillis();
 	    atkc = now + (((Integer)args[0]) * 60);
 	    if(atks == -1)
@@ -311,6 +315,7 @@ public class Fightview extends Widget {
 		lsrel.remove(rel);
 		lsrel.addFirst(rel);
 		current = rel;
+		setTarget();
 		curgive.state = rel.give.state;
 		curava.avagob = rel.gobid;
 		curava.color = rel.color();
@@ -324,6 +329,7 @@ public class Fightview extends Widget {
 			lsrel.remove(relFirst);
 			lsrel.addLast(relFirst);
 			current = relSecond;
+			setTarget();
 			curgive.state = relSecond.give.state;
 			curava.avagob = relSecond.gobid;
 			curava.color = relSecond.color();
@@ -337,6 +343,7 @@ public class Fightview extends Widget {
 			lsrel.remove(relLast);
 			lsrel.addFirst(relLast);
 			current = relLast;
+			setTarget();
 			curgive.state = relLast.give.state;
 			curava.avagob = relLast.gobid;
 			curava.color = relLast.color();
@@ -370,5 +377,33 @@ public class Fightview extends Widget {
 		if(current != null && !suppress){
 			current.ava.mousedown(Coord.z, 1);
 		}
+	}
+	
+	void createTargeter(){
+		Message sdt = new Message(0);
+		Indir<Resource> res = Resource.load("gfx/hud/new/target").indir();
+		Gob g = ui.mainview.glob.oc.getgob(0, 0);
+		if(g == null)
+			return;
+		ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
+		if((d == null) || (d.res != res) || (d.sdt.blob.length > 0) || (sdt.blob.length > 0)) {
+			g.setattr(new ResDrawable(g, res, sdt));
+			g.setattr(new Following(g, 1, new Coord(-16,-110), 0));
+		}
+		targeter = g;
+	}
+	
+	void setTarget(){
+		if(targeter == null) createTargeter();
+		if(Config.combatSword && current != null){
+			Following flw = targeter.getattr(Following.class);
+			flw.tgt = current.gobid;
+		}
+	}
+	
+	void clearTarget(){
+		if(targeter == null) createTargeter();
+		Following flw = targeter.getattr(Following.class);
+		flw.tgt = 1;
 	}
 }

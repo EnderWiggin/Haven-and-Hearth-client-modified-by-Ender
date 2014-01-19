@@ -130,11 +130,11 @@ public class Config {
     public static boolean showgobpath;
     public static boolean showothergobpath = true;
 	
-	public static boolean edgedTiles = false; // new
-    public static boolean maxWindow = true; // new
-	public static boolean broadleafTile = false; // new
+	// new
+	public static boolean edgedTiles = false;
+    public static boolean maxWindow = true;
+	public static boolean broadleafTile = false;
 	
-	// script bools
 	public static boolean runFlaskRunning = false;
 	public static boolean runFlask = true;
 	public static boolean forcemod = false;
@@ -148,7 +148,11 @@ public class Config {
 	public static boolean smoothScale = false;
 	public static boolean persistantTiles = false;
 	public static boolean persistantObjects = false;
-	// script bools
+	
+	public static boolean combatCross = false;
+	public static boolean combatHalo = false;
+	public static boolean combatSword = false;
+	// new
 	
     static {
 	try {
@@ -630,6 +634,9 @@ public class Config {
 		nightvision = options.getProperty("nightvision", "false").equals("true"); // new
 		kinLines = options.getProperty("kinLines", "false").equals("true"); // new
 		flaskMeters = options.getProperty("flaskMeters", "false").equals("true"); // new
+		combatCross = options.getProperty("combatCross", "false").equals("true"); // new
+		combatHalo = options.getProperty("combatHalo", "false").equals("true"); // new
+		combatSword = options.getProperty("combatSword", "false").equals("true"); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -649,7 +656,7 @@ public class Config {
         Resource.checkhide();
         timestamp = options.getProperty("timestamp","false").equals("true");
     }
-
+	
     public static synchronized void setWindowOpt(String key, String value) {
 	synchronized (window_props) {
 	    String prev_val =window_props.getProperty(key); 
@@ -738,6 +745,9 @@ public class Config {
 		options.setProperty("nightvision", nightvision?"true":"false"); // new
 		options.setProperty("kinLines", kinLines?"true":"false"); // new
 		options.setProperty("flaskMeters", flaskMeters?"true":"false"); // new
+		options.setProperty("combatCross", combatCross?"true":"false"); // new
+		options.setProperty("combatHalo", combatHalo?"true":"false"); // new
+		options.setProperty("combatSword", combatSword?"true":"false"); // new
 		
         options.setProperty("version", currentVersion);
         

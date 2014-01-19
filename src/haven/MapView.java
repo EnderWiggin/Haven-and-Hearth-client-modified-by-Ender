@@ -54,6 +54,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     Camera cam;
     Sprite.Part[] clickable = {};
     List<Sprite.Part> obscured = Collections.emptyList();
+	List<Sprite.Part> target = Collections.emptyList();
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
@@ -1220,7 +1221,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	
 	if(curf != null)
 	    curf.tick("plobeff");
-		
+	
+	if(Config.combatCross)
+		drawTargetCross(g);
+	
 	final List<Sprite.Part> sprites = new ArrayList<Sprite.Part>();
 	ArrayList<Speaking> speaking = new ArrayList<Speaking>();
 	ArrayList<KinInfo> kin = new ArrayList<KinInfo>();
@@ -1332,6 +1336,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    g2.chcolor(255, 255, 0, 255);
 		part.drawol(g2);
 	    }
+		
+		if(Config.combatHalo)
+			drawRedCombatHalo(g);
 	    
 	    if(curf != null)
 		curf.tick("draw");
@@ -1633,5 +1640,38 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
     public Map<String, Console.Command> findcmds() {
 	return(cmdmap);
+    }
+	
+	public void drawTargetCross(GOut g){
+		Coord oc = viewoffset(sz, mc);
+		g.chcolor(255, 0, 0, 255);
+		if(ui.fight == null || ui.fight.current == null || ui.fight.lsrel.size() <= 0)
+			return;
+		
+		Gob gob = glob.oc.getgob(ui.fight.current.gobid );
+		if(gob == null ) return;
+		
+		try{g.line(m2s(gob.getc().add(5,5) ).add(oc), m2s(gob.getc().add(-5,-5)).add(oc),3);
+			g.line(m2s(gob.getc().add(-5,5) ).add(oc), m2s(gob.getc().add(5,-5)).add(oc),3);}
+		catch(Exception e){};
+		g.chcolor();
+	}
+	
+	private void drawRedCombatHalo(GOut g) {
+	ArrayList<Sprite.Part> obsc = new ArrayList<Sprite.Part>();
+	if(ui.fight == null || ui.fight.current == null || ui.fight.lsrel.size() <= 0)
+		return;
+	for(Sprite.Part p : clickable) {
+	    Gob gob = (Gob)p.owner;
+	    if(gob == null)
+		continue;
+		
+		if(ui.fight.current.gobid == gob.id){
+			g.chcolor(255, 0, 0, 255);
+			p.drawol(g);
+			break;
+		}
+	}
+	return;
     }
 }

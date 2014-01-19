@@ -513,10 +513,14 @@ public class OptWnd extends Window {
 		    { "Stones", "gfx/terobjs/bumlings" },
 		    { "Flavor objects", "flavobjs" },
 		    { "Bushes", "gfx/tiles/wald" },
+			{ "Supports", "gfx/terobjs/mining/minesupport" },
+			{ "Ridges", "gfx/terojbs/ridges/" },
+			{ "Idol", "gfx/arch/vclaim" },
+			{ "Blood", "gfx/terobjs/blood" },
 		    { "Thicket", "gfx/tiles/dwald" } };
 	    int y = 0;
 	    for (final String[] checkbox : checkboxesList) {
-		CheckBox chkbox = new CheckBox(new Coord(10, y += 30), tab,
+		CheckBox chkbox = new CheckBox(new Coord(10, y += 25), tab,
 			checkbox[0]) {
 
 		    public void changed(boolean val) {
@@ -608,6 +612,42 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.flaskMeters;
+		/*chkbox = new CheckBox(new Coord(340, 90), tab, "Temp holder") {
+		public void changed(boolean val) {
+		    Config.flaskMeters = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.flaskMeters;*/
+		
+		new Label(new Coord(330, 150), tab, "Combat Highlights:");
+		chkbox = new CheckBox(new Coord(340, 170), tab, "Combat Cross") {
+		public void changed(boolean val) {
+		    Config.combatCross = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.combatCross;
+		chkbox = new CheckBox(new Coord(340, 200), tab, "Combat Halo") {
+		public void changed(boolean val) {
+		    Config.combatHalo = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.combatHalo;
+		chkbox = new CheckBox(new Coord(340, 230), tab, "Combat Sword") {
+		public void changed(boolean val) {
+		    Config.combatSword = val;
+			
+			if(val) 
+				ui.fight.setTarget();
+			else
+				ui.fight.clearTarget();
+			
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.combatSword;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
