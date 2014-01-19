@@ -41,6 +41,9 @@ public class Item extends Widget implements DTarget {
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
     static Color outcol = new Color(0,0,0,255);
+	static Color clrWater = new Color(48, 48, 154,190);
+    static Color clrWine = new Color(139, 71, 137,190);
+	static Color clrHoney = new Color(238, 173, 14,190);
     boolean dm = false;
     public int q, q2;
     boolean hq;
@@ -162,8 +165,49 @@ public class Item extends Widget implements DTarget {
 	}
 	if(FEP == null){calcFEP();}
 	if(curioStr == null){calcCurio();}
-    }
+	
+	if(Config.flaskMeters){
+		if (ttres.name.lastIndexOf("waterflask") > 0) {
+			drawBar(g, 2, clrWater, 3);
+		} else if (ttres.name.lastIndexOf("glass-winef") > 0) {
+			drawBar(g, 0.2, clrWine, 3);
+		} else if (ttres.name.lastIndexOf("bottle-winef") > 0) {
+			drawBar(g, 0.6, clrWine, 3);
+		} else if (ttres.name.lastIndexOf("bottle-wine-weißbier") > 0) {
+			drawBar(g, 0.6, clrWine, 3);
+		} else if (ttres.name.lastIndexOf("tankardf") > 0) {
+			drawBar(g, 0.4, clrWine, 3);
+		} else if (ttres.name.lastIndexOf("waterskin") > 0) {
+			drawBar(g, 3, clrWater, 3);
+		} else if (ttres.name.lastIndexOf("bucket-") > 0 || ttres.name.lastIndexOf("waterflask-") > 0) {
+			Color clr;
+			if (ttres.name.lastIndexOf("water") > 0)
+				clr = clrWater;
+			else if (ttres.name.lastIndexOf("wine") > 0 || ttres.name.lastIndexOf("vinegar") > 0)
+				clr = clrWine;
+			else if (ttres.name.lastIndexOf("honey") > 0)
+				clr = clrHoney;
+			else
+				clr = Color.LIGHT_GRAY;
 
+				drawBar(g, 10, clr, 9);
+		}
+	}
+	
+	}
+
+	private void drawBar(GOut g, double capacity, Color clr, int width) {
+		try {
+			String valStr = tooltip.substring(tooltip.indexOf('(')+1, tooltip.indexOf('/'));
+			double val = Double.parseDouble(valStr);        
+			int h = (int)(val/capacity*sz.y);
+			g.chcolor(clr);        
+			int barH = h-shoff.y;
+			g.frect(new Coord(0, sz.y-h), new Coord(width, barH < 0 ? 0 : barH));
+			g.chcolor();
+		} catch (Exception e) {} // fail silently.
+	}
+	
     static Tex getqtex(int q){
 	synchronized (qmap) {
 	    if(qmap.containsKey(q)){
