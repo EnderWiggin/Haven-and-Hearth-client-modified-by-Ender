@@ -76,7 +76,7 @@
       <fileset dir="build/classes-lib" />
       <manifest>
 	<attribute name="Main-Class" value="haven.MainFrame" />
-	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar haven-res.jar" />
+	<attribute name="Class-Path" value="jogl.jar gluegen-rt.jar client-res.jar haven-res.jar" />
       </manifest>
     </jar>
     <chmod file="build/haven.jar" perm="a+x" />
