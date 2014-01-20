@@ -5,6 +5,7 @@ import jerklib.events.IRCEvent;
 import jerklib.listeners.WriteRequestListener;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -147,7 +148,12 @@ class Connection
 
 		readBuffer.flip();
 
-		String tmpStr = new String(readBuffer.array(), 0, numRead);
+		String tmpStr;
+		try {
+		    tmpStr = new String(readBuffer.array(), 0, numRead, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+		    tmpStr = "<YOUR SYSTEM DOES NOT SUPPORT UTF-8>";
+		}
 
 		// read did not contain a \r\n
 		if (tmpStr.indexOf("\r\n") == -1)
@@ -231,7 +237,12 @@ class Connection
 				}
 			}
 
-			byte[] dataArray = data.getBytes();
+			byte[] dataArray;
+			try {
+			    dataArray = data.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+			    continue;
+			}
 			ByteBuffer buff = ByteBuffer.allocate(dataArray.length);
 			buff.put(dataArray);
 			buff.flip();
