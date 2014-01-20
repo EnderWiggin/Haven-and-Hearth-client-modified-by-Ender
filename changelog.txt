@@ -1,5 +1,12 @@
 ﻿Change log
  
+20.01.14
+ * made global chat use UTF-8 instead of system default charset
+ 
+03.06.13
+ * added mass transfer of items with same name SHIFT+ALT+LMB - high quality first SHIFT+ALT+RMB - low quality first
+ * added mass drop of items with same name SHIFT+CTRL+LMB - high quality first, SHIFT+CTRL+RMB - low quality first
+ 
 02.04.12
  * fix for client hang-up if pressed screenshot on char select screen with hide names and ui are toggled on
  * merged(and refactored/improved a bit) ArvinJA's "Global" chat: irc.synirc.net, channel #haven2. To open it press ALT-G or Global chat from Extended actions menu
