@@ -54,7 +54,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     Camera cam;
     Sprite.Part[] clickable = {};
     List<Sprite.Part> obscured = Collections.emptyList();
-	List<Sprite.Part> target = Collections.emptyList();
     private int[] visol = new int[31];
     private long olftimer = 0;
     private int olflash = 0;
@@ -1322,21 +1321,24 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    if(curf != null)
 		curf.tick("obsc");
 	    for(Sprite.Part part : sprites) {
-		if(part.effect != null){
-		    part.draw(part.effect.apply(g));
+			if(part.effect != null){
+				part.draw(part.effect.apply(g));
+			}else{
+				part.draw(g);
+			}
+			
 			if(Config.objectHealth)
 				drawObjectHealth(g, (Gob)part.owner);
-		}else
-		    part.draw(g);
 	    }
 	    for(Sprite.Part part : obscured) {
-		GOut g2 = new GOut(g);
-		GobHealth hlt;
-		if((part.owner != null) && (part.owner instanceof Gob) && ((hlt = ((Gob)part.owner).getattr(GobHealth.class)) != null))
-		    g2.chcolor(255, (int)(hlt.asfloat() * 255), 0, 255);
-		else
-		    g2.chcolor(255, 255, 0, 255);
-		part.drawol(g2);
+			GOut g2 = new GOut(g);
+			GobHealth hlt;
+			if((part.owner != null) && (part.owner instanceof Gob) && ((hlt = ((Gob)part.owner).getattr(GobHealth.class)) != null)){
+				g2.chcolor(255, (int)(hlt.asfloat() * 255), 0, 255);
+			}else{
+				g2.chcolor(255, 255, 0, 255);
+				part.drawol(g2);
+			}
 	    }
 		
 		if(Config.combatHalo)
@@ -1649,21 +1651,26 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			return;
 		
 		Coord oc = viewoffset(sz, mc);
-		g.chcolor(255, 0, 0, 255);
 		
 		Gob gob = glob.oc.getgob(ui.fight.current.gobid );
 		if(gob == null ) return;
 		
-		try{g.line(m2s(gob.getc().add(5,5) ).add(oc), m2s(gob.getc().add(-5,-5)).add(oc),3);
-			g.line(m2s(gob.getc().add(-5,5) ).add(oc), m2s(gob.getc().add(5,-5)).add(oc),3);}
-		catch(Exception e){};
-		g.chcolor();
+		try{
+			g.chcolor(255, 0, 0, 255);
+			g.line(m2s(gob.getc().add(5,5) ).add(oc), m2s(gob.getc().add(-5,-5)).add(oc),3);
+			g.line(m2s(gob.getc().add(-5,5) ).add(oc), m2s(gob.getc().add(5,-5)).add(oc),3);
+			g.chcolor();
+			}
+		catch(Exception e){
+			g.chcolor();
+		};
 	}
 	
 	private void drawRedCombatHalo(GOut g) {
 	ArrayList<Sprite.Part> obsc = new ArrayList<Sprite.Part>();
 	if(ui.fight == null || ui.fight.current == null || ui.fight.lsrel.size() <= 0)
 		return;
+
 	for(Sprite.Part p : clickable) {
 	    Gob gob = (Gob)p.owner;
 	    if(gob == null)
@@ -1672,6 +1679,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		if(ui.fight.current.gobid == gob.id){
 			g.chcolor(255, 0, 0, 255);
 			p.drawol(g);
+			g.chcolor();
 			break;
 		}
 	}
@@ -1679,7 +1687,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     }
 	
 	void drawObjectHealth(GOut g, Gob gob){
-		GobHealth hlt = gob.getattr(GobHealth.class);
-		g.atext((int)(hlt.asfloat() * 100) + "%", gob.sc.add(-8, -15), 0, 1);
+		if(gob == null || gob.sc == null) return;
+			GobHealth hlt = gob.getattr(GobHealth.class);
+		int health;
+		if(hlt != null && (health = (int)(hlt.asfloat() * 100)) < 100 ){
+			g.atext(health + "%", gob.sc.add(-8, -15), 0, 1);
+		}
 	}
 }

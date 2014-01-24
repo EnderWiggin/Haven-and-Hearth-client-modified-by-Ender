@@ -44,6 +44,7 @@ public class Item extends Widget implements DTarget {
 	static Color clrWater = new Color(48, 48, 154,190);
     static Color clrWine = new Color(139, 71, 137,190);
 	static Color clrHoney = new Color(238, 173, 14,190);
+	static Color clrWort = new Color(168, 47, 26,190);
     boolean dm = false;
     public int q, q2;
     boolean hq;
@@ -183,10 +184,12 @@ public class Item extends Widget implements DTarget {
 			Color clr;
 			if (ttres.name.lastIndexOf("water") > 0)
 				clr = clrWater;
-			else if (ttres.name.lastIndexOf("wine") > 0 || ttres.name.lastIndexOf("vinegar") > 0)
+			else if (ttres.name.lastIndexOf("wine") > 0 || ttres.name.lastIndexOf("vinegar") > 0 || ttres.name.lastIndexOf("grapejuice") > 0)
 				clr = clrWine;
 			else if (ttres.name.lastIndexOf("honey") > 0)
 				clr = clrHoney;
+			else if (ttres.name.lastIndexOf("wort") > 0 )
+				clr = clrWort;
 			else
 				clr = Color.LIGHT_GRAY;
 

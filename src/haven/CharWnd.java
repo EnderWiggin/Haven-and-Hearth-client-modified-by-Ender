@@ -919,6 +919,8 @@ public class CharWnd extends Window {
 	} else if(msg == "psk") {
 	    Collection<Resource> skl = new LinkedList<Resource>();
 	    for(int i = 0; i < args.length; i++) {
+		if (Config.autoTracking && ((String)args[i]).equals("ranger"))
+			enableTracking();
 		Resource res = Resource.load("gfx/hud/skills/" + (String)args[i]);
 		skl.add(res);
 	    }
@@ -1133,5 +1135,9 @@ public class CharWnd extends Window {
 			
 			return changed;
 		}
+	}
+	
+	void enableTracking(){
+		ui.m_util.turnTrackingOn(true);
 	}
 }

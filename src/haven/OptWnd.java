@@ -239,6 +239,13 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.showothergobpath;
 		
+		(new CheckBox(new Coord(370, 310), tab, "Auto Tracking On Login") { // new
+			public void changed(boolean val) {
+		    Config.autoTracking = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.autoTracking;
+		
 		(new CheckBox(new Coord(370, 340), tab, "Broadleaf tile fix") { // new
 		public void changed(boolean val) {
 		    Config.broadleafTile = val;
@@ -281,8 +288,8 @@ public class OptWnd extends Window {
 			}
 		    }).a = Config.hearthred;
 		
-		new Label(new Coord(440, 270), tab, "Flask Key:");
-		flask = new TextEntry(new Coord(440, 285), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
+		new Label(new Coord(440, 240), tab, "Flask Key:");
+		flask = new TextEntry(new Coord(440, 255), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
 			public void setFocus(){
 				hasfocus = false;
 			}

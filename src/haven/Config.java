@@ -145,6 +145,7 @@ public class Config {
 	public static boolean kinLines = false;
 	public static boolean flaskMeters = false;
 	public static boolean objectHealth = false;
+	public static boolean autoTracking = false;
 	
 	public static boolean smoothScale = false;
 	public static boolean persistantTiles = false;
@@ -639,6 +640,7 @@ public class Config {
 		combatHalo = options.getProperty("combatHalo", "false").equals("true"); // new
 		combatSword = options.getProperty("combatSword", "false").equals("true"); // new
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
+		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -751,6 +753,7 @@ public class Config {
 		options.setProperty("combatHalo", combatHalo?"true":"false"); // new
 		options.setProperty("combatSword", combatSword?"true":"false"); // new
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new
+		options.setProperty("autoTracking", autoTracking?"true":"false"); // new
 		
         options.setProperty("version", currentVersion);
         
