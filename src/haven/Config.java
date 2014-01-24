@@ -155,6 +155,9 @@ public class Config {
 	public static boolean combatCross = false;
 	public static boolean combatHalo = false;
 	public static boolean combatSword = false;
+	public static boolean combatInfo = true;
+	public static boolean largeCombatInfo = true;
+	
 	// new
 	
     static {
@@ -640,6 +643,8 @@ public class Config {
 		combatCross = options.getProperty("combatCross", "false").equals("true"); // new
 		combatHalo = options.getProperty("combatHalo", "false").equals("true"); // new
 		combatSword = options.getProperty("combatSword", "false").equals("true"); // new
+		combatInfo = options.getProperty("combatInfo", "false").equals("true"); // new
+		largeCombatInfo = options.getProperty("largeCombatInfo", "false").equals("true"); // new
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
 		singleAttack = options.getProperty("singleAttack", "false").equals("true"); // new
@@ -754,6 +759,8 @@ public class Config {
 		options.setProperty("combatCross", combatCross?"true":"false"); // new
 		options.setProperty("combatHalo", combatHalo?"true":"false"); // new
 		options.setProperty("combatSword", combatSword?"true":"false"); // new
+		options.setProperty("combatInfo", combatInfo?"true":"false"); // new
+		options.setProperty("largeCombatInfo", largeCombatInfo?"true":"false"); // new
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new
 		options.setProperty("autoTracking", autoTracking?"true":"false"); // new
 		options.setProperty("singleAttack", singleAttack?"true":"false"); // new

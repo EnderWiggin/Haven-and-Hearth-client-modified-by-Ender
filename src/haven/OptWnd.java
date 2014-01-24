@@ -664,6 +664,22 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.combatSword;
+		
+		chkbox = new CheckBox(new Coord(340, 260), tab, "Combat Info") {
+		public void changed(boolean val) {
+		    Config.combatInfo = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.combatInfo;
+		
+		chkbox = new CheckBox(new Coord(340, 290), tab, "Large Combat Info") {
+		public void changed(boolean val) {
+		    Config.largeCombatInfo = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.largeCombatInfo;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

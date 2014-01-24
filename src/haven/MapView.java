@@ -87,6 +87,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     
 	static boolean fixCameraBug = false; // new
 	public static Gob gobAtMouse; // new
+	static Color grayRect = new Color(50, 50, 50, 170); // new
+	static Color goldenText = new Color(179, 162, 104, 255); // new
 	
     public double getScale() {
         return Config.zoom?_scale:1;
@@ -1383,6 +1385,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    }
 		}
 	    }
+		
+		if(Config.combatInfo)
+			drawCombatInfo(g);
+		
 	    if(!Config.muteChat){
 		for(Speaking s : speaking) {
 		    s.draw(g, s.gob.sc.add(s.off));
@@ -1697,6 +1703,38 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		int health;
 		if(hlt != null && (health = (int)(hlt.asfloat() * 100)) < 100 ){
 			g.atext(health + "%", gob.sc.add(-8, -15), 0, 1);
+		}
+	}
+	
+	void drawCombatInfo(GOut g){
+		if(ui.fight == null || ui.fight.lsrel.size() <= 0) return;
+		
+		for(Fightview.Relation rel : ui.fight.lsrel) {
+			if(rel.gobid != playergob){
+				Gob gob = glob.oc.getgob(rel.gobid);
+				if(gob != null){
+					int lift = 0;
+					if(Config.largeCombatInfo) lift = 10;
+					Coord gc = gob.sc.add(0,-41 - lift);
+					g.chcolor(grayRect);
+					g.frect(gc.add(-30-lift/2, -21), new Coord(60+lift,10+lift));
+					g.chcolor();
+					g.image(ComWin.sword, gc.add(-28-lift/2, -20),  new Coord(8,8));
+					g.image(ComWin.shield, gc.add(1, -20), new Coord(8,8));
+					if(Config.largeCombatInfo){
+						g.image(ComWin.bal, gc.add(-33, -10),  new Coord(8,8));
+						g.image(ComWin.iptex, gc.add(1, -10), new Coord(8,8));
+					}
+					g.chcolor(goldenText);
+					g.atext(Integer.toString(rel.off/100) , gc.add(-20-lift/2, -10), 0, 1);
+					g.atext(Integer.toString(rel.def/100) , gc.add(10, -10), 0, 1);
+					if(Config.largeCombatInfo){
+						g.atext(Integer.toString(rel.bal)+"/"+Integer.toString(rel.intns), gc.add(-24, 0), 0, 1);
+						g.atext(Integer.toString(rel.ip)+"/"+Integer.toString(rel.oip), gc.add(11, 0), 0, 1);
+					}
+					g.chcolor();
+				}
+			}
 		}
 	}
 }
