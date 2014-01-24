@@ -52,7 +52,7 @@ import addons.MainScript; // new
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
-    public static String VERSION = "01.19.2014";
+    public static String VERSION = "01.25.2014";
     private static final String TITLE = String.format("Haven and Hearth (modified by Ender edited by Xcom v%s)", VERSION);
     HavenPanel p;
     ThreadGroup g;

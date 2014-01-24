@@ -437,4 +437,91 @@ public class HavenUtil{
 			((Window)w).moveWindowToView();
 		}
 	}
+	
+	boolean checkBuff(String name){
+		synchronized (ui.mainview.glob.buffs) {
+			for(Buff b : ui.mainview.glob.buffs.values()) {
+				if(b.res.get().name.contains(name)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	void toggleTracking(){
+		sendAcction("tracking");
+		int k = -2;
+		
+		if(checkBuff("tracking")){
+			ui.mainview.glob.buffs.remove(k);
+		}else{
+			Buff buff = new Buff(k, Resource.load("paginae/act/tracking").indir());
+			buff.major = true;
+			ui.mainview.glob.buffs.put(k, buff);
+		}
+	}
+	
+	public void turnTrackingOn(boolean turnon){
+		if(turnon)
+			if(!checkBuff("tracking"))
+				toggleTracking();
+		if(!turnon)
+			if(checkBuff("tracking"))
+				toggleTracking();
+	}
+	
+	void toggleCriminal(){
+		sendAcction("crime");
+		int k = -1;
+		
+		if(checkBuff("crime")){
+			ui.mainview.glob.buffs.remove(k);
+		}else{
+			Buff buff = new Buff(k, Resource.load("paginae/act/crime").indir());
+			buff.major = true;
+			ui.mainview.glob.buffs.put(k, buff);
+		}
+	}
+	
+	void turnCriminalOn(boolean turnon){
+		if(turnon)
+			if(!checkBuff("crime"))
+				toggleCriminal();
+		if(!turnon)
+			if(checkBuff("crime"))
+				toggleCriminal();
+	}
+	
+	void toggleBotIcon(){
+		int k = -4;
+		
+		if(checkBuff("eye")){
+			ui.mainview.glob.buffs.remove(k);
+		}else{
+			Buff buff = new Buff(k, Resource.load("paginae/act/eye").indir());
+			buff.major = true;
+			ui.mainview.glob.buffs.put(k, buff);
+		}
+	}
+	
+	void turnBotIconOn(boolean turnon){
+		if(turnon)
+			if(!checkBuff("eye"))
+				toggleBotIcon();
+		if(!turnon)
+			if(checkBuff("eye"))
+				toggleBotIcon();
+	}
+	
+	public void sendAcction(String str){
+		String[] action = {str};
+		ui.mnu.wdgmsg("act", (Object[])action);
+	}
+	
+	public void sendAcction(String str1, String str2){
+		String[] action = {str1, str2};
+		ui.mnu.wdgmsg("act", (Object[])action);
+	}
 }
