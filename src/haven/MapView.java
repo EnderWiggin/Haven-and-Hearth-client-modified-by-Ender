@@ -1575,10 +1575,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			if((m!=null)&&(m instanceof LinMove)){
 			    lm = (LinMove) m;
 				
-				if(gob.isHuman() && Config.kinLines){
+				if(Config.kinLines && gob.isHuman()){
 					KinInfo kin = gob.getattr(KinInfo.class);
-					if(kin == null) g.chcolor(Color.WHITE);
-					else g.chcolor(BuddyWnd.gc[kin.group]);
+					if(kin == null){
+						g.chcolor(Color.WHITE);
+					}else{
+						g.chcolor(BuddyWnd.gc[kin.group]);
+					}
+				}else{
+					g.chcolor(Color.ORANGE);
 				}
 				
 			    g.line(gob.sc, m2s(lm.t).add(oc), 2);

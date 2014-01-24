@@ -291,7 +291,8 @@ public class MenuGrid extends Widget {
 			
 			for(int i = 0; i < ad.length; i++){ // new
 				if(ad[i].contains("atk") ){
-					if(doubleTapAttack(ad)) return;
+					if(!Config.singleAttack && doubleTapAttack(ad)) return;
+					if(Config.singleAttack && singleTapAttack(ad) ) return;
 				}
 			}
 			
@@ -452,12 +453,17 @@ public class MenuGrid extends Widget {
 			//System.out.println("double tapped");
 			if(soakAttack) return true;
 			
-			for(Widget w = ui.root.child; w != null; w = w.next){
-				if(w instanceof Fightview){
-					soakAttack = true;
-					((Fightview)w).attackCurrent(/*attackName*/);
-				}
+			if(ui.fight != null){
+				soakAttack = true;
+				ui.fight.attackCurrent(/*attackName*/);
 			}
+			
+			/*for(Widget w = ui.root.child; w != null; w = w.next){
+				if(w instanceof Fightview){
+					if(!Config.singleAttack) soakAttack = true;
+					((Fightview)w).attackCurrent(/*attackName*);
+				}
+			}*/
 			
 			//doubleTapTime = 0;
 			return true;
@@ -468,7 +474,31 @@ public class MenuGrid extends Widget {
 		return false;
     }
 	
-	/*String getAttackName(String[] ad){
+	boolean singleTapAttack(String[] ad){ // new
+		Config.runFlaskSuppression = true;
+		long tapTime = 400;
+		
+		if(soakAttack && System.currentTimeMillis() - doubleTapTime < tapTime) return false;
+		
+		soakAttack = false;
+		
+		if(ui.modflags() != 1){
+			wdgmsg("act", (Object[])ad);
+			
+			if(ui.fight != null){
+				ui.fight.attackCurrent();
+			}
+			
+			doubleTapTime = System.currentTimeMillis();
+			soakAttack = getAttackName(ad) != null;
+			
+			return true;
+		}
+		
+		return false;
+    }
+	
+	String getAttackName(String[] ad){
 		String name = null;
 		for(int i = 0; i < ad.length; i++){ // new
 			if(!ad[i].contains("atk") ){
@@ -486,5 +516,5 @@ public class MenuGrid extends Widget {
 			}
 		}
 		return null;
-	}*/
+	}
 }

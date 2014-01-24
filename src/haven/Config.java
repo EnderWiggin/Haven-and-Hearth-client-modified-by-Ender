@@ -146,6 +146,7 @@ public class Config {
 	public static boolean flaskMeters = false;
 	public static boolean objectHealth = false;
 	public static boolean autoTracking = false;
+	public static boolean singleAttack = false;
 	
 	public static boolean smoothScale = false;
 	public static boolean persistantTiles = false;
@@ -641,6 +642,7 @@ public class Config {
 		combatSword = options.getProperty("combatSword", "false").equals("true"); // new
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
+		singleAttack = options.getProperty("singleAttack", "false").equals("true"); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -754,6 +756,7 @@ public class Config {
 		options.setProperty("combatSword", combatSword?"true":"false"); // new
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new
 		options.setProperty("autoTracking", autoTracking?"true":"false"); // new
+		options.setProperty("singleAttack", singleAttack?"true":"false"); // new
 		
         options.setProperty("version", currentVersion);
         
