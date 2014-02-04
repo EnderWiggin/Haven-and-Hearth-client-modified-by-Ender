@@ -115,7 +115,7 @@ public class Config {
     public static Map<String, SkillAvailability> skills;
     public static Map<String, String> crafts = new HashMap<String, String>();
     public static Map<String, String> beasts = new HashMap<String, String>();
-    //public static 
+    //public static
     public static boolean highlightSkills;
     public static boolean fps = false;
     public static boolean TEST = false;
@@ -129,6 +129,7 @@ public class Config {
     public static boolean muteChat = false;
     public static boolean showgobpath;
     public static boolean showothergobpath = true;
+	public static String hhc="255,0,0,128";
 
     static {
 	try {
@@ -179,7 +180,7 @@ public class Config {
 	    throw(new RuntimeException(e));
 	}
     }
-    
+
     public static String mksmiley(String str){
 	synchronized (smileys) {
 	    for(Pattern p : Config.smileys.keySet()){
@@ -189,7 +190,7 @@ public class Config {
 	}
 	return str;
     }
-    
+
     public static void saveCurrentHighlights(){
 	try {
 	    JSONObject cfg = new JSONObject();
@@ -207,7 +208,7 @@ public class Config {
 	    e.printStackTrace();
 	}
     }
-    
+
     private static void loadBeasts() {
 	//bear
 	String pat = "kritter/bear";
@@ -278,7 +279,7 @@ public class Config {
 			group2.add(name);
 		    }
 		}
-		
+
 	    } catch (JSONException e) {
 		e.printStackTrace();
 	    }
@@ -288,7 +289,7 @@ public class Config {
 	} catch (IOException e) {
 	}
     }
-    
+
     private static void loadCurrentHighlight() {
 	try {
 	    FileInputStream fstream;
@@ -312,7 +313,7 @@ public class Config {
 			group.add(name);
 		    }
 		}
-		
+
 	    } catch (JSONException e) {
 		e.printStackTrace();
 	    }
@@ -346,7 +347,7 @@ public class Config {
 
     private static void loadSkills() {
 	skills = new HashMap<String, SkillAvailability>();
-	
+
 	//Attacks
 	skills.put("paginae/atk/knockteeth", new Combat(6));
 	skills.put("paginae/atk/axe", new Combat(4));
@@ -354,14 +355,14 @@ public class Config {
 	skills.put("paginae/atk/sting", new Combat(2));
 	skills.put("paginae/atk/strangle", new Combat().maxINT(3));
 	skills.put("paginae/atk/valstr", new Combat(6));
-	
+
 	//Moves
 	skills.put("paginae/atk/feignflight", new Combat().maxDEF(10));
 	skills.put("paginae/atk/flex", new Combat(6));
 	skills.put("paginae/atk/padv", new Combat().minBAL(3));
 	skills.put("paginae/atk/seize", new Combat().minINT(5).minATK(75));
 	skills.put("paginae/atk/throwsand", new Combat(1));
-	
+
 	//Special Moves
 	skills.put("paginae/atk/roar", new Combat(14).minINT(10));
 	skills.put("paginae/atk/bloodshot", new Combat(2));
@@ -371,9 +372,9 @@ public class Config {
 	skills.put("paginae/atk/sternorder", new Combat(5));
 	skills.put("paginae/atk/bee", new Combat(6));
 	skills.put("paginae/atk/toarms", new Combat(3));
-	
+
 	skills.put("paginae/atk/quell", new Combat(2).maxINT(0).minBAL(3));
-	
+
     }
 
     private static void loadCurios() {
@@ -423,7 +424,7 @@ public class Config {
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
 	}
-	
+
     }
 
     private static void usage(PrintStream out) {
@@ -476,17 +477,17 @@ public class Config {
 	if(opt.rest.length > 0)
 	    defserv = opt.rest[0];
     }
-    
+
     public static double getSFXVolume()
     {
     	return (double)sfxVol/100;
     }
-    
+
     public static int getMusicVolume()
     {
     	return isMusicOn?musicVol:0;
     }
-    
+
     private static void loadSmileys() {
 	smileys = new HashMap<Pattern, String>();
 	try {
@@ -506,9 +507,9 @@ public class Config {
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
 	}
-	
+
     }
-    
+
     private static void loadWindowOptions() {
 	File inputFile = new File("windows.conf");
         if (!inputFile.exists()) {
@@ -521,7 +522,7 @@ public class Config {
             System.out.println(e);
         }
     }
-    
+
     private static void loadOptions() {
         File inputFile = new File("haven.conf");
         if (!inputFile.exists()) {
@@ -590,22 +591,23 @@ public class Config {
         }
         Resource.checkhide();
         timestamp = options.getProperty("timestamp","false").equals("true");
+        hhc = options.getProperty("hhc", "255,0,0,128");
     }
 
     public static synchronized void setWindowOpt(String key, String value) {
 	synchronized (window_props) {
-	    String prev_val =window_props.getProperty(key); 
+	    String prev_val =window_props.getProperty(key);
 	    if((prev_val != null)&&prev_val.equals(value))
 		return;
 	    window_props.setProperty(key, value);
 	}
 	saveWindowOpt();
     }
-    
+
     public static synchronized void setWindowOpt(String key, Boolean value) {
 	setWindowOpt(key, value?"true":"false");
     }
-    
+
     public static void saveWindowOpt() {
 	synchronized (window_props) {
 	    try {
@@ -615,17 +617,17 @@ public class Config {
 	    }
 	}
     }
-    
+
     public static void addhide(String str){
 	hideObjectList.add(str);
 	Resource.checkhide();
     }
-    
+
     public static void remhide(String str){
 	hideObjectList.remove(str);
 	Resource.checkhide();
     }
-    
+
     public static void saveOptions() {
         String hideObjects = "";
         for (String objectName : hideObjectList) {
@@ -672,7 +674,8 @@ public class Config {
         options.setProperty("hearthred", hearthred?"true":"false");
         options.setProperty("showViewDistance", showViewDistance?"true":"false");
         options.setProperty("version", currentVersion);
-        
+        options.setProperty("hhc", hhc);
+
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {

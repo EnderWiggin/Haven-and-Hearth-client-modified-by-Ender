@@ -43,6 +43,10 @@ public class OptWnd extends Window {
     private static final BufferedImage cfgimgd = Resource.loadimg("gfx/hud/buttons/centerd");
     private Tabs body;
     private String curcam;
+    int redval=0;
+    int greenval=0;
+    int blueval=0;
+	boolean hhcolorset=true;
     private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
     private Map<String, String> camname2type = new HashMap<String, String>();
     private Map<String, String[]> camargs = new HashMap<String, String[]>();
@@ -94,7 +98,7 @@ public class OptWnd extends Window {
 			else               ui.fsm.setfs();
 		    }
 		}};
-		
+
 	    int y = 95;
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Use new minimap (restart required)") {
 		public void changed(boolean val) {
@@ -102,56 +106,56 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.new_minimap;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Use new chat (restart required)") {
 		public void changed(boolean val) {
 		    Config.new_chat = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.new_chat;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Add timestamp in chat") {
 		public void changed(boolean val) {
 		    Config.timestamp = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.timestamp;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show dowsing direcion") {
 		public void changed(boolean val) {
 		    Config.showDirection = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showDirection;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Always show heartling names") {
 		public void changed(boolean val) {
 		    Config.showNames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showNames;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Always show other kin names") {
 		public void changed(boolean val) {
 		    Config.showOtherNames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showOtherNames;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show smileys in chat") {
 		public void changed(boolean val) {
 		    Config.use_smileys = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.use_smileys;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show item quality") {
 		public void changed(boolean val) {
 		    Config.showq = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showq;
-	    
+
 	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show player path") {
 		public void changed(boolean val) {
 		    Config.showpath = val;
@@ -165,98 +169,98 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.fastFlowerAnim;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Compress screenshots") {
 		public void changed(boolean val) {
 		    Config.sshot_compress = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.sshot_compress;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Exclude UI from screenshot") {
 		public void changed(boolean val) {
 		    Config.sshot_noui = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.sshot_noui;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Exclude names from screenshot") {
 		public void changed(boolean val) {
 		    Config.sshot_nonames = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.sshot_nonames;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Use optimized claim higlighting") {
 		public void changed(boolean val) {
 		    Config.newclaim = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.newclaim;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Show digit toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.digitbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.digitbar.name, val);
 		}
 	    }).a = ui.mnu.digitbar.visible;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Show F-button toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.functionbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.functionbar.name, val);
 		}
 	    }).a = ui.mnu.functionbar.visible;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Show numpad toolbar") {
 		public void changed(boolean val) {
 		    ui.mnu.numpadbar.visible = val;
 		    Config.setWindowOpt(ui.mnu.numpadbar.name, val);
 		}
 	    }).a = ui.mnu.numpadbar.visible;
-	    
+
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Highlight combat skills") {
 		public void changed(boolean val) {
 		    Config.highlightSkills = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.highlightSkills;
-	    
+
 	    (new CheckBox(new Coord(220, 375), tab, "Show human gob path") {
 		public void changed(boolean val) {
 		    Config.showgobpath = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showgobpath;
-	    
+
 	    (new CheckBox(new Coord(220, 410), tab, "Show other gob path") {
 		public void changed(boolean val) {
 		    Config.showothergobpath = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.showothergobpath;
-		
+
 	    (new CheckBox(new Coord(440, 130), tab, "Auto-hearth") {
 		public void changed(boolean val) {
 		    Config.autohearth = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.autohearth;
-		
+
 		(new CheckBox(new Coord(455, 165), tab, "Unknown") {
 			public void changed(boolean val) {
 			    Config.hearthunknown = val;
 			    Config.saveOptions();
 			}
 		    }).a = Config.hearthunknown;
-	    
+
 		(new CheckBox(new Coord(455, 195), tab, "Red") {
 			public void changed(boolean val) {
 			    Config.hearthred = val;
 			    Config.saveOptions();
 			}
 		    }).a = Config.hearthred;
-		
+
 	    Widget editbox = new Frame(new Coord(440, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
@@ -414,7 +418,7 @@ public class OptWnd extends Window {
 		public void changed(boolean val) {
 		    Config.isSoundOn = val;
 		}}).a = Config.isSoundOn;
-		
+
 	    (new CheckBox(new Coord(210, 270), tab, "Music enabled") {
 		public void changed(boolean val) {
 		    Config.isMusicOn = val;
@@ -468,7 +472,7 @@ public class OptWnd extends Window {
 		    }
 		};
 		chkbox.a = Config.highlightItemList.containsAll(Config.hlcgroups.get(group));
-		
+
 		new IButton(new Coord(1, 30*i + 17), tab, cfgimgu, cfgimgd){
 		    private boolean v = false;
 		    public void click() {
@@ -476,7 +480,7 @@ public class OptWnd extends Window {
 			v = true;
 			SelectorWnd wnd = new SelectorWnd(ui.root, group);
 			wnd.setData(Config.hlgroups.get(group), Config.hlcgroups.get(group), new Callback() {
-			    
+
 			    @Override
 			    public void callback() {
 				v = false;
@@ -496,10 +500,10 @@ public class OptWnd extends Window {
 			return checkhit(c)?tooltip:null;
 		    }
 		};
-		
+
 		i++;
 	    }
-	    
+
 	    CheckBox chkbox = new CheckBox(new Coord(150, 30), tab, "Don't scale minimap icons") {
 		public void changed(boolean val) {
 		    Config.dontScaleMMIcons = val;
@@ -514,6 +518,100 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.showViewDistance;
+	}
+
+	{ /* COLOR PICKER TAB */
+	    tab = body.new Tab(new Coord(390, 0), 80, "Color Picker");
+	    Widget colorbox = new Frame(new Coord(10, 30), new Coord(150, 150), tab);
+	    new Label(new Coord(20, 10), colorbox, "Colors:");
+	    RadioGroup colormode = new RadioGroup(colorbox) {
+			public void changed(int btn, String lbl) {
+				if (lbl=="Hidden Highlight") {
+					hhcolorset=true;
+					String[] col = Config.hhc.split (",");
+					redval=Integer.parseInt(col[0]);
+					greenval=Integer.parseInt(col[1]);
+					blueval=Integer.parseInt(col[2]);
+					alphaval=128;
+					if (Config.alpha) alphaval=Integer.parseInt(col[2]);
+				}
+		    }
+	   	};
+		colormode.add("Hidden Highlight", new Coord(10, 25));
+		if (hhcolorset) colormode.check("Hidden Highlight");
+
+	    new Label(new Coord(210, 40), tab, "Red:");
+	    new Frame(new Coord(210, 65), new Coord(20, 206), tab);
+	    new Label(new Coord(260, 40), tab, "Green:");
+	    new Frame(new Coord(260, 65), new Coord(20, 206), tab);
+	    new Label(new Coord(310, 40), tab, "Blue:");
+	    new Frame(new Coord(310, 65), new Coord(20, 206), tab);
+	    if (Config.alpha) {
+			new Label(new Coord(360, 40), tab, "Alpha:");
+			new Frame(new Coord(360, 65), new Coord(20, 206), tab);
+			final Label alphalvl = new Label(new Coord(385, 69 + (int)(alphaval * .73)),  tab, String.valueOf(255 - alphaval));
+			(new Scrollbar(new Coord(375, 70), 196, tab, 0, 255) {{ val = 255 - alphaval; }
+			public void changed() {
+				alphaval = 255 - val;
+				alphalvl.c.y = 69 + (int) (val * .73);
+				alphalvl.settext(String.valueOf(255 - val));
+			if (hhcolorset) Config.hhc=String.valueOf(alphaval)+","+String.valueOf(greenval)+","+String.valueOf(blueval)+","+String.valueOf(alphaval);
+			Config.saveOptions();
+			}
+			public boolean mousewheel(Coord c, int amount) {
+				val = Utils.clip(val + amount, min, max);
+				changed();
+				return (true);
+			}
+			}).changed();
+		}
+	    final Label redlvl = new Label(new Coord(235, 69 + (int)(redval * .73)),  tab, String.valueOf(255 - redval));
+	    (new Scrollbar(new Coord(225, 70), 196, tab, 0, 255) {{ val = 255 - redval; }
+		public void changed() {
+		    redval = 255 - val;
+		    redlvl.c.y = 69 + (int) (val * .73);
+		    redlvl.settext(String.valueOf(255 - val));
+		if (hhcolorset) Config.hhc=String.valueOf(redval)+","+String.valueOf(greenval)+","+String.valueOf(blueval)+",128";
+		Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+	    }).changed();
+	    final Label greenlvl = new Label(new Coord(285, 69 + (int)(greenval * .73)),  tab, String.valueOf(255 - greenval));
+	    (new Scrollbar(new Coord(275, 70), 196, tab, 0, 255) {{ val = 255 - greenval; }
+		public void changed() {
+		    greenval = 255 - val;
+		    greenlvl.c.y = 69 + (int) (val * .73);
+		    greenlvl.settext(String.valueOf(255 - val));
+		if (hhcolorset) Config.hhc=String.valueOf(redval)+","+String.valueOf(greenval)+","+String.valueOf(blueval)+",128";
+		Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+	    }).changed();
+	    final Label bluelvl = new Label(new Coord(335, 69 + (int)(blueval * .73)),  tab, String.valueOf(255 - blueval));
+	    (new Scrollbar(new Coord(325, 70), 196, tab, 0, 255) {{ val = 255 - blueval; }
+		public void changed() {
+		    blueval = 255 - val;
+		    bluelvl.c.y = 69 + (int) (val * .73);
+		    bluelvl.settext(String.valueOf(255 - val));
+		if (hhcolorset) Config.hhc=String.valueOf(redval)+","+String.valueOf(greenval)+","+String.valueOf(blueval)+",128";
+		Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+	    }).changed();
+		if (hhcolorset) Config.hhc=String.valueOf(redval)+","+String.valueOf(greenval)+","+String.valueOf(blueval)+",128";
+		Config.saveOptions();
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
