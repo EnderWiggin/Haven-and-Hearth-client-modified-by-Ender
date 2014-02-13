@@ -158,6 +158,7 @@ public class Config {
 	public static boolean combatInfo = false;
 	public static boolean largeCombatInfo = false;
 	
+	public static boolean serverGrid = false;
 	// new
 	
     static {

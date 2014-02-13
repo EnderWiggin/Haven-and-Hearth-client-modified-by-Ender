@@ -518,7 +518,8 @@ public class OptWnd extends Window {
 	{ /* HIDE OBJECTS TAB */
 	    tab = body.new Tab(new Coord(210, 0), 80, "Hide Objects");
 
-	    String[][] checkboxesList = { { "Walls", "gfx/arch/walls" },
+	    String[][] checkboxesList = {
+			{ "Walls", "gfx/arch/walls" },
 		    { "Gates", "gfx/arch/gates" },
 		    { "Wooden Houses", "gfx/arch/cabin" },
 		    { "Stone Mansions", "gfx/arch/inn" },
@@ -528,10 +529,11 @@ public class OptWnd extends Window {
 		    { "Flavor objects", "flavobjs" },
 		    { "Bushes", "gfx/tiles/wald" },
 			{ "Supports", "gfx/terobjs/mining/minesupport" },
-			{ "Ridges", "gfx/terojbs/ridges/" },
-			{ "Idol", "gfx/arch/vclaim" },
+			{ "Ridges", "gfx/terobjs/ridges" },
+			{ "Village Idol", "gfx/terobjs/vclaim" },
 			{ "Blood", "gfx/terobjs/blood" },
-		    { "Thicket", "gfx/tiles/dwald" } };
+		    { "Thicket", "gfx/tiles/dwald" }
+		};
 	    int y = 0;
 	    for (final String[] checkbox : checkboxesList) {
 		CheckBox chkbox = new CheckBox(new Coord(10, y += 25), tab,

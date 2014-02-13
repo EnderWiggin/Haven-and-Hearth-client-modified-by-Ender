@@ -1191,24 +1191,75 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    c1 = d.add(0, 0);
 	    c2 = d.add(5*hx/2,0);
 	    for(y = d.y - hy; y < d.y + hy; y = y + tilesz.y){
-		c1.y = y;
-		c2.y = c1.y;
-		g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+			c1.y = y;
+			c2.y = c1.y;
+			if(y % 100 != 0){
+				g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+			}else{
+				g.chcolor(new Color(100, 40, 40));
+				g.line(m2s(c1).add(oc), m2s(c2).add(oc), 2);
+				g.chcolor(new Color(40, 40, 40));
+			}
 	    }
 	    c1 = d.add(0, -hy);
 	    c2 = d.add(0, hy);
 	    
 	    for(x = d.x; x < d.x + 5*hx/2; x = x + tilesz.x){
-		c1.x = x;
-		c2.x = c1.x;
-		g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+			c1.x = x;
+			c2.x = c1.x;
+			if(x % 100 != 0){
+				g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+			}else{
+				g.chcolor(new Color(100, 40, 40));
+				g.line(m2s(c1).add(oc), m2s(c2).add(oc), 2);
+				g.chcolor(new Color(40, 40, 40));
+			}
 	    }
-	    
-		
-		//add mapgrid lines
 		
 		g.chcolor();
 	}
+	if(Config.serverGrid){
+		g.chcolor();
+	    Coord c1, c2, c;
+		c1 = new Coord();
+		c2 = new Coord();
+		Gob player = glob.oc.getgob(playergob);
+		if(player != null){
+			c = player.getc().div(1100).mul(1100);
+			Coord d = c.add(player.getc().sub(c).div(100).sub(4,4).mul(100) );
+			
+			c1 = new Coord(d);
+			for(x = d.x; x < d.x + 901; x += 100){
+				c1.x = x;
+				c2 = c1.add(0,900);
+				
+				if(x == d.x || x > d.x + 800){
+					g.chcolor(new Color(40, 40, 200));
+				}else{
+					g.chcolor(new Color(40, 40, 40));
+				}
+				
+				g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+			}
+			
+			c1 = new Coord(d);
+			for(y = d.y; y < d.y + 901; y += 100){
+				c1.y = y;
+				c2 = c1.add(900,0);
+				
+				if(y == d.y || y > d.y + 800){
+					g.chcolor(new Color(40, 40, 200));
+				}else{
+					g.chcolor(new Color(40, 40, 40));
+				}
+				
+				g.line(m2s(c1).add(oc), m2s(c2).add(oc), 1);
+			}
+			
+			g.chcolor();
+		}
+	}
+	
 	if(curf != null)
 	    curf.tick("map");
 

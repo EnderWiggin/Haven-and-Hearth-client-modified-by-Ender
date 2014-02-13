@@ -54,7 +54,7 @@ import java.util.WeakHashMap;
 import javax.imageio.ImageIO;
 
 public class MiniMap extends Widget {
-    private static final Coord VRSZ = new Coord(84,84);
+    private static final Coord VRSZ = new Coord(82,82);
     private static final Color VRFILL = new Color(128,128,128,96);
     private static final Color VRBORDER = new Color(200,96,200,216);
     static Map<String, Tex> grids = new WeakHashMap<String, Tex>();
@@ -410,7 +410,10 @@ public class MiniMap extends Widget {
 		Gob player = ui.sess.glob.oc.getgob(mv.playergob);
 		if(player != null && (c = player.getc()) != null){
 		    c = c0.add(c.div(tilesz));
-		    g.aimage(VR, c, 0.5, 0.5);
+			Coord d = player.getc().div(1100).mul(1100);
+			Coord e = d.add(player.getc().sub(d).div(100).sub(4,4).mul(100) ).div(11);
+			Coord upperLeft = c0.add(e);
+		    g.aimage(VR, upperLeft, 0, 0);
 		}
 	    }
 	    

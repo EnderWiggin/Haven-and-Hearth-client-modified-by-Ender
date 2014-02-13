@@ -95,6 +95,8 @@ public class RootWidget extends ConsoleHost {
 		ui.spd.setspeed(3, true);
 	    } else if((code == KeyEvent.VK_G)&&ctrl) {
 		Config.grid = !Config.grid;
+		} else if((code == KeyEvent.VK_G)&&shift) {
+		Config.serverGrid = !Config.serverGrid;
 	    } else if((code == KeyEvent.VK_G)&&alt) {
 		IRChatHW.open();
 	    } else if(((int)key == 2)&ctrl) {//CTRL-B have code of 02
