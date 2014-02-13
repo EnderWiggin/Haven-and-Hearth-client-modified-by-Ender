@@ -155,8 +155,8 @@ public class Config {
 	public static boolean combatCross = false;
 	public static boolean combatHalo = false;
 	public static boolean combatSword = false;
-	public static boolean combatInfo = true;
-	public static boolean largeCombatInfo = true;
+	public static boolean combatInfo = false;
+	public static boolean largeCombatInfo = false;
 	
 	// new
 	

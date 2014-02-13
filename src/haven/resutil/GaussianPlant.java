@@ -42,11 +42,12 @@ public class GaussianPlant extends CSprite {
 	private static final Tex[] typebarda = new Tex[0];
 	public Tex[] strands;
 	public int num;
-	public Resource.Neg neg;
+	//public Resource.Neg neg;
+	static Coord bc = new Coord(-5,-5);
 	
 	public Factory(int num) {
 	    Resource res = Utils.myres(this.getClass());
-	    this.neg = res.layer(Resource.negc);
+		//this.neg = res.layer(Resource.negc);
 	    this.num = num;
 	    ArrayList<Tex> strands = new ArrayList<Tex>();
 	    for(Resource.Image img : res.layers(Resource.imgc)) {
@@ -61,7 +62,8 @@ public class GaussianPlant extends CSprite {
 	    spr.addnegative();
 	    Random rnd = owner.mkrandoom();
 	    for(int i = 0; i < num; i++) {
-		Coord c = neg.bc.add(rnd.nextInt(neg.bs.x), rnd.nextInt(neg.bs.y));
+		//Coord c = neg.bc.add(rnd.nextInt(neg.bs.x), rnd.nextInt(neg.bs.y));  // new
+		Coord c = bc.add(rnd.nextInt(12), rnd.nextInt(12)); // new
 		Tex s = strands[rnd.nextInt(strands.length)];
 		spr.add(s, 0, MapView.m2s(c), new Coord(s.sz().x / 2, s.sz().y).inv());
 	    }

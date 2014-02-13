@@ -81,7 +81,7 @@ public class RootWidget extends ConsoleHost {
 	    } else if((code == KeyEvent.VK_D)&&ctrl) {
 		Config.dbtext = !Config.dbtext;
 	    } else if((code == KeyEvent.VK_P)&&ctrl) {
-		//Config.profile = !Config.profile;
+		Config.highlight = !Config.highlight;
 	    } else if((code == KeyEvent.VK_H)&&ctrl) {
 		Config.hide = !Config.hide;
 		Config.saveOptions();
@@ -108,24 +108,18 @@ public class RootWidget extends ConsoleHost {
 	    } else if(code == KeyEvent.VK_END) {
 		screenshot = true;
 		} else if(code == KeyEvent.VK_UP) { // new
-			for(Widget w = ui.root.child; w != null; w = w.next){
-				if(w instanceof Fightview){
-					((Fightview)w).currentUp();
-				}
-			}
+			if(ui.fight != null)
+				ui.fight.currentUp();
 	    } else if(code == KeyEvent.VK_DOWN) { // new
-			for(Widget w = ui.root.child; w != null; w = w.next){
-				if(w instanceof Fightview){
-					((Fightview)w).currentDown();
-				}
-			}
+			if(ui.fight != null)
+				ui.fight.currentDown();
 	    } else if((code == KeyEvent.VK_A)&&ctrl) { // new
 			Config.pathDrinker = !Config.pathDrinker;
 			String str = "Auto drinker: "+((Config.pathDrinker)?"ON":"OFF");
 			ui.cons.out.println(str);
 			ui.slen.error(str);
 			addons.MainScript.flaskScript();
-	    } else if((code == KeyEvent.VK_B)&&ctrl) { // new
+	    } else if((code == KeyEvent.VK_S)&&ctrl) { // new
 			Config.minerSafety = !Config.minerSafety;
 			String str = "Mining safety: "+((Config.minerSafety)?"ON":"OFF");
 			ui.cons.out.println(str);

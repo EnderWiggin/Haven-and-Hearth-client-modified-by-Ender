@@ -602,33 +602,34 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     static {ltypes.put("tooltip", Tooltip.class);}
 	
     public class Tile extends Layer {
-	transient BufferedImage img;
-	transient private Tex tex;
-	int id;
-	int w;
-	char t;
-		
-	public Tile(byte[] buf) {
-	    t = (char)Utils.ub(buf[0]);
-	    id = Utils.ub(buf[1]);
-	    w = Utils.uint16d(buf, 2);
-	    try {
-		img = ImageIO.read(new ByteArrayInputStream(buf, 4, buf.length - 4));
-	    } catch(IOException e) {
-		throw(new LoadException(e, Resource.this));
-	    }
-	    if(img == null)
-		throw(new LoadException("Invalid image data in " + name, Resource.this));
-	}
+		transient BufferedImage img;
+		transient private Tex tex;
+		int id;
+		int w;
+		char t;
+			
+		public Tile(byte[] buf) {
+			t = (char)Utils.ub(buf[0]);
+			id = Utils.ub(buf[1]);
+			w = Utils.uint16d(buf, 2);
+			try {
+			img = ImageIO.read(new ByteArrayInputStream(buf, 4, buf.length - 4));
+			} catch(IOException e) {
+			throw(new LoadException(e, Resource.this));
+			}
+			if(img == null)
+			throw(new LoadException("Invalid image data in " + name, Resource.this));
+		}
 
-	public synchronized Tex tex() {
-	    if(tex == null)
-		tex = new TexI(img);
-	    return(tex);
-	}
-		
-	public void init() {}
+		public synchronized Tex tex() {
+			if(tex == null)
+			tex = new TexI(img);
+			return(tex);
+		}
+			
+		public void init() {}
     }
+	
     static {ltypes.put("tile", Tile.class);}
 	
     public class Neg extends Layer {
@@ -639,13 +640,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		
 	public Neg(byte[] buf) {
 	    int off;
-			
+		
 	    cc = cdec(buf, 0);
 	    bc = cdec(buf, 4);
 	    bs = cdec(buf, 8);
 	    sz = cdec(buf, 12);
-	    bc = MapView.s2m(bc);
-	    bs = MapView.s2m(bs).add(bc.inv());
+	    //bc = MapView.s2m(bc);
+	    //bs = MapView.s2m(bs).add(bc.inv());
 	    ep = new Coord[8][0];
 	    int en = buf[16];
 	    off = 17;
