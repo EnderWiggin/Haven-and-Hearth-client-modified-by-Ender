@@ -159,20 +159,20 @@ public class MiniMap extends Widget {
 			BufferedImage img;
 			try {
 			    img = ImageIO.read(in);
-			    if ((!cached)&(mappingSession > 0)) {
-				String fileName;
-				if (gridsHashes.containsKey(grid)) {
-				    Coord coordinates = gridsHashes.get(grid);
-				    fileName = "tile_" + coordinates.x + "_"
-					    + coordinates.y;
-				} else {
-				    fileName = grid;
-				}
-				
-				File outputfile = new File("map/"
-					+ Utils.sessdate(mappingSession) + "/" + fileName
-					+ ".png");
-				ImageIO.write(img, "png", outputfile);
+			    if ((!cached)&(mappingSession > 0) && !Config.disableMapSaving) {
+					String fileName;
+					if (gridsHashes.containsKey(grid)) {
+						Coord coordinates = gridsHashes.get(grid);
+						fileName = "tile_" + coordinates.x + "_"
+							+ coordinates.y;
+					} else {
+						fileName = grid;
+					}
+					
+					File outputfile = new File("map/"
+						+ Utils.sessdate(mappingSession) + "/" + fileName
+						+ ".png");
+					ImageIO.write(img, "png", outputfile);
 			    }
 			} finally {
 			    Utils.readtileof(in);
@@ -221,13 +221,14 @@ public class MiniMap extends Widget {
 	long newSession = System.currentTimeMillis();
 	String date = Utils.sessdate(newSession);
 	try {
-	    (new File("map/" + date)).mkdirs();
-	    Writer currentSessionFile = new FileWriter("map/currentsession.js");
-	    currentSessionFile.write("var currentSession = '" + date + "';\n");
-	    currentSessionFile.close();
-	    mappingSession = newSession;
-	    gridsHashes.clear();
-	    coordHashes.clear();
+	    if(!Config.disableMapSaving) (new File("map/" + date)).mkdirs();
+		Writer currentSessionFile = new FileWriter("map/currentsession.js");
+		currentSessionFile.write("var currentSession = '" + date + "';\n");
+		currentSessionFile.close();
+		mappingSession = newSession;
+		gridsHashes.clear();
+		coordHashes.clear();
+		
 	} catch (IOException ex) {
 	}
     }

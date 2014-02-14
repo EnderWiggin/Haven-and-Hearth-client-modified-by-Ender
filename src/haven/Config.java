@@ -159,6 +159,7 @@ public class Config {
 	public static boolean largeCombatInfo = false;
 	
 	public static boolean serverGrid = false;
+	public static boolean disableMapSaving = false;
 	// new
 	
     static {
@@ -649,6 +650,7 @@ public class Config {
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
 		singleAttack = options.getProperty("singleAttack", "false").equals("true"); // new
+		disableMapSaving = options.getProperty("disableMapSaving", "false").equals("true"); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -765,6 +767,7 @@ public class Config {
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new
 		options.setProperty("autoTracking", autoTracking?"true":"false"); // new
 		options.setProperty("singleAttack", singleAttack?"true":"false"); // new
+		options.setProperty("disableMapSaving", disableMapSaving?"true":"false"); // new
 		
         options.setProperty("version", currentVersion);
         

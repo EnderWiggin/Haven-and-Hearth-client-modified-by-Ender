@@ -439,12 +439,18 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.zoom;
-	    (new CheckBox(new Coord(50, 300), tab, "Disable camera borders") {
+		(new CheckBox(new Coord(50, 300), tab, "Disable camera borders") {
 		public void changed(boolean val) {
 		    Config.noborders = val;
 		    Config.saveOptions();
 		}
 	    }).a = Config.noborders;
+		(new CheckBox(new Coord(50, 330), tab, "Disable map saving") {
+		public void changed(boolean val) {
+		    Config.disableMapSaving = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.disableMapSaving;
 		
 		new Label(new Coord(360, 325), tab, "WARNING! use with care.");
 		new Label(new Coord(360, 335), tab, "Reboot client after use.");
