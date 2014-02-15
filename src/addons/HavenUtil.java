@@ -18,7 +18,7 @@ import haven.IMeter.Meter;
 import haven.CharWnd.Study;
 
 public class HavenUtil{
-	
+	public static HavenUtil instance;
 	public static final int ACTIONBAR_NUMPAD = 2;
 	public static final int ACTIONBAR_F = 1;
 	public static final int ACTIONBAR_DIGIT = 0;
@@ -29,6 +29,7 @@ public class HavenUtil{
 	
 	public HavenUtil(UI u){
 		ui = u;
+		instance = this;
 	}
 	
 	public void wait(int time){

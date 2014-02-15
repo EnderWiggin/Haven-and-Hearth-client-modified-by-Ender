@@ -556,6 +556,61 @@ public class OptWnd extends Window {
 		};
 		chkbox.a = Config.hideObjectList.contains(checkbox[1]);
 	    }
+		
+		CheckBox chkbox = new CheckBox(new Coord(150, 25), tab, "Show Boat and Wagon Hitbox") {
+		public void changed(boolean val) {
+		    Config.boatnWagon = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.boatnWagon;
+		
+		
+		new Label(new Coord(425, 220), tab, "Hitbox Color");
+		new Label(new Coord(405, 240), tab, "Red");
+		new Label(new Coord(440, 240), tab, "Green");
+		new Label(new Coord(483, 240), tab, "Blue");
+		
+		final Label red = new Label(new Coord(408, 412),  tab, String.valueOf(Config.red));
+		final Label green = new Label(new Coord(448, 412),  tab, String.valueOf(Config.green));
+		final Label blue = new Label(new Coord(488, 412),  tab, String.valueOf(Config.blue));
+		
+		(new Scrollbar(new Coord(420, 260), 148, tab, 0, 255) {{ val = 255 - Config.red; }
+		public void changed() {
+		    Config.red = 255 - val;
+			red.settext(String.valueOf(255 - val));
+		    Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+	    }).changed();
+		(new Scrollbar(new Coord(460, 260), 148, tab, 0, 255) {{ val = 255 - Config.green; }
+		public void changed() {
+		    Config.green = 255 - val;
+			green.settext(String.valueOf(255 - val));
+		    Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+	    }).changed();
+		(new Scrollbar(new Coord(500, 260), 148, tab, 0, 255) {{ val = 255 - Config.blue; }
+		public void changed() {
+			Config.blue = 255 - val;
+			blue.settext(String.valueOf(255 - val));
+		    Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+	    }).changed();
 	}
 
 	{ /* HIGHLIGHT OPTIONS TAB */
@@ -703,7 +758,7 @@ public class OptWnd extends Window {
 		    { "Pearls", "pearl" },
 		    { "Aggro", "aggro" },
 		    { "Death", "death" },
-			{ "Error", "error" },
+			{ "Ram", "ram" },
 		};
 	    int y = 0;
 	    for (final String[] checkbox : checkboxesList) {

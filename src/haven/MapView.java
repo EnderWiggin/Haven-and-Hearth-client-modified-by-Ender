@@ -1322,12 +1322,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	
 	if(Config.showHidden && Config.hide) {
-		g.chcolor(255, 0, 0, 128);
+		g.chcolor(Config.red, Config.green, Config.blue, 128);
 		synchronized(glob.oc) {
 		    for(Gob gob : glob.oc) {
 			Resource res = gob.getres();
-			if(!gob.hide || ((res != null)&&(res.skiphighlight)))
-			    continue;
+			if(res == null) continue;
+			if((!res.hitbox && !gob.hide) || res.skiphighlight) continue;
 			Resource.Neg neg = gob.getneg();
 			if(neg == null)
 			    continue;

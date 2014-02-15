@@ -8,24 +8,29 @@ import java.net.URL;
 public class Sound{
 	private AudioClip m_clip;
 	public static HashSet<Integer> soundSet = new HashSet<Integer>();
+	public static HashSet<Integer> deathSet = new HashSet<Integer>();
 	
-	public static final Sound white = new Sound("custom_wav/tapSound.wav");
-	public static final Sound red = new Sound("custom_wav/boarFound.wav");
+	public static final Sound white = new Sound("custom_wav/whiteFound.wav");
+	public static final Sound red = new Sound("custom_wav/redFound.wav");
 	public static final Sound troll = new Sound("custom_wav/trollFound.wav");
-	public static final Sound bell = new Sound("custom_wav/doorbell.wav");
-	public static final Sound flotsam = new Sound("custom_wav/playerFound.wav");
+	public static final Sound bell = new Sound("custom_wav/bellFound.wav");
+	public static final Sound flotsam = new Sound("custom_wav/flotsamFound.wav");
 	public static final Sound bear = new Sound("custom_wav/bearFound.wav");
-	public static final Sound pearl = new Sound("custom_wav/oreFound.wav");
-	public static final Sound aggro = new Sound("custom_wav/clickSound.wav");
-	public static final Sound death = new Sound("custom_wav/sirenSound.wav");
-	public static final Sound error = new Sound("custom_wav/error.wav");
+	public static final Sound pearl = new Sound("custom_wav/pearlFound.wav");
+	public static final Sound aggro = new Sound("custom_wav/aggroSound.wav");
+	public static final Sound death = new Sound("custom_wav/deathSound.wav");
+	public static final Sound ram = new Sound("custom_wav/ramFound.wav");
 	
 	public static void soundGobList(Gob g){
 		if(!soundCheck(g.id)) return;
 		
 		String resname = g.resname();
 		
-		if(resname.endsWith("borka/s") && g.isHuman() ){
+		if(resname == ""){
+			soundSet.remove(g.id);
+		}
+		
+		if(g.isHuman() && !isplayerid(g.id) ){
 			KinInfo kin = g.getattr(KinInfo.class);
 			if(kin == null){
 				safePlay("white");
@@ -36,6 +41,8 @@ public class Sound{
 			safePlay("troll");
 		}else if(resname.endsWith("bear/s") ){
 			safePlay("bear");
+		}else if(resname.startsWith("gfx/kritter/bram") ){
+			safePlay("ram");
 		}else if(resname.endsWith("chimingbluebell") ){
 			safePlay("bell");
 		}else if(resname.endsWith("flotsam") ){
@@ -43,9 +50,26 @@ public class Sound{
 		}
 	}
 	
+	public static boolean isplayerid(int id){
+		if((UI.instance != null)
+			&& (UI.instance.mainview != null)
+			&& (UI.instance.mainview.playergob == id)){
+			return true;
+		}
+		return false;
+    }
+	
 	public static boolean soundCheck(int id){
 		if(!soundSet.contains(id) ){
 			soundSet.add(id);
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean deathCheck(int id){
+		if(!deathSet.contains(id) ){
+			deathSet.add(id);
 			return true;
 		}
 		return false;
@@ -67,7 +91,7 @@ public class Sound{
 		if(str == "pearl") Sound.pearl.play();
 		if(str == "aggro") Sound.aggro.play();
 		if(str == "death") Sound.death.play();
-		if(str == "error") Sound.error.play();
+		if(str == "ram") Sound.ram.play();
 	}
 	
 	public Sound(String fileName){

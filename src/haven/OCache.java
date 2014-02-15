@@ -309,6 +309,11 @@ public class OCache implements Iterable<Gob> {
 	    return;
 	Gob.Overlay ol = g.findol(olid);
 	if(resid != null) {
+		try{
+		if(resid.get().name.contains("death") && g.isHuman() && Sound.deathCheck(id)){
+			Sound.safePlay("death");
+		}
+		}catch(Exception e){}
 	    if(ol == null) {
 		g.ols.add(ol = new Gob.Overlay(olid, resid, sdt));
 	    } else if(!ol.sdt.equals(sdt)) {
@@ -340,7 +345,7 @@ public class OCache implements Iterable<Gob> {
 	} else {
 	    KinInfo b = g.getattr(KinInfo.class);
 	    if(b == null) {
-		g.setattr(new KinInfo(g, name, group, type));
+			g.setattr(new KinInfo(g, name, group, type));
 	    } else {
 		b.update(name, group, type);
 	    }

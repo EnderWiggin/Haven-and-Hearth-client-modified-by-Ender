@@ -161,6 +161,11 @@ public class Config {
 	public static boolean serverGrid = false;
 	public static boolean disableMapSaving = false;
 	public static boolean animalTags = false;
+	public static boolean boatnWagon = false;
+	
+	public static int red;
+	public static int green;
+	public static int blue;
 	
 	public static Map<String, Boolean> confSounds = new HashMap<String, Boolean>();
 	// new
@@ -333,7 +338,7 @@ public class Config {
 		confSounds.put("pearl", sounds.getProperty("pearl", "false").equals("true") );
 		confSounds.put("aggro", sounds.getProperty("aggro", "false").equals("true") );
 		confSounds.put("death", sounds.getProperty("death", "false").equals("true") );
-		confSounds.put("error", sounds.getProperty("error", "false").equals("true") );
+		confSounds.put("ram", sounds.getProperty("ram", "false").equals("true") );
     }
 	
     public static void saveSounds() {
@@ -346,7 +351,7 @@ public class Config {
 		sounds.setProperty("pearl", confSounds.get("pearl").toString() );
 		sounds.setProperty("aggro", confSounds.get("aggro").toString() );
 		sounds.setProperty("death", confSounds.get("death").toString() );
-		sounds.setProperty("error", confSounds.get("error").toString() );
+		sounds.setProperty("ram", confSounds.get("ram").toString() );
 		
         try {
             sounds.store(new FileOutputStream("sound.conf"), "Custom sound options");
@@ -705,6 +710,11 @@ public class Config {
 		singleAttack = options.getProperty("singleAttack", "false").equals("true"); // new
 		disableMapSaving = options.getProperty("disableMapSaving", "false").equals("true"); // new
 		animalTags = options.getProperty("animalTags", "false").equals("true"); // new
+		boatnWagon = options.getProperty("boatnWagon", "false").equals("true"); // new
+		
+		red = Integer.parseInt(options.getProperty("red_col", "255")); // new
+		green = Integer.parseInt(options.getProperty("green_col", "0")); // new
+		blue = Integer.parseInt(options.getProperty("blue_col", "0")); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -823,6 +833,11 @@ public class Config {
 		options.setProperty("singleAttack", singleAttack?"true":"false"); // new
 		options.setProperty("disableMapSaving", disableMapSaving?"true":"false"); // new
 		options.setProperty("animalTags", animalTags?"true":"false"); // new
+		options.setProperty("boatnWagon", boatnWagon?"true":"false"); // new
+		
+		options.setProperty("red_col", String.valueOf(red));
+		options.setProperty("green_col", String.valueOf(green));
+		options.setProperty("blue_col", String.valueOf(blue));
 		
         options.setProperty("version", currentVersion);
         
