@@ -52,6 +52,7 @@ public class Gob implements Sprite.Owner {
     private boolean isBeast;
     String beastname;
 	public static Map<Integer, DmgInfo> dmgmap = new TreeMap<Integer, Gob.DmgInfo>();
+	public boolean animalTag = false;
 	
     public static class Overlay {
 	public Indir<Resource> res;

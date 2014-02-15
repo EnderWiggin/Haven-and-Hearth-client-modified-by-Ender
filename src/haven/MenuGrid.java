@@ -371,6 +371,12 @@ public class MenuGrid extends Widget {
 		ui.cons.out.println(str);
 		ui.slen.error(str);
 		addons.MainScript.flaskScript();
+	} else if(list[1].equals("animaltag")) {
+		Config.animalTags = !Config.animalTags;
+		String str = "Turn animal tags: "+((Config.animalTags)?"ON":"OFF");
+		ui.cons.out.println(str);
+		ui.slen.error(str);
+		Config.saveOptions();
 	}
 	use(null);
     }

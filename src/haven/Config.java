@@ -160,6 +160,7 @@ public class Config {
 	
 	public static boolean serverGrid = false;
 	public static boolean disableMapSaving = false;
+	public static boolean animalTags = false;
 	// new
 	
     static {
@@ -651,6 +652,7 @@ public class Config {
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
 		singleAttack = options.getProperty("singleAttack", "false").equals("true"); // new
 		disableMapSaving = options.getProperty("disableMapSaving", "false").equals("true"); // new
+		animalTags = options.getProperty("animalTags", "false").equals("true"); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -768,6 +770,7 @@ public class Config {
 		options.setProperty("autoTracking", autoTracking?"true":"false"); // new
 		options.setProperty("singleAttack", singleAttack?"true":"false"); // new
 		options.setProperty("disableMapSaving", disableMapSaving?"true":"false"); // new
+		options.setProperty("animalTags", animalTags?"true":"false"); // new
 		
         options.setProperty("version", currentVersion);
         

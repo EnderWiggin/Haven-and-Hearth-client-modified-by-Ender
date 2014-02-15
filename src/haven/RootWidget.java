@@ -127,9 +127,9 @@ public class RootWidget extends ConsoleHost {
 			ui.cons.out.println(str);
 			ui.slen.error(str);
 	    } else if((code == KeyEvent.VK_S)&&alt) { // new
-			addons.MainScript.cleanupItems(1000, ui.mainview.gobAtMouse);
+			addons.MainScript.multiTool(4, ui.mainview.gobAtMouse);
 	    } else if((code == KeyEvent.VK_S)&&shift) { // new
-			addons.MainScript.cleanupItems(1, ui.mainview.gobAtMouse);
+			addons.MainScript.multiTool(1, ui.mainview.gobAtMouse);
 	    }else if(key == ':') {
 		entercmd();
 	    } else if(key != 0) {

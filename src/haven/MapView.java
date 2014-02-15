@@ -1394,8 +1394,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			}
 	    }
 		
-		if(Config.combatHalo)
-			drawRedCombatHalo(g);
+		drawHalo(g);
 	    
 	    if(curf != null)
 		curf.tick("draw");
@@ -1728,29 +1727,35 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		};
 	}
 	
-	private void drawRedCombatHalo(GOut g) {
-	ArrayList<Sprite.Part> obsc = new ArrayList<Sprite.Part>();
-	if(ui.fight == null || ui.fight.current == null || ui.fight.lsrel.size() <= 0)
+	private void drawHalo(GOut g) {
+	if(!Config.combatHalo && !Config.animalTags)
 		return;
-
+	
+	boolean combat = true;
+	if(!Config.combatHalo || ui.fight == null || ui.fight.current == null || ui.fight.lsrel.size() <= 0)
+		combat = false;
+	
 	for(Sprite.Part p : clickable) {
-	    Gob gob = (Gob)p.owner;
-	    if(gob == null)
+		Gob gob = (Gob)p.owner;
+		if(gob == null)
 		continue;
 		
-		if(ui.fight.current.gobid == gob.id){
+		if(gob.animalTag){
+			g.chcolor(Color.ORANGE);
+			p.drawol(g);
+		}
+		if(combat && ui.fight.current.gobid == gob.id){
 			g.chcolor(255, 0, 0, 255);
 			p.drawol(g);
-			g.chcolor();
-			break;
 		}
 	}
-	return;
+	g.chcolor();
     }
 	
 	void drawObjectHealth(GOut g, Gob gob){
 		if(gob == null || gob.sc == null) return;
 			GobHealth hlt = gob.getattr(GobHealth.class);
+		
 		int health;
 		if(hlt != null && (health = (int)(hlt.asfloat() * 100)) < 100 ){
 			g.atext(health + "%", gob.sc.add(-8, -15), 0, 1);
