@@ -523,7 +523,7 @@ public class OptWnd extends Window {
 
 	{ /* HIDE OBJECTS TAB */
 	    tab = body.new Tab(new Coord(210, 0), 80, "Hide Objects");
-
+		
 	    String[][] checkboxesList = {
 			{ "Walls", "gfx/arch/walls" },
 		    { "Gates", "gfx/arch/gates" },
@@ -688,6 +688,40 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.largeCombatInfo;
+	}
+	
+	{ /* SOUNDS OPTIONS TAB */
+	    tab = body.new Tab(new Coord(390, 0), 80, "Sounds");
+
+		String[][] checkboxesList = {
+			{ "White", "white" },
+		    { "Red", "red" },
+		    { "Troll", "troll" },
+		    { "Bluebell", "bell" },
+		    { "Flotsam", "flotsam" },
+		    { "Bears", "bear" },
+		    { "Pearls", "pearl" },
+		    { "Aggro", "aggro" },
+		    { "Death", "death" },
+			{ "Error", "error" },
+		};
+	    int y = 0;
+	    for (final String[] checkbox : checkboxesList) {
+			CheckBox chkbox = new CheckBox(new Coord(10, y += 35), tab, checkbox[0]) {
+				public void changed(boolean val) {
+					Config.confSounds.put(checkbox[1], val);
+					Config.saveSounds();
+				}
+			};
+			
+			new Button(new Coord(100, y+12), 40, tab, "Play") {
+				public void click() {
+					Sound.playSound(checkbox[1]);
+				}
+			};
+			
+			chkbox.a = Config.confSounds.get(checkbox[1]);
+	    }
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

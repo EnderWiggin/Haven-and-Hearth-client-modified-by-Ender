@@ -92,7 +92,7 @@ public class Config {
     public static boolean nightvision;
     public static String currentCharName;
     public static String currentVersion;
-    public static Properties options, window_props;
+    public static Properties options, window_props, sounds;
     public static int sfxVol;
     public static int musicVol;
     public static boolean isMusicOn = false;
@@ -161,6 +161,8 @@ public class Config {
 	public static boolean serverGrid = false;
 	public static boolean disableMapSaving = false;
 	public static boolean animalTags = false;
+	
+	public static Map<String, Boolean> confSounds = new HashMap<String, Boolean>();
 	// new
 	
     static {
@@ -196,6 +198,7 @@ public class Config {
 	    currentCharName = "";
 	    options = new Properties();
 	    window_props = new Properties();
+		sounds = new Properties();
 	    hideObjectList = Collections.synchronizedSet(new HashSet<String>());
 	    highlightItemList = Collections.synchronizedSet(new HashSet<String>());
 	    loadOptions();
@@ -208,6 +211,7 @@ public class Config {
 	    loadHighlight();
 	    loadCurrentHighlight();
 	    loadBeasts();
+		loadSounds();
 	} catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -257,13 +261,6 @@ public class Config {
 	beasts.put(pat, "Boar");
 	inf.show = true; // new
 	hlcfg.put(pat, inf);
-	//ram
-	pat = "kritter/bram";
-	inf = new HLInfo(pat, "paginae/build/bram");
-	inf.setColor(new Color(0xFF66CC));
-	beasts.put(pat, "Ram");
-	inf.show = false;
-	hlcfg.put(pat, inf);
 	//deer
 	pat = "kritter/deer";
 	inf = new HLInfo(pat, "mmap/deer");
@@ -301,6 +298,61 @@ public class Config {
 	beasts.put(pat, "Mufflon");
 	inf.show = false;
 	hlcfg.put(pat, inf);
+	//ram
+	pat = "kritter/bram";
+	inf = new HLInfo(pat, "paginae/build/bram");
+	inf.setColor(new Color(0xFF66CC));
+	beasts.put(pat, "Ram");
+	inf.show = false;
+	hlcfg.put(pat, inf);
+    }
+	
+	private static void loadSounds() {
+        File inputFile = new File("sound.conf");
+        if (!inputFile.exists()) {
+			try {
+				inputFile.createNewFile();
+			} catch (IOException e) {
+				return;
+			}
+        }
+		
+		try {
+            sounds.load(new FileInputStream("sound.conf"));
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+		
+		confSounds.put("white", sounds.getProperty("white", "false").equals("true") );
+		confSounds.put("red", sounds.getProperty("red", "false").equals("true") );
+		confSounds.put("troll", sounds.getProperty("troll", "false").equals("true") );
+		confSounds.put("bear", sounds.getProperty("bear", "false").equals("true") );
+		confSounds.put("bell", sounds.getProperty("bell", "false").equals("true") );
+		confSounds.put("flotsam", sounds.getProperty("flotsam", "false").equals("true") );
+		confSounds.put("pearl", sounds.getProperty("pearl", "false").equals("true") );
+		confSounds.put("aggro", sounds.getProperty("aggro", "false").equals("true") );
+		confSounds.put("death", sounds.getProperty("death", "false").equals("true") );
+		confSounds.put("error", sounds.getProperty("error", "false").equals("true") );
+    }
+	
+    public static void saveSounds() {
+		sounds.setProperty("white", confSounds.get("white").toString() );
+        sounds.setProperty("red", confSounds.get("red").toString() );
+		sounds.setProperty("troll", confSounds.get("troll").toString() );
+		sounds.setProperty("bear", confSounds.get("bear").toString() );
+		sounds.setProperty("bell", confSounds.get("bell").toString() );
+		sounds.setProperty("flotsam", confSounds.get("flotsam").toString() );
+		sounds.setProperty("pearl", confSounds.get("pearl").toString() );
+		sounds.setProperty("aggro", confSounds.get("aggro").toString() );
+		sounds.setProperty("death", confSounds.get("death").toString() );
+		sounds.setProperty("error", confSounds.get("error").toString() );
+		
+        try {
+            sounds.store(new FileOutputStream("sound.conf"), "Custom sound options");
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     private static void loadHighlight() {

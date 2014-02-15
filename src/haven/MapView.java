@@ -980,27 +980,29 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private void drawobjradius(GOut g) {
 	synchronized (glob.oc) {
 	    for (Gob gob : glob.oc) {
-		if(gob.sc == null){continue;}
-		
-		if (Config.showBeast && gob.isBeast()) {
-		    HLInfo inf = Config.hlcfg.get(gob.beastname);
-		    g.chcolor(inf.col.getRed(), inf.col.getGreen(), inf.col.getBlue(), 96);
-		    if(inf.show) // new
-				drawradius(g, gob.sc, 100);
-		}
-		
-		if(gob.isHuman() && !ui.sess.glob.party.memb.keySet().contains(gob.id)){
-		    g.chcolor(255, 0, 255, 96);
-		    drawradius(g, gob.sc, 10);
-			if (Config.autohearth) {
-				autohearth(gob);
+			if(gob.sc == null){continue;}
+			
+			if (Config.showBeast && gob.isBeast()) {
+				HLInfo inf = Config.hlcfg.get(gob.beastname);
+				g.chcolor(inf.col.getRed(), inf.col.getGreen(), inf.col.getBlue(), 96);
+				if(inf.show) // new
+					drawradius(g, gob.sc, 100);
 			}
-		}
-		
-		if(gob.isHighlight() && Config.highlightItemList.contains(gob.resname())){
-		    g.chcolor(255, 128, 64, 96);
-		    drawradius(g, gob.sc, 10);
-		}
+			
+			if(gob.isHuman() && !ui.sess.glob.party.memb.keySet().contains(gob.id)){
+				g.chcolor(255, 0, 255, 96);
+				drawradius(g, gob.sc, 10);
+				if (Config.autohearth) {
+					autohearth(gob);
+				}
+			}
+			
+			if(gob.isHighlight() && Config.highlightItemList.contains(gob.resname())){
+				g.chcolor(255, 128, 64, 96);
+				drawradius(g, gob.sc, 10);
+			}
+			
+			Sound.soundGobList(gob);
 	    }
 	}
 	g.chcolor();

@@ -245,6 +245,7 @@ public class Fightview extends Widget {
             rel.off = (Integer)args[6];
             rel.def = (Integer)args[7];
             lsrel.addFirst(rel);
+			Sound.safePlay("aggro");
             return;
         } else if(msg == "del") {
             Relation rel = getrel((Integer)args[0]);

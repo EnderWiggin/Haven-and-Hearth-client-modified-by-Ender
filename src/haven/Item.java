@@ -356,8 +356,23 @@ public class Item extends Widget implements DTarget {
 	qmult = Math.sqrt((float)q/10);
 	calcFEP();
 	calcCurio();
+	pearlSound();
     }
-
+	
+	void pearlSound(){
+		if(parent instanceof Inventory){
+			try{
+				if(((Window)parent.parent).cap.text.equals("Inventory")){
+					if(addons.HavenUtil.instance.hasHourglass()){
+						if(Sound.soundCheck(id) ){
+							Sound.safePlay("pearl");
+						}
+					}
+				}
+			}catch(Exception e){}
+		}
+	}
+	
     private void calcFEP() {
 	Map<String, Float> fep;
 	String name = name();

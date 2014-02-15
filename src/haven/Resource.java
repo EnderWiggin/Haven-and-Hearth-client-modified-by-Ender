@@ -1053,8 +1053,9 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	if(this.ver == -1) {
 	    this.ver = ver;
 	} else {
-	    if(ver != this.ver)
-		throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")", this));
+	    if(ver != this.ver){
+		//throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")", this));
+		}
 	}
 	outer: while(true) {
 	    StringBuilder tbuf = new StringBuilder();
