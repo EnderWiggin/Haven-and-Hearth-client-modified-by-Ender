@@ -52,8 +52,8 @@ import addons.MainScript; // new
 
 @SuppressWarnings("serial")
 public class MainFrame extends Frame implements Runnable, FSMan {
-    public static String VERSION = "01.25.2014";
-    private static final String TITLE = String.format("Haven and Hearth (modified by Ender edited by Xcom v%s)", VERSION);
+    public static String VERSION = "02.16.2014";
+    private static final String TITLE = String.format("Haven and Hearth (Apoc Lite by Xcom v%s)", VERSION);
     HavenPanel p;
     ThreadGroup g;
     DisplayMode fsmode = null, prefs = null;

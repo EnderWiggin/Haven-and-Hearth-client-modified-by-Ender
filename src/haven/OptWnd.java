@@ -532,6 +532,36 @@ public class OptWnd extends Window {
 		    Config.isMusicOn = val;
 		    Music.setVolume(Config.getMusicVolume());
 		}}).a = Config.isMusicOn;
+		
+		String[][] checkboxesList = {
+			{ "White", "white" },
+		    { "Red", "red" },
+		    { "Troll", "troll" },
+		    { "Bluebell", "bell" },
+		    { "Flotsam", "flotsam" },
+		    { "Bears", "bear" },
+		    { "Pearls", "pearl" },
+		    { "Aggro", "aggro" },
+		    { "Death", "death" },
+			{ "Ram", "ram" },
+		};
+	    int y = 0;
+	    for (final String[] checkbox : checkboxesList) {
+			CheckBox chkbox = new CheckBox(new Coord(370, y += 35), tab, checkbox[0]) {
+				public void changed(boolean val) {
+					Config.confSounds.put(checkbox[1], val);
+					Config.saveSounds();
+				}
+			};
+			
+			new Button(new Coord(450, y+12), 40, tab, "Play") {
+				public void click() {
+					Sound.playSound(checkbox[1]);
+				}
+			};
+			
+			chkbox.a = Config.confSounds.get(checkbox[1]);
+	    }
 	}
 
 	{ /* HIDE OBJECTS TAB */
@@ -762,38 +792,10 @@ public class OptWnd extends Window {
 	    chkbox.a = Config.largeCombatInfo;
 	}
 	
-	{ /* SOUNDS OPTIONS TAB */
-	    tab = body.new Tab(new Coord(390, 0), 80, "Sounds");
-
-		String[][] checkboxesList = {
-			{ "White", "white" },
-		    { "Red", "red" },
-		    { "Troll", "troll" },
-		    { "Bluebell", "bell" },
-		    { "Flotsam", "flotsam" },
-		    { "Bears", "bear" },
-		    { "Pearls", "pearl" },
-		    { "Aggro", "aggro" },
-		    { "Death", "death" },
-			{ "Ram", "ram" },
-		};
-	    int y = 0;
-	    for (final String[] checkbox : checkboxesList) {
-			CheckBox chkbox = new CheckBox(new Coord(10, y += 35), tab, checkbox[0]) {
-				public void changed(boolean val) {
-					Config.confSounds.put(checkbox[1], val);
-					Config.saveSounds();
-				}
-			};
-			
-			new Button(new Coord(100, y+12), 40, tab, "Play") {
-				public void click() {
-					Sound.playSound(checkbox[1]);
-				}
-			};
-			
-			chkbox.a = Config.confSounds.get(checkbox[1]);
-	    }
+	{ /* BOT OPTIONS TAB */
+	    tab = body.new Tab(new Coord(390, 0), 80, "Bots");
+		
+		new Label(new Coord(20, 40), tab, "No bots in the Apoc Lite version.");
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
