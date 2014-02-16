@@ -37,11 +37,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.awt.event.KeyEvent;
+import java.util.Set;
 
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     private static final BufferedImage cfgimgu = Resource.loadimg("gfx/hud/buttons/centeru");
     private static final BufferedImage cfgimgd = Resource.loadimg("gfx/hud/buttons/centerd");
+	protected static BufferedImage[] charCross = new BufferedImage[] {
+	Resource.loadimg("gfx/hud/new/crossup"),
+	Resource.loadimg("gfx/hud/new/crossdown")};
     private Tabs body;
     private String curcam;
     private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
@@ -54,6 +58,8 @@ public class OptWnd extends Window {
 	    return (a.compareTo(b));
 	}
     };
+	static HideList HL;
+	static CheckBox[] hitboxes = new CheckBox[14];
 	
 	TextEntry flask;
 
@@ -524,47 +530,51 @@ public class OptWnd extends Window {
 	{ /* HIDE OBJECTS TAB */
 	    tab = body.new Tab(new Coord(210, 0), 80, "Hide Objects");
 		
-	    String[][] checkboxesList = {
+	    int y = 0;
+		int i = 0;
+		String[][] hitboxesList = {
 			{ "Walls", "gfx/arch/walls" },
-		    { "Gates", "gfx/arch/gates" },
-		    { "Wooden Houses", "gfx/arch/cabin" },
-		    { "Stone Mansions", "gfx/arch/inn" },
-		    { "Plants", "gfx/terobjs/plants" },
-		    { "Trees", "gfx/terobjs/trees" },
-		    { "Stones", "gfx/terobjs/bumlings" },
-		    { "Flavor objects", "flavobjs" },
-		    { "Bushes", "gfx/tiles/wald" },
+			{ "Gates", "gfx/arch/gates" },
+			{ "Wooden Houses", "gfx/arch/cabin" },
+			{ "Stone Mansions", "gfx/arch/inn" },
+			{ "Plants", "gfx/terobjs/plants" },
+			{ "Trees", "gfx/terobjs/trees" },
+			{ "Stones", "gfx/terobjs/bumlings" },
+			{ "Flavor objects", "flavobjs" },
+			{ "Bushes", "gfx/tiles/wald" },
 			{ "Supports", "gfx/terobjs/mining/minesupport" },
 			{ "Ridges", "gfx/terobjs/ridges" },
 			{ "Village Idol", "gfx/terobjs/vclaim" },
 			{ "Blood", "gfx/terobjs/blood" },
-		    { "Thicket", "gfx/tiles/dwald" }
+			{ "Thicket", "gfx/tiles/dwald" }
 		};
-	    int y = 0;
-	    for (final String[] checkbox : checkboxesList) {
-		CheckBox chkbox = new CheckBox(new Coord(10, y += 25), tab,
+	    for (final String[] checkbox : hitboxesList) {
+		hitboxes[i] = new CheckBox(new Coord(10, y += 28), tab,
 			checkbox[0]) {
 
 		    public void changed(boolean val) {
-			if (val) {
-			    Config.addhide(checkbox[1]);
-			} else {
-			    Config.remhide(checkbox[1]);
-			}
-			Config.saveOptions();
+				if (val) {
+					Config.addhide(checkbox[1]);
+				} else {
+					Config.remhide(checkbox[1]);
+				}
+				Config.saveOptions();
 		    }
 		};
-		chkbox.a = Config.hideObjectList.contains(checkbox[1]);
+		hitboxes[i].a = Config.hideObjectList.contains(checkbox[1]);
+		i++;
 	    }
 		
-		CheckBox chkbox = new CheckBox(new Coord(150, 25), tab, "Show Boat and Wagon Hitbox") {
+		CheckBox cbox = new CheckBox(new Coord(150, 25), tab, "Show Boat and Wagon Hitbox") {
 		public void changed(boolean val) {
 		    Config.boatnWagon = val;
 		    Config.saveOptions();
 		}
 	    };
-	    chkbox.a = Config.boatnWagon;
+	    cbox.a = Config.boatnWagon;
 		
+		new Label(new Coord(200, 80), tab, "Hidden Objects");
+		HL = new HideList(new Coord(150, 100), new Coord(180, 300), tab, Config.hideObjectList, "hidden");
 		
 		new Label(new Coord(425, 220), tab, "Hitbox Color");
 		new Label(new Coord(405, 240), tab, "Red");
@@ -841,4 +851,135 @@ public class OptWnd extends Window {
 	    box.draw(g, Coord.z, sz);
 	}
     }
+	
+	private class HideList extends Widget {
+		private final Object LOCK = new Object();
+		private List<String> list;
+		Scrollbar sb = null;
+		int h;
+		String sel;
+		String cap;
+		
+		public HideList(Coord c, Coord sz, Widget parent, Set<String> l, String cp) {
+			super(c, sz, parent);
+			h = sz.y / 20;
+			sel = null;
+			sb = new Scrollbar(new Coord(sz.x, 0), sz.y, this, 0, 4);
+			if(l != null) list = new ArrayList<String>(l);
+			cap = cp;
+			
+			new IButton(new Coord(0, 20 ), this, charCross[0], charCross[1]) { public void click() {
+				if(sel != null){
+					Config.remhide(sel);
+					Config.saveOptions();
+					//list.remove(sel);
+					//updateCheckBoxes();
+					//repop();
+				}
+			} };
+			
+			repop();
+		}
+
+		public void draw(GOut g) {
+			g.chcolor(32, 19, 50, 128);
+			g.frect(Coord.z, sz);
+			g.chcolor();
+			synchronized(LOCK) {
+			if(list.size() == 0) {
+				g.atext("No objects hidden.", sz.div(2), 0.5, 0.5);
+			} else {
+				for(int i = 0; i < h; i++) {
+				if(i + sb.val >= list.size())
+					continue;
+				String c = list.get(i + sb.val);
+				if(c == sel) {
+					g.chcolor(96, 96, 96, 255);
+					g.frect(new Coord(0, i * 20), new Coord(sz.x, 20));
+					g.chcolor();
+				}
+				g.aimage(Text.render(c).tex(), new Coord(25, i * 20 + 10), 0, 0.5);
+				g.chcolor();
+				}
+			}
+			}
+			super.draw(g);
+		}
+
+		public void repop() {
+			sb.val = 0;
+			synchronized(LOCK) {
+			sb.max = list.size() - h;
+			}
+		}
+
+		public boolean mousewheel(Coord c, int amount) {
+			sb.ch(amount);
+			return(true);
+		}
+
+		public void select(String c) {
+			this.sel = c;
+			changed(this.sel);
+		}
+
+		public boolean mousedown(Coord c, int button) {
+			if(super.mousedown(c, button))
+			return(true);
+			synchronized(LOCK) {
+			if(button == 1) {
+				int sel = (c.y / 20) + sb.val;
+				if(sel >= list.size())
+				sel = -1;
+				if(sel < 0)
+				select(null);
+				else
+				select(list.get(sel));
+				return(true);
+			}
+			}
+			return(false);
+		}
+		
+		public void updateList(Set<String> l){
+			synchronized(LOCK) {
+				list = new ArrayList<String>(l);
+			}
+			
+			repop();
+		}
+		
+		public void clearSelection(){
+			sel = null;
+		}
+
+		public void changed(String c) {
+		}
+	}
+	
+	static void updateCheckBoxes(){
+		String[][] hitboxesList = {
+			{ "Walls", "gfx/arch/walls" },
+			{ "Gates", "gfx/arch/gates" },
+			{ "Wooden Houses", "gfx/arch/cabin" },
+			{ "Stone Mansions", "gfx/arch/inn" },
+			{ "Plants", "gfx/terobjs/plants" },
+			{ "Trees", "gfx/terobjs/trees" },
+			{ "Stones", "gfx/terobjs/bumlings" },
+			{ "Flavor objects", "flavobjs" },
+			{ "Bushes", "gfx/tiles/wald" },
+			{ "Supports", "gfx/terobjs/mining/minesupport" },
+			{ "Ridges", "gfx/terobjs/ridges" },
+			{ "Village Idol", "gfx/terobjs/vclaim" },
+			{ "Blood", "gfx/terobjs/blood" },
+			{ "Thicket", "gfx/tiles/dwald" }
+		};
+		int i = 0;
+		for (final String[] checkbox : hitboxesList) {
+			if(hitboxes[i] != null) hitboxes[i].a = Config.hideObjectList.contains(checkbox[1]);
+			i++;
+		}
+		
+		if(HL != null) HL.updateList(Config.hideObjectList);
+	}
 }

@@ -377,6 +377,20 @@ public class MenuGrid extends Widget {
 		ui.cons.out.println(str);
 		ui.slen.error(str);
 		Config.saveOptions();
+	} else if(list[1].equals("focushide")) {
+		if(ui.mainview.gobAtMouse != null){
+			String name = ui.mainview.gobAtMouse.resname();
+			if(Config.hideObjectList.contains(name)){
+				Config.remhide(name);
+			} else {
+				Config.addhide(name);
+			}
+			Config.saveOptions();
+			String str = "Hide: " + name;
+			ui.cons.out.println(str);
+			ui.slen.error(str);
+			Config.saveOptions();
+		}
 	}
 	use(null);
     }

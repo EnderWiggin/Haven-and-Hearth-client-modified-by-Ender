@@ -762,11 +762,13 @@ public class Config {
     public static void addhide(String str){
 	hideObjectList.add(str);
 	Resource.checkhide();
+	OptWnd.updateCheckBoxes();
     }
     
     public static void remhide(String str){
 	hideObjectList.remove(str);
 	Resource.checkhide();
+	OptWnd.updateCheckBoxes();
     }
     
     public static void saveOptions() {
