@@ -162,6 +162,7 @@ public class Config {
 	public static boolean disableMapSaving = false;
 	public static boolean animalTags = false;
 	public static boolean boatnWagon = false;
+	public static boolean villagePort = false;
 	
 	public static int red;
 	public static int green;
@@ -711,6 +712,7 @@ public class Config {
 		disableMapSaving = options.getProperty("disableMapSaving", "false").equals("true"); // new
 		animalTags = options.getProperty("animalTags", "false").equals("true"); // new
 		boatnWagon = options.getProperty("boatnWagon", "false").equals("true"); // new
+		villagePort = options.getProperty("villagePort", "false").equals("true"); // new
 		
 		red = Integer.parseInt(options.getProperty("red_col", "255")); // new
 		green = Integer.parseInt(options.getProperty("green_col", "0")); // new
@@ -836,6 +838,7 @@ public class Config {
 		options.setProperty("disableMapSaving", disableMapSaving?"true":"false"); // new
 		options.setProperty("animalTags", animalTags?"true":"false"); // new
 		options.setProperty("boatnWagon", boatnWagon?"true":"false"); // new
+		options.setProperty("villagePort", villagePort?"true":"false"); // new
 		
 		options.setProperty("red_col", String.valueOf(red));
 		options.setProperty("green_col", String.valueOf(green));

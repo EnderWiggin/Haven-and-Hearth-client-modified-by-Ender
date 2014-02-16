@@ -287,6 +287,13 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.autohearth;
 		
+		(new CheckBox(new Coord(440, 230), tab, "Village Port") {
+		public void changed(boolean val) {
+		    Config.villagePort = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.villagePort;
+		
 		(new CheckBox(new Coord(455, 165), tab, "Unknown") {
 			public void changed(boolean val) {
 			    Config.hearthunknown = val;
@@ -301,8 +308,8 @@ public class OptWnd extends Window {
 			}
 		    }).a = Config.hearthred;
 		
-		new Label(new Coord(440, 240), tab, "Flask Key:");
-		flask = new TextEntry(new Coord(440, 255), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
+		new Label(new Coord(370, 240), tab, "Flask Key:");
+		flask = new TextEntry(new Coord(370, 255), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
 			public void setFocus(){
 				hasfocus = false;
 			}

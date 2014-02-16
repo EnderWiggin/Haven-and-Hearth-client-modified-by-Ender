@@ -1025,7 +1025,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	
 	private void hearth() {
-		String[] action = {"theTrav", "hearth"};
+		String portType = "hearth";
+		if(Config.villagePort) portType = "village";
+		String[] action = {"theTrav", portType};
 		UI.instance.mnu.wdgmsg("act", (Object[])action);
 		lastah = System.currentTimeMillis() + 5000;
 	}

@@ -129,6 +129,11 @@ public class Item extends Widget implements DTarget {
 		g.image(tex, Coord.z);
 		g.chcolor();
 	    } else {
+		if(res.get().name.equals("gfx/invobjs/silkmoth") && tooltip.contains("Female") )
+			g.chcolor(255, 100, 255, 255);
+		else
+			g.chcolor();
+		
 		g.image(tex, Coord.z);
 	    }
 	    if(num >= 0) {
@@ -356,12 +361,14 @@ public class Item extends Widget implements DTarget {
 	qmult = Math.sqrt((float)q/10);
 	calcFEP();
 	calcCurio();
-	pearlSound();
+	pearlSound(res);
     }
 	
-	void pearlSound(){
+	void pearlSound(Indir<Resource> res){
 		if(parent instanceof Inventory){
 			try{
+				if(!res.get().name.equals("gfx/invobjs/pearl") ) return;
+				
 				if(((Window)parent.parent).cap.text.equals("Inventory")){
 					if(addons.HavenUtil.instance.hasHourglass()){
 						if(Sound.soundCheck(id) ){
