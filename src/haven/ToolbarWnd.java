@@ -131,8 +131,10 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 		slot = Integer.toString(i);
 	    } else if(key == KeyEvent.VK_F1){
 		slot = "F"+Integer.toString(i+1);
-	    } else {
+	    } else if(key == KeyEvent.VK_NUMPAD0){
 		slot = "N"+Integer.toString(i);
+	    } else {
+		slot = keypadString(i);
 	    }
 	    nums[i] = new TexI(Utils.outline2(Text.render(slot).img, Color.BLACK, true));
 	}
@@ -485,7 +487,15 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	int slot = code - key;
 	boolean alt = ev.isAltDown();
 	boolean ctrl = ev.isControlDown();
-	if(alt && key == KeyEvent.VK_F1){
+	if(key == KeyEvent.VK_Q){
+		slot = keypadNum(code);
+		if(slot != -1){
+			Slot h = layout[slot];
+			if(h!=null)
+			h.use();
+			return true;
+		}
+	}else if(alt && key == KeyEvent.VK_F1){
 	    slot = code - KeyEvent.VK_0;
 	    if((slot>0)&&(slot<=5)){
 		loadBelt(slot*2);
@@ -618,4 +628,61 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	    }
 	}
     }
+	
+	///////
+	
+	
+	String keypadString(int i){
+		switch(i){
+			case 0:
+				return "Q";
+			case 1:
+				return "W";
+			case 2:
+				return "E";
+			case 3:
+				return "R";
+			case 4:
+				return "T";
+			case 5:
+				return "Y";
+			case 6:
+				return "U";
+			case 7:
+				return "I";
+			case 8:
+				return "O";
+			case 9:
+				return "P";
+		}
+		
+		return "";
+	}
+	
+	static int keypadNum(int i){
+		switch(i){
+			case 81:
+				return 0;
+			case 87:
+				return 1;
+			case 69:
+				return 2;
+			case 82:
+				return 3;
+			case 84:
+				return 4;
+			case 89:
+				return 5;
+			case 85:
+				return 6;
+			case 73:
+				return 7;
+			case 79:
+				return 8;
+			case 80:
+				return 9;
+		}
+		
+		return -1;
+	}
 }

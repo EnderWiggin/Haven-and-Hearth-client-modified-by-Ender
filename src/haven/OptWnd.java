@@ -223,6 +223,13 @@ public class OptWnd extends Window {
 		    Config.setWindowOpt(ui.mnu.numpadbar.name, val);
 		}
 	    }).a = ui.mnu.numpadbar.visible;
+		
+		(new CheckBox(new Coord(220, (y+=35)), tab, "Show qwerty toolbar") {
+		public void changed(boolean val) {
+		    ui.mnu.qwertypadbar.visible = val;
+		    Config.setWindowOpt(ui.mnu.qwertypadbar.name, val);
+		}
+	    }).a = ui.mnu.qwertypadbar.visible;
 	    
 	    (new CheckBox(new Coord(220, (y+=35)), tab, "Highlight combat skills") {
 		public void changed(boolean val) {

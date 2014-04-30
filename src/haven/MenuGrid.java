@@ -52,6 +52,7 @@ public class MenuGrid extends Widget {
     public ToolbarWnd digitbar;
     public ToolbarWnd functionbar;
     public ToolbarWnd numpadbar;
+	public ToolbarWnd qwertypadbar;
 	
     static {
 	Widget.addtype("scm", new WidgetFactory() {
@@ -117,6 +118,7 @@ public class MenuGrid extends Widget {
 		loadBelt((belt-1)%5+10);
 	    }
 	};
+	qwertypadbar = new ToolbarWnd(new Coord(150,300), ui.root, "toolbar4", 14, KeyEvent.VK_Q);
     }
 	
     private static Comparator<Resource> sorter = new Comparator<Resource>() {
@@ -427,6 +429,9 @@ public class MenuGrid extends Widget {
 	if(ev.isAltDown() || ev.isControlDown()){
 	    return false;
 	}
+	if(qwertypadbar.visible && ToolbarWnd.keypadNum((int)Character.toUpperCase(k)) != -1 ){
+		return false;
+	}
 	if((k == 27) && (this.cur != null)) {
 	    this.cur = null;
 	    curoff = 0;
@@ -537,4 +542,6 @@ public class MenuGrid extends Widget {
 		}
 		return null;
 	}
+	
+	
 }
