@@ -1133,6 +1133,14 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 			}
 		}
 		
+		Layer r = null;
+		for(Layer l : layers){
+			if(l instanceof Neg){
+				r = l;
+			}
+		}
+		layers.remove(r);
+		
 		outer: while(true) {
 			StringBuilder tbuf = new StringBuilder();
 			while(true) {
