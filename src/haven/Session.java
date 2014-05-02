@@ -214,7 +214,7 @@ public class Session {
 			int type = msg.uint8();
 			if(type == OD_REM) {
 			    if(!Config.persistantObjects) oc.remove(id, frame);
-				Sound.soundSet.remove(id);
+				if(!Config.soundMemo) Sound.soundSet.remove(id);
 			} else if(type == OD_MOVE) {
 			    Coord c = msg.coord();
 			    oc.move(id, frame, c);

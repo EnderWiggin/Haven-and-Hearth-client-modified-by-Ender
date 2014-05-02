@@ -167,6 +167,7 @@ public class Config {
 	public static boolean showPclaim = false;
 	public static boolean showVclaim = false;
 	public static int speed = 1;
+	public static boolean soundMemo = false;
 	
 	public static int red;
 	public static int green;
@@ -720,6 +721,7 @@ public class Config {
 		showPclaim = options.getProperty("showPclaim", "false").equals("true"); // new
 		showVclaim = options.getProperty("showVclaim", "false").equals("true"); // new
 		speed = Integer.parseInt(options.getProperty("speed", "100")); // new
+		soundMemo = options.getProperty("soundMemo", "false").equals("true"); // new
 		
 		red = Integer.parseInt(options.getProperty("red_col", "255")); // new
 		green = Integer.parseInt(options.getProperty("green_col", "0")); // new
@@ -849,6 +851,7 @@ public class Config {
 		options.setProperty("showPclaim", showPclaim?"true":"false"); // new
 		options.setProperty("showVclaim", showVclaim?"true":"false"); // new
 		options.setProperty("speed", String.valueOf(speed)); // new
+		options.setProperty("soundMemo", soundMemo?"true":"false"); // new
 		
 		options.setProperty("red_col", String.valueOf(red));
 		options.setProperty("green_col", String.valueOf(green));

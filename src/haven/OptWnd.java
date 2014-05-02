@@ -569,6 +569,17 @@ public class OptWnd extends Window {
 			
 			chkbox.a = Config.confSounds.get(checkbox[1]);
 	    }
+		
+		(new CheckBox(new Coord(210, 350), tab, "Memorize Sound IDs") {
+		public void changed(boolean val) {
+		    Config.soundMemo = val;
+		}
+	    }).a = Config.soundMemo;
+		
+		new Button(new Coord(210, 390), 125, tab, "Clear Sound IDs") {
+		public void click() {
+		    Sound.soundSet.clear();
+		}};
 	}
 
 	{ /* HIDE OBJECTS TAB */
