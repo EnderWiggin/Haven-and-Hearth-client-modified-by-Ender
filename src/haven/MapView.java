@@ -546,6 +546,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	map = glob.map;
 	mask = new ILM(MainFrame.getScreenSize(), glob.oc);
 	radiuses = new HashMap<String, Integer>();
+	starterPVclaim();
     }
     
     public void resetcam(){
@@ -1796,5 +1797,18 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				}
 			}
 		}
+	}
+	
+	boolean first = true;
+	void starterPVclaim(){
+		if(Config.showPclaim){
+			enol(0, 1);
+		}
+		
+		if(Config.showVclaim){
+			enol(2, 3);
+		}
+		
+		first = false;
 	}
 }

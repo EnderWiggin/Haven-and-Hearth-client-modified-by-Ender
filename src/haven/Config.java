@@ -164,6 +164,10 @@ public class Config {
 	public static boolean boatnWagon = false;
 	public static boolean villagePort = false;
 	
+	public static boolean showPclaim = false;
+	public static boolean showVclaim = false;
+	public static int speed = 1;
+	
 	public static int red;
 	public static int green;
 	public static int blue;
@@ -713,6 +717,9 @@ public class Config {
 		animalTags = options.getProperty("animalTags", "false").equals("true"); // new
 		boatnWagon = options.getProperty("boatnWagon", "false").equals("true"); // new
 		villagePort = options.getProperty("villagePort", "false").equals("true"); // new
+		showPclaim = options.getProperty("showPclaim", "false").equals("true"); // new
+		showVclaim = options.getProperty("showVclaim", "false").equals("true"); // new
+		speed = Integer.parseInt(options.getProperty("speed", "100")); // new
 		
 		red = Integer.parseInt(options.getProperty("red_col", "255")); // new
 		green = Integer.parseInt(options.getProperty("green_col", "0")); // new
@@ -839,6 +846,9 @@ public class Config {
 		options.setProperty("animalTags", animalTags?"true":"false"); // new
 		options.setProperty("boatnWagon", boatnWagon?"true":"false"); // new
 		options.setProperty("villagePort", villagePort?"true":"false"); // new
+		options.setProperty("showPclaim", showPclaim?"true":"false"); // new
+		options.setProperty("showVclaim", showVclaim?"true":"false"); // new
+		options.setProperty("speed", String.valueOf(speed)); // new
 		
 		options.setProperty("red_col", String.valueOf(red));
 		options.setProperty("green_col", String.valueOf(green));

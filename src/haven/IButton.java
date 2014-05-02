@@ -47,6 +47,7 @@ public class IButton extends SSWidget {
 	this.up = up;
 	this.down = down;
 	this.hover = hover;
+	firstUpdate();
 	render();
     }
 	
@@ -54,11 +55,14 @@ public class IButton extends SSWidget {
 	this(c, parent, up, down, up);
     }
 	
+	public void firstUpdate(){
+	}
+	
     public void render() {
 	clear();
 	Graphics g = graphics();
 	if(a)
-	    g.drawImage(down, 0, 0, null);
+	g.drawImage(down, 0, 0, null);
 	else if(h)
 	    g.drawImage(hover, 0, 0, null);
 	else

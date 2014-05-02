@@ -19,20 +19,30 @@ public class MinimapPanel extends Window {
 	cbtn.visible = false;
 	{
 	    new IButton(new Coord(-3, -2), this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
-		private boolean v = false;
+		
+		public void firstUpdate(){
+			if(Config.showVclaim) {
+				BufferedImage tmp = down;
+				down = up;
+				up = tmp;
+				hover = tmp;
+			}
+		}
+		
 		public void click() {
 		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
 		    down = up;
 		    up = tmp;
 		    hover = tmp;
-		    if(v) {
+		    if(Config.showVclaim) {
 			mv.disol(2, 3);
-			v = false;
+			Config.showVclaim = false;
 		    } else {
 			mv.enol(2, 3);
-			v = true;
+			Config.showVclaim = true;
 		    }
+			Config.saveOptions();
 		}
 		
 		private Text tooltip = Text.render("Display village claims");
@@ -44,20 +54,30 @@ public class MinimapPanel extends Window {
 	}
 	{
 	    new IButton(new Coord(-3, 4), this, Resource.loadimg("gfx/hud/slen/dispclaim"), Resource.loadimg("gfx/hud/slen/dispclaimd")) {
-		private boolean v = false;
+		//private boolean v = false;
+		public void firstUpdate(){
+			if(Config.showPclaim) {
+				BufferedImage tmp = down;
+				down = up;
+				up = tmp;
+				hover = tmp;
+			}
+		}
+		
 		public void click() {
 		    MapView mv = ui.mainview;
 		    BufferedImage tmp = down;
 		    down = up;
 		    up = tmp;
 		    hover = tmp;
-		    if(v) {
-			mv.disol(0, 1);
-			v = false;
+		    if(Config.showPclaim) {
+				mv.disol(0, 1);
+				Config.showPclaim = false;
 		    } else {
-			mv.enol(0, 1);
-			v = true;
+				mv.enol(0, 1);
+				Config.showPclaim = true;
 		    }
+			Config.saveOptions();
 		}
 		
 		private Text tooltip = Text.render("Display personal claims");

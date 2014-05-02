@@ -119,6 +119,7 @@ public class MenuGrid extends Widget {
 	    }
 	};
 	qwertypadbar = new ToolbarWnd(new Coord(150,300), ui.root, "toolbar4", 14, KeyEvent.VK_Q);
+	ui.spd.setspeed(Config.speed, true);
     }
 	
     private static Comparator<Resource> sorter = new Comparator<Resource>() {
@@ -414,7 +415,7 @@ public class MenuGrid extends Widget {
 	return(true);
     }
 	
-    public void uimsg(String msg, Object... args) {
+    public void uimsg(String msg, Object... args){
 	if(msg == "goto") {
 	    String res = (String)args[0];
 	    if(res.equals(""))
@@ -425,7 +426,7 @@ public class MenuGrid extends Widget {
 	}
     }
 	
-    public boolean globtype(char k, KeyEvent ev) {
+    public boolean globtype(char k, KeyEvent ev){
 	if(ev.isAltDown() || ev.isControlDown()){
 	    return false;
 	}
@@ -542,6 +543,4 @@ public class MenuGrid extends Widget {
 		}
 		return null;
 	}
-	
-	
 }

@@ -487,7 +487,7 @@ public class ToolbarWnd extends Window implements DTarget, DropTarget {
 	int slot = code - key;
 	boolean alt = ev.isAltDown();
 	boolean ctrl = ev.isControlDown();
-	if(key == KeyEvent.VK_Q){
+	if(!alt && !ctrl && key == KeyEvent.VK_Q){
 		slot = keypadNum(code);
 		if(slot != -1){
 			Slot h = layout[slot];

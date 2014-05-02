@@ -82,7 +82,7 @@ public class Speedget extends Widget {
 	}
     }
     
-    public void uimsg(String msg, Object... args) {
+    public void uimsg(String msg, Object... args){
 	if(msg == "cur")
 	    cur = (Integer)args[0];
 	else if(msg == "max"){
@@ -106,10 +106,12 @@ public class Speedget extends Widget {
     }
     
     public void setspeed(int speed, boolean player){
-	wdgmsg("set", speed);
-	if(player){
-	    pspd = speed;
-	}
+		wdgmsg("set", speed);
+		if(player){
+			pspd = speed;
+			Config.speed = speed;
+			Config.saveOptions();
+		}
     }
     
     public boolean mousewheel(Coord c, int amount) {
