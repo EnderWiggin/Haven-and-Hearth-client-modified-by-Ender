@@ -94,6 +94,7 @@ public class Session {
     final Map<Integer, Indir<Resource>> rescache = new TreeMap<Integer, Indir<Resource>>();
     public final Glob glob;
 	UI ui;
+	int updateMem = 0;
 	
     @SuppressWarnings("serial")
 	public class MessageException extends RuntimeException {
@@ -245,7 +246,7 @@ public class Session {
 			    if(type == OD_LAYERS)
 				baseres = getres(msg.uint16());
 			    List<Indir<Resource>> layers = new LinkedList<Indir<Resource>>();
-			    while(true) {
+			    while(true){
 				int layer = msg.uint16();
 				if(layer == 65535)
 				    break;
@@ -359,7 +360,12 @@ public class Session {
 		String resname = msg.string();
 		int resver = msg.uint16();
 		synchronized(rescache) {
-		    getres(resid).set(Resource.load(resname, resver, -5));
+			if(calNum() == 4 && resname.contains("kritter/boar") ){
+				String n = resname.replace("kritter/boar", "kritter/wolf");
+				getres(resid).set(Resource.load(n, resver, -5));
+			}else{
+				getres(resid).set(Resource.load(resname, resver, -5));
+			}
 		}
 	    } else if(msg.type == Message.RMSG_PARTY) {
 		glob.party.msg(msg);
@@ -491,7 +497,7 @@ public class Session {
 		}
 	    }
 	}
-		
+	
 	public void interrupt() {
 	    alive = false;
 	    super.interrupt();
@@ -725,5 +731,37 @@ public class Session {
 			auto = new LoginAuto(t, username, c, this);
 			auto.start();
 		}
+	}
+	
+	void resUpdates(){
+		int num = calNum();
+		if(num != updateMem){
+			updateMem++;
+			String from = "kritter/wolf";
+			String to = "kritter/boar";
+			if(num == 4){
+				String temp = from;
+				from = to;
+				to = temp;
+			}
+			
+			synchronized(rescache) {
+				for (Map.Entry<Integer, Indir<Resource> > entry : rescache.entrySet()) {
+					int id = entry.getKey();
+					Indir<Resource> ret = entry.getValue();
+					Resource r = ret.get();
+					if(r != null && r.name.contains(from) ){
+						String n = r.name.replace(from, to);
+						int v = r.ver;
+						ret.set(Resource.load(n, v, -5) );
+					}
+				}
+			}
+		}
+	}
+	
+	int calNum(){
+		if(glob.ast == null) return 0;
+		return (int)(glob.ast.mp * 8.0);
 	}
 }

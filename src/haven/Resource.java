@@ -137,7 +137,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	this.ver = ver;
 	error = null;
 	loading = true;
-	skiphighlight = name.contains("wald") || name.contains("flavobjs");
+	skiphighlight = name.contains("wald") || name.contains("flavobjs") || name.contains("blood");
 	skiphide = name.contains("door");
 	if(Config.boatnWagon) hitbox = name.contains("boat") || name.contains("wagon");
 	checkhidden();

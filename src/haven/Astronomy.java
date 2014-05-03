@@ -28,7 +28,7 @@ package haven;
 
 
 public class Astronomy {
-    double dt, mp, yt;
+    double dt, mp = 0, yt;
     int hh,mm,day;
     boolean night;
     public static final String[] phase ={"New Moon", 

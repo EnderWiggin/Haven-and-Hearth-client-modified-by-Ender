@@ -73,6 +73,7 @@ public class Cal extends SSWidget {
 	g.drawImage(a.night?nlnd:dlnd, 0, 0, null);
 	update();
 	update = System.currentTimeMillis();
+	ui.sess.resUpdates();
     }
 	
     public Cal(Coord c, Widget parent) {
