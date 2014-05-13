@@ -335,6 +335,8 @@ public class Fightview extends Widget {
 			curava.avagob = relSecond.gobid;
 			curava.color = relSecond.color();
 		}
+		
+		forceDrink();
 	}
 	
 	public void currentDown(){ // new
@@ -349,6 +351,8 @@ public class Fightview extends Widget {
 			curava.avagob = relLast.gobid;
 			curava.color = relLast.color();
 		}
+		
+		forceDrink();
 	}
 	
 	public Relation getRelation(int gobid){ // new
@@ -406,5 +410,17 @@ public class Fightview extends Widget {
 		if(targeter == null) createTargeter();
 		Following flw = targeter.getattr(Following.class);
 		flw.tgt = 1;
+	}
+	
+	void forceDrink(){
+		if(!Config.targetSwapDrink || batk == null) return;
+		
+		Coord flaskCoord = ui.m_util.flaskToCoord(Config.flaskNum);
+		if(flaskCoord != null){
+			int bar = flaskCoord.x;
+			int slot = flaskCoord.y;
+			if(ui.m_util.findFlaskToolbar(bar, slot))
+				ui.m_util.useActionBar(bar, slot);
+		}
 	}
 }

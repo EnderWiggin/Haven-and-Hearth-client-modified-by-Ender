@@ -147,6 +147,7 @@ public class Config {
 	public static boolean objectHealth = false;
 	public static boolean autoTracking = false;
 	public static boolean singleAttack = false;
+	public static boolean targetSwapDrink = false;
 	
 	public static boolean smoothScale = false;
 	public static boolean persistantTiles = false;
@@ -714,6 +715,7 @@ public class Config {
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
 		singleAttack = options.getProperty("singleAttack", "false").equals("true"); // new
+		targetSwapDrink = options.getProperty("targetSwapDrink", "false").equals("true"); // new
 		disableMapSaving = options.getProperty("disableMapSaving", "false").equals("true"); // new
 		animalTags = options.getProperty("animalTags", "false").equals("true"); // new
 		boatnWagon = options.getProperty("boatnWagon", "false").equals("true"); // new
@@ -843,6 +845,7 @@ public class Config {
 		options.setProperty("largeCombatInfo", largeCombatInfo?"true":"false"); // new
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new
 		options.setProperty("autoTracking", autoTracking?"true":"false"); // new
+		options.setProperty("targetSwapDrink", targetSwapDrink?"true":"false"); // new
 		options.setProperty("singleAttack", singleAttack?"true":"false"); // new
 		options.setProperty("disableMapSaving", disableMapSaving?"true":"false"); // new
 		options.setProperty("animalTags", animalTags?"true":"false"); // new

@@ -231,13 +231,6 @@ public class OptWnd extends Window {
 		}
 	    }).a = ui.mnu.qwertypadbar.visible;
 	    
-	    (new CheckBox(new Coord(220, (y+=35)), tab, "Highlight combat skills") {
-		public void changed(boolean val) {
-		    Config.highlightSkills = val;
-		    Config.saveOptions();
-		}
-	    }).a = Config.highlightSkills;
-	    
 	    (new CheckBox(new Coord(220, 375), tab, "Show human gob path") {
 		public void changed(boolean val) {
 		    Config.showgobpath = val;
@@ -251,13 +244,6 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    }).a = Config.showothergobpath;
-		
-		(new CheckBox(new Coord(370, 270), tab, "Single tap attack") { // new
-			public void changed(boolean val) {
-		    Config.singleAttack = val;
-		    Config.saveOptions();
-		}
-	    }).a = Config.singleAttack;
 		
 		(new CheckBox(new Coord(370, 305), tab, "Auto Tracking On Login") { // new
 			public void changed(boolean val) {
@@ -313,44 +299,7 @@ public class OptWnd extends Window {
 			    Config.hearthred = val;
 			    Config.saveOptions();
 			}
-		    }).a = Config.hearthred;
-		
-		new Label(new Coord(370, 240), tab, "Flask Key:");
-		flask = new TextEntry(new Coord(370, 255), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
-			public void setFocus(){
-				hasfocus = false;
-			}
-			
-			public boolean type(char c, KeyEvent ev) {
-				return true;
-			}
-			
-			public boolean keydown(KeyEvent e) {
-				if(hasfocus){
-					int val = e.getExtendedKeyCode();
-					String str = addons.HavenUtil.flaskText(val);
-					if(str != ""){
-						settext(str);
-						
-						Config.flaskNum = val;
-						Config.saveOptions();
-					}else{
-						settext(text);
-					}
-				}
-				//System.out.println(e.getExtendedKeyCode() );
-				hasfocus = false;
-				return true;
-			}
-			
-			public void focus(){
-				String mem = text;
-				tcache = null;
-				hasfocus = true;
-				settext("");
-				text = mem;
-			}
-		};
+		}).a = Config.hearthred;
 		
 	    Widget editbox = new Frame(new Coord(440, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
@@ -740,44 +689,88 @@ public class OptWnd extends Window {
 	    };
 	    chkbox.a = Config.showViewDistance;
 		
-		chkbox = new CheckBox(new Coord(340, 30), tab, "Kin Colored Player Lines") {
-		public void changed(boolean val) {
-		    Config.kinLines = val;
-		    Config.saveOptions();
-		}
-	    };
 	    chkbox.a = Config.kinLines;
-		chkbox = new CheckBox(new Coord(340, 60), tab, "Show Liquid Meters") {
+		chkbox = new CheckBox(new Coord(340, 30), tab, "Show Liquid Meters") {
 		public void changed(boolean val) {
 		    Config.flaskMeters = val;
 		    Config.saveOptions();
 		}
 	    };
 	    chkbox.a = Config.flaskMeters;
-		chkbox = new CheckBox(new Coord(340, 90), tab, "Object Health") {
+		chkbox = new CheckBox(new Coord(340, 60), tab, "Object Health") {
 		public void changed(boolean val) {
 		    Config.objectHealth = val;
 		    Config.saveOptions();
 		}
 	    };
 	    chkbox.a = Config.objectHealth;
+	}
+	
+	{ /* COMBAT OPTIONS TAB */
+	    tab = body.new Tab(new Coord(390, 0), 80, "Combat");
 		
-		new Label(new Coord(330, 150), tab, "Combat Highlights:");
-		chkbox = new CheckBox(new Coord(340, 170), tab, "Combat Cross") {
+		int y = 35;
+		CheckBox chkbox = new CheckBox(new Coord(10, y), tab, "Kin Colored Player Lines") {
+		public void changed(boolean val) {
+		    Config.kinLines = val;
+		    Config.saveOptions();
+		}
+	    };
+		
+		(new CheckBox(new Coord(10, (y+=35)), tab, "Single tap attack") { // new
+			public void changed(boolean val) {
+		    Config.singleAttack = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.singleAttack;
+		
+		(new CheckBox(new Coord(10, (y+=35)), tab, "Highlight combat skills") {
+		public void changed(boolean val) {
+		    Config.highlightSkills = val;
+		    Config.saveOptions();
+		}
+	    }).a = Config.highlightSkills;
+		
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Combat Info") {
+		public void changed(boolean val) {
+		    Config.combatInfo = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.combatInfo;
+		
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Large Combat Info") {
+		public void changed(boolean val) {
+		    Config.largeCombatInfo = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.largeCombatInfo;
+		
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Force Drink on Target Swap") {
+		public void changed(boolean val) {
+		    Config.targetSwapDrink = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.targetSwapDrink;
+		
+		new Label(new Coord(220, 50), tab, "Combat Highlights:");
+		chkbox = new CheckBox(new Coord(220, 70), tab, "Combat Cross") {
 		public void changed(boolean val) {
 		    Config.combatCross = val;
 		    Config.saveOptions();
 		}
 	    };
 	    chkbox.a = Config.combatCross;
-		chkbox = new CheckBox(new Coord(340, 200), tab, "Combat Halo") {
+		chkbox = new CheckBox(new Coord(220, 100), tab, "Combat Halo") {
 		public void changed(boolean val) {
 		    Config.combatHalo = val;
 		    Config.saveOptions();
 		}
 	    };
 	    chkbox.a = Config.combatHalo;
-		chkbox = new CheckBox(new Coord(340, 230), tab, "Combat Sword") {
+		chkbox = new CheckBox(new Coord(220, 130), tab, "Combat Sword") {
 		public void changed(boolean val) {
 		    Config.combatSword = val;
 			
@@ -793,27 +786,42 @@ public class OptWnd extends Window {
 	    };
 	    chkbox.a = Config.combatSword;
 		
-		chkbox = new CheckBox(new Coord(340, 260), tab, "Combat Info") {
-		public void changed(boolean val) {
-		    Config.combatInfo = val;
-		    Config.saveOptions();
-		}
-	    };
-	    chkbox.a = Config.combatInfo;
-		
-		chkbox = new CheckBox(new Coord(340, 290), tab, "Large Combat Info") {
-		public void changed(boolean val) {
-		    Config.largeCombatInfo = val;
-		    Config.saveOptions();
-		}
-	    };
-	    chkbox.a = Config.largeCombatInfo;
-	}
-	
-	{ /* BOT OPTIONS TAB */
-	    tab = body.new Tab(new Coord(390, 0), 80, "Bots");
-		
-		new Label(new Coord(20, 40), tab, "No bots in the Apoc Lite version.");
+		new Label(new Coord(400, 50), tab, "Flask Key:");
+		flask = new TextEntry(new Coord(400, 65), new Coord(50, 20), tab, addons.HavenUtil.flaskText(Config.flaskNum) ){
+			public void setFocus(){
+				hasfocus = false;
+			}
+			
+			public boolean type(char c, KeyEvent ev) {
+				return true;
+			}
+			
+			public boolean keydown(KeyEvent e) {
+				if(hasfocus){
+					int val = e.getExtendedKeyCode();
+					String str = addons.HavenUtil.flaskText(val);
+					if(str != ""){
+						settext(str);
+						
+						Config.flaskNum = val;
+						Config.saveOptions();
+					}else{
+						settext(text);
+					}
+				}
+				//System.out.println(e.getExtendedKeyCode() );
+				hasfocus = false;
+				return true;
+			}
+			
+			public void focus(){
+				String mem = text;
+				tcache = null;
+				hasfocus = true;
+				settext("");
+				text = mem;
+			}
+		};
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
