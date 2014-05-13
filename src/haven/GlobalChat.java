@@ -78,6 +78,7 @@ public class GlobalChat implements IRCEventListener
     }
     
     public void close(String quitMessage){
+	if(ircjce == null || ircjce.getSession() == null) return;
 	ircjce.getSession().close(quitMessage);
 	chhw = null;
 	ircjce = null;
