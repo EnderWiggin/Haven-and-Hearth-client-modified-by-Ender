@@ -365,6 +365,11 @@ public class UI {
     public void mousewheel(MouseEvent ev, Coord c, int amount) {
 	setmods(ev);
 	lcc = mc = c;
+	if(fight != null && modflags() == 1){
+		if(amount < 0) fight.currentUp();
+		else fight.currentDown();
+		return;
+	}
 	//if(mousegrab == null)  // new
 	    root.mousewheel(c, amount);
 	//else // new
