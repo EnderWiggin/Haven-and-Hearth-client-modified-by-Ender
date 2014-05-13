@@ -200,6 +200,8 @@ public class FlowerMenu extends Widget {
     public boolean mousedown(Coord c, int button) {
 	if(anim != null)
 	    return(true);
+	if(ui.modflags() == 1 && !super.mousedown(c, button) && button == 3)
+	    wdgmsg("cl", 0);
 	if(!super.mousedown(c, button))
 	    wdgmsg("cl", -1);
 	return(true);
