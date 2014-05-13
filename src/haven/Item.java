@@ -383,11 +383,13 @@ public class Item extends Widget implements DTarget {
     private void calcFEP() {
 	Map<String, Float> fep;
 	String name = name();
+	double weapon = 1;
 	if(name == null){return;}
 	if(name.equals("Ring of Brodgar")){
 	    if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Baking)";}
 	    if(res.get().name.equals("gfx/invobjs/feast-rob")){name = "Ring of Brodgar (Seafood)";}
 	}
+	
 	name = name.toLowerCase();
 	boolean isItem = false;
 	if((fep = Config.FEPMap.get(name)) != null){
@@ -396,8 +398,20 @@ public class Item extends Widget implements DTarget {
 	    }
 	    FEP = "\n";
 	    for(String key:fep.keySet()){
-		float val = (float) (fep.get(key)*qmult);
+		double k = fep.get(key);
+		float val = (float)(k*qmult);
 		if(key.equals("isItem")){continue;}
+		
+		if(name.contains("sword") || name.contains("axe")){
+			int str = ui.sess.glob.cattr.get("str").comp;
+			double marsh = 1 + (((double)ui.sess.glob.cattr.get("martial").comp * 4) / 100);
+			weapon = Math.sqrt(Math.sqrt((double)q * (double)str)/10) * marsh;
+			val = (float)(weapon * k);
+		}else if(name.contains("bow") || name.contains("sling")){
+			double marsh = 1 + (((double)ui.sess.glob.cattr.get("martial").comp * 4) / 100);
+			val = (float)(marsh * val);
+		}
+		
 		if(isItem){
 		    val = (float) Math.floor(val);
 		    FEP += String.format("%s:%.0f ", key, val);
