@@ -164,7 +164,6 @@ public class MCache {
 		    Color col = colors.get(id);
 		    if(col == null){
 			col = new Color(255, 0, 255);
-			//System.out.println(id);
 		    }
 		    g.setColor(col);
 		    g.fillRect(c.x, c.y, 1, 1);
@@ -330,7 +329,7 @@ public class MCache {
 	}
 	return(g.tcache[gtc.x][gtc.y]);
     }
-
+	
     public Tile getground(Coord tc) {
 	Grid g;
 	synchronized(grids) {

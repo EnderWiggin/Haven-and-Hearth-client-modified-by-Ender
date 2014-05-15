@@ -1,12 +1,20 @@
 package haven;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
-import java.net.URL;
+import java.net.MalformedURLException;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.DataLine;
 
 public class Sound{
-	private AudioClip m_clip;
+	Clip m_clip;
+    
+	//private AudioClip m_clip;
 	public static HashSet<Integer> soundSet = new HashSet<Integer>();
 	public static HashSet<Integer> deathSet = new HashSet<Integer>();
 	
@@ -95,20 +103,45 @@ public class Sound{
 	}
 	
 	public Sound(String fileName){
-		try{
+		/*try{
 			URL url = new URL("file:"+fileName);
 			m_clip = Applet.newAudioClip(url);
 			//System.out.println(fileName);
 		}catch(Exception e){
 			System.out.println("Clip loading error.");
-		}
+		}*/
+		try {
+			File file = new File(fileName);
+			if (file.exists()) {
+				m_clip = AudioSystem.getClip();
+				AudioInputStream ais = AudioSystem.getAudioInputStream(file.toURI().toURL());
+				m_clip.open(ais);
+			} else {
+				m_clip = null;
+				//throw new RuntimeException("Sound: file not found: " + fileName);
+			}
+		}catch(Exception e){}
+	}
+	
+	void volume(){
+		FloatControl gainControl = (FloatControl) m_clip.getControl(FloatControl.Type.MASTER_GAIN);
+		double gain = (double)Config.alertVol / 100;
+		float dB = (float) (Math.log(gain) / Math.log(10.0) * 20.0);
+		
+		gainControl.setValue(dB);
 	}
 	
 	public void play(){
 		try{
 			new Thread(){
 				public void run(){
-					m_clip.play();
+					//m_clip.setVolume((double)(Config.sfxvol / 100));
+					//m_clip.play();
+					if(m_clip == null) return;
+					volume();
+					m_clip.setFramePosition(0);
+					m_clip.loop(0);
+					m_clip.start();
 				}
 			}.start();
 		}catch(Exception ec){

@@ -443,50 +443,67 @@ public class OptWnd extends Window {
 	{ /* AUDIO TAB */
 	    tab = body.new Tab(new Coord(140, 0), 60, "Audio");
 
-	    new Label(new Coord(10, 40), tab, "Sound volume:");
-	    new Frame(new Coord(10, 65), new Coord(20, 206), tab);
-	    new Label(new Coord(210, 40), tab, "Music volume:");
-	    new Frame(new Coord(210, 65), new Coord(20, 206), tab);
-	    final Label sfxvol = new Label(new Coord(35, 69 + (int)(Config.sfxVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
-	    final Label musicvol = new Label(new Coord(235, 69 + (int)(Config.musicVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
-	    (new Scrollbar(new Coord(25, 70), 196, tab, 0, 100) {{ val = 100 - Config.sfxVol; }
+		new Label(new Coord(10, 40), tab, "Sound volume:");
+		new Frame(new Coord(10, 65), new Coord(20, 206), tab);
+		new Label(new Coord(135, 40), tab, "Music volume:");
+		new Frame(new Coord(135, 65), new Coord(20, 206), tab);
+		new Label(new Coord(260, 40), tab, "Alert volume:");
+		new Frame(new Coord(260, 65), new Coord(20, 206), tab);
+		final Label sfxvol = new Label(new Coord(35, 69 + (int)(Config.sfxVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
+		final Label musicvol = new Label(new Coord(160, 69 + (int)(Config.musicVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
+		final Label alertVol = new Label(new Coord(285, 69 + (int)(Config.alertVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
+		(new Scrollbar(new Coord(25, 70), 196, tab, 0, 100) {{ val = 100 - Config.sfxVol; }
 		public void changed() {
-		    //Audio.setvolume((100 - val) / 100.0);
-		    Config.sfxVol = 100 - val;
-		    sfxvol.c.y = 69 + (int) (val * 1.86);
-		    sfxvol.settext(String.valueOf(100 - val) + " %");
-		    Config.saveOptions();
+			//Audio.setvolume((100 - val) / 100.0);
+			Config.sfxVol = 100 - val;
+			sfxvol.c.y = 69 + (int) (val * 1.86);
+			sfxvol.settext(String.valueOf(100 - val) + " %");
+			Config.saveOptions();
 		}
 		public boolean mousewheel(Coord c, int amount) {
-		    val = Utils.clip(val + amount, min, max);
-		    changed();
-		    return (true);
+			val = Utils.clip(val + amount, min, max);
+			changed();
+			return (true);
 		}
-	    }).changed();
-	    (new Scrollbar(new Coord(225, 70), 196, tab, 0, 100) {{ val = 100 - Config.musicVol; }
+		}).changed();
+		(new Scrollbar(new Coord(150, 70), 196, tab, 0, 100) {{ val = 100 - Config.musicVol; }
 		public void changed() {
-		    //Audio.setvolume((100 - val) / 100.0);
-		    Config.musicVol = 100 - val;
-		    Music.setVolume(Config.getMusicVolume());
-		    musicvol.c.y = 69 + (int) (val * 1.86);
-		    musicvol.settext(String.valueOf(100 - val) + " %");
-		    Config.saveOptions();
+			//Audio.setvolume((100 - val) / 100.0);
+			Config.musicVol = 100 - val;
+			Music.setVolume(Config.getMusicVolume());
+			musicvol.c.y = 69 + (int) (val * 1.86);
+			musicvol.settext(String.valueOf(100 - val) + " %");
+			Config.saveOptions();
 		}
 		public boolean mousewheel(Coord c, int amount) {
-		    val = Utils.clip(val + amount, min, max);
-		    changed();
-		    return (true);
+			val = Utils.clip(val + amount, min, max);
+			changed();
+			return (true);
 		}
-	    }).changed();
-	    (new CheckBox(new Coord(10, 270), tab, "Sound enabled") {
+		}).changed();
+		(new Scrollbar(new Coord(275, 70), 196, tab, 0, 100) {{ val = 100 - Config.alertVol; }
+		public void changed() {
+			//Audio.setvolume((100 - val) / 100.0);
+			Config.alertVol = 100 - val;
+			Music.setVolume(Config.getMusicVolume());
+			alertVol.c.y = 69 + (int) (val * 1.86);
+			alertVol.settext(String.valueOf(100 - val) + " %");
+			Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+			val = Utils.clip(val + amount, min, max);
+			changed();
+			return (true);
+		}
+		}).changed();
+		(new CheckBox(new Coord(10, 270), tab, "Sound enabled") {
 		public void changed(boolean val) {
-		    Config.isSoundOn = val;
+			Config.isSoundOn = val;
 		}}).a = Config.isSoundOn;
-		
-	    (new CheckBox(new Coord(210, 270), tab, "Music enabled") {
+		(new CheckBox(new Coord(135, 270), tab, "Music enabled") {
 		public void changed(boolean val) {
-		    Config.isMusicOn = val;
-		    Music.setVolume(Config.getMusicVolume());
+			Config.isMusicOn = val;
+			Music.setVolume(Config.getMusicVolume());
 		}}).a = Config.isMusicOn;
 		
 		String[][] checkboxesList = {

@@ -95,6 +95,7 @@ public class Config {
     public static Properties options, window_props, sounds;
     public static int sfxVol;
     public static int musicVol;
+	public static int alertVol;
     public static boolean isMusicOn = false;
     public static boolean isSoundOn = false;
     public static boolean showRadius = false;
@@ -692,6 +693,7 @@ public class Config {
         showViewDistance = options.getProperty("showViewDistance", "false").equals("true");
         sfxVol = Integer.parseInt(options.getProperty("sfx_vol", "100"));
         musicVol = Integer.parseInt(options.getProperty("music_vol", "100"));
+		alertVol = Integer.parseInt(options.getProperty("alert_vol", "100"));
         currentVersion = options.getProperty("version", "");
         autohearth = options.getProperty("autohearth", "false").equals("true");
         hearthunknown = options.getProperty("hearthunknown", "false").equals("true");
@@ -804,6 +806,7 @@ public class Config {
         options.setProperty("use_smileys", use_smileys?"true":"false");
         options.setProperty("sfx_vol", String.valueOf(sfxVol));
         options.setProperty("music_vol", String.valueOf(musicVol));
+		options.setProperty("alert_vol", String.valueOf(alertVol));
         options.setProperty("music_on", isMusicOn?"true":"false");
         options.setProperty("sound_on", isSoundOn?"true":"false");
         options.setProperty("show_direction", showDirection?"true":"false");

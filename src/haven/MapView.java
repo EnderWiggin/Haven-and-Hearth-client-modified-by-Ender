@@ -882,11 +882,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	
     private void drawtile(GOut g, Coord tc, Coord sc) {
 	Tile t;
-		
 	try {
-	    t = getground(tc);
-	    //t = gettile(tc).ground.pick(0);
-	    g.image(t.tex(), sc);
+		t = getground(tc);
+		//t = gettile(tc).ground.pick(0);
+		g.image(t.tex(), sc);
 	    //g.setColor(FlowerMenu.pink);
 	    //Utils.drawtext(g, Integer.toString(t.i), sc);
 		if(!Config.edgedTiles){ // new
