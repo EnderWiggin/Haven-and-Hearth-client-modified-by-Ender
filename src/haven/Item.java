@@ -455,13 +455,17 @@ public class Item extends Widget implements DTarget {
 	name = name.toLowerCase();
 	CurioInfo curio;
 	if((curio = Config.curios.get(name)) != null){
+		if(GetResName().contains("goldegg")) qmult = 1;
 	    int LP = (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
-	    int time = curio.time*(100 - meter - 1)/100;
+	    int time = (int)(curio.time*(100 - meter)/100);
 	    int h = time/60;
 	    int m = time%60;
 		int LPM = (int)( (double)LP / (double)(curio.time) );
 		int LPH = (int)( (double)LPM * (double)(60) );
-	    curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm\nLPH: %d", LP,curio.weight,h,m,LPH);
+		if(LP != 0)
+			curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm\nLPH: %d", LP,curio.weight,h,m,LPH);
+		else
+			curioStr = String.format("\nPrep time: %dh %2dm",h,m);
 	    shorttip = longtip = null;
 	}
     }

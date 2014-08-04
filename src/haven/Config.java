@@ -513,7 +513,7 @@ public class Config {
 		String [] tmp = strLine.split(":");
 		String name = tmp[0].toLowerCase();
 		curio.LP = Integer.parseInt(tmp[1]);
-		curio.time = (int) (60*Float.parseFloat(tmp[2]));
+		curio.time = (int) (Float.parseFloat(tmp[2]));
 		curio.weight = Integer.parseInt(tmp[3]);
 		curios.put(name, curio);
 	    }
