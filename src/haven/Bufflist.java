@@ -36,6 +36,9 @@ public class Bufflist extends Widget {
     static final Coord ametersz = new Coord(30, 2);
     static final int margin = 2;
     static final int num = 5;
+	private boolean teaLogoffski = false;
+	private int teaColorCount = 0;
+	private int logoffCounter = 0;
     
     static {
         Widget.addtype("buffs", new WidgetFactory() {
@@ -70,6 +73,23 @@ public class Bufflist extends Widget {
 		}
 		if(b.res.get() != null) {
 		    Tex img = b.res.get().layer(Resource.imgc).tex();
+			if(teaLogoffski && b.res.get().name.equals("gfx/hud/buffs/tea") ){
+				teaColorCount += 20;
+				if(teaColorCount > 255) teaColorCount = -255;
+				int val = 255 - Math.abs(teaColorCount);
+				g.chcolor(255, val, val, 255);
+				
+				if(b.ameter == 100){
+					if(logoffCounter % 10 == 0) ui.m_util.sendSlenMessage("100% Tea buff reached. Logging off in " + (60 - (logoffCounter/10) ));
+					logoffCounter++;
+					if(logoffCounter > 599){
+						teaLogoffski = false;
+						ui.sess.close();
+					}
+				}
+			}else{
+				g.chcolor();
+			}
 		    g.image(img, bc.add(imgoff));
 		    if(b.nmeter >= 0) {
 			Tex ntext = b.nmeter();
@@ -137,5 +157,29 @@ public class Bufflist extends Widget {
 	    }
 	}
 	return(null);
+    }
+	
+	public boolean mousedown(Coord c, int button) {
+	if(button != 3)
+	    return(false);
+	int i = 0;
+	int w = frame.sz().x + margin;
+	synchronized(ui.sess.glob.buffs) {
+	    for(Buff b : ui.sess.glob.buffs.values()) {
+		if(!b.major)
+		    continue;
+		Coord bc = new Coord(i * w, 0);
+		if(c.isect(bc, frame.sz())) {
+		    Resource res = b.res.get();
+			if(res != null && res.name.equals("gfx/hud/buffs/tea") ){
+				logoffCounter = 0;
+				teaLogoffski = !teaLogoffski;
+			}
+		}
+		if(++i >= 5)
+		    break;
+	    }
+	}
+	return(true);
     }
 }
