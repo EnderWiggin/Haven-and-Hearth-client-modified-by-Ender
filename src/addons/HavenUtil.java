@@ -179,6 +179,11 @@ public class HavenUtil{
 		
 	}
 	
+	public void dropItemOnGround(Item item){
+		if(item == null) return;
+		item.wdgmsg("drop", new Object[]{Coord.z});
+	}
+	
 	public void pickUpItem(Item i){
 		if(i == null){
 			return;
@@ -238,7 +243,7 @@ public class HavenUtil{
 		return 0;
 	}
 	
-	boolean findFlaskToolbar(int bar, int slot){
+	public boolean findFlaskToolbar(int bar, int slot){
 		String quickname = "empty";
 		ToolbarWnd barPad = null;
 		
@@ -440,15 +445,35 @@ public class HavenUtil{
 	}
 	
 	boolean checkBuff(String name){
+		if(ui.mainview == null){
+			return false;
+		}
+		if(ui.mainview.glob == null){
+			return false;
+		}
+		
 		synchronized (ui.mainview.glob.buffs) {
 			for(Buff b : ui.mainview.glob.buffs.values()) {
-				if(b.res.get().name.contains(name)){
+				Indir<Resource> ir = b.res;
+				if(getResName(b.res).contains(name)){
 					return true;
 				}
 			}
 		}
 		
 		return false;
+	}
+	
+	String getResName(Indir<Resource> indir){
+		if(indir.get() != null) {
+			return indir.get().name;
+		}else{
+			int count = 0;
+			while(indir.get() == null && count < 1000){wait(50); count++;}
+			
+			if(indir.get() != null) return indir.get().name;
+		}
+		return "";
 	}
 	
 	void toggleTracking(){
@@ -524,5 +549,9 @@ public class HavenUtil{
 	public void sendAcction(String str1, String str2){
 		String[] action = {str1, str2};
 		ui.mnu.wdgmsg("act", (Object[])action);
+	}
+	
+	public boolean flowerMenuReady(){
+		return ui.flowerMenu != null;
 	}
 }

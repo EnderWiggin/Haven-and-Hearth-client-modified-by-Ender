@@ -361,24 +361,7 @@ public class Item extends Widget implements DTarget {
 	qmult = Math.sqrt((float)q/10);
 	calcFEP();
 	calcCurio();
-	pearlSound(res);
     }
-	
-	void pearlSound(Indir<Resource> res){
-		if(parent instanceof Inventory){
-			try{
-				if(!res.get().name.equals("gfx/invobjs/pearl") ) return;
-				
-				if(((Window)parent.parent).cap.text.equals("Inventory")){
-					if(addons.HavenUtil.instance.hasHourglass()){
-						if(Sound.soundCheck(id) ){
-							Sound.safePlay("pearl");
-						}
-					}
-				}
-			}catch(Exception e){}
-		}
-	}
 	
     private void calcFEP() {
 	Map<String, Float> fep;
@@ -561,49 +544,49 @@ public class Item extends Widget implements DTarget {
 	}
 	
     public boolean mousedown(Coord c, int button) {
-	if(button == 3 && ui.modflags() == 4){ // new
-		sortedSkoop();
-		return(true);
-	}
-	
-	if(!dm) {
-	    if(button == 1) {
-		if(ui.modshift)
-		    if(ui.modmeta)
-			wdgmsg("transfer-same", name(), false);
-		    else
-			wdgmsg("transfer", c);
-		else if(ui.modctrl)
-		    if(ui.modmeta)
-			wdgmsg("drop-same", name(), false);
-		    else
-			wdgmsg("drop", c);
-		else
-		    wdgmsg("take", c);
-		return(true);
-	    } else if(button == 3) {
-		if(ui.modmeta){
-		    if(ui.modshift){
-			wdgmsg("transfer-same", name(), true);
-		    } else if(ui.modctrl){
-			wdgmsg("drop-same", name(), true);
-		    }
-		} else {
-		    wdgmsg("iact", c);
+		if(button == 3 && ui.modflags() == 4){ // new
+			sortedSkoop();
+			return(true);
 		}
-		return(true);
-	    }
-	} else {
-	    if(button == 1) {
-		dropon(parent, c.add(this.c));
-	    } else if(button == 3) {
-		interact(parent, c.add(this.c));
-	    }
-	    return(true);
-	}
-	return(false);
+		
+		if(!dm) {
+			if(button == 1) {
+			if(ui.modshift)
+				if(ui.modmeta)
+				wdgmsg("transfer-same", name(), false);
+				else
+				wdgmsg("transfer", c);
+			else if(ui.modctrl)
+				if(ui.modmeta)
+				wdgmsg("drop-same", name(), false);
+				else
+				wdgmsg("drop", c);
+			else
+				wdgmsg("take", c);
+			return(true);
+			} else if(button == 3) {
+			if(ui.modmeta){
+				if(ui.modshift){
+				wdgmsg("transfer-same", name(), true);
+				} else if(ui.modctrl){
+				wdgmsg("drop-same", name(), true);
+				}
+			} else {
+				wdgmsg("iact", c);
+			}
+			return(true);
+			}
+		} else {
+			if(button == 1) {
+			dropon(parent, c.add(this.c));
+			} else if(button == 3) {
+			interact(parent, c.add(this.c));
+			}
+			return(true);
+		}
+		return(false);
     }
-
+	
     public void mousemove(Coord c) {
 	if(dm)
 	    this.c = this.c.add(c.add(doff.inv()));
@@ -617,4 +600,28 @@ public class Item extends Widget implements DTarget {
 	wdgmsg("itemact", ui.modflags());
 	return(true);
     }
+	
+	public void binded(){
+		itemAction(res);
+	}
+	
+	void itemAction(Indir<Resource> res){
+		if(parent instanceof Inventory){
+			try{
+				String resname = res.get().name;
+				
+				if(((Window)parent.parent).cap.text.equals("Inventory")){
+					if(addons.HavenUtil.instance.hasHourglass()){
+						if(resname.equals("gfx/invobjs/pearl") && Sound.soundCheck(id) ){
+							Sound.safePlay("pearl");
+						}
+					}
+					
+					if(Config.minerSafety && Config.miningDrop && (resname.contains("ore-iron") || resname.contains("petrifiedseashell") || resname.contains("catgold")) ){
+						wdgmsg("drop", Coord.z);
+					}
+				}
+			}catch(Exception e){}
+		}
+	}
 }

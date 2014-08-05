@@ -138,10 +138,12 @@ public class Config {
 	
 	public static boolean runFlaskRunning = false;
 	public static boolean runFlask = true;
+	public static boolean flaskFillOnly = false;
 	public static boolean forcemod = false;
 	public static boolean pathDrinker = false;
 	public static boolean runFlaskSuppression = false;
 	public static boolean minerSafety = false;
+	public static boolean miningDrop = false;
 	public static int flaskNum = 113;
 	public static boolean kinLines = false;
 	public static boolean flaskMeters = false;
@@ -707,6 +709,8 @@ public class Config {
 		flaskNum = Integer.parseInt(options.getProperty("flaskNum", "100"));
 		hide = options.getProperty("hide", "false").equals("true"); // new
 		nightvision = options.getProperty("nightvision", "false").equals("true"); // new
+		flaskFillOnly = options.getProperty("flaskFillOnly", "false").equals("true"); // new
+		miningDrop = options.getProperty("miningDrop", "false").equals("true"); // new
 		kinLines = options.getProperty("kinLines", "false").equals("true"); // new
 		flaskMeters = options.getProperty("flaskMeters", "false").equals("true"); // new
 		combatCross = options.getProperty("combatCross", "false").equals("true"); // new
@@ -839,6 +843,8 @@ public class Config {
 		options.setProperty("flaskNum", String.valueOf(flaskNum)); // new
 		options.setProperty("hide", hide?"true":"false"); // new
 		options.setProperty("nightvision", nightvision?"true":"false"); // new
+		options.setProperty("flaskFillOnly", flaskFillOnly?"true":"false"); // new
+		options.setProperty("miningDrop", miningDrop?"true":"false"); // new
 		options.setProperty("kinLines", kinLines?"true":"false"); // new
 		options.setProperty("flaskMeters", flaskMeters?"true":"false"); // new
 		options.setProperty("combatCross", combatCross?"true":"false"); // new

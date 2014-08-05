@@ -63,6 +63,8 @@ public class UI {
 	public HavenUtil m_util;
 	public Fightview fight;
 	
+	public FlowerMenu flowerMenu = null;
+	
     public interface Receiver {
 	public void rcvmsg(int widget, String msg, Object... args);
     }
@@ -184,6 +186,7 @@ public class UI {
 	    wdg.binded();
 	    if(wdg instanceof MapView)
 		mainview = (MapView)wdg;
+		createWidget(wdg);
 	}
     }
 	
@@ -205,9 +208,20 @@ public class UI {
 	keygrab = wdg;
     }
 	
+	private void createWidget(Widget wdg){
+		if ((wdg instanceof FlowerMenu))
+			flowerMenu = (FlowerMenu)wdg;
+	}
+	
+	private void destroyWidget(Widget wdg){
+		if ((wdg instanceof FlowerMenu))
+			flowerMenu = null;
+	}
+	
     private void removeid(Widget wdg) {
 	if(rwidgets.containsKey(wdg)) {
 	    int id = rwidgets.get(wdg);
+		destroyWidget(wdg);
 	    widgets.remove(id);
 	    rwidgets.remove(wdg);
 	}

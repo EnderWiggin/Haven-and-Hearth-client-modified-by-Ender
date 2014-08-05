@@ -59,15 +59,16 @@ public class RunFlaskScript extends Thread{
 				}
 			}
 			
-			if(m_util.checkPlayerWalking() && m_util.findFlaskToolbar(bar, slot) && Config.runFlask){
+			if(m_util.findFlaskToolbar(bar, slot) && Config.runFlask){
 				if(fillFlasks()) count = 3;
 				
-				if(!m_util.hasHourglass() && m_util.getStamina() < 80 && count > 2){
+				if(!Config.flaskFillOnly && m_util.checkPlayerWalking() && !m_util.hasHourglass() && m_util.getStamina() < 80 && count > 2){
 					Config.forcemod = false;
 					m_util.useActionBar(bar, slot);
 					count = 0;
-				}else
+				}else{
 					count++;
+				}
 			}
 		}
 	}
@@ -90,7 +91,7 @@ public class RunFlaskScript extends Thread{
 			}
 		}
 		
-		if(flaskList.size() > 0 && !m_filling){
+		if(flaskList.size() > 0 && !m_filling && !m_util.flowerMenuReady()){
 			m_filling = true;
 			fillFlaskList(flaskList);
 			m_filling = false;

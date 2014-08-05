@@ -840,6 +840,26 @@ public class OptWnd extends Window {
 			}
 		};
 	}
+	
+	{ /* ADDONS OPTIONS TAB */
+	    tab = body.new Tab(new Coord(480, 0), 60, "Addons");
+		
+		int y = 35;
+		CheckBox chkbox = new CheckBox(new Coord(10, y), tab, "Drop items when mining") {
+		public void changed(boolean val) {
+		    Config.miningDrop = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.miningDrop;
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Only auto fill flask (auto drink)") {
+		public void changed(boolean val) {
+		    Config.flaskFillOnly = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.flaskFillOnly;
+	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);
 	String last = Utils.getpref("optwndtab", "");

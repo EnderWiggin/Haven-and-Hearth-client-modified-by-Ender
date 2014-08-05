@@ -123,24 +123,24 @@ public class Inventory extends Widget implements DTarget {
     }
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if(checkTrashButton(sender)) {
-	    if(wait.get()){return;}
-	    wait.set(true);
-	    new ConfirmWnd(parent.c.add(c).add(trash.c), ui.root, getmsg(), new ConfirmWnd.Callback() {
-		public void result(Boolean res) {
-		    wait.set(false);
-		    if(res){
-			empty();
-		    }
+		if(checkTrashButton(sender)) {
+			if(wait.get()){return;}
+			wait.set(true);
+			new ConfirmWnd(parent.c.add(c).add(trash.c), ui.root, getmsg(), new ConfirmWnd.Callback() {
+			public void result(Boolean res) {
+				wait.set(false);
+				if(res){
+				empty();
+				}
+			}
+			});
+		} else if(msg.equals("transfer-same")){
+			process(getSame((String) args[0], (Boolean) args[1]), "transfer");
+		} else if(msg.equals("drop-same")){
+			process(getSame((String) args[0], (Boolean) args[1]), "drop");
+		} else {
+			super.wdgmsg(sender, msg, args);
 		}
-	    });
-	} else if(msg.equals("transfer-same")){
-	    process(getSame((String) args[0], (Boolean) args[1]), "transfer");
-	} else if(msg.equals("drop-same")){
-	    process(getSame((String) args[0], (Boolean) args[1]), "drop");
-	} else {
-	    super.wdgmsg(sender, msg, args);
-	}
     }
     
     private void process(List<Item> items, String action) {
