@@ -398,4 +398,16 @@ public class Gob implements Sprite.Owner {
 		}
 		msg.off = off;
 	}
+	
+	public byte GetBlob(int index){
+		Drawable d = (Drawable)getattr(Drawable.class);
+		ResDrawable dw = (ResDrawable)getattr(ResDrawable.class);
+		
+		if ((dw != null) && (d != null)){
+			if ((index < dw.sdt.blob.length) && (index >= 0))
+			return dw.sdt.blob[index];
+		}
+		
+		return 0;
+	}
 }

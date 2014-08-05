@@ -5,6 +5,10 @@ import haven.*;
 public class MainScript{
 	public static boolean stop = false;
 	public static boolean cleanupRunning = false;
+	public static boolean landscapeRunning = false;
+	public static Coord m_c1;
+	public static Coord m_c2;
+	public static int m_alType;
 	
 	public static void flaskScript(){
 		if(!Config.runFlaskRunning){
@@ -64,8 +68,21 @@ public class MainScript{
 		}
 	}
 	
+	public static void autoLand(){
+		if(!landscapeRunning){
+			
+			AutoLandscape al = new AutoLandscape(UI.instance.m_util, m_c1, m_c2, m_alType);
+			
+			if(al != null){
+				stop = false;
+				landscapeRunning = true;
+				al.start();
+			}
+		}
+	}
+	
 	public static void stop(int button){
-		if(button == 1){
+		if(button == 1 || button == 3){
 			stop = true;
 		}
 	}

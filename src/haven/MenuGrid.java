@@ -296,6 +296,8 @@ public class MenuGrid extends Widget {
 				if(ad[i].contains("atk") ){
 					if(!Config.singleAttack && doubleTapAttack(ad)) return;
 					if(Config.singleAttack && singleTapAttack(ad) ) return;
+				}if(ui.modflags() == 1 && autoLandscape(landscape(ad[i]) ) ){
+					return;
 				}
 			}
 			
@@ -542,5 +544,29 @@ public class MenuGrid extends Widget {
 			}
 		}
 		return null;
+	}
+	
+	int landscape(String name){
+		if(name.equals("harvest") ){
+			return 1;
+		}else if(name.equals("stone") ){
+			return 2;
+		}else if(name.equals("grass") ){
+			return 3;
+		}else if(name.equals("dirt") ){
+			return 4;
+		}
+		
+		return 0;
+	}
+	
+	boolean autoLandscape(int type){
+		if(type == 0){
+			return false;
+		}
+		addons.MainScript.m_alType = type;
+		Config.autoLand = true;
+		
+		return true;
 	}
 }

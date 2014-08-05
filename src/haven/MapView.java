@@ -60,7 +60,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     private int olflash = 0;
     Grabber grab = null;
     ILM mask;
-    final MCache map;
+    public final MCache map;
     public final Glob glob;
     Collection<Gob> plob = null;
     boolean plontile;
@@ -92,6 +92,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	static Color goldenText = new Color(179, 162, 104, 255); // new
 	static Color offcol = new Color(255, 0, 0, 128), defcol = new Color(0, 0, 255, 128);
 	static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 10));
+	boolean drawSelection = false;
 	
     public double getScale() {
         return Config.zoom?_scale:1;
@@ -632,6 +633,17 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Gob hit = gobatpos(c);
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
+	
+	if(Config.autoLand && button == 1){
+		addons.MainScript.m_c1 = mc;
+		drawSelection = true;
+		return(true);
+	}else if(Config.autoLand && button == 3){
+		Config.autoLand = false;
+		drawSelection = false;
+		return(true);
+	}
+	
 	if(grab != null) {
 	    try{
 		grab.mmousedown(mc, button);
@@ -677,6 +689,15 @@ public class MapView extends Widget implements DTarget, Console.Directory {
     public boolean mouseup(Coord c, int button) {
 	c = new Coord((int)(c.x/getScale()), (int)(c.y/getScale()));
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
+	
+	if(Config.autoLand && button == 1){
+		addons.MainScript.m_c2 = mc;
+		addons.MainScript.autoLand();
+		drawSelection = false;
+		Config.autoLand = false;
+		return(true);
+	}
+	
 	if(grab != null) {
 	    try {
 		grab.mmouseup(mc, button);
@@ -696,6 +717,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Coord mc = s2m(c.add(viewoffset(sz, this.mc).inv()));
 	this.mousepos = mc;
 	Gob hit = gobAtMouse = gobatpos(c);
+	
+	if(Config.autoLand){
+		return;
+	}
+	
 	if(hit == null){
 	    tip = null;
 	    tips = null;
@@ -1571,7 +1597,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		drawPlayerPath(g);
 	    }
 	    //###############
-	    
+		if(drawSelection){
+			drawMyBox(g);
+		}
 	    drawarrows(g);
 	    g.chcolor(Color.WHITE);
 	    if(Config.dbtext)
@@ -1624,6 +1652,48 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    g.chcolor();
 	}
     }
+	
+	private void drawMyBox(GOut g){
+		Coord oc = viewoffset(sz, mc);
+		g.chcolor(255, 0, 64, 256);
+		
+		Coord p1 = addons.MainScript.m_c1;
+		Coord p2 = this.mousepos;
+		
+		int smallestX = p1.x;
+		int largestX = p2.x;
+		if(p2.x < p1.x){
+			smallestX = p2.x;
+			largestX = p1.x;
+		}
+		int smallestY = p1.y;
+		int largestY = p2.y;
+		if(p2.y < p1.y){
+			smallestY = p2.y;
+			largestY = p1.y;
+		}
+		
+		Coord d1 = new Coord(smallestX, smallestY);
+		Coord d2 = new Coord(largestX, largestY);
+		
+		Coord c1 = d1.div(11).mul(11);
+		Coord c2 = d2.div(11).mul(11).add(10,10);
+		
+		g.line(m2s(c1).add(oc), m2s(new Coord(c1.x, c2.y)).add(oc),2);
+		g.line(m2s(c1).add(oc), m2s(new Coord(c2.x, c1.y)).add(oc),2);
+		g.line(m2s(c2).add(oc), m2s(new Coord(c1.x, c2.y)).add(oc),2);
+		g.line(m2s(c2).add(oc), m2s(new Coord(c2.x, c1.y)).add(oc),2);
+		
+		g.chcolor(0, 255, 0, 64);
+		
+		g.frect(m2s(c1).add(oc),
+			m2s(new Coord(c2.x, c1.y)).add(oc),
+			m2s(c2).add(oc),
+			m2s(new Coord(c1.x, c2.y)).add(oc));
+		
+		g.chcolor();
+		
+	}
 
     private void drawGobPath(GOut g) {
 	Moving m;

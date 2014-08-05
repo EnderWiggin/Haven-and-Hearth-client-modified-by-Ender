@@ -107,7 +107,7 @@ public class LoginAuto extends Thread {
 				for(Widget wdg = wd.child; wdg != null; wdg = wdg.next) {
 					if(wdg instanceof Button){
 						//System.out.println( ((Button)wdg).text.text );
-						if(((Button)wdg).text.text.contains(type) ){
+						if(((Button)wdg).text != null && ((Button)wdg).text.text != null && ((Button)wdg).text.text.contains(type) ){
 							((Button)wdg).wdgmsg("activate");
 							return true;
 						}

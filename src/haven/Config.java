@@ -173,6 +173,7 @@ public class Config {
 	public static boolean showVclaim = false;
 	public static int speed = 1;
 	public static boolean soundMemo = false;
+	public static boolean autoLand = false;
 	
 	public static int red;
 	public static int green;

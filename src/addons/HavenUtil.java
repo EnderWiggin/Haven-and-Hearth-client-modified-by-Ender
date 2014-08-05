@@ -61,6 +61,10 @@ public class HavenUtil{
 		ui.mainview.wdgmsg("click", new Coord(200,150), object.getc(), button, 0, object.id, object.getc());
 	}
 	
+	public void clickWorld(int button, Coord c){
+		ui.mainview.wdgmsg("click", new Coord(0, 0), c, button, 0);
+	}
+	
 	public Inventory getInventory(String name){
 		Widget root = ui.root;
 		Widget inv = null;
@@ -342,6 +346,16 @@ public class HavenUtil{
 		return list;
 	}
 	
+	boolean findObject(Gob object){
+		synchronized(ui.mainview.glob.oc){
+			for(Gob g : ui.mainview.glob.oc){
+				if(object.id == g.id) return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public ArrayList<Item> getItemsFromBag(){
 		Inventory inv = getInventory("Inventory");
 		ArrayList<Item> list = new ArrayList<Item>();
@@ -553,5 +567,38 @@ public class HavenUtil{
 	
 	public boolean flowerMenuReady(){
 		return ui.flowerMenu != null;
+	}
+	
+	public ArrayList<Coord> getTilesInRegion(Coord pos1, Coord pos2){
+		ArrayList<Coord> list = new ArrayList<Coord>();
+		
+		Coord p1 = pos1.div(11);
+		Coord p2 = pos2.div(11);
+		
+		int smallestX = p1.x;
+		int largestX = p2.x;
+		if(p2.x < p1.x){
+			smallestX = p2.x;
+			largestX = p1.x;
+		}
+		int smallestY = p1.y;
+		int largestY = p2.y;
+		if(p2.y < p1.y){
+			smallestY = p2.y;
+			largestY = p1.y;
+		}
+		
+		for( int y = largestY; y >= smallestY ; y-- ){
+			for( int x = largestX; x >= smallestX ; x-- ){
+				Coord tc = new Coord(x , y);
+				list.add(tc);
+			}
+		}
+		
+		return list;
+	}
+	
+	public int getTileID(Coord c){
+		return ui.mainview.map.gettilen(c.div(11) );
 	}
 }
