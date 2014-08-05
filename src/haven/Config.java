@@ -161,6 +161,7 @@ public class Config {
 	public static boolean combatSword = false;
 	public static boolean combatInfo = false;
 	public static boolean largeCombatInfo = false;
+	public static boolean numericalCombat = false;
 	
 	public static boolean serverGrid = false;
 	public static boolean disableMapSaving = false;
@@ -717,6 +718,7 @@ public class Config {
 		combatHalo = options.getProperty("combatHalo", "false").equals("true"); // new
 		combatSword = options.getProperty("combatSword", "false").equals("true"); // new
 		combatInfo = options.getProperty("combatInfo", "false").equals("true"); // new
+		numericalCombat = options.getProperty("numericalCombat", "false").equals("true"); // new
 		largeCombatInfo = options.getProperty("largeCombatInfo", "false").equals("true"); // new
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
@@ -851,6 +853,7 @@ public class Config {
 		options.setProperty("combatHalo", combatHalo?"true":"false"); // new
 		options.setProperty("combatSword", combatSword?"true":"false"); // new
 		options.setProperty("combatInfo", combatInfo?"true":"false"); // new
+		options.setProperty("numericalCombat", numericalCombat?"true":"false"); // new
 		options.setProperty("largeCombatInfo", largeCombatInfo?"true":"false"); // new
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new
 		options.setProperty("autoTracking", autoTracking?"true":"false"); // new

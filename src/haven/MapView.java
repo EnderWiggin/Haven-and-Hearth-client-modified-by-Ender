@@ -31,6 +31,7 @@ import static haven.MCache.tilesz;
 import haven.MCache.Grid;
 import haven.MCache.Overlay;
 import haven.Resource.Tile;
+import java.awt.Font;
 
 import java.awt.Color;
 import java.lang.reflect.Constructor;
@@ -89,6 +90,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public static Gob gobAtMouse; // new
 	static Color grayRect = new Color(50, 50, 50, 170); // new
 	static Color goldenText = new Color(179, 162, 104, 255); // new
+	static Color offcol = new Color(255, 0, 0, 128), defcol = new Color(0, 0, 255, 128);
+	static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 10));
 	
     public double getScale() {
         return Config.zoom?_scale:1;
@@ -1773,25 +1776,57 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			if(rel.gobid != playergob){
 				Gob gob = glob.oc.getgob(rel.gobid);
 				if(gob != null){
-					int lift = 0;
-					if(Config.largeCombatInfo) lift = 10;
-					Coord gc = gob.sc.add(0,-41 - lift);
-					g.chcolor(grayRect);
-					g.frect(gc.add(-30-lift/2, -21), new Coord(60+lift,10+lift));
-					g.chcolor();
-					g.image(ComWin.sword, gc.add(-28-lift/2, -20),  new Coord(8,8));
-					g.image(ComWin.shield, gc.add(1, -20), new Coord(8,8));
-					if(Config.largeCombatInfo){
-						g.image(ComWin.bal, gc.add(-33, -10),  new Coord(8,8));
-						g.image(ComWin.iptex, gc.add(1, -10), new Coord(8,8));
+					if(Config.numericalCombat){
+						int lift = 0;
+						if(Config.largeCombatInfo) lift = 10;
+						Coord gc = gob.sc.add(0,-41 - lift);
+						g.chcolor(grayRect);
+						g.chcolor(grayRect);
+						g.frect(gc.add(-30-lift/2, -21), new Coord(60+lift,10+lift));
+						g.chcolor();
+						g.image(ComWin.sword, gc.add(-28-lift/2, -20),  new Coord(8,8));
+						g.image(ComWin.shield, gc.add(1, -20), new Coord(8,8));
+						if(Config.largeCombatInfo){
+							g.image(ComWin.bal, gc.add(-33, -10),  new Coord(8,8));
+							g.image(ComWin.iptex, gc.add(1, -10), new Coord(8,8));
+						}
+						g.chcolor(goldenText);
+						g.atext(Integer.toString(rel.off/100) , gc.add(-20-lift/2, -10), 0, 1);
+						g.atext(Integer.toString(rel.def/100) , gc.add(10, -10), 0, 1);
+						if(Config.largeCombatInfo){
+							g.atext(Integer.toString(rel.bal)+"/"+Integer.toString(rel.intns), gc.add(-24, 0), 0, 1);
+							g.atext(Integer.toString(rel.ip)+"/"+Integer.toString(rel.oip), gc.add(11, 0), 0, 1);
+						}
+					}else{
+						Coord gc = gob.sc.add(0,-51);
+						if(rel.off >= 200) {
+							g.chcolor(offcol);
+							g.frect(gc.add(-25, -18), new Coord(rel.off / 200, 8));
+							g.chcolor(goldenText);
+							g.aimage(fnd.render(String.format("%d", rel.off/100)).tex(), gc.add(-25, -18), -0.9, 0.29);
+							g.rect(gc.add(-25, -18), new Coord(51, 9) );
+						}
+						if(rel.def >= 200) {
+							g.chcolor(defcol);
+							
+							g.frect(gc.add(-25, -10), new Coord(rel.def / 200, 8));
+							g.chcolor(goldenText);
+							g.aimage(fnd.render(String.format("%d", rel.def/100)).tex(), gc.add(-25, -10), -0.9, 0.29);
+							g.rect(gc.add(-25, -10), new Coord(51, 9) );
+						}
+						g.chcolor(grayRect);
+						g.frect(gc.add(-25, -26), new Coord(50, 8));
+						g.chcolor(goldenText);
+						g.atext(Integer.toString(rel.bal)+"/"+Integer.toString(rel.intns), gc.add(-23, -30), 0, 0);
+						g.atext(Integer.toString(rel.ip)+"/"+Integer.toString(rel.oip), gc.add(2, -30), 0, 0);
+						
+						g.image(ComWin.sword, gc.add(-15, -16),  new Coord(5,5));
+						g.image(ComWin.shield, gc.add(-15, -8), new Coord(5,5));
+						g.image(ComWin.bal, gc.add(-22, -32),  new Coord(5,5));
+						g.image(ComWin.intns, gc.add(-10, -32),  new Coord(5,5));
+						g.image(ComWin.iptex, gc.add(6, -32), new Coord(5,5));
 					}
-					g.chcolor(goldenText);
-					g.atext(Integer.toString(rel.off/100) , gc.add(-20-lift/2, -10), 0, 1);
-					g.atext(Integer.toString(rel.def/100) , gc.add(10, -10), 0, 1);
-					if(Config.largeCombatInfo){
-						g.atext(Integer.toString(rel.bal)+"/"+Integer.toString(rel.intns), gc.add(-24, 0), 0, 1);
-						g.atext(Integer.toString(rel.ip)+"/"+Integer.toString(rel.oip), gc.add(11, 0), 0, 1);
-					}
+					
 					g.chcolor();
 				}
 			}

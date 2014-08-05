@@ -718,7 +718,7 @@ public class OptWnd extends Window {
 		public void changed(boolean val) {
 		    Config.objectHealth = val;
 		    Config.saveOptions();
-		}
+			}
 	    };
 	    chkbox.a = Config.objectHealth;
 	}
@@ -755,6 +755,14 @@ public class OptWnd extends Window {
 		}
 	    };
 	    chkbox.a = Config.combatInfo;
+		
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Numerical Combat Info") {
+			public void changed(boolean val) {
+		    Config.numericalCombat = val;
+		    Config.saveOptions();
+		}
+	    };
+	    chkbox.a = Config.numericalCombat;
 		
 		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Large Combat Info") {
 		public void changed(boolean val) {
