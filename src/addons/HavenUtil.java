@@ -492,7 +492,7 @@ public class HavenUtil{
 	
 	void toggleTracking(){
 		sendAcction("tracking");
-		int k = -2;
+		/*int k = -2;
 		
 		if(checkBuff("tracking")){
 			ui.mainview.glob.buffs.remove(k);
@@ -500,7 +500,7 @@ public class HavenUtil{
 			Buff buff = new Buff(k, Resource.load("paginae/act/tracking").indir());
 			buff.major = true;
 			ui.mainview.glob.buffs.put(k, buff);
-		}
+		}*/
 	}
 	
 	public void turnTrackingOn(boolean turnon){
@@ -514,7 +514,7 @@ public class HavenUtil{
 	
 	void toggleCriminal(){
 		sendAcction("crime");
-		int k = -1;
+		/*int k = -1;
 		
 		if(checkBuff("crime")){
 			ui.mainview.glob.buffs.remove(k);
@@ -522,7 +522,7 @@ public class HavenUtil{
 			Buff buff = new Buff(k, Resource.load("paginae/act/crime").indir());
 			buff.major = true;
 			ui.mainview.glob.buffs.put(k, buff);
-		}
+		}*/
 	}
 	
 	void turnCriminalOn(boolean turnon){

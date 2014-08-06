@@ -135,6 +135,7 @@ public class Config {
 	public static boolean edgedTiles = false;
     public static boolean maxWindow = true;
 	public static boolean broadleafTile = false;
+	public static boolean displayNumbers = false;
 	
 	public static boolean runFlaskRunning = false;
 	public static boolean runFlask = true;

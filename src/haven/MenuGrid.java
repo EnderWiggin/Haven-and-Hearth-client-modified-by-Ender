@@ -276,7 +276,7 @@ public class MenuGrid extends Widget {
 		if(ad[0].equals("@")) {
 		    usecustom(ad);
 		} else {
-		    int k = 0;
+		    /*int k = 0;
 		    if (ad[0].equals("crime")){k = -1;}
 		    if (ad[0].equals("tracking")){k = -2;}
 		    if (ad[0].equals("swim")){k = -3;}
@@ -290,7 +290,7 @@ public class MenuGrid extends Widget {
 				ui.sess.glob.buffs.put(k, buff);
 			    }
 			}
-		    }
+		    }*/
 			
 			for(int i = 0; i < ad.length; i++){ // new
 				if(ad[i].contains("atk") ){

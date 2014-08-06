@@ -251,6 +251,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
 	
     public void error(String err) {
+	messageBuffUpdate(err);
 	lasterr = errfoundry.render(err);
 	errtime = System.currentTimeMillis();
     }
@@ -559,4 +560,26 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     public Map<String, Console.Command> findcmds() {
 	return(cmdmap);
     }
+	
+	void messageBuffUpdate(String msg){
+		if(msg.contains("Criminal acts are now turned") ){
+			addBuffIcon(msg.endsWith("on."), "crime", -1);
+		}else if(msg.contains("Tracking is now turned") ){
+			addBuffIcon(msg.endsWith("on."), "tracking", -2);
+		}else if(msg.contains("Swimming is now turned") ){
+			addBuffIcon(msg.endsWith("on."), "swimming", -3);
+		}
+	}
+	
+	void addBuffIcon(boolean turnOn, String type, int k){
+		synchronized (ui.sess.glob.buffs) {
+			if(!turnOn && ui.sess.glob.buffs.containsKey(k)){
+				ui.mainview.glob.buffs.remove(k);
+			}else if(turnOn && !ui.sess.glob.buffs.containsKey(k)){
+				Buff buff = new Buff(k, Resource.load("paginae/act/" + type).indir());
+				buff.major = true;
+				ui.sess.glob.buffs.put(k, buff);
+			}
+		}
+	}
 }

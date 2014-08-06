@@ -29,6 +29,7 @@ package haven;
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
+import java.awt.Font;
 
 public class IMeter extends Widget {
     static Coord off = new Coord(13, 7);
@@ -36,6 +37,7 @@ public class IMeter extends Widget {
     static Coord msz = new Coord(49, 4);
     public Resource bg;
     public List<Meter> meters;
+	static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 9));
     
     static {
 	Widget.addtype("im", new WidgetFactory() {
@@ -72,12 +74,18 @@ public class IMeter extends Widget {
 	    g.frect(off, msz);
 	    g.chcolor();
 	    for(Meter m : meters) {
-		int w = msz.x;
-		w = (w * m.a) / 100;
-		g.chcolor(m.c);
-		g.frect(off, new Coord(w, msz.y));
+			int w = msz.x;
+			w = (w * m.a) / 100;
+			g.chcolor(m.c);
+			g.frect(off, new Coord(w, msz.y));
 	    }
-	    g.chcolor();
+		if(Config.displayNumbers) {
+			try{
+			String []tip = ((String)tooltip).split(":");
+			g.aimage(fnd.render(tip[1]).tex(), new Coord(10,0), 0, 0.2);
+			}catch(Exception e){}
+		}
+		g.chcolor();
 	    g.image(bg, Coord.z);
 	}
     }

@@ -27,6 +27,7 @@
 package haven;
 
 import java.awt.Color;
+import java.awt.Font;
 
 public class Bufflist extends Widget {
     static Tex frame = Resource.loadtex("gfx/hud/buffs/frame");
@@ -39,6 +40,7 @@ public class Bufflist extends Widget {
 	private boolean teaLogoffski = false;
 	private int teaColorCount = 0;
 	private int logoffCounter = 0;
+	static Text.Foundry fnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 16));
     
     static {
         Widget.addtype("buffs", new WidgetFactory() {
@@ -80,9 +82,9 @@ public class Bufflist extends Widget {
 				g.chcolor(255, val, val, 255);
 				
 				if(b.ameter == 100){
-					if(logoffCounter % 10 == 0) ui.m_util.sendSlenMessage("100% Tea buff reached. Logging off in " + (60 - (logoffCounter/10) ));
+					if(logoffCounter % 10 == 0) ui.m_util.sendSlenMessage("100% Tea buff reached. Logging off in " + (50 - (logoffCounter/10) ));
 					logoffCounter++;
-					if(logoffCounter > 599){
+					if(logoffCounter > 499){
 						teaLogoffski = false;
 						ui.sess.close();
 					}
@@ -91,6 +93,9 @@ public class Bufflist extends Widget {
 				g.chcolor();
 			}
 		    g.image(img, bc.add(imgoff));
+			if(Config.displayNumbers && b.ameter >= 0) {
+				g.aimage(fnd.render(String.format("%d", b.ameter)).tex(), bc.add(imgoff), 0, -0.5);
+			}
 		    if(b.nmeter >= 0) {
 			Tex ntext = b.nmeter();
 			g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
