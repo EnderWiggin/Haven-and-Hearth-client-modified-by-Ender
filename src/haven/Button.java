@@ -106,6 +106,12 @@ public class Button extends Widget {
     }
     
     public void click() {
+	try{
+		if(ui.modflags() == 1 && text.text.equals("Feast!")){
+			addons.MainScript.autoFeast();
+			return;
+		}
+	}catch(Exception e){}
 	wdgmsg("activate");
     }
     

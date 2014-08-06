@@ -564,7 +564,7 @@ public class MenuGrid extends Widget {
 		if(type == 0){
 			return false;
 		}
-		addons.MainScript.m_alType = type;
+		addons.MainScript.m_Type = type;
 		Config.autoLand = true;
 		
 		return true;

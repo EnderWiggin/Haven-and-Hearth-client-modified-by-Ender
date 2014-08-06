@@ -415,6 +415,22 @@ public class HavenUtil{
 		return count;
 	}
 	
+	public ArrayList<Item> getItemsFromInv(Inventory inv){
+		ArrayList<Item> list = new ArrayList<Item>();
+		
+		if(inv == null){
+			return list;
+		}
+		
+		for(Widget wdg = inv.child; wdg != null; wdg = wdg.next){
+			if(wdg instanceof Item){
+				Item i = (Item)wdg;
+				list.add(i);
+			}
+		}
+		return list;
+	}
+	
 	public static String flaskText(int val){
 		String str = "";
 		if(val >= 48 && val <= 57){
@@ -600,5 +616,60 @@ public class HavenUtil{
 	
 	public int getTileID(Coord c){
 		return ui.mainview.map.gettilen(c.div(11) );
+	}
+	
+	public void clickButton(String name){
+		
+		Widget root = ui.root;
+		
+		for(Widget w = root.child; w != null; w = w.next){
+			if (!(w instanceof Window))
+				continue;
+			if(((Window)w).cap == null)
+				continue;
+			if(((Window)w).cap.text == null)
+				continue;
+			if(!((Window)w).cap.text.contains(name))
+				continue;
+			
+			for(Widget wdg = w.child; wdg != null; wdg = wdg.next) {
+				if(wdg instanceof Button){
+					try{
+						wdg.wdgmsg("activate");
+					}catch(Exception e){}
+				}
+			}
+		}
+	}
+	
+	public int getHunger(){
+		int hunger = 2000;
+		Widget root = ui.root;
+		
+		for(Widget w = root.child; w != null; w = w.next){
+			if ((w instanceof IMeter)){
+				if(((IMeter)w).bg.name.contains("hngr")){
+					for(Meter m : ((IMeter)w).meters){
+						
+						if(m.a < 100){
+							if(m.c.getRed() == 96 && m.c.getGreen() == 0 && m.c.getBlue() == 0){
+								hunger =(int)( m.a * 5);
+							}else if(m.c.getRed() == 255 && m.c.getGreen() == 64 && m.c.getBlue() == 0){
+								hunger =(int)( 500 + m.a * 3.33);
+							}else if(m.c.getRed() == 255 && m.c.getGreen() == 192 && m.c.getBlue() == 0){
+								hunger =(int)( 800 + m.a * 1);
+							}else if(m.c.getRed() == 0 && m.c.getGreen() == 255 && m.c.getBlue() == 0){
+								hunger =(int)( 900 + m.a * 1);
+							}else if(m.c.getRed() == 255 && m.c.getGreen() == 0 && m.c.getBlue() == 0){
+								hunger =(int)( 1000 + m.a * 1);
+							}else{
+								hunger = 2000;
+							}
+						}
+					}
+				}
+			}
+		}
+		return hunger;
 	}
 }
