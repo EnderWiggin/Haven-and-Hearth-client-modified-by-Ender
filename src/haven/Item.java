@@ -38,6 +38,9 @@ import ender.CurioInfo;
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
     static final Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
+	static final Pattern pattTray = Pattern.compile("quality \\d+ cheese tray: quality \\d+ (.+)", Pattern.CASE_INSENSITIVE);
+	
+	//Quality 0 Cheese Tray: Quality 0
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
     static Color outcol = new Color(0,0,0,255);
@@ -92,7 +95,7 @@ public class Item extends Widget implements DTarget {
 	q2 = -1;
 	if(tooltip != null){
 	    try{
-		Matcher m =patt.matcher(tooltip); 
+		Matcher m = patt.matcher(tooltip); 
 		while(m.find()){
 		    q2 = Integer.parseInt(m.group(1));
 		}
@@ -528,6 +531,7 @@ public class Item extends Widget implements DTarget {
 	    shorttip = null;
 	    longtip = null;
 	    calcCurio();
+		calcTray();
 	}
     }
 	
@@ -623,5 +627,92 @@ public class Item extends Widget implements DTarget {
 				}
 			}catch(Exception e){}
 		}
+	}
+	
+	void calcTray(){
+		try{
+			String name = this.GetResName();
+			String cheeseName = "";
+			if(name.equals("gfx/invobjs/cheese-tray-cheese") ){
+				cheeseName = cheeseTrayName();
+			}else if(name.equals("gfx/invobjs/cheese-tray-curd") ){
+				cheeseName = "curd";
+			}else{
+				return;
+			}
+			
+			String getName = getNextCheeseStage(cheeseName);
+			CurioInfo curio;
+			if((curio = Config.curios.get(getName.toLowerCase())) != null){
+				int time = (int)(curio.time*(100 - meter)/100);
+				int d = time/1440;
+				int h = (time%1440)/60;
+				int m = time%60;
+				curioStr = String.format("\n%s: %dd %dh %2dm",getName,d,h,m);
+			}
+		}catch(Exception e){}
+	}
+	
+	String cheeseTrayName(){
+		try{
+			Matcher m = pattTray.matcher(tooltip); 
+			while(m.find()){
+				return m.group(1);
+			}
+	    } catch(Exception e){}
+		
+		return "";
+	}
+	
+	String getNextCheeseStage(String tray){
+		int idType = getPlayerTileID(); // 1 outside 2 cabin 3 cellar 4 mine
+		
+		if(tray.equals("curd") ){
+			if(idType == 1)
+				return "Creamy Camembert";
+			else if(idType == 2)
+				return "Tasty Emmentaler";
+			else if(idType == 3)
+				return "Cellar Cheddar";
+			else if(idType == 4)
+				return "Mothzarella";
+		}else if(tray.equals("Brodgar Blue Cheese") ){
+			if(idType == 1 || idType == 2)
+				return "Jorbonzola";
+		}else if(tray.equals("Mothzarella") ){
+			if(idType == 2 || idType == 3)
+				return "Harmesan Cheese";
+		}else if(tray.equals("Cellar Cheddar") ){
+			if(idType == 2)
+				return "Brodgar Blue Cheese";
+		}else if(tray.equals("Jorbonzola") ){
+			if(idType == 3)
+				return "Midnight Blue Cheese";
+		}else if(tray.equals("Harmesan Cheese") ){
+			if(idType == 1)
+				return "Sunlit Stilton";
+		}else if(tray.equals("Tasty Emmentaler") ){
+			if(idType == 4)
+				return "Musky Milben";
+		}else if(tray.equals("Generic Gouda") ){
+			return "";
+		}
+		
+		return "Generic Gouda";
+	}
+	
+	int getPlayerTileID(){
+		try{
+			int id = ui.mainview.map.gettilen(ui.mainview.glob.oc.getgob(ui.mainview.playergob).getc().div(11) );
+			
+			if(id == 21)
+				return 2;
+			if(id == 22)
+				return 3;
+			if(id == 23 || id == 24 || id == 24)
+				return 4;
+		}catch(Exception e){}
+		
+		return 1;
 	}
 }
