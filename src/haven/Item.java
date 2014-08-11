@@ -39,8 +39,6 @@ public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
     static final Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
 	static final Pattern pattTray = Pattern.compile("quality \\d+ cheese tray: quality \\d+ (.+)", Pattern.CASE_INSENSITIVE);
-	
-	//Quality 0 Cheese Tray: Quality 0
     static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
     static Color outcol = new Color(0,0,0,255);
@@ -615,13 +613,9 @@ public class Item extends Widget implements DTarget {
 				String resname = res.get().name;
 				
 				if(((Window)parent.parent).cap.text.equals("Inventory")){
-					if(addons.HavenUtil.instance.hasHourglass()){
-						if(resname.equals("gfx/invobjs/pearl") && Sound.soundCheck(id) ){
-							Sound.safePlay("pearl");
-						}
-					}
-					
-					if(Config.minerSafety && Config.miningDrop && (resname.contains("ore-iron") || resname.contains("petrifiedseashell") || resname.contains("catgold")) ){
+					if(resname.equals("gfx/invobjs/pearl") && addons.HavenUtil.instance.hasHourglass() && Sound.soundCheck(id)){
+						Sound.safePlay("pearl");
+					}else if(Config.minerSafety && Config.miningDrop && (resname.contains("ore-iron") || resname.contains("petrifiedseashell") || resname.contains("catgold")) ){
 						wdgmsg("drop", Coord.z);
 					}
 				}

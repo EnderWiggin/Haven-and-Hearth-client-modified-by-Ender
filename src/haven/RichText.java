@@ -52,6 +52,7 @@ public class RichText extends Text {
     public static final Parser std;
     public static final Foundry stdf;
     public  List<Part> parts;
+	public static final Map<? extends Attribute, ?> urlAttr;
 
     static {
 	Map<Attribute, Object> a = new HashMap<Attribute, Object>();
@@ -59,6 +60,7 @@ public class RichText extends Text {
 	a.put(TextAttribute.SIZE, 10);
 	std = new Parser(a);
 	stdf = new Foundry(std);
+	urlAttr = fillattrs(TextAttribute.FAMILY, "Sans Serif", TextAttribute.SIZE, 12, TextAttribute.FOREGROUND, Color.BLUE);
     }
     
     public static class ActionAttribute extends Attribute
@@ -83,6 +85,17 @@ public class RichText extends Text {
 		    action = tp.getAction(tp.charAt(c.x - part.x));
 		}
 		return action;
+	    }
+	}
+	return null;
+    }
+	
+	public String actionURL(Coord c) {
+	for (Part part : parts) {
+	    if(c.isect(new Coord(part.x, part.y), new Coord(part.width(), part.height())) ) {
+			if(part instanceof URLlink){
+				return ((URLlink)part).urlLink;
+			}
 	    }
 	}
 	return null;
@@ -192,6 +205,132 @@ public class RichText extends Text {
 	public int baseline() {
 	    return((int)lm().getAscent());
 	}
+    }
+	
+	public static class URLlink extends Part {
+		public AttributedString str;
+		public int start, end;
+		private TextMeasurer tm = null;
+		private TextLayout tl = null;
+		public String urlLink = "";
+		
+		public URLlink(AttributedString str, int start, int end) {
+			this.str = str;
+			this.start = start;
+			this.end = end;
+		}
+		
+		public URLlink(String str, Map<? extends Attribute, ?> attrs) {
+			this((str.length() == 0)?(new AttributedString(str)):(new AttributedString(str, attrs)), 0, str.length());
+			urlLink = str;
+		}
+		
+		public URLlink(String str) {
+			this(new AttributedString(str), 0, str.length());
+			urlLink = str;
+		}
+		
+		private AttributedCharacterIterator ti() {
+			return(str.getIterator(null, start, end));
+		}
+		
+		public void append(Part p) {
+			if(next == null) {
+			if(p instanceof TextPart) {
+				TextPart tp = (TextPart)p;
+				str = AttributedStringBuffer.concat(ti(), tp.ti());
+				end = (end - start) + (tp.end - tp.start);
+				start = 0;
+				next = p.next;
+			} else {
+				next = p;
+			}
+			} else {
+			next.append(p);
+			}
+		}
+		
+		private TextMeasurer tm() {
+			if(tm == null)
+			tm = new TextMeasurer(str.getIterator(), rs.frc);
+			return(tm);
+		}
+
+		private TextLayout tl() {
+			if(tl == null)
+			tl = tm().getLayout(start, end);
+			return(tl);
+		}
+
+		public int width() {
+			if(start == end) return(0);
+			return((int)tm().getAdvanceBetween(start, end));
+		}
+		
+		public int charAt(int x) {
+			for(int i=start+1; i<end; i++) {
+			if(x < tm().getAdvanceBetween(start, i))
+				return i - start - 1;
+			}
+			return -1;
+		}
+		
+		public int height() {
+			if(start == end) return(0);
+			return((int)(tl().getAscent() + tl().getDescent() + tl().getLeading()));
+		}
+		
+		public int baseline() {
+			if(start == end) return(0);
+			return((int)tl().getAscent());
+		}
+		
+		private Part split2(int e1, int s2) {
+			URLlink p1 = new URLlink(str, start, e1);
+			URLlink p2 = new URLlink(str, s2, end);
+			p1.next = p2;
+			p2.next = next;
+			p1.rs = p2.rs = rs;
+			p1.urlLink = p2.urlLink = urlLink;
+			return(p1);
+		}
+
+		public Part split(int w) {
+			if((end-start)<=1){
+			return null;
+			}
+			int l = start, r = end;
+			while(true) {
+			int t = l + ((r - l) / 2);
+			int tw;
+			if(t == l)
+				tw = 0;
+			else
+				tw = (int)tm().getAdvanceBetween(start, t);
+			if(tw > w) {
+				r = t;
+			} else {
+				l = t;
+			}
+			if(l >= r - 1)
+				break;
+			}
+			CharacterIterator it = str.getIterator();
+			for(int i = l; i >= start; i--) {
+			if(Character.isWhitespace(it.setIndex(i))) {
+				return(split2(i, i + 1));
+			}
+			}
+			if(l == start){
+			l+=1;
+			}
+			return(split2(l, l));
+		}
+		
+		public void render(Graphics2D g) {
+			if(start == end) return;
+			tl().draw(g, x, y + tl().getAscent());
+		}
     }
     
     public static class TextPart extends Part {
@@ -425,7 +564,9 @@ public class RichText extends Text {
 		if(args.length > 1)
 		    id = Integer.parseInt(args[1]);
 		return(new Image(res, id));
-	    } else {
+	    } else if(tn == "url") {
+		return(new URLlink(args[0], urlAttr ) );
+		} else {
 		Map<Attribute, Object> na = new HashMap<Attribute, Object>(attrs);
 		if(tn == "font") {
 		    na.put(TextAttribute.FAMILY, args[0]);

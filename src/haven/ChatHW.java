@@ -46,7 +46,7 @@ public class ChatHW extends HWindow {
 		String t = (String)args[0];
 		boolean cl = false;
 		if(args.length > 1)
-		    cl = (Integer)args[1] != 0;
+		cl = (Integer)args[1] != 0;
 		return(new ChatHW(parent, t, cl));
 	    }
 	});

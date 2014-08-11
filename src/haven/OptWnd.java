@@ -867,6 +867,13 @@ public class OptWnd extends Window {
 		}
 	    };
 		chkbox.a = Config.flaskFillOnly;
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Add URL links in chat.") {
+		public void changed(boolean val) {
+		    Config.urlLinking = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.urlLinking;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

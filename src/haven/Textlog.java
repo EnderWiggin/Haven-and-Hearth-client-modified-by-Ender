@@ -31,6 +31,12 @@ import java.awt.font.TextAttribute;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.net.URI;
+import java.awt.Desktop;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 public class Textlog extends Widget {
     public int maxLines = 150;
     static Tex texpap = Resource.loadtex("gfx/hud/texpap");
@@ -43,6 +49,10 @@ public class Textlog extends Widget {
     boolean sdrag = false;
     public boolean drawbg = true;
     public Color defcolor = Color.BLACK;
+	
+	static final String urlRegex = "\\b(https?://|ftp://|www.)"
+            + "[-A-Za-z0-9+&@#/%?=~_|!:,.;]"
+            + "*[-A-Za-z0-9+&@#/%=~_|]";
 	
     static {
 	Widget.addtype("log", new WidgetFactory() {
@@ -97,6 +107,10 @@ public class Textlog extends Widget {
 	if(Config.use_smileys){
 	    line = Config.mksmiley(line);
 	}
+	if(Config.urlLinking){
+		line = findURL(line);
+	}
+	System.out.println(line);
 	rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
 	synchronized(lines) {
 	    lines.add(rl);
@@ -142,7 +156,18 @@ public class Textlog extends Widget {
 	    mousemove(c);
 	    return(true);
 	}
-	return(false);
+	int y = -cury;
+	synchronized(lines) {
+		for(Text line : lines) {
+			int dy1 = sz.y + y;
+			Coord cc = new Coord(margin, dy1);
+			if(c.isect(cc, line.sz() )){
+				openURL( ((RichText)line).actionURL(c.add(cc.inv()) ) );
+			}
+			y += line.sz().y;
+		}
+	}
+	return(Config.urlLinking);
     }
         
     public void mousemove(Coord c) {
@@ -172,4 +197,34 @@ public class Textlog extends Widget {
 	}
 	return(false);
     }
+	
+	void openURL(String s){
+		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+			try {
+				desktop.browse(new URI(s));
+			} catch (Exception e) {
+				//e.printStackTrace();
+			}
+		}
+	}
+	
+	String findURL(String line){
+		String ln = "";
+        String[] parts = line.split("\\s+");
+		
+        for(String s : parts){
+			if(isURL(s) ){
+				ln = ln + " $url[" + s + "]";
+			}else{
+				ln = ln + " " + s;
+			}
+		}
+		
+		return ln;
+	}
+	
+	public static boolean isURL(String url){
+		return url.matches(urlRegex); 
+	}
 }
