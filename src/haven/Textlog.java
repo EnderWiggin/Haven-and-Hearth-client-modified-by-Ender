@@ -110,7 +110,6 @@ public class Textlog extends Widget {
 	if(Config.urlLinking){
 		line = findURL(line);
 	}
-	System.out.println(line);
 	rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
 	synchronized(lines) {
 	    lines.add(rl);

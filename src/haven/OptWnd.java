@@ -847,7 +847,7 @@ public class OptWnd extends Window {
 				text = mem;
 			}
 		};
-	}
+		}
 	
 	{ /* ADDONS OPTIONS TAB */
 	    tab = body.new Tab(new Coord(480, 0), 60, "Addons");
@@ -867,13 +867,20 @@ public class OptWnd extends Window {
 		}
 	    };
 		chkbox.a = Config.flaskFillOnly;
-		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Add URL links in chat.") {
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Add URL links in chat") {
 		public void changed(boolean val) {
 		    Config.urlLinking = val;
 		    Config.saveOptions();
 		}
 	    };
 		chkbox.a = Config.urlLinking;
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Save chat logs") {
+		public void changed(boolean val) {
+		    Config.chatLogger = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.chatLogger;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

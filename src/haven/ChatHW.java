@@ -34,12 +34,18 @@ import java.util.regex.Pattern;
 
 import ender.GoogleTranslator;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
     static final Collection<Integer> todarken = new ArrayList<Integer>();
     static final Pattern hlpatt = Pattern.compile("@\\$\\[(-?\\d+)\\]");
-
+	chatLog logger;
+	
     static {
 	Widget.addtype("slenchat", new WidgetFactory() {
 	    public Widget create(Coord c, Widget parent, Object[] args) {
@@ -69,6 +75,7 @@ public class ChatHW extends HWindow {
 		cbtn.hide();
 	}
 	setsz(sz);
+	logger = new chatLog();
     }
 
     public void setsz(Coord s) {
@@ -118,6 +125,8 @@ public class ChatHW extends HWindow {
 		if(Config.timestamp)
 		    str = Utils.timestamp() + str;
 		out.append(str, col);
+		if(Config.chatLogger)
+			logger.save(str);
 	    }
 	} else if(msg == "focusme") {
 	    shp.setawnd(this, true);
@@ -142,4 +151,44 @@ public class ChatHW extends HWindow {
     {
 	return(out.mousewheel(c, amount));
     }
+	
+	private class chatLog{
+		BufferedWriter buffWriter;
+		
+		public void createFile(){
+			try{
+				String timeString = Utils.sessdate(System.currentTimeMillis());
+				File file = new File("./logs/"+timeString+"_"+title+".save");
+				File folder = file.getParentFile();
+				
+				if(!folder.exists()){
+					folder.mkdirs();
+				}
+				file.createNewFile();
+				
+				FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+				buffWriter = new BufferedWriter(fw);
+				
+				buffWriter.write(timeString);
+				buffWriter.newLine();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		
+		void save(String str){
+			if(buffWriter == null) createFile();
+			
+			if(!Config.timestamp)
+				str = Utils.timestamp() + str;
+			
+			try {
+				buffWriter.write(str);
+				buffWriter.newLine();
+				buffWriter.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
