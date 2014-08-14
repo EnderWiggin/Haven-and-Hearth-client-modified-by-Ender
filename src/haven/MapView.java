@@ -1352,28 +1352,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    }
 	}
 	
-	if(Config.showHidden && Config.hide) {
-		g.chcolor(Config.red, Config.green, Config.blue, 128);
-		synchronized(glob.oc) {
-		    for(Gob gob : glob.oc) {
-			Resource res = gob.getres();
-			if(res == null) continue;
-			if((!res.hitbox && !gob.hide) || res.skiphighlight) continue;
-			Resource.Neg neg = gob.getneg();
-			if(neg == null)
-			    continue;
-			if((neg.bs.x > 0) && (neg.bs.y > 0)) {
-			    Coord c1 = gob.getc().add(neg.bc);
-			    Coord c2 = c1.add(neg.bs);
-			    g.frect(m2s(c1).add(oc),
-				    m2s(new Coord(c2.x, c1.y)).add(oc),
-				    m2s(c2).add(oc),
-				    m2s(new Coord(c1.x, c2.y)).add(oc));
-			}
-		    }
-		}
-		g.chcolor();
-	    }
+	drawHitbox(g, oc);
 	
 	GobMapper drawer = new GobMapper();
 	synchronized(glob.oc) {
@@ -1485,6 +1464,41 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	    //System.out.println(curf);
 	}
     }
+	
+	public void drawHitbox(GOut g, Coord oc){
+		if(Config.showHidden && Config.hide) {
+			g.chcolor(Config.hitboxCol[0], Config.hitboxCol[1], Config.hitboxCol[2], Config.hitboxCol[3]);
+			synchronized(glob.oc){
+				for(Gob gob : glob.oc){
+					Resource res = gob.getres();
+					if(res == null) continue;
+					if((!res.hitbox && !gob.hide) || res.skiphighlight) continue;
+					Resource.Neg neg = gob.getneg();
+					if(neg == null)
+						continue;
+					if (res.name != null && res.name.contains("/plants/")){
+						g.chcolor(Config.hitboxCol[4], Config.hitboxCol[5], Config.hitboxCol[6], Config.hitboxCol[7]);
+						hitboxRect(g, oc, gob.getc(), neg);
+						g.chcolor(Config.hitboxCol[0], Config.hitboxCol[1], Config.hitboxCol[2], Config.hitboxCol[3]);
+						continue;
+					}
+					hitboxRect(g, oc, gob.getc(), neg);
+				}
+				g.chcolor();
+			}
+		}
+	}
+	
+	void hitboxRect(GOut g, Coord oc, Coord c, Resource.Neg neg){
+		if((neg.bs.x > 0) && (neg.bs.y > 0)) {
+			Coord c1 = c.add(neg.bc);
+			Coord c2 = c1.add(neg.bs);
+			g.frect(m2s(c1).add(oc),
+				m2s(new Coord(c2.x, c1.y)).add(oc),
+				m2s(c2).add(oc),
+				m2s(new Coord(c1.x, c2.y)).add(oc));
+		}
+	}
 	
     public void drawarrows(GOut g) {
 	Coord oc = viewoffset(sz, mc);

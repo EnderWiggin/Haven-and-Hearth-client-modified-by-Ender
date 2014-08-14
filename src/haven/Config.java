@@ -178,9 +178,7 @@ public class Config {
 	public static boolean soundMemo = false;
 	public static boolean autoLand = false;
 	
-	public static int red;
-	public static int green;
-	public static int blue;
+	public static int[] hitboxCol = new int[8]; // red, green, blue, trans
 	
 	public static Map<String, Boolean> confSounds = new HashMap<String, Boolean>();
 	// new
@@ -739,9 +737,15 @@ public class Config {
 		speed = Integer.parseInt(options.getProperty("speed", "100")); // new
 		soundMemo = options.getProperty("soundMemo", "false").equals("true"); // new
 		
-		red = Integer.parseInt(options.getProperty("red_col", "255")); // new
-		green = Integer.parseInt(options.getProperty("green_col", "0")); // new
-		blue = Integer.parseInt(options.getProperty("blue_col", "0")); // new
+		hitboxCol[0] = Integer.parseInt(options.getProperty("red_col", "255")); // new
+		hitboxCol[1] = Integer.parseInt(options.getProperty("green_col", "0")); // new
+		hitboxCol[2] = Integer.parseInt(options.getProperty("blue_col", "0")); // new
+		hitboxCol[3] = Integer.parseInt(options.getProperty("trans_col", "128")); // new
+		
+		hitboxCol[4] = Integer.parseInt(options.getProperty("red_crop_col", "255")); // new
+		hitboxCol[5] = Integer.parseInt(options.getProperty("green_crop_col", "0")); // new
+		hitboxCol[6] = Integer.parseInt(options.getProperty("blue_crop_col", "0")); // new
+		hitboxCol[7] = Integer.parseInt(options.getProperty("trans_crop_col", "128")); // new
 		
         if (!hideObjects.isEmpty()) {
             for (String objectName : hideObjects.split(",")) {
@@ -876,9 +880,15 @@ public class Config {
 		options.setProperty("speed", String.valueOf(speed)); // new
 		options.setProperty("soundMemo", soundMemo?"true":"false"); // new
 		
-		options.setProperty("red_col", String.valueOf(red));
-		options.setProperty("green_col", String.valueOf(green));
-		options.setProperty("blue_col", String.valueOf(blue));
+		options.setProperty("red_col", String.valueOf(hitboxCol[0]));
+		options.setProperty("green_col", String.valueOf(hitboxCol[1]));
+		options.setProperty("blue_col", String.valueOf(hitboxCol[2]));
+		options.setProperty("trans_col", String.valueOf(hitboxCol[3]));
+		
+		options.setProperty("red_crop_col", String.valueOf(hitboxCol[4]));
+		options.setProperty("green_crop_col", String.valueOf(hitboxCol[5]));
+		options.setProperty("blue_crop_col", String.valueOf(hitboxCol[6]));
+		options.setProperty("trans_crop_col", String.valueOf(hitboxCol[7]));
 		
         options.setProperty("version", currentVersion);
         

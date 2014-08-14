@@ -51,6 +51,10 @@ public class OptWnd extends Window {
     private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
     private Map<String, String> camname2type = new HashMap<String, String>();
     private Map<String, String[]> camargs = new HashMap<String, String[]>();
+	
+	int hitboxRadioGroup = 0;
+	Scrollbar redScroll, greenScroll, blueScroll, transScroll;
+	
     private Comparator<String> camcomp = new Comparator<String>() {
 	public int compare(String a, String b) {
 	    if(a.startsWith("The ")) a = a.substring(4);
@@ -126,7 +130,7 @@ public class OptWnd extends Window {
 		}
 	    }).a = Config.timestamp;
 	    
-	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show dowsing direcion") {
+	    (new CheckBox(new Coord(10, (y+=35)), tab, "Show dowsing direction") {
 		public void changed(boolean val) {
 		    Config.showDirection = val;
 		    Config.saveOptions();
@@ -597,18 +601,20 @@ public class OptWnd extends Window {
 		new Label(new Coord(200, 80), tab, "Hidden Objects");
 		HL = new HideList(new Coord(150, 100), new Coord(180, 300), tab, Config.hideObjectList, "hidden");
 		
-		new Label(new Coord(425, 220), tab, "Hitbox Color");
-		new Label(new Coord(405, 240), tab, "Red");
-		new Label(new Coord(440, 240), tab, "Green");
-		new Label(new Coord(483, 240), tab, "Blue");
+		new Label(new Coord(405, 220), tab, "Hitbox Color");
+		new Label(new Coord(365, 240), tab, "Red");
+		new Label(new Coord(400, 240), tab, "Green");
+		new Label(new Coord(440, 240), tab, "Blue");
+		new Label(new Coord(480, 240), tab, "Trans");
 		
-		final Label red = new Label(new Coord(408, 412),  tab, String.valueOf(Config.red));
-		final Label green = new Label(new Coord(448, 412),  tab, String.valueOf(Config.green));
-		final Label blue = new Label(new Coord(488, 412),  tab, String.valueOf(Config.blue));
+		final Label red = new Label(new Coord(368, 412),  tab, String.valueOf(Config.hitboxCol[0]));
+		final Label green = new Label(new Coord(408, 412),  tab, String.valueOf(Config.hitboxCol[1]));
+		final Label blue = new Label(new Coord(448, 412),  tab, String.valueOf(Config.hitboxCol[2]));
+		final Label trans = new Label(new Coord(488, 412),  tab, String.valueOf(Config.hitboxCol[3]));
 		
-		(new Scrollbar(new Coord(420, 260), 148, tab, 0, 255) {{ val = 255 - Config.red; }
+		redScroll = new Scrollbar(new Coord(380, 260), 148, tab, 0, 255) {{ val = 255 - Config.hitboxCol[hitboxGroup(0) ]; }
 		public void changed() {
-		    Config.red = 255 - val;
+		    Config.hitboxCol[hitboxGroup(0) ] = 255 - val;
 			red.settext(String.valueOf(255 - val));
 		    Config.saveOptions();
 		}
@@ -617,10 +623,15 @@ public class OptWnd extends Window {
 		    changed();
 		    return (true);
 		}
-	    }).changed();
-		(new Scrollbar(new Coord(460, 260), 148, tab, 0, 255) {{ val = 255 - Config.green; }
+		public void update() {
+			val = 255 - Config.hitboxCol[hitboxGroup(0) ];
+			red.settext(String.valueOf(255 - val));
+		}
+	    };
+		redScroll.changed();
+		greenScroll = new Scrollbar(new Coord(420, 260), 148, tab, 0, 255) {{ val = 255 - Config.hitboxCol[hitboxGroup(1) ]; }
 		public void changed() {
-		    Config.green = 255 - val;
+		    Config.hitboxCol[hitboxGroup(1) ] = 255 - val;
 			green.settext(String.valueOf(255 - val));
 		    Config.saveOptions();
 		}
@@ -629,10 +640,15 @@ public class OptWnd extends Window {
 		    changed();
 		    return (true);
 		}
-	    }).changed();
-		(new Scrollbar(new Coord(500, 260), 148, tab, 0, 255) {{ val = 255 - Config.blue; }
+		public void update() {
+			val = 255 - Config.hitboxCol[hitboxGroup(1) ];
+			green.settext(String.valueOf(255 - val));
+		}
+	    };
+		greenScroll.changed();
+		blueScroll = new Scrollbar(new Coord(460, 260), 148, tab, 0, 255) {{ val = 255 - Config.hitboxCol[hitboxGroup(2) ]; }
 		public void changed() {
-			Config.blue = 255 - val;
+			Config.hitboxCol[hitboxGroup(2) ] = 255 - val;
 			blue.settext(String.valueOf(255 - val));
 		    Config.saveOptions();
 		}
@@ -641,7 +657,45 @@ public class OptWnd extends Window {
 		    changed();
 		    return (true);
 		}
-	    }).changed();
+		public void update() {
+			val = 255 - Config.hitboxCol[hitboxGroup(2) ];
+			blue.settext(String.valueOf(255 - val));
+		}
+	    };
+		blueScroll.changed();
+		transScroll = new Scrollbar(new Coord(500, 260), 148, tab, 0, 255) {{ val = 255 - Config.hitboxCol[hitboxGroup(3) ]; }
+		public void changed() {
+			Config.hitboxCol[hitboxGroup(3) ] = 255 - val;
+			trans.settext(String.valueOf(255 - val));
+		    Config.saveOptions();
+		}
+		public boolean mousewheel(Coord c, int amount) {
+		    val = Utils.clip(val + amount, min, max);
+		    changed();
+		    return (true);
+		}
+		public void update() {
+			val = 255 - Config.hitboxCol[hitboxGroup(3) ];
+			trans.settext(String.valueOf(255 - val));
+		}
+	    };
+		transScroll.changed();
+		
+		RadioGroup hitbox = new RadioGroup(tab) {
+			public void changed(int btn, String lbl) {
+				hitboxRadioGroup = btn;
+				
+				redScroll.update();
+				greenScroll.update();
+				blueScroll.update();
+				transScroll.update();
+			}
+		};
+		
+		new Label(new Coord(400, 120), tab, "Hitbox Type");
+		hitbox.add("General", new Coord(400, 130));
+		hitbox.add("Crops", new Coord(400, 160));
+		hitbox.check("General");
 	}
 
 	{ /* HIGHLIGHT OPTIONS TAB */
@@ -1075,5 +1129,9 @@ public class OptWnd extends Window {
 		}
 		
 		if(HL != null) HL.updateList(Config.hideObjectList);
+	}
+	
+	int hitboxGroup(int group){
+		return group + (hitboxRadioGroup * 4);
 	}
 }

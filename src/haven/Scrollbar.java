@@ -85,6 +85,8 @@ public class Scrollbar extends Widget {
     }
     
     public void changed() {}
+	
+	public void update() {}
     
     public void ch(int a) {
 	int val = this.val + a;
