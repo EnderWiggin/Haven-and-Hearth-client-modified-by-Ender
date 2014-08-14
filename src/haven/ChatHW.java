@@ -43,7 +43,7 @@ public class ChatHW extends HWindow {
     TextEntry in;
     Textlog out;
     static final Collection<Integer> todarken = new ArrayList<Integer>();
-    static final Pattern hlpatt = Pattern.compile("@\\$\\[(-?\\d+)\\]");
+    static final Pattern hlpatt = Pattern.compile("@\\$\\[(.+)\\]");
 	chatLog logger;
 	
     static {
@@ -107,14 +107,19 @@ public class ChatHW extends HWindow {
 		makeurgent((Integer)args[2]);
 	    String str = (String)args[0];
 	    int id = 0;
+		String[] s2 = null;
 	    try{
-		Matcher m = hlpatt.matcher(str); 
-		if(m.find()){
-		    id = Integer.parseInt(m.group(1));
-		}
+			Matcher m = hlpatt.matcher(str);
+			String s = "";
+			if(m.find()){
+				s = m.group(1);
+			}
+			s2 = s.split(",");
+			id = Integer.parseInt(s2[0]);
 	    } catch(Exception e){}
 	    Gob gob;
 	    if(id != 0) {
+		catchBroadcast(s2);
 		if ((gob = ui.sess.glob.oc.getgob(id)) != null){
 		    gob.highlight = new Gob.HlFx(System.currentTimeMillis());
 		}
@@ -151,6 +156,35 @@ public class ChatHW extends HWindow {
     {
 	return(out.mousewheel(c, amount));
     }
+	
+	void catchBroadcast(String[] s2){
+		if(s2 == null) return;
+		
+		if(Config.showDirection && s2.length == 6){
+			Gob gob;
+			if((gob = ui.sess.glob.oc.getgob(Integer.parseInt(s2[4]) )) != null){
+				int olid = Integer.parseInt(s2[5]);
+				boolean found = false;
+				
+				for(int i = 0; i<TrackingWnd.instances.size(); i++){
+					TrackingWnd wnd = TrackingWnd.instances.get(i);
+					if(wnd.broadcastID == olid){
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found){
+					new TrackingWnd(gob, olid,
+					Integer.parseInt(s2[0]),
+					Integer.parseInt(s2[1]),
+					Integer.parseInt(s2[2]),
+					Integer.parseInt(s2[3]),
+					null);
+				}
+			}
+		}
+	}
 	
 	private class chatLog{
 		BufferedWriter buffWriter;

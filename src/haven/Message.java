@@ -56,6 +56,7 @@ public class Message implements java.io.Serializable {
     public int retx = 0;
     public int seq;
     int off = 0;
+	int id = 0;
 	
     public Message(int type, byte[] blob) {
 	this.type = type;

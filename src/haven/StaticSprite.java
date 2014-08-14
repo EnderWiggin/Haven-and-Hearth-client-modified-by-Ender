@@ -34,7 +34,7 @@ public class StaticSprite extends ImageSprite {
     
     public static final Factory fact = new Factory() {
 	    public Sprite create(Owner owner, Resource res, Message sdt) {
-		if(res.layer(Resource.animc) != null)
+		if(res.layer(Resource.animc) != null || res.layer(Resource.imgc) == null)
 		    return(null);
 		return(new StaticSprite(owner, res, sdt));
 	    }

@@ -44,6 +44,7 @@ public abstract class Sprite {
     static {
 	factories.add(AnimSprite.fact);
 	factories.add(StaticSprite.fact);
+	factories.add(DowseFx.fact);
     }
     
     public static final Comparator<Part> partcmp = new Comparator<Part>() {
