@@ -207,13 +207,4 @@ public class Inventory extends Widget implements DTarget {
     protected boolean checkTrashButton(Widget w) {
         return trash != null && w == trash;
     }
-	
-	void skoopItems(String name){ // new
-		for(Widget wdg = child; wdg != null; wdg = wdg.next){
-			if(wdg instanceof Item){
-				Item i = (Item)wdg;
-				if(name.equals(i.GetResName() ) ) i.wdgmsg("transfer", Coord.z);
-			}
-		}
-	}
 }

@@ -7,6 +7,7 @@ public class MainScript{
 	public static boolean cleanupRunning = false;
 	public static boolean landscapeRunning = false;
 	public static boolean feastRunning = false;
+	public static boolean seedbagRunning = false;
 	public static Coord m_c1;
 	public static Coord m_c2;
 	public static int m_Type;
@@ -91,6 +92,19 @@ public class MainScript{
 				stop = false;
 				feastRunning = true;
 				af.start();
+			}
+		}
+	}
+	
+	public static void seedbagScript(boolean transfer){
+		if(!seedbagRunning){
+			
+			SeedbagScript sbs = new SeedbagScript(UI.instance.m_util, transfer);
+			
+			if(sbs != null){
+				stop = false;
+				seedbagRunning = true;
+				sbs.start();
 			}
 		}
 	}

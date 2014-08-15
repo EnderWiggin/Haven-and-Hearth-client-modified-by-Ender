@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,6 +139,7 @@ public class Config {
 	public static boolean displayNumbers = false;
 	public static boolean urlLinking = false;
 	public static boolean chatLogger = false;
+	public static boolean flavobjs = false;
 	
 	public static boolean runFlaskRunning = false;
 	public static boolean runFlask = true;
@@ -165,6 +167,7 @@ public class Config {
 	public static boolean combatInfo = false;
 	public static boolean largeCombatInfo = false;
 	public static boolean numericalCombat = false;
+	public static boolean trackingBroadcast = false;
 	
 	public static boolean serverGrid = false;
 	public static boolean disableMapSaving = false;
@@ -711,6 +714,7 @@ public class Config {
 		broadleafTile = options.getProperty("broadleafTile", "false").equals("true"); // new
 		urlLinking = options.getProperty("urlLinking", "false").equals("true"); // new
 		chatLogger = options.getProperty("chatLogger", "false").equals("true"); // new
+		flavobjs = options.getProperty("flavobjs", "false").equals("true"); // new
 		flaskNum = Integer.parseInt(options.getProperty("flaskNum", "100"));
 		hide = options.getProperty("hide", "false").equals("true"); // new
 		nightvision = options.getProperty("nightvision", "false").equals("true"); // new
@@ -723,6 +727,7 @@ public class Config {
 		combatSword = options.getProperty("combatSword", "false").equals("true"); // new
 		combatInfo = options.getProperty("combatInfo", "false").equals("true"); // new
 		numericalCombat = options.getProperty("numericalCombat", "false").equals("true"); // new
+		trackingBroadcast = options.getProperty("trackingBroadcast", "false").equals("true"); // new
 		largeCombatInfo = options.getProperty("largeCombatInfo", "false").equals("true"); // new
 		objectHealth = options.getProperty("objectHealth", "false").equals("true"); // new
 		autoTracking = options.getProperty("autoTracking", "false").equals("true"); // new
@@ -852,6 +857,7 @@ public class Config {
 		options.setProperty("edgedTiles", edgedTiles?"true":"false"); // new
 		options.setProperty("maxWindow", maxWindow?"true":"false"); // new
 		options.setProperty("chatLogger", chatLogger?"true":"false"); // new
+		options.setProperty("flavobjs", flavobjs?"true":"false"); // new
 		options.setProperty("urlLinking", urlLinking?"true":"false"); // new
 		options.setProperty("broadleafTile", broadleafTile?"true":"false"); // new
 		options.setProperty("flaskNum", String.valueOf(flaskNum)); // new
@@ -865,6 +871,7 @@ public class Config {
 		options.setProperty("combatHalo", combatHalo?"true":"false"); // new
 		options.setProperty("combatSword", combatSword?"true":"false"); // new
 		options.setProperty("combatInfo", combatInfo?"true":"false"); // new
+		options.setProperty("trackingBroadcast", trackingBroadcast?"true":"false"); // new
 		options.setProperty("numericalCombat", numericalCombat?"true":"false"); // new
 		options.setProperty("largeCombatInfo", largeCombatInfo?"true":"false"); // new
 		options.setProperty("objectHealth", objectHealth?"true":"false"); // new

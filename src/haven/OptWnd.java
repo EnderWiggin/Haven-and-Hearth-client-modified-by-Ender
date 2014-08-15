@@ -787,6 +787,7 @@ public class OptWnd extends Window {
 		    Config.saveOptions();
 		}
 	    };
+		chkbox.a = Config.kinLines;
 		
 		(new CheckBox(new Coord(10, (y+=35)), tab, "Single tap attack") { // new
 			public void changed(boolean val) {
@@ -935,6 +936,20 @@ public class OptWnd extends Window {
 		}
 	    };
 		chkbox.a = Config.chatLogger;
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Receive Tracking Broadcasts") {
+		public void changed(boolean val) {
+		    Config.trackingBroadcast = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.trackingBroadcast;
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Disable Flavobjs") {
+		public void changed(boolean val) {
+		    Config.flavobjs = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.flavobjs;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

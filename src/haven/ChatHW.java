@@ -160,7 +160,7 @@ public class ChatHW extends HWindow {
 	void catchBroadcast(String[] s2){
 		if(s2 == null) return;
 		
-		if(Config.showDirection && s2.length == 6){
+		if(Config.trackingBroadcast && s2.length == 6){
 			Gob gob;
 			if((gob = ui.sess.glob.oc.getgob(Integer.parseInt(s2[4]) )) != null){
 				int olid = Integer.parseInt(s2[5]);

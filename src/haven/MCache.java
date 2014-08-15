@@ -465,7 +465,7 @@ public class MCache {
 			new Overlay(g.ols, c1, c2, ol);
 		    }
 		    req.remove(c);
-		    g.makeflavor();
+		    if(Config.flavobjs) g.makeflavor();
 		    if(grids.containsKey(c)) {
 			grids.get(c).remove();
 			replace(grids.remove(c));

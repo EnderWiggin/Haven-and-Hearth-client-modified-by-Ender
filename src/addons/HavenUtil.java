@@ -89,7 +89,6 @@ public class HavenUtil{
 			return (Inventory)inv;
 		
 		return null;
-		
 	}
 	
 	public boolean hasHourglass(){
@@ -180,7 +179,14 @@ public class HavenUtil{
 		}
 		
 		bag.drop(new Coord(0,0), c);
+	}
+	
+	public void dropItemInInv(Coord c, Inventory inv){
+		if(inv == null){
+			return;
+		}
 		
+		inv.drop(new Coord(0,0), c);
 	}
 	
 	public void dropItemOnGround(Item item){
@@ -200,6 +206,28 @@ public class HavenUtil{
 			return;
 		}
 		item.wdgmsg("itemact", 0);
+	}
+	
+	public void itemAction(Item item){
+		if(item == null){
+			return;
+		}
+		item.wdgmsg("iact", Coord.z);
+	}
+	
+	public void transferItem(Item item){
+		if(item == null){
+			return;
+		}
+		item.wdgmsg("transfer", Coord.z);
+	}
+	
+	public void transferItemTo(Inventory inv, int mod){
+		inv.wdgmsg("xfer", 1, mod);
+	}
+	
+	public void transferItemFrom(Inventory inv, int mod){
+		inv.wdgmsg("xfer", -1, mod);
 	}
 	
 	Item findFlask(){

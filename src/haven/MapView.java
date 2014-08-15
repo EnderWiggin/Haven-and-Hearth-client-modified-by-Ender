@@ -1194,8 +1194,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	int stw, sth;
 	Coord oc, tc, ctc, sc;
 	
-	if(Config.profile)
-	    curf = prof.new Frame();
 	stw = (tilesz.x * 4) - 2;
 	sth = tilesz.y * 2;
 	oc = viewoffset(sz, mc);
@@ -1461,7 +1459,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		curf.fin();
 		curf = null;
 	    }
-	    //System.out.println(curf);
 	}
     }
 	
@@ -1887,7 +1884,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 							g.chcolor(offcol);
 							g.frect(gc.add(-25, -18), new Coord(rel.off / 200, 8));
 							g.chcolor(goldenText);
-							g.aimage(fnd.render(String.format("%d", rel.off/100)).tex(), gc.add(-25, -18), -0.9, 0.29);
+							g.aimage(fnd.render(String.format("%d", rel.off/100)).tex(), gc.add(-9, -22), 0, 0);
 							g.rect(gc.add(-25, -18), new Coord(51, 9) );
 						}
 						if(rel.def >= 200) {
@@ -1895,7 +1892,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 							
 							g.frect(gc.add(-25, -10), new Coord(rel.def / 200, 8));
 							g.chcolor(goldenText);
-							g.aimage(fnd.render(String.format("%d", rel.def/100)).tex(), gc.add(-25, -10), -0.9, 0.29);
+							g.aimage(fnd.render(String.format("%d", rel.def/100)).tex(), gc.add(-9, -14), 0, 0);
 							g.rect(gc.add(-25, -10), new Coord(51, 9) );
 						}
 						g.chcolor(grayRect);
@@ -1904,11 +1901,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 						g.atext(Integer.toString(rel.bal)+"/"+Integer.toString(rel.intns), gc.add(-23, -30), 0, 0);
 						g.atext(Integer.toString(rel.ip)+"/"+Integer.toString(rel.oip), gc.add(2, -30), 0, 0);
 						
-						g.image(ComWin.sword, gc.add(-15, -16),  new Coord(5,5));
-						g.image(ComWin.shield, gc.add(-15, -8), new Coord(5,5));
-						g.image(ComWin.bal, gc.add(-22, -32),  new Coord(5,5));
-						g.image(ComWin.intns, gc.add(-10, -32),  new Coord(5,5));
-						g.image(ComWin.iptex, gc.add(6, -32), new Coord(5,5));
+						if(Config.largeCombatInfo){
+							g.image(ComWin.sword, gc.add(-15, -16),  new Coord(5,5));
+							g.image(ComWin.shield, gc.add(-15, -8), new Coord(5,5));
+							g.image(ComWin.bal, gc.add(-22, -32),  new Coord(5,5));
+							g.image(ComWin.intns, gc.add(-10, -32),  new Coord(5,5));
+							g.image(ComWin.iptex, gc.add(6, -32), new Coord(5,5));
+						}
 					}
 					
 					g.chcolor();

@@ -533,56 +533,38 @@ public class Item extends Widget implements DTarget {
 	}
     }
 	
-	public String GetResName(){ // new
-		if (this.res.get() != null) {
-			return ((Resource)this.res.get()).name;
-		}
-		return "";
-	}
-	
-	void sortedSkoop(){ // new
-		String name = GetResName();
-		if(parent instanceof Inventory ) ((Inventory)parent).skoopItems(name);
-	}
-	
     public boolean mousedown(Coord c, int button) {
-		if(button == 3 && ui.modflags() == 4){ // new
-			sortedSkoop();
-			return(true);
-		}
-		
 		if(!dm) {
 			if(button == 1) {
-			if(ui.modshift)
-				if(ui.modmeta)
-				wdgmsg("transfer-same", name(), false);
-				else
-				wdgmsg("transfer", c);
-			else if(ui.modctrl)
-				if(ui.modmeta)
-				wdgmsg("drop-same", name(), false);
-				else
-				wdgmsg("drop", c);
-			else
-				wdgmsg("take", c);
-			return(true);
-			} else if(button == 3) {
-			if(ui.modmeta){
-				if(ui.modshift){
-				wdgmsg("transfer-same", name(), true);
-				} else if(ui.modctrl){
-				wdgmsg("drop-same", name(), true);
+				if(ui.modflags() == 1){
+					wdgmsg("transfer", c);
+				}else if(ui.modflags() == 2){
+					wdgmsg("drop", c);
+				}else if(ui.modflags() == 4){
+					wdgmsg("transfer-same", name(), false);
+				}else{
+					wdgmsg("take", c);
 				}
-			} else {
-				wdgmsg("iact", c);
-			}
-			return(true);
+				return(true);
+			}else if(button == 3){
+				if(ui.modflags() == 1 && name().equals("Seedbag") ){
+					seedBagAcction(true);
+				}else if(ui.modflags() == 4){
+					wdgmsg("transfer-same", name(), true);
+				}else if(ui.modflags() == 5){
+					wdgmsg("drop-same", name(), false);
+				}else if(ui.modflags() == 7 && name().equals("Seedbag")){
+					seedBagAcction(false);
+				}else{
+					wdgmsg("iact", c);
+				}
+				return(true);
 			}
 		} else {
-			if(button == 1) {
-			dropon(parent, c.add(this.c));
-			} else if(button == 3) {
-			interact(parent, c.add(this.c));
+			if(button == 1){
+				dropon(parent, c.add(this.c));
+			}else if(button == 3){
+				interact(parent, c.add(this.c));
 			}
 			return(true);
 		}
@@ -658,6 +640,13 @@ public class Item extends Widget implements DTarget {
 		return "";
 	}
 	
+	public String GetResName(){
+		if (this.res.get() != null) {
+			return ((Resource)this.res.get()).name;
+		}
+		return "";
+	}
+	
 	String getNextCheeseStage(String tray){
 		int idType = getPlayerTileID(); // 1 outside 2 cabin 3 cellar 4 mine
 		
@@ -671,13 +660,13 @@ public class Item extends Widget implements DTarget {
 			else if(idType == 4)
 				return "Mothzarella";
 		}else if(tray.equals("Brodgar Blue Cheese") ){
-			if(idType == 1 || idType == 2)
+			if(idType == 4)
 				return "Jorbonzola";
 		}else if(tray.equals("Mothzarella") ){
 			if(idType == 2 || idType == 3)
 				return "Harmesan Cheese";
 		}else if(tray.equals("Cellar Cheddar") ){
-			if(idType == 2)
+			if(idType == 1 || idType == 2)
 				return "Brodgar Blue Cheese";
 		}else if(tray.equals("Jorbonzola") ){
 			if(idType == 3)
@@ -708,5 +697,9 @@ public class Item extends Widget implements DTarget {
 		}catch(Exception e){}
 		
 		return 1;
+	}
+	
+	void seedBagAcction(boolean transfer){
+		addons.MainScript.seedbagScript(transfer);
 	}
 }
