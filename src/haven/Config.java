@@ -140,6 +140,7 @@ public class Config {
 	public static boolean urlLinking = false;
 	public static boolean chatLogger = false;
 	public static boolean flavobjs = false;
+	public static boolean customNeg = false;
 	
 	public static boolean runFlaskRunning = false;
 	public static boolean runFlask = true;
@@ -715,6 +716,7 @@ public class Config {
 		urlLinking = options.getProperty("urlLinking", "false").equals("true"); // new
 		chatLogger = options.getProperty("chatLogger", "false").equals("true"); // new
 		flavobjs = options.getProperty("flavobjs", "false").equals("true"); // new
+		customNeg = options.getProperty("customNeg", "false").equals("true"); // new
 		flaskNum = Integer.parseInt(options.getProperty("flaskNum", "100"));
 		hide = options.getProperty("hide", "false").equals("true"); // new
 		nightvision = options.getProperty("nightvision", "false").equals("true"); // new
@@ -858,6 +860,7 @@ public class Config {
 		options.setProperty("maxWindow", maxWindow?"true":"false"); // new
 		options.setProperty("chatLogger", chatLogger?"true":"false"); // new
 		options.setProperty("flavobjs", flavobjs?"true":"false"); // new
+		options.setProperty("customNeg", customNeg?"true":"false"); // new
 		options.setProperty("urlLinking", urlLinking?"true":"false"); // new
 		options.setProperty("broadleafTile", broadleafTile?"true":"false"); // new
 		options.setProperty("flaskNum", String.valueOf(flaskNum)); // new

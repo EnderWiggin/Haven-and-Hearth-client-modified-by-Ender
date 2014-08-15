@@ -950,6 +950,13 @@ public class OptWnd extends Window {
 		}
 	    };
 		chkbox.a = Config.flavobjs;
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Use Custom Neg (restart required)") {
+		public void changed(boolean val) {
+		    Config.customNeg = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.customNeg;
 	}
 
 	new Frame(new Coord(-10, 20), new Coord(550, 430), this);

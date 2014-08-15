@@ -551,7 +551,7 @@ public class Item extends Widget implements DTarget {
 					seedBagAcction(true);
 				}else if(ui.modflags() == 4){
 					wdgmsg("transfer-same", name(), true);
-				}else if(ui.modflags() == 5){
+				}else if(ui.modflags() == 6){
 					wdgmsg("drop-same", name(), false);
 				}else if(ui.modflags() == 7 && name().equals("Seedbag")){
 					seedBagAcction(false);
