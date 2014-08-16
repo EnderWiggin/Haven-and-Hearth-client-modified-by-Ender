@@ -1138,6 +1138,7 @@ public class CharWnd extends Window {
 	}
 	
 	void enableTracking(){
-		ui.m_util.turnTrackingOn(true);
+		//ui.m_util.turnTrackingOn(true);
+		ui.mnu.wdgmsg("act", "tracking");
 	}
 }

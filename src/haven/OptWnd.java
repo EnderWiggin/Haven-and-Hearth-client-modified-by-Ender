@@ -902,6 +902,13 @@ public class OptWnd extends Window {
 				text = mem;
 			}
 		};
+		chkbox = new CheckBox(new Coord(400, 100), tab, "Only auto fill flask") {
+		public void changed(boolean val) {
+		    Config.flaskFillOnly = val;
+		    Config.saveOptions();
+		}
+	    };
+		chkbox.a = Config.flaskFillOnly;
 		}
 	
 	{ /* ADDONS OPTIONS TAB */
@@ -915,13 +922,6 @@ public class OptWnd extends Window {
 		}
 	    };
 		chkbox.a = Config.miningDrop;
-		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Only auto fill flask (auto drink)") {
-		public void changed(boolean val) {
-		    Config.flaskFillOnly = val;
-		    Config.saveOptions();
-		}
-	    };
-		chkbox.a = Config.flaskFillOnly;
 		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Add URL links in chat") {
 		public void changed(boolean val) {
 		    Config.urlLinking = val;

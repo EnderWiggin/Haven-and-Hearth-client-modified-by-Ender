@@ -179,12 +179,12 @@ public class LoginScreen extends Widget {
 	private Pwbox(String username, boolean save) {
 	    super(new Coord(345, 310), new Coord(150, 150), LoginScreen.this);
 	    setfocustab(true);
-	    new Label(new Coord(0, 0), this, "User name", textf);
+	    new Label(new Coord(0, 0), this, "User name", textf).setcolor(Color.BLACK);
 		user = new TextEntry(new Coord(0, 20), new Coord(150, 20), this, username) { public void focus(){
 			LL.clearSelection();
 			CL.clearSelection();
 		} };
-		new Label(new Coord(0, 60), this, "Password", textf);
+		new Label(new Coord(0, 60), this, "Password", textf).setcolor(Color.BLACK);
 		pass = new TextEntry(new Coord(0, 80), new Coord(150, 20), this, "") { public void focus(){
 			LL.clearSelection();
 			CL.clearSelection();

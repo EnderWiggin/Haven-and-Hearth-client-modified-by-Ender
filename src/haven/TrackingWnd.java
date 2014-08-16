@@ -31,7 +31,7 @@ public class TrackingWnd extends Window {
 		instances.add(this);
     }
 	
-	void getID(Message sdt){ // the only way to get the god damn ID :/
+	void getID(Message sdt){
 		broadcastID = sdt.id;
 	}
     
