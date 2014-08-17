@@ -118,8 +118,8 @@ public class Gob implements Sprite.Owner {
 	for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
-		if(((getattr(Drawable.class) == null) || (getneg() != null)) && (ol.res.get() != null)){
-		    checkol(ol);		    
+		if(((getattr(Drawable.class) == null) || (getneg() == null) || (getattr(Layered.class) != null && getattr(Layered.class).sprites.size() == 0) ) && (ol.res.get() != null)){
+		    checkol(ol);
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 		}
 	    } else {
@@ -211,6 +211,7 @@ public class Gob implements Sprite.Owner {
 	
 	Drawable d = getattr(Drawable.class);
 	Coord dro = drawoff();
+	
 	for(Overlay ol : ols) {
 	    if (ol.spr != null) {
 		ol.spr.setup(drawer, dc, dro);

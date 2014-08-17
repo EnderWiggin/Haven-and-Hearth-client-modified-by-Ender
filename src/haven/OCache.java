@@ -309,7 +309,6 @@ public class OCache implements Iterable<Gob> {
 	    return;
 	Gob.Overlay ol = g.findol(olid);
 	if(sdt != null) sdt.id = olid;
-	
 	if(resid != null) {
 		try{
 		if(resid.get().name.contains("death") && g.isHuman() && Sound.deathCheck(id)){
