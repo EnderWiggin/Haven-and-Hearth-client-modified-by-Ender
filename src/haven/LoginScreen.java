@@ -124,9 +124,9 @@ public class LoginScreen extends Widget {
 		}
 		} };
 		
-		fire = new Button(new Coord(615, 340), 150, this, "Your hearth fire");
+		fire = new Button(new Coord(615, 345), 150, this, "Your hearth fire");
 		
-		last = new Button(new Coord(615, 362), 150, this, "Where you logged out");
+		last = new Button(new Coord(615, 380), 150, this, "Where you logged out");
 		
 		//show changelog on first run after update;
 		boolean same = Config.currentVersion.equals(MainFrame.VERSION); 
@@ -224,7 +224,7 @@ public class LoginScreen extends Widget {
 		
 	private Tokenbox(String username) {
 	    super(new Coord(295, 310), new Coord(250, 100), LoginScreen.this);
-	    label = textfs.render("Identity is saved for " + username, java.awt.Color.WHITE);
+	    label = textfs.render("Identity is saved for " + username, java.awt.Color.BLACK);
 	    btn = new Button(new Coord(75, 30), 100, this, "Forget me");
 	}
 		
@@ -271,7 +271,7 @@ public class LoginScreen extends Widget {
 	    if(progress != null)
 		progress = null;
 	    if(p != null)
-		progress = textf.render(p, java.awt.Color.WHITE);
+		progress = textf.render(p, java.awt.Color.BLACK);
 	}
     }
     

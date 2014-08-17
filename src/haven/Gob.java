@@ -118,7 +118,7 @@ public class Gob implements Sprite.Owner {
 	for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
 	    Overlay ol = i.next();
 	    if(ol.spr == null) {
-		if(((getattr(Drawable.class) == null) || (getneg() == null) || (getattr(Layered.class) != null && getattr(Layered.class).sprites.size() == 0) ) && (ol.res.get() != null)){
+		if(((getattr(Drawable.class) == null) || (getneg() != null) || (getattr(Layered.class) != null && getattr(Layered.class).sprites.size() == 0) ) && (ol.res.get() != null)){
 		    checkol(ol);
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
 		}
