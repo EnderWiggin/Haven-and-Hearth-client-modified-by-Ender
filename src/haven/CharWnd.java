@@ -48,6 +48,7 @@ public class CharWnd extends Window {
     public static CharWnd instance;
     Widget cattr, skill, belief;
     Worship ancw;
+	public static int worshipID = 1001;
     Label cost, skcost;
     Label explbl;
     int exp;
@@ -444,13 +445,19 @@ public class CharWnd extends Window {
 	}
     }
 
-    private class Worship extends Widget {
+    public class Worship extends Widget {
 	Inventory[] wishes = new Inventory[3];
 	Text title, numen;
 	Tex img;
 	
+	Window wnd;
+	boolean svis, attached = true;
+	private Coord detsz =  new Coord(90, 170);
+	private Coord detc = new Coord(-5, -5);
+	
 	public Worship(Coord c, Widget parent, String title, Tex img) {
 	    super(c, new Coord(100, 200), parent);
+		ui.numen = this;
 	    canhastrash = false;
 	    this.title = Text.render(title);
 	    this.img = img;
@@ -462,6 +469,7 @@ public class CharWnd extends Window {
 		    CharWnd.this.wdgmsg("forfeit", 0);
 		}
 	    };
+		visible = false;
 	}
 	
 	public void draw(GOut g) {
@@ -481,6 +489,51 @@ public class CharWnd extends Window {
 	
 	public void numen(int n) {
 	    this.numen = Text.render(Integer.toString(n));
+	}
+	
+	public void detach(){
+		svis = this.visible;
+		if(wnd != null){
+			this.unlink();
+			this.parent = wnd;
+			this.link();
+			this.c = detc;
+			wnd.show();
+			this.visible = true;
+		}
+		attached = false;
+	}
+	
+	public void attach(){
+		if(wnd != null){
+			wnd.hide();
+		}
+		this.c = new Coord(255, 40);
+		this.unlink();
+		this.parent = CharWnd.this;
+		this.link();
+		this.visible = svis;
+		attached = true;
+	}
+	
+	public void toggle(){
+		if(wnd == null){
+			wnd = new Window(new Coord(150, 150), detsz, ui.root, "Numen"){
+				public void destroy(){
+				wnd = null;
+				if(!attached){Worship.this.unlink();}
+				super.destroy();
+				}
+			};
+			wnd.justclose = true;
+			if(!attached){
+				this.visible = svis;
+				detach();
+			}
+			wnd.visible = !attached;
+		} else {
+			ui.destroy(wnd);
+		}
 	}
     }
 
@@ -865,6 +918,7 @@ public class CharWnd extends Window {
 		skill.visible = false;
 		belief.visible = false;
 		study.visible = false;
+		ancw.visible = false;
 	    }
 	}.tooltip = "Attributes";
 	if(studyid >= 0) {
@@ -874,6 +928,7 @@ public class CharWnd extends Window {
 		    skill.visible = false;
 		    belief.visible = false;
 		    study.visible = true;
+			ancw.visible = false;
 		}
 	    }.tooltip = "Study";
 	}
@@ -883,6 +938,7 @@ public class CharWnd extends Window {
 		skill.visible = true;
 		belief.visible = false;
 		study.visible = false;
+		ancw.visible = false;
 	    }
 	}.tooltip = "Skills";
 	new IButton(new Coord(bx += 70, 310), this, Resource.loadimg("gfx/hud/charsh/worshipup"), Resource.loadimg("gfx/hud/charsh/worshipdown")) {
@@ -891,6 +947,7 @@ public class CharWnd extends Window {
 		skill.visible = false;
 		belief.visible = true;
 		study.visible = false;
+		ancw.visible = true;
 	    }
 	}.tooltip = "Personal Beliefs";
 	
@@ -948,12 +1005,14 @@ public class CharWnd extends Window {
     @Override
     public void hide() {
 	study.detach();
+	ancw.detach();
 	super.hide();
     }
 
     @Override
     public void show() {
 	study.attach();
+	ancw.attach();
 	super.show();
     }
 

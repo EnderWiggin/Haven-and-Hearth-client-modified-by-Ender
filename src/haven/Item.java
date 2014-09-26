@@ -692,7 +692,7 @@ public class Item extends Widget implements DTarget {
 				return 2;
 			if(id == 22)
 				return 3;
-			if(id == 23 || id == 24 || id == 24)
+			if(id == 23 || id == 24 || id == 25)
 				return 4;
 		}catch(Exception e){}
 		

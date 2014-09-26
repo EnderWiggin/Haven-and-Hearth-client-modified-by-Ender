@@ -27,6 +27,7 @@
 package haven;
 
 import haven.CharWnd.Study;
+import haven.CharWnd.Worship;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -45,6 +46,7 @@ public class UI {
     public MenuGrid mnu;
     public Speedget spd;
     public Study study;
+	public Worship numen;
     public WikiBrowser wiki;
     private Widget keygrab, mousegrab;
     public Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
