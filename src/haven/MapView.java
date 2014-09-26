@@ -1748,10 +1748,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	cc = new Coord((int) (cc.x/getScale()), (int)(cc.y/getScale()));
 	Gob hit = gobatpos(cc);
 	Coord mc = s2m(cc.add(viewoffset(sz, this.mc).inv()));
-	if(hit == null)
+	if(hit == null){
+		if(ui.modflags() == 1) mc = tilify(mc);
 	    wdgmsg("itemact", cc0, mc, ui.modflags());
-	else
+	}else{
 	    wdgmsg("itemact", cc0, mc, ui.modflags(), hit.id, hit.getc());
+	}
 	return(true);
     }
     
