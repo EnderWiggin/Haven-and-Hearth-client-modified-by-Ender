@@ -34,9 +34,12 @@ import java.util.List;
 public class LineEdit {
     public String line = "";
     public int point = 0;
+	public int selStart = 0;
+	public int selEnd = 0;
     private static Text tcache = null;
-    private static final int C = 1;
-    private static final int M = 2;
+	private static final int S = 1;
+    private static final int C = 2;
+    private static final int M = 4;
     public KeyHandler mode;
 
     public abstract class KeyHandler {
@@ -45,50 +48,136 @@ public class LineEdit {
 
     public class PCMode extends KeyHandler {
 	public boolean key(char c, int code, int mod) {
-	    if((c == 8) && (mod == 0)) {
-		if(point > 0) {
-		    line = line.substring(0, point - 1) + line.substring(point);
-		    point--;
-		}
-	    } else if((c == 8) && (mod == C)) {
-		int b = wordstart(point);
-		line = line.substring(0, b) + line.substring(point);
-		point = b;
-	    } else if(c == 10) {
-		done(line);
-	    } else if((c == 127) && (mod == 0)) {
-		if(point < line.length())
-		    line = line.substring(0, point) + line.substring(point + 1);
-	    } else if((c == 127) && (mod == C)) {
-		int b = wordend(point);
-		line = line.substring(0, point) + line.substring(b);
-	    } else if((c >= 32) && (mod == 0)) {
-		line = line.substring(0, point) + c + line.substring(point);
-		point++;
-	    } else if(((c == 'v')||(c == 'V')) && (mod == C)) {
-		String str = Utils.getClipboard();
-		line = line.substring(0, point) + str + line.substring(point);
-		point += str.length();
-	    } else if((code == KeyEvent.VK_LEFT) && (mod == 0)) {
-		if(point > 0)
-		    point--;
-	    } else if((code == KeyEvent.VK_LEFT) && (mod == C)) {
-		point = wordstart(point);
-	    } else if((code == KeyEvent.VK_RIGHT) && (mod == 0)) {
-		if(point < line.length())
-		    point++;
-	    } else if((code == KeyEvent.VK_RIGHT) && (mod == C)) {
-		point = wordend(point);
-	    } else if((code == KeyEvent.VK_HOME) && (mod == 0)) {
-		point = 0;
-	    } else if((code == KeyEvent.VK_END) && (mod == 0)) {
-		point = line.length();
-	    } else {
-		return(false);
+		if((code == KeyEvent.VK_LEFT) && (mod == S)) {
+			if(point > 0){
+				changeSel(-1);
+				point--;
+			}
+			return true;
+	    } else if((code == KeyEvent.VK_RIGHT) && (mod == S)) {
+			if(point < line.length()){
+				changeSel(1);
+				point++;
+			}
+			return true;
 	    }
+		
+		if(((c == 'c')||(c == 'C')) && (mod == C)){
+			if(selStart != selEnd)
+				Utils.setClipboard(line.substring(selStart(), selEnd() ) );
+			return true;
+	    }
+		
+		if((code == KeyEvent.VK_LEFT) && (mod == 0)) {
+			if(point > 0)
+				point--;
+			if(selStart != selEnd) point = selStart();
+				selDes();
+	    } else if((code == KeyEvent.VK_LEFT) && (mod == C)) {
+			point = wordstart(point);
+			if(selStart != selEnd) point = selStart();
+				selDes();
+	    } else if((code == KeyEvent.VK_RIGHT) && (mod == 0)) {
+			if(point < line.length())
+				point++;
+			if(selStart != selEnd) point = selEnd();
+				selDes();
+	    } else if((code == KeyEvent.VK_RIGHT) && (mod == C)) {
+			point = wordend(point);
+			if(selStart != selEnd) point = selEnd();
+				selDes();
+	    } else if((code == KeyEvent.VK_HOME) && (mod == 0)) {
+			point = 0;
+			selDes();
+	    } else if((code == KeyEvent.VK_END) && (mod == 0)) {
+			point = line.length();
+			selDes();
+	    }else{
+			if((c == 8) && (mod == 0)) {
+				if(selStart == selEnd){
+					if(point > 0) {
+						line = line.substring(0, point - 1) + line.substring(point);
+						point--;
+					}
+				}else{
+					removeSelection();
+				}
+			}else if((c == 8) && (mod == C)) {
+				removeSelection();
+				int b = wordstart(point);
+				line = line.substring(0, b) + line.substring(point);
+				point = b;
+			} else if(c == 10) {
+				removeSelection();
+				done(line);
+			} else if((c == 127) && (mod == 0)) {
+				removeSelection();
+				if(point < line.length())
+					line = line.substring(0, point) + line.substring(point + 1);
+			} else if((c == 127) && (mod == C)) {
+				removeSelection();
+				int b = wordend(point);
+				line = line.substring(0, point) + line.substring(b);
+			} else if((c >= 32) && (mod <= 1)) {
+				removeSelection();
+				line = line.substring(0, point) + c + line.substring(point);
+				point++;
+			} else if(((c == 'v')||(c == 'V')) && (mod == C)) {
+				removeSelection();
+				String str = Utils.getClipboard();
+				line = line.substring(0, point) + str + line.substring(point);
+				point += str.length();
+			} else {
+				if((int)c > 0) selDes();
+					return(false);
+			}
+			selDes();
+		}
 	    return(true);
 	}
     }
+	
+	void sortSelection(){
+		if(selStart > selEnd){
+			int temp = selStart;
+			selStart = selEnd;
+			selEnd = temp;
+		}
+	}
+	
+	int selStart(){
+		if(selStart > selEnd) return selEnd;
+		
+		return selStart;
+	}
+	
+	int selEnd(){
+		if(selStart > selEnd) return selStart;
+		
+		return selEnd;
+	}
+	
+	void changeSel(int increment){
+		if(selStart == selEnd){
+			selStart = point;
+			selEnd = point + increment;
+			changeSelect(selStart, selEnd);
+		}else{
+			changeSelect(selStart, point + increment);
+		}
+	}
+	
+	void selDes(){
+		deselect();
+		selEnd = selStart;
+	}
+	
+	void removeSelection(){
+		if(selStart != selEnd){
+			line = line.substring(0, selStart() ) + line.substring(selEnd() );
+			point = selStart;
+		}
+	}
     
     public class EmacsMode extends KeyHandler {
 	private int mark, yankpos, undopos;
@@ -280,14 +369,15 @@ public class LineEdit {
 	    changed();
 	return(ret);
     }
-
+	
     public boolean key(KeyEvent ev) {
 	int mod = 0;
+	if((ev.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK) != 0) mod |= S;
 	if((ev.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0) mod |= C;
 	if((ev.getModifiersEx() & (InputEvent.META_DOWN_MASK | InputEvent.ALT_DOWN_MASK)) != 0) mod |= M;
 	if(ev.getID() == KeyEvent.KEY_TYPED) {
 	    char c = ev.getKeyChar();
-	    if(((mod & C) != 0) && (c < 32)) {
+	    if(((mod & S) != 0) && (c < 32)) {
 		/* Undo Java's TTY Control-code mangling */
 		if(ev.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 		} else if(ev.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -326,6 +416,8 @@ public class LineEdit {
 
     protected void done(String line) {}
     protected void changed() {}
+	protected void deselect() {}
+	protected void changeSelect(int start, int end) {}
     
     public Text render(Text.Foundry f) {
 	if((tcache == null) || (tcache.text != line))
