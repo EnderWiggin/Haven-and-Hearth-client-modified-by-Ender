@@ -62,11 +62,14 @@ public class LineEdit {
 			return true;
 	    }
 		
-		if(((c == 'c')||(c == 'C')) && (mod == C)){
+		if(((c == 'c')||(c == 'C')) && (mod == C) ){
 			if(selStart != selEnd)
 				Utils.setClipboard(line.substring(selStart(), selEnd() ) );
 			return true;
-	    }
+	    } else if(((c == 'a')||(c == 'A')) && (mod == C) ) {
+			changeSelect(0, -1);
+			return true;
+		}
 		
 		if((code == KeyEvent.VK_LEFT) && (mod == 0)) {
 			if(point > 0)

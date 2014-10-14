@@ -215,6 +215,13 @@ public class Textlog extends Widget {
 		if(ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_C){
 			copySelected();
 			return true;
+		}else if(ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_A && lines.size() > 0){
+			selection.sel = true;
+			Text first = lines.get(0);
+			Text last = lines.get(lines.size() - 1);
+			selection.selStart(first, ((RichText)first).charNum(new Coord(0,0) ) );
+			selection.selEnd(last, ((RichText)last).charNum( last.sz() ) );
+			return true;
 		}
 		return false;
     }
@@ -287,6 +294,15 @@ public class Textlog extends Widget {
 					
 					selection.draging = true;
 					
+					if(!selection.sel && selection.time > System.currentTimeMillis() ){
+						selection.time = 0;
+						selection.sel = true;
+						selection.selStart(line, ((RichText)line).charNum(new Coord(0,0) ) );
+						selection.selEnd(line, ((RichText)line).charNum( line.sz() ) );
+					}
+					
+					selection.time = System.currentTimeMillis() + 200;
+					
 					return(true);
 				}
 				y += line.sz().y;
@@ -347,8 +363,12 @@ public class Textlog extends Widget {
 						selection.draging = false;
 						ui.grabmouse(null);
 					}
-					if(c.isect(cc, line.sz() ) && !selection.sel){
-						return openURL( ((RichText)line).actionURL(c.add(cc.inv()) ) );
+					if(!selection.sel){
+						if(c.isect(cc, line.sz() ) ){
+							if(openURL( ((RichText)line).actionURL(c.add(cc.inv()) ) )){
+								return true;
+							}
+						}
 					}
 					y += line.sz().y;
 				}

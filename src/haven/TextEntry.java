@@ -131,7 +131,11 @@ public class TextEntry extends Widget {
 		protected void changeSelect(int start, int end){
 			selection = true;
 			selBoxStart = tcache.advance(start);
+			if(end == -1) end = buf.line.length();
 			selBoxEnd = tcache.advance(end);
+			
+			buf.selStart = start;
+			buf.selEnd = end;
 		}
 	    };
 	setcanfocus(true);

@@ -553,9 +553,9 @@ public class RichText extends Text {
 		
 		public int charAtV2(int x){
 			TextMeasurer t = tm();
-			for(int i = start + 1; i < end + 1 && x != -1; i++) {
+			for(int i = start + 1; i <= end && x != -1; i++) {
 			if(x < t.getAdvanceBetween(start, i))
-				return i - start;
+				return i - start - 1;
 			}
 			return end;
 		}
