@@ -253,6 +253,10 @@ public class GOut {
 	return(color);
     }
 	
+	public void chcolor(int a) {
+	chcolor(Utils.clipcol(color.getRed(), color.getGreen(), color.getBlue(), a));
+    }
+	
     public GOut reclip(Coord ul, Coord sz) {
 	GOut g = new GOut(this);
 	g.ul = this.ul.add(ul);
