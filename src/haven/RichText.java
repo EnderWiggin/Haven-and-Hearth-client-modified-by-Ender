@@ -74,7 +74,54 @@ public class RichText extends Text {
     private RichText(String text) {
 	super(text);
     }
-
+	
+	public Coord getCoord(int i){
+		Coord c = new Coord();
+		int num = 0;
+		for(Part part : parts){
+			if(i <= (num + part.maxChar()) ){
+				return new Coord(part.advanceV2(i - num) + part.x, part.y + part.height());
+			}
+			num += part.maxChar();
+		}
+		
+		return new Coord();
+	}
+	
+	public int charNum(Coord c){
+		int num = 0;
+		for(Part part : parts){
+			if(c.isect(new Coord(part.x, part.y), new Coord(part.width(), part.height()))){
+				num += part.charAtV2(c.x - part.x);
+				break;
+			}else if(c.y < part.y){
+				break;
+			}
+			
+			num += part.maxChar();
+		}
+		
+		return num;
+	}
+	
+	public String getString(int start, int end){
+		String s = "";
+		String parsed = "";
+		for(Part part : parts){
+			s += part.getString();
+		}
+		
+		try{
+			if(end == -1) end = s.length();
+			
+			parsed = s.substring(start, end);
+		}catch(Exception e){
+			System.out.println(e);
+		}
+		
+		return parsed;
+	}
+	
     public String actionat(Coord c) {
 	for (Part part : parts) {
 	    if(c.isect(new Coord(part.x, part.y), new Coord(part.width(), part.height()))) {
@@ -148,6 +195,11 @@ public class RichText extends Text {
 	public Part split(int w) {
 	    return(null);
 	}
+	
+	public String getString(){return "";};
+	public int charAtV2(int x){return 0;}
+	public int maxChar(){return 0;}
+	public int advanceV2(int i){return 0;}
     }
     
     public static class Image extends Part {
@@ -331,138 +383,206 @@ public class RichText extends Text {
 			if(start == end) return;
 			tl().draw(g, x, y + tl().getAscent());
 		}
+		
+		
+		public int charAtV2(int x){
+			TextMeasurer t = tm();
+			for(int i = start + 1; i < end + 1 && x != -1; i++) {
+			if(x < t.getAdvanceBetween(start, i))
+				return i - start;
+			}
+			return end;
+		}
+		
+		public int maxChar(){
+			return end - start;
+		}
+		
+		public int advanceV2(int i){
+			TextMeasurer t = tm();
+			try{
+				if(i > 0 && t != null && end > start){
+					return (int)t.getAdvanceBetween(start, i + start);
+				}
+			}catch(Exception e){}
+			
+			return -1;
+		}
+		
+		public String getString(){
+			String s = "";
+			CharacterIterator iter = str.getIterator();
+			for(char c = iter.setIndex(start); iter.getIndex() < end; c = iter.next()) 
+				s += c;
+			
+			return s;
+		}
     }
     
     public static class TextPart extends Part {
-	public AttributedString str;
-	public int start, end;
-	private TextMeasurer tm = null;
-	private TextLayout tl = null;
-	
-	public TextPart(AttributedString str, int start, int end) {
-	    this.str = str;
-	    this.start = start;
-	    this.end = end;
-	}
-	
-	public TextPart(String str, Map<? extends Attribute, ?> attrs) {
-	    this((str.length() == 0)?(new AttributedString(str)):(new AttributedString(str, attrs)), 0, str.length());
-	}
-	
-	public TextPart(String str) {
-	    this(new AttributedString(str), 0, str.length());
-	}
-	
-	public String getAction() {
-	   return getAction(0);
-	}
-	
-	public String getAction(int index) {
-	    AttributedCharacterIterator aci = str.getIterator();
-	    aci.setIndex(start + index);
-	    return (String) aci.getAttributes().get(ActionAttribute.ACTION);
-	}
-	
-	private AttributedCharacterIterator ti() {
-	    return(str.getIterator(null, start, end));
-	}
-
-	public void append(Part p) {
-	    if(next == null) {
-		if(p instanceof TextPart) {
-		    TextPart tp = (TextPart)p;
-		    str = AttributedStringBuffer.concat(ti(), tp.ti());
-		    end = (end - start) + (tp.end - tp.start);
-		    start = 0;
-		    next = p.next;
-		} else {
-		    next = p;
+		public AttributedString str;
+		public int start, end;
+		private TextMeasurer tm = null;
+		private TextLayout tl = null;
+		
+		public TextPart(AttributedString str, int start, int end) {
+			this.str = str;
+			this.start = start;
+			this.end = end;
 		}
-	    } else {
-		next.append(p);
-	    }
-	}
-	
-	private TextMeasurer tm() {
-	    if(tm == null)
-		tm = new TextMeasurer(str.getIterator(), rs.frc);
-	    return(tm);
-	}
-
-	private TextLayout tl() {
-	    if(tl == null)
-		tl = tm().getLayout(start, end);
-	    return(tl);
-	}
-
-	public int width() {
-	    if(start == end) return(0);
-	    return((int)tm().getAdvanceBetween(start, end));
-	}
-	
-	public int charAt(int x) {
-	    for(int i=start+1; i<end; i++) {
-		if(x < tm().getAdvanceBetween(start, i))
-		    return i - start - 1;
-	    }
-	    return -1;
-	}
-	
-	public int height() {
-	    if(start == end) return(0);
-	    return((int)(tl().getAscent() + tl().getDescent() + tl().getLeading()));
-	}
-	
-	public int baseline() {
-	    if(start == end) return(0);
-	    return((int)tl().getAscent());
-	}
-	
-	private Part split2(int e1, int s2) {
-	    TextPart p1 = new TextPart(str, start, e1);
-	    TextPart p2 = new TextPart(str, s2, end);
-	    p1.next = p2;
-	    p2.next = next;
-	    p1.rs = p2.rs = rs;
-	    return(p1);
-	}
-
-	public Part split(int w) {
-	    if((end-start)<=1){
-		return null;
-	    }
-	    int l = start, r = end;
-	    while(true) {
-		int t = l + ((r - l) / 2);
-		int tw;
-		if(t == l)
-		    tw = 0;
-		else
-		    tw = (int)tm().getAdvanceBetween(start, t);
-		if(tw > w) {
-		    r = t;
-		} else {
-		    l = t;
+		
+		public TextPart(String str, Map<? extends Attribute, ?> attrs) {
+			this((str.length() == 0)?(new AttributedString(str)):(new AttributedString(str, attrs)), 0, str.length());
 		}
-		if(l >= r - 1)
-		    break;
-	    }
-	    CharacterIterator it = str.getIterator();
-	    for(int i = l; i >= start; i--) {
-		if(Character.isWhitespace(it.setIndex(i))) {
-		    return(split2(i, i + 1));
+		
+		public TextPart(String str) {
+			this(new AttributedString(str), 0, str.length());
 		}
-	    }
-	    if(l == start){
-		l+=1;
-	    }
-	    return(split2(l, l));
-	}
-	
-	public void render(Graphics2D g) {
-	    if(start == end) return;
-	    tl().draw(g, x, y + tl().getAscent());
-	}
+		
+		public String getAction() {
+		   return getAction(0);
+		}
+		
+		public String getAction(int index) {
+			AttributedCharacterIterator aci = str.getIterator();
+			aci.setIndex(start + index);
+			return (String) aci.getAttributes().get(ActionAttribute.ACTION);
+		}
+		
+		private AttributedCharacterIterator ti() {
+			return(str.getIterator(null, start, end));
+		}
+
+		public void append(Part p) {
+			if(next == null) {
+			if(p instanceof TextPart) {
+				TextPart tp = (TextPart)p;
+				str = AttributedStringBuffer.concat(ti(), tp.ti());
+				end = (end - start) + (tp.end - tp.start);
+				start = 0;
+				next = p.next;
+			} else {
+				next = p;
+			}
+			} else {
+			next.append(p);
+			}
+		}
+		
+		private TextMeasurer tm() {
+			if(tm == null)
+			tm = new TextMeasurer(str.getIterator(), rs.frc);
+			return(tm);
+		}
+
+		private TextLayout tl() {
+			if(tl == null)
+			tl = tm().getLayout(start, end);
+			return(tl);
+		}
+
+		public int width() {
+			if(start == end) return(0);
+			return((int)tm().getAdvanceBetween(start, end));
+		}
+		
+		public int charAt(int x) {
+			for(int i=start+1; i<end; i++) {
+			if(x < tm().getAdvanceBetween(start, i))
+				return i - start - 1;
+			}
+			return -1;
+		}
+		
+		public int height() {
+			if(start == end) return(0);
+			return((int)(tl().getAscent() + tl().getDescent() + tl().getLeading()));
+		}
+		
+		public int baseline() {
+			if(start == end) return(0);
+			return((int)tl().getAscent());
+		}
+		
+		private Part split2(int e1, int s2) {
+			TextPart p1 = new TextPart(str, start, e1);
+			TextPart p2 = new TextPart(str, s2, end);
+			p1.next = p2;
+			p2.next = next;
+			p1.rs = p2.rs = rs;
+			return(p1);
+		}
+
+		public Part split(int w) {
+			if((end-start)<=1){
+			return null;
+			}
+			int l = start, r = end;
+			while(true) {
+			int t = l + ((r - l) / 2);
+			int tw;
+			if(t == l)
+				tw = 0;
+			else
+				tw = (int)tm().getAdvanceBetween(start, t);
+			if(tw > w) {
+				r = t;
+			} else {
+				l = t;
+			}
+			if(l >= r - 1)
+				break;
+			}
+			CharacterIterator it = str.getIterator();
+			for(int i = l; i >= start; i--) {
+			if(Character.isWhitespace(it.setIndex(i))) {
+				return(split2(i, i + 1));
+			}
+			}
+			if(l == start){
+			l+=1;
+			}
+			return(split2(l, l));
+		}
+		
+		public void render(Graphics2D g) {
+			if(start == end) return;
+			tl().draw(g, x, y + tl().getAscent());
+		}
+		
+		
+		public int charAtV2(int x){
+			TextMeasurer t = tm();
+			for(int i = start + 1; i < end + 1 && x != -1; i++) {
+			if(x < t.getAdvanceBetween(start, i))
+				return i - start;
+			}
+			return end;
+		}
+		
+		public int maxChar(){
+			return end - start;
+		}
+		
+		public int advanceV2(int i){
+			TextMeasurer t = tm();
+			try{
+				if(i > 0 && t != null && end > start){
+					return (int)t.getAdvanceBetween(start, i + start);
+				}
+			}catch(Exception e){}
+			
+			return -1;
+		}
+		
+		public String getString(){
+			String s = "";
+			CharacterIterator iter = str.getIterator();
+			for(char c = iter.setIndex(start); iter.getIndex() < end; c = iter.next()) 
+				s += c;
+			
+			return s;
+		}
     }
     
     private static Map<? extends Attribute, ?> fillattrs(Object... attrs) {

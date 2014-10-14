@@ -35,7 +35,7 @@ import java.net.URI;
 import java.awt.Desktop;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.awt.event.KeyEvent;
 
 public class Textlog extends Widget {
     public int maxLines = 150;
@@ -49,6 +49,8 @@ public class Textlog extends Widget {
     boolean sdrag = false;
     public boolean drawbg = true;
     public Color defcolor = Color.BLACK;
+	
+	public SelBox selection = new SelBox();
 	
 	static final String urlRegex = "\\b(https?://|ftp://|www.)"
             + "[-A-Za-z0-9+&@#/%?=~_|!:,.;]"
@@ -71,16 +73,90 @@ public class Textlog extends Widget {
 		}
 	    }
 	g.chcolor();
+	
 	int y = -cury;
 	synchronized(lines) {
+		boolean selRow = false;
 	    for(Text line : lines) {
-		int dy1 = sz.y + y;
-		int dy2 = dy1 + line.sz().y;
-		if((dy2 > 0) && (dy1 < sz.y))
-		    g.image(line.tex(), new Coord(margin, dy1));
-		y += line.sz().y;
+			int dy1 = sz.y + y;
+			int dy2 = dy1 + line.sz().y;
+			
+			if(hasfocus && selection.sel){
+				Coord dotStart = null, dotEnd = null;
+				Color col = g.getcolor();
+				g.chcolor(51, 153, 255, 128);
+				
+				int ymem = -1;
+				int dsy1 = 0;
+				int wid = 0;
+				int xdraw = 0;
+				int ydraw = 0;
+				int ysel = 0;
+				
+				if(selection.selStart() == line) dotStart = ((RichText)line).getCoord(selection.selCharStart() );
+				if(selection.selEnd() == line) dotEnd = ((RichText)line).getCoord(selection.selCharEnd() );
+				
+				boolean endline = false;
+				for(RichText.Part part : ((RichText)line).parts){
+					if(part instanceof RichText.Image) continue;
+					
+					if(part.y != ymem){
+						if(ymem != -1 && selRow){
+							if(dsy1 < 0){
+								ydraw += dsy1;
+								dsy1 = 0;
+							}else if(dsy1 + ydraw > sz.y){
+								ydraw = sz.y - dsy1;
+							}
+							if(ydraw < 0) ydraw = 0;
+							
+							g.frect(Coord.z.add(margin + xdraw, dsy1), Coord.z.add(wid - xdraw, ydraw) );
+							xdraw = 0;
+						}
+						
+						ydraw = part.y + part.height();
+						dsy1 = dy1 + ysel;
+						ysel += ydraw;
+						
+						wid = part.width();
+						
+						if(dotStart != null && ydraw == dotStart.y){
+							selRow = true;
+							xdraw = dotStart.x;
+						}
+						
+						if(dotEnd != null && ydraw == dotEnd.y){
+							selRow = false;
+							endline = true;
+							wid = dotEnd.x;
+							break;
+						}
+					}else{
+						wid += part.width();
+					}
+					
+					ymem = part.y;
+					
+				}
+				
+				if(dsy1 < 0){
+					ydraw += dsy1;
+					dsy1 = 0;
+				}else if(dsy1 + ydraw > sz.y){
+					ydraw = sz.y - dsy1;
+				}
+				if(ydraw < 0) ydraw = 0;
+				if(selRow || endline) g.frect(Coord.z.add(margin + xdraw, dsy1), Coord.z.add(wid - xdraw, ydraw) );
+				
+				g.chcolor(col);
+			}
+			
+			if((dy2 > 0) && (dy1 < sz.y))
+				g.image(line.tex(), new Coord(margin, dy1));
+			y += line.sz().y;
 	    }
 	}
+	
 	if(maxy > sz.y) {
 	    int fx = sz.x - sflarp.sz().x;
 	    int cx = fx + (sflarp.sz().x / 2) - (schain.sz().x / 2);
@@ -107,7 +183,7 @@ public class Textlog extends Widget {
 	if(Config.use_smileys){
 	    line = Config.mksmiley(line);
 	}
-	if(Config.urlLinking){
+	if(Config.chatBoxInteraction){
 		line = findURL(line);
 	}
 	rl = fnd.render(line, sz.x - (margin * 2) - sflarp.sz().x, TextAttribute.FOREGROUND, col, TextAttribute.SIZE, 12);
@@ -134,6 +210,45 @@ public class Textlog extends Widget {
 	    append((String)args[0]);
 	}
     }
+	
+	public boolean keydown(KeyEvent ev) {
+		if(ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_C){
+			copySelected();
+			return true;
+		}
+		return false;
+    }
+	
+	void copySelected(){
+		if(!selection.sel) return;
+		String string = "";
+		synchronized(lines){
+			int y = -cury;
+			boolean selRow = false;
+			boolean f = true;
+			for(Text line : lines) {
+				if(selection.selStart() == line && selection.selEnd() == line){
+					string += ((RichText)line).getString(selection.selCharStart(), selection.selCharEnd());
+					break;
+				}else if(selection.selStart() == line){
+					selRow = true;
+					
+					string += ((RichText)line).getString(selection.selCharStart(), -1);
+				}else if(selection.selEnd() == line){
+					selRow = false;
+					
+					string += ((RichText)line).getString(0, selection.selCharEnd());
+					break;
+				}else if(selRow){
+					string += ((RichText)line).getString(0, -1);
+				}
+				
+				if(selRow) string += "\n";
+			}
+		}
+		
+		Utils.setClipboard(string);
+	}
         
     public boolean mousewheel(Coord c, int amount) {
 	cury += amount * 20;
@@ -145,39 +260,68 @@ public class Textlog extends Widget {
     }
         
     public boolean mousedown(Coord c, int button) {
-	if(button != 1)
-	    return(false);
-	int fx = sz.x - sflarp.sz().x;
-	int cx = fx + (sflarp.sz().x / 2) - (schain.sz().x / 2);
-	if((maxy > sz.y) && (c.x >= fx)) {
-	    sdrag = true;
-	    ui.grabmouse(this);
-	    mousemove(c);
-	    return(true);
-	}
-	int y = -cury;
-	synchronized(lines) {
-		for(Text line : lines) {
-			int dy1 = sz.y + y;
-			Coord cc = new Coord(margin, dy1);
-			if(c.isect(cc, line.sz() )){
-				openURL( ((RichText)line).actionURL(c.add(cc.inv()) ) );
-			}
-			y += line.sz().y;
+		parent.setfocus(this);
+		if(button != 1)
+			return(false);
+		int fx = sz.x - sflarp.sz().x;
+		int cx = fx + (sflarp.sz().x / 2) - (schain.sz().x / 2);
+		if((maxy > sz.y) && (c.x >= fx)) {
+			sdrag = true;
+			ui.grabmouse(this);
+			mousemove(c);
+			return(true);
 		}
-	}
-	return(Config.urlLinking);
+		
+		selection.sel = false;
+		if(!Config.chatBoxInteraction) return false;
+		int y = -cury;
+		synchronized(lines) {
+			for(Text line : lines) {
+				int dy1 = sz.y + y;
+				Coord cc = new Coord(margin, dy1);
+				if(c.isect(cc, line.sz() )){
+					selection.selStart(line, ((RichText)line).charNum(c.add(cc.inv()) ) );
+					selection.selCharEnd = selection.selCharStart;
+					
+					ui.grabmouse(this);
+					
+					selection.draging = true;
+					
+					return(true);
+				}
+				y += line.sz().y;
+			}
+		}
+		return(true);
     }
-        
-    public void mousemove(Coord c) {
-	if(sdrag) {
-	    double a = (double)(c.y - (sflarp.sz().y / 2)) / (double)(sz.y - sflarp.sz().y);
-	    if(a < 0)
-		a = 0;
-	    if(a > 1)
-		a = 1;
-	    cury = (int)(a * (maxy - sz.y)) + sz.y;
-	}
+	
+	public void mousemove(Coord c) {
+		if(sdrag) {
+			double a = (double)(c.y - (sflarp.sz().y / 2)) / (double)(sz.y - sflarp.sz().y);
+			if(a < 0)
+			a = 0;
+			if(a > 1)
+			a = 1;
+			cury = (int)(a * (maxy - sz.y)) + sz.y;
+		}else if(selection.draging){
+			int y = -cury;
+			synchronized(lines) {
+				for(Text line : lines) {
+					int dy1 = sz.y + y;
+					Coord cc = new Coord(margin, dy1);
+					if(c.isect(cc, new Coord(sz.x - margin, line.sz().y) )){
+						if(!selection.sel && (selection.selCharStart != selection.selCharEnd || selection.selStart != selection.selEnd)){
+							selection.sel = true;
+						}
+						
+						selection.selEnd(line, ((RichText)line).charNum(c.add(cc.inv()) ) );
+						
+						if(selection.sel) selection.invertSel();
+					}
+					y += line.sz().y;
+				}
+			}
+		}
     }
     
     public void setprog(double a){
@@ -189,23 +333,42 @@ public class Textlog extends Widget {
     }
     
     public boolean mouseup(Coord c, int button) {
-	if((button == 1) && sdrag) {
-	    sdrag = false;
-	    ui.grabmouse(null);
-	    return(true);
-	}
-	return(false);
+		if((button == 1) && sdrag) {
+			sdrag = false;
+			ui.grabmouse(null);
+			return(true);
+		}else if(button == 1) {
+			int y = -cury;
+			synchronized(lines) {
+				for(Text line : lines) {
+					int dy1 = sz.y + y;
+					Coord cc = new Coord(margin, dy1);
+					if(selection.draging){
+						selection.draging = false;
+						ui.grabmouse(null);
+					}
+					if(c.isect(cc, line.sz() ) && !selection.sel){
+						return openURL( ((RichText)line).actionURL(c.add(cc.inv()) ) );
+					}
+					y += line.sz().y;
+				}
+			}
+		}
+		return(false);
     }
 	
-	void openURL(String s){
+	boolean openURL(String s){
 		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
 			try {
 				desktop.browse(new URI(s));
+				return true;
 			} catch (Exception e) {
 				//e.printStackTrace();
 			}
 		}
+		
+		return false;
 	}
 	
 	String findURL(String line){
@@ -225,5 +388,87 @@ public class Textlog extends Widget {
 	
 	public static boolean isURL(String url){
 		return url.matches(urlRegex); 
+	}
+	
+	public class SelBox{
+		boolean sel = false;
+		boolean draging = false;
+		boolean invert = false;
+		
+		int selCharStart = -1;
+		int selCharEnd = -1;
+		
+		Text selStart;
+		Text selEnd;
+		
+		long time = 0;
+		
+		public SelBox(){}
+		
+		Text selStart(){
+			if(invert){
+				return selEnd;
+			}
+			return selStart;
+		}
+		
+		Text selEnd(){
+			if(invert){
+				return selStart;
+			}
+			return selEnd;
+		}
+		
+		int selCharStart(){
+			if(invert){
+				return selCharEnd;
+			}
+			return selCharStart;
+		}
+		
+		int selCharEnd(){
+			if(invert){
+				return selCharStart;
+			}
+			return selCharEnd;
+		}
+		
+		void selStart(Text line, int ch){
+			selStart = line;
+			selCharStart = ch;
+		}
+		
+		void selEnd(Text line, int ch){
+			selEnd = line;
+			selCharEnd = ch;
+		}
+		
+		void invertSel(){
+			invert = invertTest();
+		}
+		
+		boolean invertTest(){
+			if(selStart == selEnd){
+				if(selCharEnd < selCharStart) return true;
+			}else if(lineTest() ){
+				return true;
+			}
+			
+			return false;
+		}
+		
+		boolean lineTest(){
+			synchronized(lines) {
+				for(Text line : lines) {
+					if(line == selEnd){
+						return true;
+					}else if(selStart == line){
+						return false;
+					}
+				}
+			}
+			
+			return false;
+		}
 	}
 }

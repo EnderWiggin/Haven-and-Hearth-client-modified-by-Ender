@@ -137,7 +137,7 @@ public class Config {
     public static boolean maxWindow = true;
 	public static boolean broadleafTile = false;
 	public static boolean displayNumbers = false;
-	public static boolean urlLinking = false;
+	public static boolean chatBoxInteraction = false;
 	public static boolean chatLogger = false;
 	public static boolean flavobjs = false;
 	public static boolean customNeg = false;
@@ -713,7 +713,7 @@ public class Config {
 		edgedTiles = options.getProperty("edgedTiles", "false").equals("true"); // new
 		maxWindow = options.getProperty("maxWindow", "false").equals("true"); // new
 		broadleafTile = options.getProperty("broadleafTile", "false").equals("true"); // new
-		urlLinking = options.getProperty("urlLinking", "false").equals("true"); // new
+		chatBoxInteraction = options.getProperty("chatBoxInteraction", "false").equals("true"); // new
 		chatLogger = options.getProperty("chatLogger", "false").equals("true"); // new
 		flavobjs = options.getProperty("flavobjs", "false").equals("true"); // new
 		customNeg = options.getProperty("customNeg", "false").equals("true"); // new
@@ -861,7 +861,7 @@ public class Config {
 		options.setProperty("chatLogger", chatLogger?"true":"false"); // new
 		options.setProperty("flavobjs", flavobjs?"true":"false"); // new
 		options.setProperty("customNeg", customNeg?"true":"false"); // new
-		options.setProperty("urlLinking", urlLinking?"true":"false"); // new
+		options.setProperty("chatBoxInteraction", chatBoxInteraction?"true":"false"); // new
 		options.setProperty("broadleafTile", broadleafTile?"true":"false"); // new
 		options.setProperty("flaskNum", String.valueOf(flaskNum)); // new
 		options.setProperty("hide", hide?"true":"false"); // new

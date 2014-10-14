@@ -922,13 +922,13 @@ public class OptWnd extends Window {
 		}
 	    };
 		chkbox.a = Config.miningDrop;
-		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Add URL links in chat") {
+		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Chat box interaction") {
 		public void changed(boolean val) {
-		    Config.urlLinking = val;
+		    Config.chatBoxInteraction = val;
 		    Config.saveOptions();
 		}
 	    };
-		chkbox.a = Config.urlLinking;
+		chkbox.a = Config.chatBoxInteraction;
 		chkbox = new CheckBox(new Coord(10, (y+=35)), tab, "Save chat logs") {
 		public void changed(boolean val) {
 		    Config.chatLogger = val;
