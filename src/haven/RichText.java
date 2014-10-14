@@ -75,17 +75,28 @@ public class RichText extends Text {
 	super(text);
     }
 	
-	public Coord getCoord(int i){
-		Coord c = new Coord();
+	public int getAdv(int i){
 		int num = 0;
 		for(Part part : parts){
 			if(i <= (num + part.maxChar()) ){
-				return new Coord(part.advanceV2(i - num) + part.x, part.y + part.height());
+				return part.advanceV2(i - num);
 			}
 			num += part.maxChar();
 		}
 		
-		return new Coord();
+		return 0;
+	}
+	
+	public Part getPart(int i){
+		int num = 0;
+		for(Part part : parts){
+			if(i <= (num + part.maxChar()) ){
+				return part;
+			}
+			num += part.maxChar();
+		}
+		
+		return null;
 	}
 	
 	public int charNum(Coord c){

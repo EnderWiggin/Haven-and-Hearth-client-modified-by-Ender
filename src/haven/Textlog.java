@@ -77,11 +77,12 @@ public class Textlog extends Widget {
 	int y = -cury;
 	synchronized(lines) {
 		boolean selRow = false;
+		boolean endline = false;
 	    for(Text line : lines) {
 			int dy1 = sz.y + y;
 			int dy2 = dy1 + line.sz().y;
 			
-			if(hasfocus && selection.sel){
+			if(hasfocus && selection.sel && !endline){
 				Coord dotStart = null, dotEnd = null;
 				Color col = g.getcolor();
 				g.chcolor(51, 153, 255, 128);
@@ -93,60 +94,39 @@ public class Textlog extends Widget {
 				int ydraw = 0;
 				int ysel = 0;
 				
-				if(selection.selStart() == line) dotStart = ((RichText)line).getCoord(selection.selCharStart() );
-				if(selection.selEnd() == line) dotEnd = ((RichText)line).getCoord(selection.selCharEnd() );
-				
-				boolean endline = false;
 				for(RichText.Part part : ((RichText)line).parts){
-					if(part instanceof RichText.Image) continue;
+					xdraw = part.x;
+					wid = part.width();
 					
-					if(part.y != ymem){
-						if(ymem != -1 && selRow){
-							if(dsy1 < 0){
-								ydraw += dsy1;
-								dsy1 = 0;
-							}else if(dsy1 + ydraw > sz.y){
-								ydraw = sz.y - dsy1;
-							}
-							if(ydraw < 0) ydraw = 0;
-							
-							g.frect(Coord.z.add(margin + xdraw, dsy1), Coord.z.add(wid - xdraw, ydraw) );
-							xdraw = 0;
-						}
-						
-						ydraw = part.y + part.height();
-						dsy1 = dy1 + ysel;
-						ysel += ydraw;
-						
-						wid = part.width();
-						
-						if(dotStart != null && ydraw == dotStart.y){
-							selRow = true;
-							xdraw = dotStart.x;
-						}
-						
-						if(dotEnd != null && ydraw == dotEnd.y){
-							selRow = false;
-							endline = true;
-							wid = dotEnd.x;
-							break;
-						}
-					}else{
-						wid += part.width();
+					if(selection.partStart != null && part == selection.partStart){
+						selRow = true;
+						xdraw += selection.advStart;
+						wid -= selection.advStart;
 					}
 					
-					ymem = part.y;
+					if(!selRow) continue;
 					
+					if(selection.partEnd != null && part == selection.partEnd){
+						selRow = false;
+						endline = true;
+						wid -= part.width() - selection.advEnd;
+					}
+					
+					dsy1 = dy1 + part.y;
+					ydraw = part.height();
+					
+					if(dsy1 < 0){
+						ydraw += dsy1;
+						dsy1 = 0;
+					}else if(dsy1 + ydraw > sz.y){
+						ydraw = sz.y - dsy1;
+					}
+					if(ydraw < 0) ydraw = 0;
+					
+					if(selRow || endline) g.frect(Coord.z.add(margin + xdraw, dsy1), Coord.z.add(wid, ydraw) );
+					
+					if(endline) break;
 				}
-				
-				if(dsy1 < 0){
-					ydraw += dsy1;
-					dsy1 = 0;
-				}else if(dsy1 + ydraw > sz.y){
-					ydraw = sz.y - dsy1;
-				}
-				if(ydraw < 0) ydraw = 0;
-				if(selRow || endline) g.frect(Coord.z.add(margin + xdraw, dsy1), Coord.z.add(wid - xdraw, ydraw) );
 				
 				g.chcolor(col);
 			}
@@ -423,6 +403,12 @@ public class Textlog extends Widget {
 		
 		long time = 0;
 		
+		RichText.Part partStart;
+		RichText.Part partEnd;
+		
+		int advStart;
+		int advEnd;
+		
 		public SelBox(){}
 		
 		Text selStart(){
@@ -456,11 +442,27 @@ public class Textlog extends Widget {
 		void selStart(Text line, int ch){
 			selStart = line;
 			selCharStart = ch;
+			
+			fixSelect();
 		}
 		
 		void selEnd(Text line, int ch){
 			selEnd = line;
 			selCharEnd = ch;
+			
+			fixSelect();
+		}
+		
+		void fixSelect(){
+			if(selStart() != null){
+				advStart = ((RichText)selStart() ).getAdv(selection.selCharStart() );
+				partStart = ((RichText)selStart() ).getPart(selection.selCharStart() );
+			}
+			
+			if(selEnd() != null){
+				advEnd = ((RichText)selEnd() ).getAdv(selection.selCharEnd() );
+				partEnd = ((RichText)selEnd() ).getPart(selection.selCharEnd() );
+			}
 		}
 		
 		void invertSel(){
