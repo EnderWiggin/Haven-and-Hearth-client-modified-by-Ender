@@ -89,7 +89,6 @@ public class TextEntry extends Widget {
 	
 	if(selection && hasfocus){
 		g.chcolor(51, 153, 255, 128);
-		//g.frect(Coord.z.add(xAlign(selBoxStart), 0), Coord.z.add(xAlign(selBoxEnd), sz.y - 1));
 		g.frect(Coord.z.add(selBoxStart, 0), Coord.z.add(selBoxEnd - selBoxStart, sz.y - 1));
 		g.chcolor(0, 0, 0, 255);
 	}

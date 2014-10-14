@@ -77,6 +77,7 @@ public class CharWnd extends Window {
 	Label slidersCtrl; //new
 	Label slidersShiftCtrl; //new
 	Label slidersAlt; //new
+	boolean first = true;
 	
 	ArrayList<sliderClass> autoSlide = new ArrayList<sliderClass>(); // new
 	
@@ -976,11 +977,12 @@ public class CharWnd extends Window {
 	} else if(msg == "psk") {
 	    Collection<Resource> skl = new LinkedList<Resource>();
 	    for(int i = 0; i < args.length; i++) {
-		if (Config.autoTracking && ((String)args[i]).equals("ranger"))
+		if(first && Config.autoTracking && ((String)args[i]).equals("ranger"))
 			enableTracking();
 		Resource res = Resource.load("gfx/hud/skills/" + (String)args[i]);
 		skl.add(res);
 	    }
+		first = false;
 	    psk.pop(skl);
 	} else if(msg == "food") {
 	    foodm.update(args);

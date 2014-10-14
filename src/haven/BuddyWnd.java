@@ -45,7 +45,7 @@ public class BuddyWnd extends Window {
     private Button sbalpha;
     private Button sbgroup;
     private Button sbstatus;
-    private TextEntry charpass, opass;
+    private TextEntry serchbox, charpass, opass;
     public static final Tex online = Resource.loadtex("gfx/hud/online");
     public static final Tex offline = Resource.loadtex("gfx/hud/offline");
     public static final Color[] gc = new Color[] {
@@ -381,7 +381,7 @@ public class BuddyWnd extends Window {
 	bi = new BuddyInfo(new Coord(210, 5), new Coord(180, 280), this);
 	new Label(new Coord(0, 290), this, "Search for kins:");
 	new Label(new Coord(200, 290), this, "Sort kin by:");
-	charpass = new TextEntry(new Coord(0, 305), new Coord(190, 20), this, "") {
+	serchbox = new TextEntry(new Coord(0, 305), new Coord(190, 20), this, "") {
 		public void activate(String text) {
 			searchName(text);
 		}
