@@ -175,7 +175,7 @@ public class LineEdit {
 	void removeSelection(){
 		if(selStart != selEnd){
 			line = line.substring(0, selStart() ) + line.substring(selEnd() );
-			point = selStart;
+			point = selStart();
 		}
 	}
     
@@ -377,7 +377,7 @@ public class LineEdit {
 	if((ev.getModifiersEx() & (InputEvent.META_DOWN_MASK | InputEvent.ALT_DOWN_MASK)) != 0) mod |= M;
 	if(ev.getID() == KeyEvent.KEY_TYPED) {
 	    char c = ev.getKeyChar();
-	    if(((mod & S) != 0) && (c < 32)) {
+	    if(((mod & C) != 0) && (c < 32)) {
 		/* Undo Java's TTY Control-code mangling */
 		if(ev.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 		} else if(ev.getKeyCode() == KeyEvent.VK_ENTER) {
