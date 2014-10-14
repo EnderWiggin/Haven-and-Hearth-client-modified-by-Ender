@@ -182,13 +182,13 @@ public class OCache implements Iterable<Gob> {
 	LinMove lm = (LinMove)m;
 	if((l < 0) || (l >= lm.c)) {
 	    g.delattr(Moving.class);
-	    if(isplayer){
+	    if(isplayer || isPlayerBoat(id) ){
 		ismoving = false;
 		checkqueue();
 	    }
 	} else {
 	    lm.setl(l);
-	    if(isplayer){
+	    if(isplayer || isPlayerBoat(id) ){
 		ismoving = true;
 	    }
 	}
@@ -352,4 +352,15 @@ public class OCache implements Iterable<Gob> {
 	    }
 	}
     }
+	
+	boolean isPlayerBoat(int id){
+		Gob player = getgob(UI.instance.mainview.playergob);
+		Moving m = null;
+		if(player == null || ((m = player.getattr(Moving.class)) == null) ) return false;
+		if(m instanceof Following){
+			Following f = (Following)m;
+			if(f.tgt == id) return true;
+		}
+		return false;
+	}
 }

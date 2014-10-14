@@ -1644,6 +1644,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Coord pc, cc;
 	Moving m;
 	LinMove lm;
+	Following f;
 	Gob player = glob.oc.getgob(playergob);
 	if(player != null){
 	    m = player.getattr(Moving.class);
@@ -1659,6 +1660,24 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		    g.line(pc, cc, 2);
 		    pc = cc;
 		}
+	    }else if((m != null) && (m instanceof Following)){
+			f = (Following)m;
+			Gob target = glob.oc.getgob(f.tgt);
+			if(target != null){
+				m = target.getattr(Moving.class);
+				lm = (LinMove)m;
+				if((m != null) && (m instanceof LinMove)){
+					pc = m2s(lm.t).add(oc);
+					
+					if(target.sc != null) g.line(target.sc, pc, 2);
+					
+					for(Coord c:glob.oc.movequeue){
+						cc = m2s(c).add(oc);
+						g.line(pc, cc, 2);
+						pc = cc;
+					}
+				}
+			}
 	    }
 	    g.chcolor();
 	}
