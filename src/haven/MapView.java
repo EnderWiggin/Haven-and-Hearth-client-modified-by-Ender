@@ -1665,8 +1665,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			Gob target = glob.oc.getgob(f.tgt);
 			if(target != null){
 				m = target.getattr(Moving.class);
-				lm = (LinMove)m;
 				if((m != null) && (m instanceof LinMove)){
+					lm = (LinMove)m;
 					pc = m2s(lm.t).add(oc);
 					
 					if(target.sc != null) g.line(target.sc, pc, 2);
