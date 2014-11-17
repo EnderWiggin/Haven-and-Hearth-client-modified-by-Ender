@@ -37,6 +37,7 @@ import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 public class TexI extends TexGL {
     public static ComponentColorModel glcm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[] {8, 8, 8, 8}, true, false, ComponentColorModel.TRANSLUCENT, DataBuffer.TYPE_BYTE);
@@ -56,7 +57,7 @@ public class TexI extends TexGL {
     }
     
     protected void fill(GOut g) {
-	GL gl = g.gl;
+	GL2 gl = g.gl;
 	ByteBuffer data = ByteBuffer.wrap(pixels);
 	gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, fmt, tdim.x, tdim.y, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
     }

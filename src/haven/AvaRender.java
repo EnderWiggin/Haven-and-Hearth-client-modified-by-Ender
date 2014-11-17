@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 public class AvaRender extends TexRT {
     List<Indir<Resource>> layers;
@@ -69,7 +70,7 @@ public class AvaRender extends TexRT {
 	this.images = images;
 
 	g.gl.glClearColor(255, 255, 255, 0);
-	g.gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+	g.gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 	for(Resource.Image i : images)
 	    g.image(i.tex(), i.o);
         return(true);

@@ -43,8 +43,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
+import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLException;
@@ -70,7 +71,7 @@ public class HavenPanel extends GLCanvas implements Runnable {
     private SyncFSM fsm = null;
     private static final GLCapabilities caps;
     static {
-	caps = new GLCapabilities();
+	caps = new GLCapabilities(null);
 	caps.setDoubleBuffered(true);
 	caps.setAlphaBits(8);
 	caps.setRedBits(8);
@@ -90,15 +91,15 @@ public class HavenPanel extends GLCanvas implements Runnable {
     private void initgl() {
 	final Thread caller = Thread.currentThread();
 	addGLEventListener(new GLEventListener() {
-		public void display(GLAutoDrawable d) {
-		    GL gl = d.getGL();
+		public void display(GLAutoDrawable d){
+		    GL2 gl = (GL2)d.getGL();
 		    if(inited && rdr)
 			redraw(gl);
 		    TexGL.disposeall(gl);
 		}
-			
-		public void init(GLAutoDrawable d) {
-		    GL gl = d.getGL();
+		
+		public void init(GLAutoDrawable d){
+		    GL2 gl = (GL2)d.getGL();
 		    if(caller.getThreadGroup() instanceof haven.error.ErrorHandler) {
 			haven.error.ErrorHandler h = (haven.error.ErrorHandler)caller.getThreadGroup();
 			h.lsetprop("gl.vendor", gl.glGetString(GL.GL_VENDOR));
@@ -120,7 +121,13 @@ public class HavenPanel extends GLCanvas implements Runnable {
 		}
 			
 		public void displayChanged(GLAutoDrawable d, boolean cp1, boolean cp2) {}
-	    });
+		
+		@Override
+		public void dispose(GLAutoDrawable arg0) {
+			// TODO Auto-generated method stub
+		}
+		
+		});
     }
 	
     public void init() {
@@ -277,17 +284,17 @@ public class HavenPanel extends GLCanvas implements Runnable {
 	return(Toolkit.getDefaultToolkit().createCustomCursor(buf, new java.awt.Point(hs.x, hs.y), ""));
     }
 
-    void redraw(GL gl) {
+    void redraw(GL2 gl){
 	GOut g = new GOut(gl, getContext(), MainFrame.getInnerSize());
 
-	gl.glMatrixMode(GL.GL_PROJECTION);
+	gl.glMatrixMode(GL2.GL_PROJECTION);
 	gl.glLoadIdentity();
 	gl.glOrtho(0, getWidth(), 0, getHeight(), -1, 1);
 	TexRT.renderall(g);
 	if(curf != null)
 	    curf.tick("texrt");
 
-	gl.glMatrixMode(GL.GL_PROJECTION);
+	gl.glMatrixMode(GL2.GL_PROJECTION);
 	gl.glLoadIdentity();
 	gl.glOrtho(0, getWidth(), getHeight(), 0, -1, 1);
 	gl.glClearColor(0, 0, 0, 1);

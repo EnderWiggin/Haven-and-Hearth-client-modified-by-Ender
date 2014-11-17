@@ -30,10 +30,11 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLContext;
 
 public class GOut {
-    GL gl;
+    GL2 gl;
     public Coord ul, sz;
     private Color color = Color.WHITE;
     final GLContext ctx;
@@ -53,7 +54,7 @@ public class GOut {
 	this.sh = o.sh;
     }
 
-    public GOut(GL gl, GLContext ctx, Coord sz) {
+    public GOut(GL2 gl, GLContext ctx, Coord sz) {
 	this.gl = gl;
 	this.ul = Coord.z;
 	this.sz = sz;
@@ -186,7 +187,7 @@ public class GOut {
     public void frect(Coord ul, Coord sz) {
 	glcolor();
 	texsel(-1);
-	gl.glBegin(GL.GL_QUADS);
+	gl.glBegin(GL2.GL_QUADS);
 	vertex(ul);
 	vertex(ul.add(new Coord(sz.x, 0)));
 	vertex(ul.add(sz));
@@ -198,7 +199,7 @@ public class GOut {
     public void frect(Coord c1, Coord c2, Coord c3, Coord c4) {
 	glcolor();
 	texsel(-1);
-	gl.glBegin(GL.GL_QUADS);
+	gl.glBegin(GL2.GL_QUADS);
 	vertex(c1);
 	vertex(c2);
 	vertex(c3);

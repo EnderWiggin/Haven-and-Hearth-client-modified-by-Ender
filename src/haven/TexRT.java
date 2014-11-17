@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 public abstract class TexRT extends TexGL {
     static Map<GL, Collection<TexRT>> current = new WeakHashMap<GL, Collection<TexRT>>();
@@ -100,7 +101,7 @@ public abstract class TexRT extends TexGL {
     }
     
     public static void renderall(GOut g) {
-	GL gl = g.gl;
+	GL2 gl = g.gl;
 	Collection<TexRT> tc;
 	synchronized(current) {
 	    tc = current.get(gl);
